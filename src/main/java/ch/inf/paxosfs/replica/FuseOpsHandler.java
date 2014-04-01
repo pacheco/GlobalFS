@@ -38,7 +38,7 @@ public class FuseOpsHandler implements FuseOps.Iface {
 	@Override
 	public Attr getattr(String path) throws FSError, TException {
 		int dest = oracle.partitionOf(path);
-		Command cmd = new Command(CommandType.ATTR.getValue(), new Random().nextLong(), (int) (System.currentTimeMillis() / 1000L), Arrays.asList(dest));
+		Command cmd = new Command(CommandType.ATTR.getValue(), new Random().nextLong(), (int) (System.currentTimeMillis() / 1000L));
 		cmd.setAttr(new AttrCmd(path));
 		Attr ret = (Attr) replica.submitCommand(cmd);
 		return ret;

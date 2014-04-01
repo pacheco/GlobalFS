@@ -4,9 +4,17 @@ package ch.inf.paxosfs.partitioning;
 
 public interface PartitioningOracle {
 	/**
-	 * Return the id of the group that the command has to be sent to given the paths involved
+	 * Return the ids of the groups responsible for this path
 	 * @param path
 	 * @return
 	 */
-	public int partitionOf(String path);
+	public int[] partitionsOf(String path);
+	
+	/**
+	 * Returns true if a given partition is responsible for this path
+	 * @param path
+	 * @param partition
+	 * @return
+	 */
+	public boolean partitionHasPath(String path, int partition);
 }

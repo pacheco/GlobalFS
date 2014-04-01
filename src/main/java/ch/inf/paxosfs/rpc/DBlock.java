@@ -570,8 +570,5 @@ public class DBlock implements org.apache.thrift.TBase<DBlock, DBlock._Fields>, 
     }
   }
 
-  public long size() {
-	  return this.getEndOffset() - this.getStartOffset();
-  }
 }
 

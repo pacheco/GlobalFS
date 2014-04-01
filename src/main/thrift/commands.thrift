@@ -130,7 +130,6 @@ struct Command {
     1: i32 type
     2: i64 reqId
     3: i32 reqTime
-    4: list<i32> involvedPartitions
     5: optional AttrCmd attr
     7: optional MknodCmd mknod
     8: optional MkdirCmd mkdir

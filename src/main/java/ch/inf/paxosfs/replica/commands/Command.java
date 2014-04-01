@@ -38,7 +38,6 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
   private static final org.apache.thrift.protocol.TField TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("type", org.apache.thrift.protocol.TType.I32, (short)1);
   private static final org.apache.thrift.protocol.TField REQ_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("reqId", org.apache.thrift.protocol.TType.I64, (short)2);
   private static final org.apache.thrift.protocol.TField REQ_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("reqTime", org.apache.thrift.protocol.TType.I32, (short)3);
-  private static final org.apache.thrift.protocol.TField INVOLVED_PARTITIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("involvedPartitions", org.apache.thrift.protocol.TType.LIST, (short)4);
   private static final org.apache.thrift.protocol.TField ATTR_FIELD_DESC = new org.apache.thrift.protocol.TField("attr", org.apache.thrift.protocol.TType.STRUCT, (short)5);
   private static final org.apache.thrift.protocol.TField MKNOD_FIELD_DESC = new org.apache.thrift.protocol.TField("mknod", org.apache.thrift.protocol.TType.STRUCT, (short)7);
   private static final org.apache.thrift.protocol.TField MKDIR_FIELD_DESC = new org.apache.thrift.protocol.TField("mkdir", org.apache.thrift.protocol.TType.STRUCT, (short)8);
@@ -66,7 +65,6 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
   public int type; // required
   public long reqId; // required
   public int reqTime; // required
-  public List<Integer> involvedPartitions; // required
   public AttrCmd attr; // optional
   public MknodCmd mknod; // optional
   public MkdirCmd mkdir; // optional
@@ -90,7 +88,6 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     TYPE((short)1, "type"),
     REQ_ID((short)2, "reqId"),
     REQ_TIME((short)3, "reqTime"),
-    INVOLVED_PARTITIONS((short)4, "involvedPartitions"),
     ATTR((short)5, "attr"),
     MKNOD((short)7, "mknod"),
     MKDIR((short)8, "mkdir"),
@@ -128,8 +125,6 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
           return REQ_ID;
         case 3: // REQ_TIME
           return REQ_TIME;
-        case 4: // INVOLVED_PARTITIONS
-          return INVOLVED_PARTITIONS;
         case 5: // ATTR
           return ATTR;
         case 7: // MKNOD
@@ -218,9 +213,6 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     tmpMap.put(_Fields.REQ_TIME, new org.apache.thrift.meta_data.FieldMetaData("reqTime", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-    tmpMap.put(_Fields.INVOLVED_PARTITIONS, new org.apache.thrift.meta_data.FieldMetaData("involvedPartitions", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32))));
     tmpMap.put(_Fields.ATTR, new org.apache.thrift.meta_data.FieldMetaData("attr", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, AttrCmd.class)));
     tmpMap.put(_Fields.MKNOD, new org.apache.thrift.meta_data.FieldMetaData("mknod", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -265,8 +257,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
   public Command(
     int type,
     long reqId,
-    int reqTime,
-    List<Integer> involvedPartitions)
+    int reqTime)
   {
     this();
     this.type = type;
@@ -275,7 +266,6 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     setReqIdIsSet(true);
     this.reqTime = reqTime;
     setReqTimeIsSet(true);
-    this.involvedPartitions = involvedPartitions;
   }
 
   /**
@@ -286,10 +276,6 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     this.type = other.type;
     this.reqId = other.reqId;
     this.reqTime = other.reqTime;
-    if (other.isSetInvolvedPartitions()) {
-      List<Integer> __this__involvedPartitions = new ArrayList<Integer>(other.involvedPartitions);
-      this.involvedPartitions = __this__involvedPartitions;
-    }
     if (other.isSetAttr()) {
       this.attr = new AttrCmd(other.attr);
     }
@@ -355,7 +341,6 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     this.reqId = 0;
     setReqTimeIsSet(false);
     this.reqTime = 0;
-    this.involvedPartitions = null;
     this.attr = null;
     this.mknod = null;
     this.mkdir = null;
@@ -442,45 +427,6 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
 
   public void setReqTimeIsSet(boolean value) {
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __REQTIME_ISSET_ID, value);
-  }
-
-  public int getInvolvedPartitionsSize() {
-    return (this.involvedPartitions == null) ? 0 : this.involvedPartitions.size();
-  }
-
-  public java.util.Iterator<Integer> getInvolvedPartitionsIterator() {
-    return (this.involvedPartitions == null) ? null : this.involvedPartitions.iterator();
-  }
-
-  public void addToInvolvedPartitions(int elem) {
-    if (this.involvedPartitions == null) {
-      this.involvedPartitions = new ArrayList<Integer>();
-    }
-    this.involvedPartitions.add(elem);
-  }
-
-  public List<Integer> getInvolvedPartitions() {
-    return this.involvedPartitions;
-  }
-
-  public Command setInvolvedPartitions(List<Integer> involvedPartitions) {
-    this.involvedPartitions = involvedPartitions;
-    return this;
-  }
-
-  public void unsetInvolvedPartitions() {
-    this.involvedPartitions = null;
-  }
-
-  /** Returns true if field involvedPartitions is set (has been assigned a value) and false otherwise */
-  public boolean isSetInvolvedPartitions() {
-    return this.involvedPartitions != null;
-  }
-
-  public void setInvolvedPartitionsIsSet(boolean value) {
-    if (!value) {
-      this.involvedPartitions = null;
-    }
   }
 
   public AttrCmd getAttr() {
@@ -917,14 +863,6 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       }
       break;
 
-    case INVOLVED_PARTITIONS:
-      if (value == null) {
-        unsetInvolvedPartitions();
-      } else {
-        setInvolvedPartitions((List<Integer>)value);
-      }
-      break;
-
     case ATTR:
       if (value == null) {
         unsetAttr();
@@ -1075,9 +1013,6 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     case REQ_TIME:
       return Integer.valueOf(getReqTime());
 
-    case INVOLVED_PARTITIONS:
-      return getInvolvedPartitions();
-
     case ATTR:
       return getAttr();
 
@@ -1146,8 +1081,6 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       return isSetReqId();
     case REQ_TIME:
       return isSetReqTime();
-    case INVOLVED_PARTITIONS:
-      return isSetInvolvedPartitions();
     case ATTR:
       return isSetAttr();
     case MKNOD:
@@ -1223,15 +1156,6 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       if (!(this_present_reqTime && that_present_reqTime))
         return false;
       if (this.reqTime != that.reqTime)
-        return false;
-    }
-
-    boolean this_present_involvedPartitions = true && this.isSetInvolvedPartitions();
-    boolean that_present_involvedPartitions = true && that.isSetInvolvedPartitions();
-    if (this_present_involvedPartitions || that_present_involvedPartitions) {
-      if (!(this_present_involvedPartitions && that_present_involvedPartitions))
-        return false;
-      if (!this.involvedPartitions.equals(that.involvedPartitions))
         return false;
     }
 
@@ -1430,16 +1354,6 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     }
     if (isSetReqTime()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.reqTime, other.reqTime);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetInvolvedPartitions()).compareTo(other.isSetInvolvedPartitions());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetInvolvedPartitions()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.involvedPartitions, other.involvedPartitions);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1644,14 +1558,6 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     if (!first) sb.append(", ");
     sb.append("reqTime:");
     sb.append(this.reqTime);
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("involvedPartitions:");
-    if (this.involvedPartitions == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.involvedPartitions);
-    }
     first = false;
     if (isSetAttr()) {
       if (!first) sb.append(", ");
@@ -1943,24 +1849,6 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // INVOLVED_PARTITIONS
-            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
-              {
-                org.apache.thrift.protocol.TList _list16 = iprot.readListBegin();
-                struct.involvedPartitions = new ArrayList<Integer>(_list16.size);
-                for (int _i17 = 0; _i17 < _list16.size; ++_i17)
-                {
-                  int _elem18;
-                  _elem18 = iprot.readI32();
-                  struct.involvedPartitions.add(_elem18);
-                }
-                iprot.readListEnd();
-              }
-              struct.setInvolvedPartitionsIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
           case 5: // ATTR
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
               struct.attr = new AttrCmd();
@@ -2138,18 +2026,6 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       oprot.writeFieldBegin(REQ_TIME_FIELD_DESC);
       oprot.writeI32(struct.reqTime);
       oprot.writeFieldEnd();
-      if (struct.involvedPartitions != null) {
-        oprot.writeFieldBegin(INVOLVED_PARTITIONS_FIELD_DESC);
-        {
-          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, struct.involvedPartitions.size()));
-          for (int _iter19 : struct.involvedPartitions)
-          {
-            oprot.writeI32(_iter19);
-          }
-          oprot.writeListEnd();
-        }
-        oprot.writeFieldEnd();
-      }
       if (struct.attr != null) {
         if (struct.isSetAttr()) {
           oprot.writeFieldBegin(ATTR_FIELD_DESC);
@@ -2296,61 +2172,58 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       if (struct.isSetReqTime()) {
         optionals.set(2);
       }
-      if (struct.isSetInvolvedPartitions()) {
+      if (struct.isSetAttr()) {
         optionals.set(3);
       }
-      if (struct.isSetAttr()) {
+      if (struct.isSetMknod()) {
         optionals.set(4);
       }
-      if (struct.isSetMknod()) {
+      if (struct.isSetMkdir()) {
         optionals.set(5);
       }
-      if (struct.isSetMkdir()) {
+      if (struct.isSetUnlink()) {
         optionals.set(6);
       }
-      if (struct.isSetUnlink()) {
+      if (struct.isSetRmdir()) {
         optionals.set(7);
       }
-      if (struct.isSetRmdir()) {
+      if (struct.isSetSymlink()) {
         optionals.set(8);
       }
-      if (struct.isSetSymlink()) {
+      if (struct.isSetRename()) {
         optionals.set(9);
       }
-      if (struct.isSetRename()) {
+      if (struct.isSetChmod()) {
         optionals.set(10);
       }
-      if (struct.isSetChmod()) {
+      if (struct.isSetChown()) {
         optionals.set(11);
       }
-      if (struct.isSetChown()) {
+      if (struct.isSetTruncate()) {
         optionals.set(12);
       }
-      if (struct.isSetTruncate()) {
+      if (struct.isSetUtime()) {
         optionals.set(13);
       }
-      if (struct.isSetUtime()) {
+      if (struct.isSetOpen()) {
         optionals.set(14);
       }
-      if (struct.isSetOpen()) {
+      if (struct.isSetRead()) {
         optionals.set(15);
       }
-      if (struct.isSetRead()) {
+      if (struct.isSetWrite()) {
         optionals.set(16);
       }
-      if (struct.isSetWrite()) {
+      if (struct.isSetRelease()) {
         optionals.set(17);
       }
-      if (struct.isSetRelease()) {
+      if (struct.isSetStatfs()) {
         optionals.set(18);
       }
-      if (struct.isSetStatfs()) {
+      if (struct.isSetSignal()) {
         optionals.set(19);
       }
-      if (struct.isSetSignal()) {
-        optionals.set(20);
-      }
-      oprot.writeBitSet(optionals, 21);
+      oprot.writeBitSet(optionals, 20);
       if (struct.isSetType()) {
         oprot.writeI32(struct.type);
       }
@@ -2359,15 +2232,6 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       }
       if (struct.isSetReqTime()) {
         oprot.writeI32(struct.reqTime);
-      }
-      if (struct.isSetInvolvedPartitions()) {
-        {
-          oprot.writeI32(struct.involvedPartitions.size());
-          for (int _iter20 : struct.involvedPartitions)
-          {
-            oprot.writeI32(_iter20);
-          }
-        }
       }
       if (struct.isSetAttr()) {
         struct.attr.write(oprot);
@@ -2425,7 +2289,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, Command struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(21);
+      BitSet incoming = iprot.readBitSet(20);
       if (incoming.get(0)) {
         struct.type = iprot.readI32();
         struct.setTypeIsSet(true);
@@ -2439,99 +2303,86 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
         struct.setReqTimeIsSet(true);
       }
       if (incoming.get(3)) {
-        {
-          org.apache.thrift.protocol.TList _list21 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I32, iprot.readI32());
-          struct.involvedPartitions = new ArrayList<Integer>(_list21.size);
-          for (int _i22 = 0; _i22 < _list21.size; ++_i22)
-          {
-            int _elem23;
-            _elem23 = iprot.readI32();
-            struct.involvedPartitions.add(_elem23);
-          }
-        }
-        struct.setInvolvedPartitionsIsSet(true);
-      }
-      if (incoming.get(4)) {
         struct.attr = new AttrCmd();
         struct.attr.read(iprot);
         struct.setAttrIsSet(true);
       }
-      if (incoming.get(5)) {
+      if (incoming.get(4)) {
         struct.mknod = new MknodCmd();
         struct.mknod.read(iprot);
         struct.setMknodIsSet(true);
       }
-      if (incoming.get(6)) {
+      if (incoming.get(5)) {
         struct.mkdir = new MkdirCmd();
         struct.mkdir.read(iprot);
         struct.setMkdirIsSet(true);
       }
-      if (incoming.get(7)) {
+      if (incoming.get(6)) {
         struct.unlink = new UnlinkCmd();
         struct.unlink.read(iprot);
         struct.setUnlinkIsSet(true);
       }
-      if (incoming.get(8)) {
+      if (incoming.get(7)) {
         struct.rmdir = new RmdirCmd();
         struct.rmdir.read(iprot);
         struct.setRmdirIsSet(true);
       }
-      if (incoming.get(9)) {
+      if (incoming.get(8)) {
         struct.symlink = new SymlinkCmd();
         struct.symlink.read(iprot);
         struct.setSymlinkIsSet(true);
       }
-      if (incoming.get(10)) {
+      if (incoming.get(9)) {
         struct.rename = new RenameCmd();
         struct.rename.read(iprot);
         struct.setRenameIsSet(true);
       }
-      if (incoming.get(11)) {
+      if (incoming.get(10)) {
         struct.chmod = new ChmodCmd();
         struct.chmod.read(iprot);
         struct.setChmodIsSet(true);
       }
-      if (incoming.get(12)) {
+      if (incoming.get(11)) {
         struct.chown = new ChownCmd();
         struct.chown.read(iprot);
         struct.setChownIsSet(true);
       }
-      if (incoming.get(13)) {
+      if (incoming.get(12)) {
         struct.truncate = new TruncateCmd();
         struct.truncate.read(iprot);
         struct.setTruncateIsSet(true);
       }
-      if (incoming.get(14)) {
+      if (incoming.get(13)) {
         struct.utime = new UtimeCmd();
         struct.utime.read(iprot);
         struct.setUtimeIsSet(true);
       }
-      if (incoming.get(15)) {
+      if (incoming.get(14)) {
         struct.open = new OpenCmd();
         struct.open.read(iprot);
         struct.setOpenIsSet(true);
       }
-      if (incoming.get(16)) {
+      if (incoming.get(15)) {
         struct.read = new ReadBlocksCmd();
         struct.read.read(iprot);
         struct.setReadIsSet(true);
       }
-      if (incoming.get(17)) {
+      if (incoming.get(16)) {
         struct.write = new WriteBlocksCmd();
         struct.write.read(iprot);
         struct.setWriteIsSet(true);
       }
-      if (incoming.get(18)) {
+      if (incoming.get(17)) {
         struct.release = new ReleaseCmd();
         struct.release.read(iprot);
         struct.setReleaseIsSet(true);
       }
-      if (incoming.get(19)) {
+      if (incoming.get(18)) {
         struct.statfs = new StatFsCmd();
         struct.statfs.read(iprot);
         struct.setStatfsIsSet(true);
       }
-      if (incoming.get(20)) {
+      if (incoming.get(19)) {
         struct.signal = new Signal();
         struct.signal.read(iprot);
         struct.setSignalIsSet(true);

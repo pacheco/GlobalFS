@@ -88,4 +88,14 @@ public class MemFileSystem implements FileSystem {
 	private FSError notDir(String file) {
 		return new FSError(FuseException.ENOTDIR, file + ": Not a directory");
 	}
+
+	@Override
+	public void removeFileOrLink(String path) throws FSError {
+		
+	}
+
+	@Override
+	public void removeDir(String path) throws FSError {
+		
+	}
 }

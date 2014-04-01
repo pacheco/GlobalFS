@@ -87,7 +87,7 @@ public class FSMain {
 	 */
 	private static void startReplica(CommunicationService comm, int partition) throws TTransportException {
 		// start replica thread
-		FileSystemReplica learner = new FileSystemReplica(comm, partition);
+		FileSystemReplica learner = new FileSystemReplica(comm, partition, new SinglePartitionOracle(partition));
 		replica = new Thread(learner);
 		replica.start();
 		// start thrift server

@@ -7,11 +7,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import ch.inf.paxosfs.filesystem.DataBlock;
 import ch.inf.paxosfs.filesystem.FileNode;
 import ch.inf.paxosfs.filesystem.FileSystem;
 import ch.inf.paxosfs.filesystem.Node;
 import ch.inf.paxosfs.filesystem.memory.MemFileSystem;
+import ch.inf.paxosfs.partitioning.PartitioningOracle;
 import ch.inf.paxosfs.replica.commands.Command;
 import ch.inf.paxosfs.replica.commands.CommandType;
 import ch.inf.paxosfs.replica.commands.Signal;
@@ -19,6 +19,7 @@ import ch.inf.paxosfs.rpc.Attr;
 import ch.inf.paxosfs.rpc.DBlock;
 import ch.inf.paxosfs.rpc.FSError;
 import ch.inf.paxosfs.rpc.FileHandle;
+import ch.inf.paxosfs.util.Paths;
 import fuse.FuseException;
 
 public class FileSystemReplica implements Runnable {
@@ -27,12 +28,14 @@ public class FileSystemReplica implements Runnable {
 	private List<Command> signalsReceived; // to keep track of signals received in advance
 	private int localPartition;
 	private FileSystem fs;
+	private PartitioningOracle oracle;
 
-	public FileSystemReplica(CommunicationService comm, int partition) {
+	public FileSystemReplica(CommunicationService comm, int partition, PartitioningOracle oracle) {
 		this.comm = comm;
 		this.pendingCommands = new ConcurrentHashMap<Long, CommandResult>();
 		this.signalsReceived = new LinkedList<Command>();
 		this.localPartition = partition;
+		this.oracle = oracle;
 	}
 
 	/**
@@ -64,13 +67,8 @@ public class FileSystemReplica implements Runnable {
 		CommandResult res = pendingCommands.remove(c.getReqId());
 		if (res == null) {
 			System.out.println("No pending command for " + c.getReqId());
-			// creating a dummy command so we dont have to check for null all
-			// the time
+			// creating a dummy command so we dont have to check for null all the time
 			res = new CommandResult();
-		}
-
-		if (!c.getInvolvedPartitions().contains(localPartition)) {
-			System.err.println("Replica: Command is for another partition");
 		}
 
 		try {
@@ -80,17 +78,34 @@ public class FileSystemReplica implements Runnable {
 			switch (CommandType.findByValue(c.getType())) {
 			case ATTR:
 				System.out.println("attr");
+				if (!oracle.partitionHasPath(c.getAttr().getPath(), localPartition)) {
+					break;
+				}
 				n = fs.get(c.getAttr().getPath());
 				res.setSuccess(true);
 				res.setResponse(new Attr(n.getAttributes()));
 				break;
 			case MKNOD:
 				System.out.println("mknod");
+				if (!oracle.partitionHasPath(Paths.dirname(c.getMknod().getPath()), localPartition) 
+						&& !oracle.partitionHasPath(c.getMknod().getPath(), localPartition)) {
+					break;
+				}
 				fs.createFile(c.getMknod().getPath(), 
 						c.getMknod().getMode(), 
 						c.getReqTime(), 
 						c.getMknod().getUid(), 
 						c.getMknod().getGid());
+				
+				// send signal
+				comm.signal(c.getReqId(), new Signal(localPartition, true));
+				// wait signal from other partitions
+				for (int otherPartition: oracle.partitionsOf(Paths.dirname(c.getAttr().getPath()))) {
+					if (otherPartition != localPartition) {
+						Signal sig = this.waitForSignal(c.getReqId(), otherPartition);
+					}
+				}
+				
 				res.setSuccess(true);
 				res.setResponse(null);
 				break;
@@ -124,17 +139,18 @@ public class FileSystemReplica implements Runnable {
 				res.setResponse(null);
 				break;
 			case RENAME:
-				// Might be cross partition
 				System.out.println("rename");
-				
+				// TODO
 				res.setSuccess(true);
 				break;
 			case CHMOD:
 				System.out.println("chmod");
+				// TODO
 				res.setSuccess(true);
 				break;
 			case CHOWN:
 				System.out.println("chown");
+				// TODO
 				res.setSuccess(true);
 				break;
 			case TRUNCATE:
@@ -172,15 +188,23 @@ public class FileSystemReplica implements Runnable {
 				}
 				file = (FileNode) n;
 				List<DBlock> blocks = file.getBlocks(c.getRead().getOffset(), c.getRead().getBytes());
-				
 				res.setSuccess(true);
+				res.setResponse(blocks);
 				break;
 			case WRITE_BLOCKS:
 				System.out.println("writeblocks");
+				n = fs.get(c.getRead().getPath());
+				if (!n.isFile()) {
+					throw new FSError(FuseException.EINVAL, "Not a file");
+				}
+				file = (FileNode) n;
+				file.updateData(c.getWrite().getBlocks(), c.getWrite().getOffset());
 				res.setSuccess(true);
+				res.setResponse(null);
 				break;
 			case RELEASE:
 				System.out.println("release");
+				// TODO: right now, this is not relevant for us. Here we would release the file handle mapping
 				res.setSuccess(true);
 				res.setResponse(null);
 				break;
@@ -194,6 +218,7 @@ public class FileSystemReplica implements Runnable {
 			res.setSuccess(false);
 			res.setError(e);
 		}
+		// signal waiting client, if any
 		res.countDown();
 	}
 
@@ -204,7 +229,7 @@ public class FileSystemReplica implements Runnable {
 	 * @param fromPartition
 	 * @return
 	 */
-	private Signal waitForSignal(int reqId, int fromPartition) {
+	private Signal waitForSignal(long reqId, int fromPartition) {
 		Command c;
 
 		// check already received signals

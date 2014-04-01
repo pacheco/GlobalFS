@@ -52,20 +52,20 @@ public class MemFile extends MemNode implements FileNode {
 		DBlock startingBlock = new DBlock(b.getId(), startingBlockOffset, b.getEndOffset());
 		int startingBlockIdx = iter.previousIndex();
 		
-		// find ending block and calculate its endingOffset
+		// find ending block and calculate its endOffset
 		while (currOffset <= offset + bytes && iter.hasNext()) {
 			b = iter.next();
 			currOffset += b.size();
 		}
 		
-		ArrayList<DBlock> ret = Lists.newArrayList(this.blocks.subList(startingBlockIdx, iter.previousIndex()));
-		ret.set(0, startingBlock); // put adjusted starting block on the return list
+		ArrayList<DBlock> ret = Lists.newArrayList(this.blocks.subList(startingBlockIdx, iter.previousIndex()+1));
+		ret.set(startingBlockIdx, startingBlock); // put adjusted starting block on the return list
 
-		if (currOffset > offset) {
+		if (currOffset > offset + bytes) {
 			// put adjusted ending block
 			long endingBlockOffset = b.getEndOffset() - (currOffset - (offset + bytes));
 			DBlock endingBlock = new DBlock(b.getId(), b.getStartOffset(), endingBlockOffset);
-			ret.set(iter.previousIndex()-1, endingBlock);
+			ret.set(iter.previousIndex(), endingBlock);
 		}
 					
 		return ret;

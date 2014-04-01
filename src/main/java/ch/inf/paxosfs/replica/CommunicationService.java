@@ -11,6 +11,7 @@ import org.apache.thrift.TSerializer;
 
 import ch.inf.paxosfs.replica.commands.Command;
 import ch.inf.paxosfs.replica.commands.CommandType;
+import ch.inf.paxosfs.replica.commands.Signal;
 import ch.inf.paxosfs.rpc.FSError;
 import ch.usi.da.paxos.api.Proposer;
 import ch.usi.da.paxos.ring.Node;
@@ -101,10 +102,10 @@ public class CommunicationService {
 	 * @param command
 	 * @return A FutureDecision that can be waited on
 	 */
-	public void amcast(Command command) throws FSError {
+	public void amcast(Command command, int... partitions) throws FSError {
 		int ringid = GLOBAL_RING;
-		if (command.getInvolvedPartitionsSize() == 1) {
-			ringid = command.getInvolvedPartitions().get(0);
+		if (partitions.length == 1) {
+			ringid = partitions[0];
 		}
 		System.out.println("Submitting command " + command.getReqId() + " to ring " + ringid);
 		Proposer p = this.proposers.get(ringid);
@@ -121,16 +122,15 @@ public class CommunicationService {
 	}
 	
 	/**
-	 * Send a signal to the partitions command.involvedPartitions
+	 * Send a signal
 	 * @param ringId
 	 * @param command
 	 * @throws FSError
 	 */
-	public void signal(Command command) throws FSError {
-		assert(command.getType() == CommandType.SIGNAL.getValue());
-		// FIXME: right now, signals are sent to the global ring since its trivial to get a local proposer. Change this later
-		command.involvedPartitions.add(this.GLOBAL_RING);
-		this.amcast(command);
+	public void signal(long reqId, Signal signal) throws FSError {
+		Command cmd = new Command(CommandType.SIGNAL.getValue(), reqId, 0);
+		cmd.setSignal(signal);
+		this.amcast(cmd, GLOBAL_RING);
 	}
 	
 	public BlockingQueue<Command> getCommands() {
