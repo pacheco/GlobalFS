@@ -39,6 +39,8 @@ public class MknodCmd implements org.apache.thrift.TBase<MknodCmd, MknodCmd._Fie
   private static final org.apache.thrift.protocol.TField MODE_FIELD_DESC = new org.apache.thrift.protocol.TField("mode", org.apache.thrift.protocol.TType.I32, (short)4);
   private static final org.apache.thrift.protocol.TField UID_FIELD_DESC = new org.apache.thrift.protocol.TField("uid", org.apache.thrift.protocol.TType.I32, (short)5);
   private static final org.apache.thrift.protocol.TField GID_FIELD_DESC = new org.apache.thrift.protocol.TField("gid", org.apache.thrift.protocol.TType.I32, (short)6);
+  private static final org.apache.thrift.protocol.TField PARENT_PARTITION_FIELD_DESC = new org.apache.thrift.protocol.TField("parentPartition", org.apache.thrift.protocol.TType.SET, (short)7);
+  private static final org.apache.thrift.protocol.TField PARTITION_FIELD_DESC = new org.apache.thrift.protocol.TField("partition", org.apache.thrift.protocol.TType.SET, (short)8);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -50,13 +52,17 @@ public class MknodCmd implements org.apache.thrift.TBase<MknodCmd, MknodCmd._Fie
   public int mode; // required
   public int uid; // required
   public int gid; // required
+  public Set<Byte> parentPartition; // required
+  public Set<Byte> partition; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     PATH((short)3, "path"),
     MODE((short)4, "mode"),
     UID((short)5, "uid"),
-    GID((short)6, "gid");
+    GID((short)6, "gid"),
+    PARENT_PARTITION((short)7, "parentPartition"),
+    PARTITION((short)8, "partition");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -79,6 +85,10 @@ public class MknodCmd implements org.apache.thrift.TBase<MknodCmd, MknodCmd._Fie
           return UID;
         case 6: // GID
           return GID;
+        case 7: // PARENT_PARTITION
+          return PARENT_PARTITION;
+        case 8: // PARTITION
+          return PARTITION;
         default:
           return null;
       }
@@ -134,6 +144,12 @@ public class MknodCmd implements org.apache.thrift.TBase<MknodCmd, MknodCmd._Fie
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.GID, new org.apache.thrift.meta_data.FieldMetaData("gid", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.PARENT_PARTITION, new org.apache.thrift.meta_data.FieldMetaData("parentPartition", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.SetMetaData(org.apache.thrift.protocol.TType.SET, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE))));
+    tmpMap.put(_Fields.PARTITION, new org.apache.thrift.meta_data.FieldMetaData("partition", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.SetMetaData(org.apache.thrift.protocol.TType.SET, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(MknodCmd.class, metaDataMap);
   }
@@ -145,7 +161,9 @@ public class MknodCmd implements org.apache.thrift.TBase<MknodCmd, MknodCmd._Fie
     String path,
     int mode,
     int uid,
-    int gid)
+    int gid,
+    Set<Byte> parentPartition,
+    Set<Byte> partition)
   {
     this();
     this.path = path;
@@ -155,6 +173,8 @@ public class MknodCmd implements org.apache.thrift.TBase<MknodCmd, MknodCmd._Fie
     setUidIsSet(true);
     this.gid = gid;
     setGidIsSet(true);
+    this.parentPartition = parentPartition;
+    this.partition = partition;
   }
 
   /**
@@ -168,6 +188,14 @@ public class MknodCmd implements org.apache.thrift.TBase<MknodCmd, MknodCmd._Fie
     this.mode = other.mode;
     this.uid = other.uid;
     this.gid = other.gid;
+    if (other.isSetParentPartition()) {
+      Set<Byte> __this__parentPartition = new HashSet<Byte>(other.parentPartition);
+      this.parentPartition = __this__parentPartition;
+    }
+    if (other.isSetPartition()) {
+      Set<Byte> __this__partition = new HashSet<Byte>(other.partition);
+      this.partition = __this__partition;
+    }
   }
 
   public MknodCmd deepCopy() {
@@ -183,6 +211,8 @@ public class MknodCmd implements org.apache.thrift.TBase<MknodCmd, MknodCmd._Fie
     this.uid = 0;
     setGidIsSet(false);
     this.gid = 0;
+    this.parentPartition = null;
+    this.partition = null;
   }
 
   public String getPath() {
@@ -278,6 +308,84 @@ public class MknodCmd implements org.apache.thrift.TBase<MknodCmd, MknodCmd._Fie
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __GID_ISSET_ID, value);
   }
 
+  public int getParentPartitionSize() {
+    return (this.parentPartition == null) ? 0 : this.parentPartition.size();
+  }
+
+  public java.util.Iterator<Byte> getParentPartitionIterator() {
+    return (this.parentPartition == null) ? null : this.parentPartition.iterator();
+  }
+
+  public void addToParentPartition(byte elem) {
+    if (this.parentPartition == null) {
+      this.parentPartition = new HashSet<Byte>();
+    }
+    this.parentPartition.add(elem);
+  }
+
+  public Set<Byte> getParentPartition() {
+    return this.parentPartition;
+  }
+
+  public MknodCmd setParentPartition(Set<Byte> parentPartition) {
+    this.parentPartition = parentPartition;
+    return this;
+  }
+
+  public void unsetParentPartition() {
+    this.parentPartition = null;
+  }
+
+  /** Returns true if field parentPartition is set (has been assigned a value) and false otherwise */
+  public boolean isSetParentPartition() {
+    return this.parentPartition != null;
+  }
+
+  public void setParentPartitionIsSet(boolean value) {
+    if (!value) {
+      this.parentPartition = null;
+    }
+  }
+
+  public int getPartitionSize() {
+    return (this.partition == null) ? 0 : this.partition.size();
+  }
+
+  public java.util.Iterator<Byte> getPartitionIterator() {
+    return (this.partition == null) ? null : this.partition.iterator();
+  }
+
+  public void addToPartition(byte elem) {
+    if (this.partition == null) {
+      this.partition = new HashSet<Byte>();
+    }
+    this.partition.add(elem);
+  }
+
+  public Set<Byte> getPartition() {
+    return this.partition;
+  }
+
+  public MknodCmd setPartition(Set<Byte> partition) {
+    this.partition = partition;
+    return this;
+  }
+
+  public void unsetPartition() {
+    this.partition = null;
+  }
+
+  /** Returns true if field partition is set (has been assigned a value) and false otherwise */
+  public boolean isSetPartition() {
+    return this.partition != null;
+  }
+
+  public void setPartitionIsSet(boolean value) {
+    if (!value) {
+      this.partition = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case PATH:
@@ -312,6 +420,22 @@ public class MknodCmd implements org.apache.thrift.TBase<MknodCmd, MknodCmd._Fie
       }
       break;
 
+    case PARENT_PARTITION:
+      if (value == null) {
+        unsetParentPartition();
+      } else {
+        setParentPartition((Set<Byte>)value);
+      }
+      break;
+
+    case PARTITION:
+      if (value == null) {
+        unsetPartition();
+      } else {
+        setPartition((Set<Byte>)value);
+      }
+      break;
+
     }
   }
 
@@ -328,6 +452,12 @@ public class MknodCmd implements org.apache.thrift.TBase<MknodCmd, MknodCmd._Fie
 
     case GID:
       return Integer.valueOf(getGid());
+
+    case PARENT_PARTITION:
+      return getParentPartition();
+
+    case PARTITION:
+      return getPartition();
 
     }
     throw new IllegalStateException();
@@ -348,6 +478,10 @@ public class MknodCmd implements org.apache.thrift.TBase<MknodCmd, MknodCmd._Fie
       return isSetUid();
     case GID:
       return isSetGid();
+    case PARENT_PARTITION:
+      return isSetParentPartition();
+    case PARTITION:
+      return isSetPartition();
     }
     throw new IllegalStateException();
   }
@@ -398,6 +532,24 @@ public class MknodCmd implements org.apache.thrift.TBase<MknodCmd, MknodCmd._Fie
       if (!(this_present_gid && that_present_gid))
         return false;
       if (this.gid != that.gid)
+        return false;
+    }
+
+    boolean this_present_parentPartition = true && this.isSetParentPartition();
+    boolean that_present_parentPartition = true && that.isSetParentPartition();
+    if (this_present_parentPartition || that_present_parentPartition) {
+      if (!(this_present_parentPartition && that_present_parentPartition))
+        return false;
+      if (!this.parentPartition.equals(that.parentPartition))
+        return false;
+    }
+
+    boolean this_present_partition = true && this.isSetPartition();
+    boolean that_present_partition = true && that.isSetPartition();
+    if (this_present_partition || that_present_partition) {
+      if (!(this_present_partition && that_present_partition))
+        return false;
+      if (!this.partition.equals(that.partition))
         return false;
     }
 
@@ -457,6 +609,26 @@ public class MknodCmd implements org.apache.thrift.TBase<MknodCmd, MknodCmd._Fie
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetParentPartition()).compareTo(other.isSetParentPartition());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetParentPartition()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.parentPartition, other.parentPartition);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetPartition()).compareTo(other.isSetPartition());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetPartition()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.partition, other.partition);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -495,6 +667,22 @@ public class MknodCmd implements org.apache.thrift.TBase<MknodCmd, MknodCmd._Fie
     if (!first) sb.append(", ");
     sb.append("gid:");
     sb.append(this.gid);
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("parentPartition:");
+    if (this.parentPartition == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.parentPartition);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("partition:");
+    if (this.partition == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.partition);
+    }
     first = false;
     sb.append(")");
     return sb.toString();
@@ -573,6 +761,42 @@ public class MknodCmd implements org.apache.thrift.TBase<MknodCmd, MknodCmd._Fie
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 7: // PARENT_PARTITION
+            if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
+              {
+                org.apache.thrift.protocol.TSet _set16 = iprot.readSetBegin();
+                struct.parentPartition = new HashSet<Byte>(2*_set16.size);
+                for (int _i17 = 0; _i17 < _set16.size; ++_i17)
+                {
+                  byte _elem18;
+                  _elem18 = iprot.readByte();
+                  struct.parentPartition.add(_elem18);
+                }
+                iprot.readSetEnd();
+              }
+              struct.setParentPartitionIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 8: // PARTITION
+            if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
+              {
+                org.apache.thrift.protocol.TSet _set19 = iprot.readSetBegin();
+                struct.partition = new HashSet<Byte>(2*_set19.size);
+                for (int _i20 = 0; _i20 < _set19.size; ++_i20)
+                {
+                  byte _elem21;
+                  _elem21 = iprot.readByte();
+                  struct.partition.add(_elem21);
+                }
+                iprot.readSetEnd();
+              }
+              struct.setPartitionIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -602,6 +826,30 @@ public class MknodCmd implements org.apache.thrift.TBase<MknodCmd, MknodCmd._Fie
       oprot.writeFieldBegin(GID_FIELD_DESC);
       oprot.writeI32(struct.gid);
       oprot.writeFieldEnd();
+      if (struct.parentPartition != null) {
+        oprot.writeFieldBegin(PARENT_PARTITION_FIELD_DESC);
+        {
+          oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, struct.parentPartition.size()));
+          for (byte _iter22 : struct.parentPartition)
+          {
+            oprot.writeByte(_iter22);
+          }
+          oprot.writeSetEnd();
+        }
+        oprot.writeFieldEnd();
+      }
+      if (struct.partition != null) {
+        oprot.writeFieldBegin(PARTITION_FIELD_DESC);
+        {
+          oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, struct.partition.size()));
+          for (byte _iter23 : struct.partition)
+          {
+            oprot.writeByte(_iter23);
+          }
+          oprot.writeSetEnd();
+        }
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -632,7 +880,13 @@ public class MknodCmd implements org.apache.thrift.TBase<MknodCmd, MknodCmd._Fie
       if (struct.isSetGid()) {
         optionals.set(3);
       }
-      oprot.writeBitSet(optionals, 4);
+      if (struct.isSetParentPartition()) {
+        optionals.set(4);
+      }
+      if (struct.isSetPartition()) {
+        optionals.set(5);
+      }
+      oprot.writeBitSet(optionals, 6);
       if (struct.isSetPath()) {
         oprot.writeString(struct.path);
       }
@@ -645,12 +899,30 @@ public class MknodCmd implements org.apache.thrift.TBase<MknodCmd, MknodCmd._Fie
       if (struct.isSetGid()) {
         oprot.writeI32(struct.gid);
       }
+      if (struct.isSetParentPartition()) {
+        {
+          oprot.writeI32(struct.parentPartition.size());
+          for (byte _iter24 : struct.parentPartition)
+          {
+            oprot.writeByte(_iter24);
+          }
+        }
+      }
+      if (struct.isSetPartition()) {
+        {
+          oprot.writeI32(struct.partition.size());
+          for (byte _iter25 : struct.partition)
+          {
+            oprot.writeByte(_iter25);
+          }
+        }
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, MknodCmd struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(4);
+      BitSet incoming = iprot.readBitSet(6);
       if (incoming.get(0)) {
         struct.path = iprot.readString();
         struct.setPathIsSet(true);
@@ -666,6 +938,32 @@ public class MknodCmd implements org.apache.thrift.TBase<MknodCmd, MknodCmd._Fie
       if (incoming.get(3)) {
         struct.gid = iprot.readI32();
         struct.setGidIsSet(true);
+      }
+      if (incoming.get(4)) {
+        {
+          org.apache.thrift.protocol.TSet _set26 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, iprot.readI32());
+          struct.parentPartition = new HashSet<Byte>(2*_set26.size);
+          for (int _i27 = 0; _i27 < _set26.size; ++_i27)
+          {
+            byte _elem28;
+            _elem28 = iprot.readByte();
+            struct.parentPartition.add(_elem28);
+          }
+        }
+        struct.setParentPartitionIsSet(true);
+      }
+      if (incoming.get(5)) {
+        {
+          org.apache.thrift.protocol.TSet _set29 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, iprot.readI32());
+          struct.partition = new HashSet<Byte>(2*_set29.size);
+          for (int _i30 = 0; _i30 < _set29.size; ++_i30)
+          {
+            byte _elem31;
+            _elem31 = iprot.readByte();
+            struct.partition.add(_elem31);
+          }
+        }
+        struct.setPartitionIsSet(true);
       }
     }
   }

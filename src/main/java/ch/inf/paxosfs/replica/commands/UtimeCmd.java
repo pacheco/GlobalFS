@@ -38,6 +38,7 @@ public class UtimeCmd implements org.apache.thrift.TBase<UtimeCmd, UtimeCmd._Fie
   private static final org.apache.thrift.protocol.TField PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("path", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField ATIME_FIELD_DESC = new org.apache.thrift.protocol.TField("atime", org.apache.thrift.protocol.TType.I32, (short)4);
   private static final org.apache.thrift.protocol.TField MTIME_FIELD_DESC = new org.apache.thrift.protocol.TField("mtime", org.apache.thrift.protocol.TType.I32, (short)5);
+  private static final org.apache.thrift.protocol.TField PARTITION_FIELD_DESC = new org.apache.thrift.protocol.TField("partition", org.apache.thrift.protocol.TType.SET, (short)7);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -48,12 +49,14 @@ public class UtimeCmd implements org.apache.thrift.TBase<UtimeCmd, UtimeCmd._Fie
   public String path; // required
   public int atime; // required
   public int mtime; // required
+  public Set<Byte> partition; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     PATH((short)3, "path"),
     ATIME((short)4, "atime"),
-    MTIME((short)5, "mtime");
+    MTIME((short)5, "mtime"),
+    PARTITION((short)7, "partition");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -74,6 +77,8 @@ public class UtimeCmd implements org.apache.thrift.TBase<UtimeCmd, UtimeCmd._Fie
           return ATIME;
         case 5: // MTIME
           return MTIME;
+        case 7: // PARTITION
+          return PARTITION;
         default:
           return null;
       }
@@ -126,6 +131,9 @@ public class UtimeCmd implements org.apache.thrift.TBase<UtimeCmd, UtimeCmd._Fie
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.MTIME, new org.apache.thrift.meta_data.FieldMetaData("mtime", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.PARTITION, new org.apache.thrift.meta_data.FieldMetaData("partition", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.SetMetaData(org.apache.thrift.protocol.TType.SET, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(UtimeCmd.class, metaDataMap);
   }
@@ -136,7 +144,8 @@ public class UtimeCmd implements org.apache.thrift.TBase<UtimeCmd, UtimeCmd._Fie
   public UtimeCmd(
     String path,
     int atime,
-    int mtime)
+    int mtime,
+    Set<Byte> partition)
   {
     this();
     this.path = path;
@@ -144,6 +153,7 @@ public class UtimeCmd implements org.apache.thrift.TBase<UtimeCmd, UtimeCmd._Fie
     setAtimeIsSet(true);
     this.mtime = mtime;
     setMtimeIsSet(true);
+    this.partition = partition;
   }
 
   /**
@@ -156,6 +166,10 @@ public class UtimeCmd implements org.apache.thrift.TBase<UtimeCmd, UtimeCmd._Fie
     }
     this.atime = other.atime;
     this.mtime = other.mtime;
+    if (other.isSetPartition()) {
+      Set<Byte> __this__partition = new HashSet<Byte>(other.partition);
+      this.partition = __this__partition;
+    }
   }
 
   public UtimeCmd deepCopy() {
@@ -169,6 +183,7 @@ public class UtimeCmd implements org.apache.thrift.TBase<UtimeCmd, UtimeCmd._Fie
     this.atime = 0;
     setMtimeIsSet(false);
     this.mtime = 0;
+    this.partition = null;
   }
 
   public String getPath() {
@@ -241,6 +256,45 @@ public class UtimeCmd implements org.apache.thrift.TBase<UtimeCmd, UtimeCmd._Fie
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __MTIME_ISSET_ID, value);
   }
 
+  public int getPartitionSize() {
+    return (this.partition == null) ? 0 : this.partition.size();
+  }
+
+  public java.util.Iterator<Byte> getPartitionIterator() {
+    return (this.partition == null) ? null : this.partition.iterator();
+  }
+
+  public void addToPartition(byte elem) {
+    if (this.partition == null) {
+      this.partition = new HashSet<Byte>();
+    }
+    this.partition.add(elem);
+  }
+
+  public Set<Byte> getPartition() {
+    return this.partition;
+  }
+
+  public UtimeCmd setPartition(Set<Byte> partition) {
+    this.partition = partition;
+    return this;
+  }
+
+  public void unsetPartition() {
+    this.partition = null;
+  }
+
+  /** Returns true if field partition is set (has been assigned a value) and false otherwise */
+  public boolean isSetPartition() {
+    return this.partition != null;
+  }
+
+  public void setPartitionIsSet(boolean value) {
+    if (!value) {
+      this.partition = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case PATH:
@@ -267,6 +321,14 @@ public class UtimeCmd implements org.apache.thrift.TBase<UtimeCmd, UtimeCmd._Fie
       }
       break;
 
+    case PARTITION:
+      if (value == null) {
+        unsetPartition();
+      } else {
+        setPartition((Set<Byte>)value);
+      }
+      break;
+
     }
   }
 
@@ -280,6 +342,9 @@ public class UtimeCmd implements org.apache.thrift.TBase<UtimeCmd, UtimeCmd._Fie
 
     case MTIME:
       return Integer.valueOf(getMtime());
+
+    case PARTITION:
+      return getPartition();
 
     }
     throw new IllegalStateException();
@@ -298,6 +363,8 @@ public class UtimeCmd implements org.apache.thrift.TBase<UtimeCmd, UtimeCmd._Fie
       return isSetAtime();
     case MTIME:
       return isSetMtime();
+    case PARTITION:
+      return isSetPartition();
     }
     throw new IllegalStateException();
   }
@@ -339,6 +406,15 @@ public class UtimeCmd implements org.apache.thrift.TBase<UtimeCmd, UtimeCmd._Fie
       if (!(this_present_mtime && that_present_mtime))
         return false;
       if (this.mtime != that.mtime)
+        return false;
+    }
+
+    boolean this_present_partition = true && this.isSetPartition();
+    boolean that_present_partition = true && that.isSetPartition();
+    if (this_present_partition || that_present_partition) {
+      if (!(this_present_partition && that_present_partition))
+        return false;
+      if (!this.partition.equals(that.partition))
         return false;
     }
 
@@ -388,6 +464,16 @@ public class UtimeCmd implements org.apache.thrift.TBase<UtimeCmd, UtimeCmd._Fie
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetPartition()).compareTo(other.isSetPartition());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetPartition()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.partition, other.partition);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -422,6 +508,14 @@ public class UtimeCmd implements org.apache.thrift.TBase<UtimeCmd, UtimeCmd._Fie
     if (!first) sb.append(", ");
     sb.append("mtime:");
     sb.append(this.mtime);
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("partition:");
+    if (this.partition == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.partition);
+    }
     first = false;
     sb.append(")");
     return sb.toString();
@@ -492,6 +586,24 @@ public class UtimeCmd implements org.apache.thrift.TBase<UtimeCmd, UtimeCmd._Fie
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 7: // PARTITION
+            if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
+              {
+                org.apache.thrift.protocol.TSet _set152 = iprot.readSetBegin();
+                struct.partition = new HashSet<Byte>(2*_set152.size);
+                for (int _i153 = 0; _i153 < _set152.size; ++_i153)
+                {
+                  byte _elem154;
+                  _elem154 = iprot.readByte();
+                  struct.partition.add(_elem154);
+                }
+                iprot.readSetEnd();
+              }
+              struct.setPartitionIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -518,6 +630,18 @@ public class UtimeCmd implements org.apache.thrift.TBase<UtimeCmd, UtimeCmd._Fie
       oprot.writeFieldBegin(MTIME_FIELD_DESC);
       oprot.writeI32(struct.mtime);
       oprot.writeFieldEnd();
+      if (struct.partition != null) {
+        oprot.writeFieldBegin(PARTITION_FIELD_DESC);
+        {
+          oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, struct.partition.size()));
+          for (byte _iter155 : struct.partition)
+          {
+            oprot.writeByte(_iter155);
+          }
+          oprot.writeSetEnd();
+        }
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -545,7 +669,10 @@ public class UtimeCmd implements org.apache.thrift.TBase<UtimeCmd, UtimeCmd._Fie
       if (struct.isSetMtime()) {
         optionals.set(2);
       }
-      oprot.writeBitSet(optionals, 3);
+      if (struct.isSetPartition()) {
+        optionals.set(3);
+      }
+      oprot.writeBitSet(optionals, 4);
       if (struct.isSetPath()) {
         oprot.writeString(struct.path);
       }
@@ -555,12 +682,21 @@ public class UtimeCmd implements org.apache.thrift.TBase<UtimeCmd, UtimeCmd._Fie
       if (struct.isSetMtime()) {
         oprot.writeI32(struct.mtime);
       }
+      if (struct.isSetPartition()) {
+        {
+          oprot.writeI32(struct.partition.size());
+          for (byte _iter156 : struct.partition)
+          {
+            oprot.writeByte(_iter156);
+          }
+        }
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, UtimeCmd struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(3);
+      BitSet incoming = iprot.readBitSet(4);
       if (incoming.get(0)) {
         struct.path = iprot.readString();
         struct.setPathIsSet(true);
@@ -572,6 +708,19 @@ public class UtimeCmd implements org.apache.thrift.TBase<UtimeCmd, UtimeCmd._Fie
       if (incoming.get(2)) {
         struct.mtime = iprot.readI32();
         struct.setMtimeIsSet(true);
+      }
+      if (incoming.get(3)) {
+        {
+          org.apache.thrift.protocol.TSet _set157 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, iprot.readI32());
+          struct.partition = new HashSet<Byte>(2*_set157.size);
+          for (int _i158 = 0; _i158 < _set157.size; ++_i158)
+          {
+            byte _elem159;
+            _elem159 = iprot.readByte();
+            struct.partition.add(_elem159);
+          }
+        }
+        struct.setPartitionIsSet(true);
       }
     }
   }

@@ -45,6 +45,12 @@ struct DBlock {
     3: i64 endOffset,
 }
 
+// THIS METHOD HAS TO BE ADDED TO THE DBLOCK CLASS
+//public long size() {
+//    return this.getEndOffset() - this.getStartOffset();
+//}
+
+
 struct ReadResult {
 	1: i64 len,
 	2: list<DBlock> blocks,
@@ -54,11 +60,11 @@ service FuseOps {
 	Attr getattr(1: string path) throws (1: FSError e),
 	string readlink(1: string path) throws (1: FSError e),
 	list<DirEntry> getdir(1: string path) throws (1: FSError e),
-	void mknod(1: string path, 2: i32 mode, 3: i32 rdev) throws (1: FSError e),	
-	void mkdir(1: string path, 2: i32 mode) throws (1: FSError e),
+	void mknod(1: string path, 2: i32 mode, 3: i32 rdev, 4: i32 uid, 5: i32 gid) throws (1: FSError e),	
+	void mkdir(1: string path, 2: i32 mode, 3: i32 uid, 4: i32 gid) throws (1: FSError e),
 	void unlink(1: string path) throws (1: FSError e),
 	void rmdir(1: string path) throws (1: FSError e),
-	void symlink(1: string target, 2: string path) throws (1: FSError e),
+	void symlink(1: string target, 2: string path, 3: i32 uid, 4: i32 gid) throws (1: FSError e),
 	void rename(1: string from, 2: string to) throws (1: FSError e),
 	void chmod(1: string path, 2: i32 mode) throws (1: FSError e),
 	void chown(1: string path, 2: i32 uid, 3: i32 gid) throws (1: FSError e),

@@ -85,13 +85,13 @@ public class FSMain {
 	 * @param partition
 	 * @throws TTransportException
 	 */
-	private static void startReplica(CommunicationService comm, int partition) throws TTransportException {
+	private static void startReplica(int id, byte partition, CommunicationService comm) throws TTransportException {
 		// start replica thread
-		FileSystemReplica learner = new FileSystemReplica(comm, partition, new SinglePartitionOracle(partition));
+		FileSystemReplica learner = new FileSystemReplica(id, partition, comm);
 		replica = new Thread(learner);
 		replica.start();
 		// start thrift server
-		FuseOpsHandler fuseHandler = new FuseOpsHandler(partition, new SinglePartitionOracle(partition), learner);
+		FuseOpsHandler fuseHandler = new FuseOpsHandler(id, partition, learner, new SinglePartitionOracle(partition));
 		TProcessor fuseProcessor = new FuseOps.Processor<FuseOpsHandler>(fuseHandler);
 		TServerTransport serverTransport = new TServerSocket(thriftPort);
 		TThreadPoolServer.Args args = new TThreadPoolServer.Args(serverTransport);
@@ -104,7 +104,7 @@ public class FSMain {
 	public static void main(String[] rawargs) {
 		String zoohost = "127.0.0.1:2181";
 		
-		int partition;
+		byte partition;
 		int nodeid;
 		int globalRing = 0;
 		int globalid; // id of the node in the global ring
@@ -122,7 +122,7 @@ public class FSMain {
 			if (args.hasOption("global")) {
 				globalRing = (Integer) args.getParsedOptionValue("global");
 			}
-			partition = ((Long) args.getParsedOptionValue("partition")).intValue();
+			partition = ((Long) args.getParsedOptionValue("partition")).byteValue();
 			nodeid = ((Long) args.getParsedOptionValue("id")).intValue();
 			globalid = partition * 100 + nodeid;
 			thriftPort = ((Long) args.getParsedOptionValue("port")).intValue();
@@ -160,7 +160,7 @@ public class FSMain {
 
 		// start the replica
 		try {
-			startReplica(comm, partition);
+			startReplica(0, partition, comm);
 		} catch (TTransportException e) {
 			e.printStackTrace();
 			System.exit(1);

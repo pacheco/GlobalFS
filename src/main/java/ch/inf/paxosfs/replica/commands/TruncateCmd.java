@@ -37,6 +37,7 @@ public class TruncateCmd implements org.apache.thrift.TBase<TruncateCmd, Truncat
 
   private static final org.apache.thrift.protocol.TField PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("path", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField SIZE_FIELD_DESC = new org.apache.thrift.protocol.TField("size", org.apache.thrift.protocol.TType.I64, (short)4);
+  private static final org.apache.thrift.protocol.TField PARTITION_FIELD_DESC = new org.apache.thrift.protocol.TField("partition", org.apache.thrift.protocol.TType.SET, (short)7);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -46,11 +47,13 @@ public class TruncateCmd implements org.apache.thrift.TBase<TruncateCmd, Truncat
 
   public String path; // required
   public long size; // required
+  public Set<Byte> partition; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     PATH((short)3, "path"),
-    SIZE((short)4, "size");
+    SIZE((short)4, "size"),
+    PARTITION((short)7, "partition");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -69,6 +72,8 @@ public class TruncateCmd implements org.apache.thrift.TBase<TruncateCmd, Truncat
           return PATH;
         case 4: // SIZE
           return SIZE;
+        case 7: // PARTITION
+          return PARTITION;
         default:
           return null;
       }
@@ -118,6 +123,9 @@ public class TruncateCmd implements org.apache.thrift.TBase<TruncateCmd, Truncat
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.SIZE, new org.apache.thrift.meta_data.FieldMetaData("size", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
+    tmpMap.put(_Fields.PARTITION, new org.apache.thrift.meta_data.FieldMetaData("partition", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.SetMetaData(org.apache.thrift.protocol.TType.SET, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TruncateCmd.class, metaDataMap);
   }
@@ -127,12 +135,14 @@ public class TruncateCmd implements org.apache.thrift.TBase<TruncateCmd, Truncat
 
   public TruncateCmd(
     String path,
-    long size)
+    long size,
+    Set<Byte> partition)
   {
     this();
     this.path = path;
     this.size = size;
     setSizeIsSet(true);
+    this.partition = partition;
   }
 
   /**
@@ -144,6 +154,10 @@ public class TruncateCmd implements org.apache.thrift.TBase<TruncateCmd, Truncat
       this.path = other.path;
     }
     this.size = other.size;
+    if (other.isSetPartition()) {
+      Set<Byte> __this__partition = new HashSet<Byte>(other.partition);
+      this.partition = __this__partition;
+    }
   }
 
   public TruncateCmd deepCopy() {
@@ -155,6 +169,7 @@ public class TruncateCmd implements org.apache.thrift.TBase<TruncateCmd, Truncat
     this.path = null;
     setSizeIsSet(false);
     this.size = 0;
+    this.partition = null;
   }
 
   public String getPath() {
@@ -204,6 +219,45 @@ public class TruncateCmd implements org.apache.thrift.TBase<TruncateCmd, Truncat
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SIZE_ISSET_ID, value);
   }
 
+  public int getPartitionSize() {
+    return (this.partition == null) ? 0 : this.partition.size();
+  }
+
+  public java.util.Iterator<Byte> getPartitionIterator() {
+    return (this.partition == null) ? null : this.partition.iterator();
+  }
+
+  public void addToPartition(byte elem) {
+    if (this.partition == null) {
+      this.partition = new HashSet<Byte>();
+    }
+    this.partition.add(elem);
+  }
+
+  public Set<Byte> getPartition() {
+    return this.partition;
+  }
+
+  public TruncateCmd setPartition(Set<Byte> partition) {
+    this.partition = partition;
+    return this;
+  }
+
+  public void unsetPartition() {
+    this.partition = null;
+  }
+
+  /** Returns true if field partition is set (has been assigned a value) and false otherwise */
+  public boolean isSetPartition() {
+    return this.partition != null;
+  }
+
+  public void setPartitionIsSet(boolean value) {
+    if (!value) {
+      this.partition = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case PATH:
@@ -222,6 +276,14 @@ public class TruncateCmd implements org.apache.thrift.TBase<TruncateCmd, Truncat
       }
       break;
 
+    case PARTITION:
+      if (value == null) {
+        unsetPartition();
+      } else {
+        setPartition((Set<Byte>)value);
+      }
+      break;
+
     }
   }
 
@@ -232,6 +294,9 @@ public class TruncateCmd implements org.apache.thrift.TBase<TruncateCmd, Truncat
 
     case SIZE:
       return Long.valueOf(getSize());
+
+    case PARTITION:
+      return getPartition();
 
     }
     throw new IllegalStateException();
@@ -248,6 +313,8 @@ public class TruncateCmd implements org.apache.thrift.TBase<TruncateCmd, Truncat
       return isSetPath();
     case SIZE:
       return isSetSize();
+    case PARTITION:
+      return isSetPartition();
     }
     throw new IllegalStateException();
   }
@@ -280,6 +347,15 @@ public class TruncateCmd implements org.apache.thrift.TBase<TruncateCmd, Truncat
       if (!(this_present_size && that_present_size))
         return false;
       if (this.size != that.size)
+        return false;
+    }
+
+    boolean this_present_partition = true && this.isSetPartition();
+    boolean that_present_partition = true && that.isSetPartition();
+    if (this_present_partition || that_present_partition) {
+      if (!(this_present_partition && that_present_partition))
+        return false;
+      if (!this.partition.equals(that.partition))
         return false;
     }
 
@@ -319,6 +395,16 @@ public class TruncateCmd implements org.apache.thrift.TBase<TruncateCmd, Truncat
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetPartition()).compareTo(other.isSetPartition());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetPartition()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.partition, other.partition);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -349,6 +435,14 @@ public class TruncateCmd implements org.apache.thrift.TBase<TruncateCmd, Truncat
     if (!first) sb.append(", ");
     sb.append("size:");
     sb.append(this.size);
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("partition:");
+    if (this.partition == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.partition);
+    }
     first = false;
     sb.append(")");
     return sb.toString();
@@ -411,6 +505,24 @@ public class TruncateCmd implements org.apache.thrift.TBase<TruncateCmd, Truncat
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 7: // PARTITION
+            if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
+              {
+                org.apache.thrift.protocol.TSet _set144 = iprot.readSetBegin();
+                struct.partition = new HashSet<Byte>(2*_set144.size);
+                for (int _i145 = 0; _i145 < _set144.size; ++_i145)
+                {
+                  byte _elem146;
+                  _elem146 = iprot.readByte();
+                  struct.partition.add(_elem146);
+                }
+                iprot.readSetEnd();
+              }
+              struct.setPartitionIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -434,6 +546,18 @@ public class TruncateCmd implements org.apache.thrift.TBase<TruncateCmd, Truncat
       oprot.writeFieldBegin(SIZE_FIELD_DESC);
       oprot.writeI64(struct.size);
       oprot.writeFieldEnd();
+      if (struct.partition != null) {
+        oprot.writeFieldBegin(PARTITION_FIELD_DESC);
+        {
+          oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, struct.partition.size()));
+          for (byte _iter147 : struct.partition)
+          {
+            oprot.writeByte(_iter147);
+          }
+          oprot.writeSetEnd();
+        }
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -458,19 +582,31 @@ public class TruncateCmd implements org.apache.thrift.TBase<TruncateCmd, Truncat
       if (struct.isSetSize()) {
         optionals.set(1);
       }
-      oprot.writeBitSet(optionals, 2);
+      if (struct.isSetPartition()) {
+        optionals.set(2);
+      }
+      oprot.writeBitSet(optionals, 3);
       if (struct.isSetPath()) {
         oprot.writeString(struct.path);
       }
       if (struct.isSetSize()) {
         oprot.writeI64(struct.size);
       }
+      if (struct.isSetPartition()) {
+        {
+          oprot.writeI32(struct.partition.size());
+          for (byte _iter148 : struct.partition)
+          {
+            oprot.writeByte(_iter148);
+          }
+        }
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, TruncateCmd struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(2);
+      BitSet incoming = iprot.readBitSet(3);
       if (incoming.get(0)) {
         struct.path = iprot.readString();
         struct.setPathIsSet(true);
@@ -478,6 +614,19 @@ public class TruncateCmd implements org.apache.thrift.TBase<TruncateCmd, Truncat
       if (incoming.get(1)) {
         struct.size = iprot.readI64();
         struct.setSizeIsSet(true);
+      }
+      if (incoming.get(2)) {
+        {
+          org.apache.thrift.protocol.TSet _set149 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, iprot.readI32());
+          struct.partition = new HashSet<Byte>(2*_set149.size);
+          for (int _i150 = 0; _i150 < _set149.size; ++_i150)
+          {
+            byte _elem151;
+            _elem151 = iprot.readByte();
+            struct.partition.add(_elem151);
+          }
+        }
+        struct.setPartitionIsSet(true);
       }
     }
   }

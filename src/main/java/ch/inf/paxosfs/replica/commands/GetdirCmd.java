@@ -32,28 +32,25 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fields>, java.io.Serializable, Cloneable, Comparable<ChownCmd> {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ChownCmd");
+public class GetdirCmd implements org.apache.thrift.TBase<GetdirCmd, GetdirCmd._Fields>, java.io.Serializable, Cloneable, Comparable<GetdirCmd> {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("GetdirCmd");
 
-  private static final org.apache.thrift.protocol.TField UID_FIELD_DESC = new org.apache.thrift.protocol.TField("uid", org.apache.thrift.protocol.TType.I32, (short)3);
-  private static final org.apache.thrift.protocol.TField GID_FIELD_DESC = new org.apache.thrift.protocol.TField("gid", org.apache.thrift.protocol.TType.I32, (short)4);
-  private static final org.apache.thrift.protocol.TField PARTITION_FIELD_DESC = new org.apache.thrift.protocol.TField("partition", org.apache.thrift.protocol.TType.SET, (short)7);
+  private static final org.apache.thrift.protocol.TField PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("path", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField PARTITION_FIELD_DESC = new org.apache.thrift.protocol.TField("partition", org.apache.thrift.protocol.TType.SET, (short)2);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new ChownCmdStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new ChownCmdTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new GetdirCmdStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new GetdirCmdTupleSchemeFactory());
   }
 
-  public int uid; // required
-  public int gid; // required
+  public String path; // required
   public Set<Byte> partition; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    UID((short)3, "uid"),
-    GID((short)4, "gid"),
-    PARTITION((short)7, "partition");
+    PATH((short)1, "path"),
+    PARTITION((short)2, "partition");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -68,11 +65,9 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 3: // UID
-          return UID;
-        case 4: // GID
-          return GID;
-        case 7: // PARTITION
+        case 1: // PATH
+          return PATH;
+        case 2: // PARTITION
           return PARTITION;
         default:
           return null;
@@ -114,109 +109,75 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
   }
 
   // isset id assignments
-  private static final int __UID_ISSET_ID = 0;
-  private static final int __GID_ISSET_ID = 1;
-  private byte __isset_bitfield = 0;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.UID, new org.apache.thrift.meta_data.FieldMetaData("uid", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-    tmpMap.put(_Fields.GID, new org.apache.thrift.meta_data.FieldMetaData("gid", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.PATH, new org.apache.thrift.meta_data.FieldMetaData("path", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.PARTITION, new org.apache.thrift.meta_data.FieldMetaData("partition", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.SetMetaData(org.apache.thrift.protocol.TType.SET, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ChownCmd.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(GetdirCmd.class, metaDataMap);
   }
 
-  public ChownCmd() {
+  public GetdirCmd() {
   }
 
-  public ChownCmd(
-    int uid,
-    int gid,
+  public GetdirCmd(
+    String path,
     Set<Byte> partition)
   {
     this();
-    this.uid = uid;
-    setUidIsSet(true);
-    this.gid = gid;
-    setGidIsSet(true);
+    this.path = path;
     this.partition = partition;
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public ChownCmd(ChownCmd other) {
-    __isset_bitfield = other.__isset_bitfield;
-    this.uid = other.uid;
-    this.gid = other.gid;
+  public GetdirCmd(GetdirCmd other) {
+    if (other.isSetPath()) {
+      this.path = other.path;
+    }
     if (other.isSetPartition()) {
       Set<Byte> __this__partition = new HashSet<Byte>(other.partition);
       this.partition = __this__partition;
     }
   }
 
-  public ChownCmd deepCopy() {
-    return new ChownCmd(this);
+  public GetdirCmd deepCopy() {
+    return new GetdirCmd(this);
   }
 
   @Override
   public void clear() {
-    setUidIsSet(false);
-    this.uid = 0;
-    setGidIsSet(false);
-    this.gid = 0;
+    this.path = null;
     this.partition = null;
   }
 
-  public int getUid() {
-    return this.uid;
+  public String getPath() {
+    return this.path;
   }
 
-  public ChownCmd setUid(int uid) {
-    this.uid = uid;
-    setUidIsSet(true);
+  public GetdirCmd setPath(String path) {
+    this.path = path;
     return this;
   }
 
-  public void unsetUid() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __UID_ISSET_ID);
+  public void unsetPath() {
+    this.path = null;
   }
 
-  /** Returns true if field uid is set (has been assigned a value) and false otherwise */
-  public boolean isSetUid() {
-    return EncodingUtils.testBit(__isset_bitfield, __UID_ISSET_ID);
+  /** Returns true if field path is set (has been assigned a value) and false otherwise */
+  public boolean isSetPath() {
+    return this.path != null;
   }
 
-  public void setUidIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __UID_ISSET_ID, value);
-  }
-
-  public int getGid() {
-    return this.gid;
-  }
-
-  public ChownCmd setGid(int gid) {
-    this.gid = gid;
-    setGidIsSet(true);
-    return this;
-  }
-
-  public void unsetGid() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __GID_ISSET_ID);
-  }
-
-  /** Returns true if field gid is set (has been assigned a value) and false otherwise */
-  public boolean isSetGid() {
-    return EncodingUtils.testBit(__isset_bitfield, __GID_ISSET_ID);
-  }
-
-  public void setGidIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __GID_ISSET_ID, value);
+  public void setPathIsSet(boolean value) {
+    if (!value) {
+      this.path = null;
+    }
   }
 
   public int getPartitionSize() {
@@ -238,7 +199,7 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
     return this.partition;
   }
 
-  public ChownCmd setPartition(Set<Byte> partition) {
+  public GetdirCmd setPartition(Set<Byte> partition) {
     this.partition = partition;
     return this;
   }
@@ -260,19 +221,11 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case UID:
+    case PATH:
       if (value == null) {
-        unsetUid();
+        unsetPath();
       } else {
-        setUid((Integer)value);
-      }
-      break;
-
-    case GID:
-      if (value == null) {
-        unsetGid();
-      } else {
-        setGid((Integer)value);
+        setPath((String)value);
       }
       break;
 
@@ -289,11 +242,8 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case UID:
-      return Integer.valueOf(getUid());
-
-    case GID:
-      return Integer.valueOf(getGid());
+    case PATH:
+      return getPath();
 
     case PARTITION:
       return getPartition();
@@ -309,10 +259,8 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
     }
 
     switch (field) {
-    case UID:
-      return isSetUid();
-    case GID:
-      return isSetGid();
+    case PATH:
+      return isSetPath();
     case PARTITION:
       return isSetPartition();
     }
@@ -323,30 +271,21 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof ChownCmd)
-      return this.equals((ChownCmd)that);
+    if (that instanceof GetdirCmd)
+      return this.equals((GetdirCmd)that);
     return false;
   }
 
-  public boolean equals(ChownCmd that) {
+  public boolean equals(GetdirCmd that) {
     if (that == null)
       return false;
 
-    boolean this_present_uid = true;
-    boolean that_present_uid = true;
-    if (this_present_uid || that_present_uid) {
-      if (!(this_present_uid && that_present_uid))
+    boolean this_present_path = true && this.isSetPath();
+    boolean that_present_path = true && that.isSetPath();
+    if (this_present_path || that_present_path) {
+      if (!(this_present_path && that_present_path))
         return false;
-      if (this.uid != that.uid)
-        return false;
-    }
-
-    boolean this_present_gid = true;
-    boolean that_present_gid = true;
-    if (this_present_gid || that_present_gid) {
-      if (!(this_present_gid && that_present_gid))
-        return false;
-      if (this.gid != that.gid)
+      if (!this.path.equals(that.path))
         return false;
     }
 
@@ -368,29 +307,19 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
   }
 
   @Override
-  public int compareTo(ChownCmd other) {
+  public int compareTo(GetdirCmd other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetUid()).compareTo(other.isSetUid());
+    lastComparison = Boolean.valueOf(isSetPath()).compareTo(other.isSetPath());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetUid()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.uid, other.uid);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetGid()).compareTo(other.isSetGid());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetGid()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gid, other.gid);
+    if (isSetPath()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.path, other.path);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -422,15 +351,15 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("ChownCmd(");
+    StringBuilder sb = new StringBuilder("GetdirCmd(");
     boolean first = true;
 
-    sb.append("uid:");
-    sb.append(this.uid);
-    first = false;
-    if (!first) sb.append(", ");
-    sb.append("gid:");
-    sb.append(this.gid);
+    sb.append("path:");
+    if (this.path == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.path);
+    }
     first = false;
     if (!first) sb.append(", ");
     sb.append("partition:");
@@ -459,23 +388,21 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
 
   private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
     try {
-      // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
-      __isset_bitfield = 0;
       read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
     } catch (org.apache.thrift.TException te) {
       throw new java.io.IOException(te);
     }
   }
 
-  private static class ChownCmdStandardSchemeFactory implements SchemeFactory {
-    public ChownCmdStandardScheme getScheme() {
-      return new ChownCmdStandardScheme();
+  private static class GetdirCmdStandardSchemeFactory implements SchemeFactory {
+    public GetdirCmdStandardScheme getScheme() {
+      return new GetdirCmdStandardScheme();
     }
   }
 
-  private static class ChownCmdStandardScheme extends StandardScheme<ChownCmd> {
+  private static class GetdirCmdStandardScheme extends StandardScheme<GetdirCmd> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, ChownCmd struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, GetdirCmd struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -485,32 +412,24 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
           break;
         }
         switch (schemeField.id) {
-          case 3: // UID
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.uid = iprot.readI32();
-              struct.setUidIsSet(true);
+          case 1: // PATH
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.path = iprot.readString();
+              struct.setPathIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // GID
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.gid = iprot.readI32();
-              struct.setGidIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 7: // PARTITION
+          case 2: // PARTITION
             if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
               {
-                org.apache.thrift.protocol.TSet _set136 = iprot.readSetBegin();
-                struct.partition = new HashSet<Byte>(2*_set136.size);
-                for (int _i137 = 0; _i137 < _set136.size; ++_i137)
+                org.apache.thrift.protocol.TSet _set8 = iprot.readSetBegin();
+                struct.partition = new HashSet<Byte>(2*_set8.size);
+                for (int _i9 = 0; _i9 < _set8.size; ++_i9)
                 {
-                  byte _elem138;
-                  _elem138 = iprot.readByte();
-                  struct.partition.add(_elem138);
+                  byte _elem10;
+                  _elem10 = iprot.readByte();
+                  struct.partition.add(_elem10);
                 }
                 iprot.readSetEnd();
               }
@@ -530,23 +449,22 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, ChownCmd struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, GetdirCmd struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      oprot.writeFieldBegin(UID_FIELD_DESC);
-      oprot.writeI32(struct.uid);
-      oprot.writeFieldEnd();
-      oprot.writeFieldBegin(GID_FIELD_DESC);
-      oprot.writeI32(struct.gid);
-      oprot.writeFieldEnd();
+      if (struct.path != null) {
+        oprot.writeFieldBegin(PATH_FIELD_DESC);
+        oprot.writeString(struct.path);
+        oprot.writeFieldEnd();
+      }
       if (struct.partition != null) {
         oprot.writeFieldBegin(PARTITION_FIELD_DESC);
         {
           oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, struct.partition.size()));
-          for (byte _iter139 : struct.partition)
+          for (byte _iter11 : struct.partition)
           {
-            oprot.writeByte(_iter139);
+            oprot.writeByte(_iter11);
           }
           oprot.writeSetEnd();
         }
@@ -558,66 +476,56 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
 
   }
 
-  private static class ChownCmdTupleSchemeFactory implements SchemeFactory {
-    public ChownCmdTupleScheme getScheme() {
-      return new ChownCmdTupleScheme();
+  private static class GetdirCmdTupleSchemeFactory implements SchemeFactory {
+    public GetdirCmdTupleScheme getScheme() {
+      return new GetdirCmdTupleScheme();
     }
   }
 
-  private static class ChownCmdTupleScheme extends TupleScheme<ChownCmd> {
+  private static class GetdirCmdTupleScheme extends TupleScheme<GetdirCmd> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, ChownCmd struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, GetdirCmd struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       BitSet optionals = new BitSet();
-      if (struct.isSetUid()) {
+      if (struct.isSetPath()) {
         optionals.set(0);
       }
-      if (struct.isSetGid()) {
+      if (struct.isSetPartition()) {
         optionals.set(1);
       }
-      if (struct.isSetPartition()) {
-        optionals.set(2);
-      }
-      oprot.writeBitSet(optionals, 3);
-      if (struct.isSetUid()) {
-        oprot.writeI32(struct.uid);
-      }
-      if (struct.isSetGid()) {
-        oprot.writeI32(struct.gid);
+      oprot.writeBitSet(optionals, 2);
+      if (struct.isSetPath()) {
+        oprot.writeString(struct.path);
       }
       if (struct.isSetPartition()) {
         {
           oprot.writeI32(struct.partition.size());
-          for (byte _iter140 : struct.partition)
+          for (byte _iter12 : struct.partition)
           {
-            oprot.writeByte(_iter140);
+            oprot.writeByte(_iter12);
           }
         }
       }
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, ChownCmd struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, GetdirCmd struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(3);
+      BitSet incoming = iprot.readBitSet(2);
       if (incoming.get(0)) {
-        struct.uid = iprot.readI32();
-        struct.setUidIsSet(true);
+        struct.path = iprot.readString();
+        struct.setPathIsSet(true);
       }
       if (incoming.get(1)) {
-        struct.gid = iprot.readI32();
-        struct.setGidIsSet(true);
-      }
-      if (incoming.get(2)) {
         {
-          org.apache.thrift.protocol.TSet _set141 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, iprot.readI32());
-          struct.partition = new HashSet<Byte>(2*_set141.size);
-          for (int _i142 = 0; _i142 < _set141.size; ++_i142)
+          org.apache.thrift.protocol.TSet _set13 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, iprot.readI32());
+          struct.partition = new HashSet<Byte>(2*_set13.size);
+          for (int _i14 = 0; _i14 < _set13.size; ++_i14)
           {
-            byte _elem143;
-            _elem143 = iprot.readByte();
-            struct.partition.add(_elem143);
+            byte _elem15;
+            _elem15 = iprot.readByte();
+            struct.partition.add(_elem15);
           }
         }
         struct.setPartitionIsSet(true);

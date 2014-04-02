@@ -4,6 +4,7 @@ include "fuseops.thrift"
 
 enum CommandType {
     ATTR = 0,
+    GETDIR = 1,
     MKNOD = 2,
     MKDIR = 3,
     UNLINK = 4,
@@ -23,6 +24,14 @@ enum CommandType {
 
 struct AttrCmd {
     1: string path
+
+    2: set<byte> partition
+}
+
+struct GetdirCmd {
+    1: string path
+    
+    2: set<byte> partition
 }
 
 struct MknodCmd {
@@ -30,6 +39,9 @@ struct MknodCmd {
     4: i32 mode
     5: i32 uid
     6: i32 gid
+
+    7: set<byte> parentPartition
+    8: set<byte> partition
 }
 
 struct MkdirCmd {
@@ -37,14 +49,23 @@ struct MkdirCmd {
     4: i32 mode
     5: i32 uid
     6: i32 gid
+
+    7: set<byte> parentPartition
+    8: set<byte> partition
 }
 
 struct UnlinkCmd {
     3: string path
+
+    7: set<byte> parentPartition
+    8: set<byte> partition
 }
 
 struct RmdirCmd {
     3: string path
+
+    7: set<byte> parentPartition
+    8: set<byte> partition
 }
 
 struct SymlinkCmd {
@@ -52,37 +73,55 @@ struct SymlinkCmd {
     4: string path
     5: i32 uid
     6: i32 gid
+
+    7: set<byte> parentPartition
+    8: set<byte> partition
 }
 
 struct RenameCmd {
     3: string from
     4: string to
+
+    7: set<byte> parentPartitionFrom
+    8: set<byte> partitionFrom
+    9: set<byte> parentPartitionTo
+    10: set<byte> partitionTo
 }
 
 struct ChmodCmd {
     3: string path
     4: i32 mode
+
+    7: set<byte> partition
 }
 
 struct ChownCmd {
     3: i32 uid
     4: i32 gid
+
+    7: set<byte> partition
 }
 
 struct TruncateCmd {
     3: string path
     4: i64 size
+
+    7: set<byte> partition
 }
 
 struct UtimeCmd {
     3: string path
     4: i32 atime
     5: i32 mtime
+
+    7: set<byte> partition
 }
 
 struct OpenCmd {
     3: string path
     4: i32 flags
+
+    7: set<byte> partition
 }
 
 struct ReadBlocksCmd {
@@ -90,6 +129,8 @@ struct ReadBlocksCmd {
     4: i32 fileHandle
     5: i64 offset
     6: i64 bytes
+
+    7: set<byte> partition
 }
 
 struct WriteBlocksCmd {
@@ -97,12 +138,19 @@ struct WriteBlocksCmd {
     4: i32 fileHandle
     5: i64 offset
     6: list<fuseops.DBlock> blocks
+
+    7: set<byte> partition
 }
 
 struct ReleaseCmd {
     3: string path
     4: i32 fileHandle
     5: i32 flags
+
+    7: set<byte> partition
+}
+
+struct StatFsCmd {
 }
 
 struct RenameData {
@@ -117,19 +165,18 @@ struct RenameData {
     9: i32 ctime
 }
 
-struct StatFsCmd {
-}
-
 struct Signal {
     1: i32 fromPartition
     2: bool success
     3: optional RenameData renameData
+    4: optional fuseops.FSError error
 }
 
 struct Command {
     1: i32 type
     2: i64 reqId
     3: i32 reqTime
+    4: optional GetdirCmd getdir
     5: optional AttrCmd attr
     7: optional MknodCmd mknod
     8: optional MkdirCmd mkdir

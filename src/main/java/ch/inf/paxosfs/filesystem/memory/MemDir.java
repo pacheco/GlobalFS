@@ -6,6 +6,7 @@ import java.util.HashMap;
 import ch.inf.paxosfs.filesystem.DirNode;
 import ch.inf.paxosfs.filesystem.Node;
 import ch.inf.paxosfs.rpc.Attr;
+import fuse.FuseFtypeConstants;
 
 public class MemDir extends MemNode implements DirNode {
 	private HashMap<String, Node> children;
@@ -34,5 +35,9 @@ public class MemDir extends MemNode implements DirNode {
 
 	public Node removeChild(String name) {
 		return children.remove(name);
+	}
+	
+	public int typeMode() {
+		return FuseFtypeConstants.TYPE_DIR;
 	}
 }

@@ -12,6 +12,8 @@ import ch.inf.paxosfs.rpc.DBlock;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
+import fuse.FuseFtypeConstants;
+
 public class MemFile extends MemNode implements FileNode {
 	private LinkedList<DBlock> blocks;
 
@@ -208,5 +210,9 @@ public class MemFile extends MemNode implements FileNode {
 			// split)
 			this.blocks.subList(iter.nextIndex(), this.blocks.size()).clear();
 		}
+	}
+
+	public int typeMode() {
+		return FuseFtypeConstants.TYPE_FILE;
 	}
 }

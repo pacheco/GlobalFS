@@ -39,6 +39,7 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
   private static final org.apache.thrift.protocol.TField FILE_HANDLE_FIELD_DESC = new org.apache.thrift.protocol.TField("fileHandle", org.apache.thrift.protocol.TType.I32, (short)4);
   private static final org.apache.thrift.protocol.TField OFFSET_FIELD_DESC = new org.apache.thrift.protocol.TField("offset", org.apache.thrift.protocol.TType.I64, (short)5);
   private static final org.apache.thrift.protocol.TField BLOCKS_FIELD_DESC = new org.apache.thrift.protocol.TField("blocks", org.apache.thrift.protocol.TType.LIST, (short)6);
+  private static final org.apache.thrift.protocol.TField PARTITION_FIELD_DESC = new org.apache.thrift.protocol.TField("partition", org.apache.thrift.protocol.TType.SET, (short)7);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -50,13 +51,15 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
   public int fileHandle; // required
   public long offset; // required
   public List<ch.inf.paxosfs.rpc.DBlock> blocks; // required
+  public Set<Byte> partition; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     PATH((short)3, "path"),
     FILE_HANDLE((short)4, "fileHandle"),
     OFFSET((short)5, "offset"),
-    BLOCKS((short)6, "blocks");
+    BLOCKS((short)6, "blocks"),
+    PARTITION((short)7, "partition");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -79,6 +82,8 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
           return OFFSET;
         case 6: // BLOCKS
           return BLOCKS;
+        case 7: // PARTITION
+          return PARTITION;
         default:
           return null;
       }
@@ -134,6 +139,9 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
     tmpMap.put(_Fields.BLOCKS, new org.apache.thrift.meta_data.FieldMetaData("blocks", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ch.inf.paxosfs.rpc.DBlock.class))));
+    tmpMap.put(_Fields.PARTITION, new org.apache.thrift.meta_data.FieldMetaData("partition", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.SetMetaData(org.apache.thrift.protocol.TType.SET, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(WriteBlocksCmd.class, metaDataMap);
   }
@@ -145,7 +153,8 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
     String path,
     int fileHandle,
     long offset,
-    List<ch.inf.paxosfs.rpc.DBlock> blocks)
+    List<ch.inf.paxosfs.rpc.DBlock> blocks,
+    Set<Byte> partition)
   {
     this();
     this.path = path;
@@ -154,6 +163,7 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
     this.offset = offset;
     setOffsetIsSet(true);
     this.blocks = blocks;
+    this.partition = partition;
   }
 
   /**
@@ -173,6 +183,10 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
       }
       this.blocks = __this__blocks;
     }
+    if (other.isSetPartition()) {
+      Set<Byte> __this__partition = new HashSet<Byte>(other.partition);
+      this.partition = __this__partition;
+    }
   }
 
   public WriteBlocksCmd deepCopy() {
@@ -187,6 +201,7 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
     setOffsetIsSet(false);
     this.offset = 0;
     this.blocks = null;
+    this.partition = null;
   }
 
   public String getPath() {
@@ -298,6 +313,45 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
     }
   }
 
+  public int getPartitionSize() {
+    return (this.partition == null) ? 0 : this.partition.size();
+  }
+
+  public java.util.Iterator<Byte> getPartitionIterator() {
+    return (this.partition == null) ? null : this.partition.iterator();
+  }
+
+  public void addToPartition(byte elem) {
+    if (this.partition == null) {
+      this.partition = new HashSet<Byte>();
+    }
+    this.partition.add(elem);
+  }
+
+  public Set<Byte> getPartition() {
+    return this.partition;
+  }
+
+  public WriteBlocksCmd setPartition(Set<Byte> partition) {
+    this.partition = partition;
+    return this;
+  }
+
+  public void unsetPartition() {
+    this.partition = null;
+  }
+
+  /** Returns true if field partition is set (has been assigned a value) and false otherwise */
+  public boolean isSetPartition() {
+    return this.partition != null;
+  }
+
+  public void setPartitionIsSet(boolean value) {
+    if (!value) {
+      this.partition = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case PATH:
@@ -332,6 +386,14 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
       }
       break;
 
+    case PARTITION:
+      if (value == null) {
+        unsetPartition();
+      } else {
+        setPartition((Set<Byte>)value);
+      }
+      break;
+
     }
   }
 
@@ -348,6 +410,9 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
 
     case BLOCKS:
       return getBlocks();
+
+    case PARTITION:
+      return getPartition();
 
     }
     throw new IllegalStateException();
@@ -368,6 +433,8 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
       return isSetOffset();
     case BLOCKS:
       return isSetBlocks();
+    case PARTITION:
+      return isSetPartition();
     }
     throw new IllegalStateException();
   }
@@ -418,6 +485,15 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
       if (!(this_present_blocks && that_present_blocks))
         return false;
       if (!this.blocks.equals(that.blocks))
+        return false;
+    }
+
+    boolean this_present_partition = true && this.isSetPartition();
+    boolean that_present_partition = true && that.isSetPartition();
+    if (this_present_partition || that_present_partition) {
+      if (!(this_present_partition && that_present_partition))
+        return false;
+      if (!this.partition.equals(that.partition))
         return false;
     }
 
@@ -477,6 +553,16 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetPartition()).compareTo(other.isSetPartition());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetPartition()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.partition, other.partition);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -518,6 +604,14 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
       sb.append("null");
     } else {
       sb.append(this.blocks);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("partition:");
+    if (this.partition == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.partition);
     }
     first = false;
     sb.append(")");
@@ -592,18 +686,36 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
           case 6: // BLOCKS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
-                struct.blocks = new ArrayList<ch.inf.paxosfs.rpc.DBlock>(_list0.size);
-                for (int _i1 = 0; _i1 < _list0.size; ++_i1)
+                org.apache.thrift.protocol.TList _list176 = iprot.readListBegin();
+                struct.blocks = new ArrayList<ch.inf.paxosfs.rpc.DBlock>(_list176.size);
+                for (int _i177 = 0; _i177 < _list176.size; ++_i177)
                 {
-                  ch.inf.paxosfs.rpc.DBlock _elem2;
-                  _elem2 = new ch.inf.paxosfs.rpc.DBlock();
-                  _elem2.read(iprot);
-                  struct.blocks.add(_elem2);
+                  ch.inf.paxosfs.rpc.DBlock _elem178;
+                  _elem178 = new ch.inf.paxosfs.rpc.DBlock();
+                  _elem178.read(iprot);
+                  struct.blocks.add(_elem178);
                 }
                 iprot.readListEnd();
               }
               struct.setBlocksIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 7: // PARTITION
+            if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
+              {
+                org.apache.thrift.protocol.TSet _set179 = iprot.readSetBegin();
+                struct.partition = new HashSet<Byte>(2*_set179.size);
+                for (int _i180 = 0; _i180 < _set179.size; ++_i180)
+                {
+                  byte _elem181;
+                  _elem181 = iprot.readByte();
+                  struct.partition.add(_elem181);
+                }
+                iprot.readSetEnd();
+              }
+              struct.setPartitionIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -638,11 +750,23 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
         oprot.writeFieldBegin(BLOCKS_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.blocks.size()));
-          for (ch.inf.paxosfs.rpc.DBlock _iter3 : struct.blocks)
+          for (ch.inf.paxosfs.rpc.DBlock _iter182 : struct.blocks)
           {
-            _iter3.write(oprot);
+            _iter182.write(oprot);
           }
           oprot.writeListEnd();
+        }
+        oprot.writeFieldEnd();
+      }
+      if (struct.partition != null) {
+        oprot.writeFieldBegin(PARTITION_FIELD_DESC);
+        {
+          oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, struct.partition.size()));
+          for (byte _iter183 : struct.partition)
+          {
+            oprot.writeByte(_iter183);
+          }
+          oprot.writeSetEnd();
         }
         oprot.writeFieldEnd();
       }
@@ -676,7 +800,10 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
       if (struct.isSetBlocks()) {
         optionals.set(3);
       }
-      oprot.writeBitSet(optionals, 4);
+      if (struct.isSetPartition()) {
+        optionals.set(4);
+      }
+      oprot.writeBitSet(optionals, 5);
       if (struct.isSetPath()) {
         oprot.writeString(struct.path);
       }
@@ -689,9 +816,18 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
       if (struct.isSetBlocks()) {
         {
           oprot.writeI32(struct.blocks.size());
-          for (ch.inf.paxosfs.rpc.DBlock _iter4 : struct.blocks)
+          for (ch.inf.paxosfs.rpc.DBlock _iter184 : struct.blocks)
           {
-            _iter4.write(oprot);
+            _iter184.write(oprot);
+          }
+        }
+      }
+      if (struct.isSetPartition()) {
+        {
+          oprot.writeI32(struct.partition.size());
+          for (byte _iter185 : struct.partition)
+          {
+            oprot.writeByte(_iter185);
           }
         }
       }
@@ -700,7 +836,7 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, WriteBlocksCmd struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(4);
+      BitSet incoming = iprot.readBitSet(5);
       if (incoming.get(0)) {
         struct.path = iprot.readString();
         struct.setPathIsSet(true);
@@ -715,17 +851,30 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
       }
       if (incoming.get(3)) {
         {
-          org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.blocks = new ArrayList<ch.inf.paxosfs.rpc.DBlock>(_list5.size);
-          for (int _i6 = 0; _i6 < _list5.size; ++_i6)
+          org.apache.thrift.protocol.TList _list186 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.blocks = new ArrayList<ch.inf.paxosfs.rpc.DBlock>(_list186.size);
+          for (int _i187 = 0; _i187 < _list186.size; ++_i187)
           {
-            ch.inf.paxosfs.rpc.DBlock _elem7;
-            _elem7 = new ch.inf.paxosfs.rpc.DBlock();
-            _elem7.read(iprot);
-            struct.blocks.add(_elem7);
+            ch.inf.paxosfs.rpc.DBlock _elem188;
+            _elem188 = new ch.inf.paxosfs.rpc.DBlock();
+            _elem188.read(iprot);
+            struct.blocks.add(_elem188);
           }
         }
         struct.setBlocksIsSet(true);
+      }
+      if (incoming.get(4)) {
+        {
+          org.apache.thrift.protocol.TSet _set189 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, iprot.readI32());
+          struct.partition = new HashSet<Byte>(2*_set189.size);
+          for (int _i190 = 0; _i190 < _set189.size; ++_i190)
+          {
+            byte _elem191;
+            _elem191 = iprot.readByte();
+            struct.partition.add(_elem191);
+          }
+        }
+        struct.setPartitionIsSet(true);
       }
     }
   }

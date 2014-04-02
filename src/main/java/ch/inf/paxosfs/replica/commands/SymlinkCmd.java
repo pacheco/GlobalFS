@@ -39,6 +39,8 @@ public class SymlinkCmd implements org.apache.thrift.TBase<SymlinkCmd, SymlinkCm
   private static final org.apache.thrift.protocol.TField PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("path", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField UID_FIELD_DESC = new org.apache.thrift.protocol.TField("uid", org.apache.thrift.protocol.TType.I32, (short)5);
   private static final org.apache.thrift.protocol.TField GID_FIELD_DESC = new org.apache.thrift.protocol.TField("gid", org.apache.thrift.protocol.TType.I32, (short)6);
+  private static final org.apache.thrift.protocol.TField PARENT_PARTITION_FIELD_DESC = new org.apache.thrift.protocol.TField("parentPartition", org.apache.thrift.protocol.TType.SET, (short)7);
+  private static final org.apache.thrift.protocol.TField PARTITION_FIELD_DESC = new org.apache.thrift.protocol.TField("partition", org.apache.thrift.protocol.TType.SET, (short)8);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -50,13 +52,17 @@ public class SymlinkCmd implements org.apache.thrift.TBase<SymlinkCmd, SymlinkCm
   public String path; // required
   public int uid; // required
   public int gid; // required
+  public Set<Byte> parentPartition; // required
+  public Set<Byte> partition; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     TARGET((short)3, "target"),
     PATH((short)4, "path"),
     UID((short)5, "uid"),
-    GID((short)6, "gid");
+    GID((short)6, "gid"),
+    PARENT_PARTITION((short)7, "parentPartition"),
+    PARTITION((short)8, "partition");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -79,6 +85,10 @@ public class SymlinkCmd implements org.apache.thrift.TBase<SymlinkCmd, SymlinkCm
           return UID;
         case 6: // GID
           return GID;
+        case 7: // PARENT_PARTITION
+          return PARENT_PARTITION;
+        case 8: // PARTITION
+          return PARTITION;
         default:
           return null;
       }
@@ -133,6 +143,12 @@ public class SymlinkCmd implements org.apache.thrift.TBase<SymlinkCmd, SymlinkCm
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.GID, new org.apache.thrift.meta_data.FieldMetaData("gid", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.PARENT_PARTITION, new org.apache.thrift.meta_data.FieldMetaData("parentPartition", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.SetMetaData(org.apache.thrift.protocol.TType.SET, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE))));
+    tmpMap.put(_Fields.PARTITION, new org.apache.thrift.meta_data.FieldMetaData("partition", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.SetMetaData(org.apache.thrift.protocol.TType.SET, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(SymlinkCmd.class, metaDataMap);
   }
@@ -144,7 +160,9 @@ public class SymlinkCmd implements org.apache.thrift.TBase<SymlinkCmd, SymlinkCm
     String target,
     String path,
     int uid,
-    int gid)
+    int gid,
+    Set<Byte> parentPartition,
+    Set<Byte> partition)
   {
     this();
     this.target = target;
@@ -153,6 +171,8 @@ public class SymlinkCmd implements org.apache.thrift.TBase<SymlinkCmd, SymlinkCm
     setUidIsSet(true);
     this.gid = gid;
     setGidIsSet(true);
+    this.parentPartition = parentPartition;
+    this.partition = partition;
   }
 
   /**
@@ -168,6 +188,14 @@ public class SymlinkCmd implements org.apache.thrift.TBase<SymlinkCmd, SymlinkCm
     }
     this.uid = other.uid;
     this.gid = other.gid;
+    if (other.isSetParentPartition()) {
+      Set<Byte> __this__parentPartition = new HashSet<Byte>(other.parentPartition);
+      this.parentPartition = __this__parentPartition;
+    }
+    if (other.isSetPartition()) {
+      Set<Byte> __this__partition = new HashSet<Byte>(other.partition);
+      this.partition = __this__partition;
+    }
   }
 
   public SymlinkCmd deepCopy() {
@@ -182,6 +210,8 @@ public class SymlinkCmd implements org.apache.thrift.TBase<SymlinkCmd, SymlinkCm
     this.uid = 0;
     setGidIsSet(false);
     this.gid = 0;
+    this.parentPartition = null;
+    this.partition = null;
   }
 
   public String getTarget() {
@@ -278,6 +308,84 @@ public class SymlinkCmd implements org.apache.thrift.TBase<SymlinkCmd, SymlinkCm
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __GID_ISSET_ID, value);
   }
 
+  public int getParentPartitionSize() {
+    return (this.parentPartition == null) ? 0 : this.parentPartition.size();
+  }
+
+  public java.util.Iterator<Byte> getParentPartitionIterator() {
+    return (this.parentPartition == null) ? null : this.parentPartition.iterator();
+  }
+
+  public void addToParentPartition(byte elem) {
+    if (this.parentPartition == null) {
+      this.parentPartition = new HashSet<Byte>();
+    }
+    this.parentPartition.add(elem);
+  }
+
+  public Set<Byte> getParentPartition() {
+    return this.parentPartition;
+  }
+
+  public SymlinkCmd setParentPartition(Set<Byte> parentPartition) {
+    this.parentPartition = parentPartition;
+    return this;
+  }
+
+  public void unsetParentPartition() {
+    this.parentPartition = null;
+  }
+
+  /** Returns true if field parentPartition is set (has been assigned a value) and false otherwise */
+  public boolean isSetParentPartition() {
+    return this.parentPartition != null;
+  }
+
+  public void setParentPartitionIsSet(boolean value) {
+    if (!value) {
+      this.parentPartition = null;
+    }
+  }
+
+  public int getPartitionSize() {
+    return (this.partition == null) ? 0 : this.partition.size();
+  }
+
+  public java.util.Iterator<Byte> getPartitionIterator() {
+    return (this.partition == null) ? null : this.partition.iterator();
+  }
+
+  public void addToPartition(byte elem) {
+    if (this.partition == null) {
+      this.partition = new HashSet<Byte>();
+    }
+    this.partition.add(elem);
+  }
+
+  public Set<Byte> getPartition() {
+    return this.partition;
+  }
+
+  public SymlinkCmd setPartition(Set<Byte> partition) {
+    this.partition = partition;
+    return this;
+  }
+
+  public void unsetPartition() {
+    this.partition = null;
+  }
+
+  /** Returns true if field partition is set (has been assigned a value) and false otherwise */
+  public boolean isSetPartition() {
+    return this.partition != null;
+  }
+
+  public void setPartitionIsSet(boolean value) {
+    if (!value) {
+      this.partition = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case TARGET:
@@ -312,6 +420,22 @@ public class SymlinkCmd implements org.apache.thrift.TBase<SymlinkCmd, SymlinkCm
       }
       break;
 
+    case PARENT_PARTITION:
+      if (value == null) {
+        unsetParentPartition();
+      } else {
+        setParentPartition((Set<Byte>)value);
+      }
+      break;
+
+    case PARTITION:
+      if (value == null) {
+        unsetPartition();
+      } else {
+        setPartition((Set<Byte>)value);
+      }
+      break;
+
     }
   }
 
@@ -328,6 +452,12 @@ public class SymlinkCmd implements org.apache.thrift.TBase<SymlinkCmd, SymlinkCm
 
     case GID:
       return Integer.valueOf(getGid());
+
+    case PARENT_PARTITION:
+      return getParentPartition();
+
+    case PARTITION:
+      return getPartition();
 
     }
     throw new IllegalStateException();
@@ -348,6 +478,10 @@ public class SymlinkCmd implements org.apache.thrift.TBase<SymlinkCmd, SymlinkCm
       return isSetUid();
     case GID:
       return isSetGid();
+    case PARENT_PARTITION:
+      return isSetParentPartition();
+    case PARTITION:
+      return isSetPartition();
     }
     throw new IllegalStateException();
   }
@@ -398,6 +532,24 @@ public class SymlinkCmd implements org.apache.thrift.TBase<SymlinkCmd, SymlinkCm
       if (!(this_present_gid && that_present_gid))
         return false;
       if (this.gid != that.gid)
+        return false;
+    }
+
+    boolean this_present_parentPartition = true && this.isSetParentPartition();
+    boolean that_present_parentPartition = true && that.isSetParentPartition();
+    if (this_present_parentPartition || that_present_parentPartition) {
+      if (!(this_present_parentPartition && that_present_parentPartition))
+        return false;
+      if (!this.parentPartition.equals(that.parentPartition))
+        return false;
+    }
+
+    boolean this_present_partition = true && this.isSetPartition();
+    boolean that_present_partition = true && that.isSetPartition();
+    if (this_present_partition || that_present_partition) {
+      if (!(this_present_partition && that_present_partition))
+        return false;
+      if (!this.partition.equals(that.partition))
         return false;
     }
 
@@ -457,6 +609,26 @@ public class SymlinkCmd implements org.apache.thrift.TBase<SymlinkCmd, SymlinkCm
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetParentPartition()).compareTo(other.isSetParentPartition());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetParentPartition()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.parentPartition, other.parentPartition);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetPartition()).compareTo(other.isSetPartition());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetPartition()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.partition, other.partition);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -499,6 +671,22 @@ public class SymlinkCmd implements org.apache.thrift.TBase<SymlinkCmd, SymlinkCm
     if (!first) sb.append(", ");
     sb.append("gid:");
     sb.append(this.gid);
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("parentPartition:");
+    if (this.parentPartition == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.parentPartition);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("partition:");
+    if (this.partition == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.partition);
+    }
     first = false;
     sb.append(")");
     return sb.toString();
@@ -577,6 +765,42 @@ public class SymlinkCmd implements org.apache.thrift.TBase<SymlinkCmd, SymlinkCm
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 7: // PARENT_PARTITION
+            if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
+              {
+                org.apache.thrift.protocol.TSet _set80 = iprot.readSetBegin();
+                struct.parentPartition = new HashSet<Byte>(2*_set80.size);
+                for (int _i81 = 0; _i81 < _set80.size; ++_i81)
+                {
+                  byte _elem82;
+                  _elem82 = iprot.readByte();
+                  struct.parentPartition.add(_elem82);
+                }
+                iprot.readSetEnd();
+              }
+              struct.setParentPartitionIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 8: // PARTITION
+            if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
+              {
+                org.apache.thrift.protocol.TSet _set83 = iprot.readSetBegin();
+                struct.partition = new HashSet<Byte>(2*_set83.size);
+                for (int _i84 = 0; _i84 < _set83.size; ++_i84)
+                {
+                  byte _elem85;
+                  _elem85 = iprot.readByte();
+                  struct.partition.add(_elem85);
+                }
+                iprot.readSetEnd();
+              }
+              struct.setPartitionIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -608,6 +832,30 @@ public class SymlinkCmd implements org.apache.thrift.TBase<SymlinkCmd, SymlinkCm
       oprot.writeFieldBegin(GID_FIELD_DESC);
       oprot.writeI32(struct.gid);
       oprot.writeFieldEnd();
+      if (struct.parentPartition != null) {
+        oprot.writeFieldBegin(PARENT_PARTITION_FIELD_DESC);
+        {
+          oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, struct.parentPartition.size()));
+          for (byte _iter86 : struct.parentPartition)
+          {
+            oprot.writeByte(_iter86);
+          }
+          oprot.writeSetEnd();
+        }
+        oprot.writeFieldEnd();
+      }
+      if (struct.partition != null) {
+        oprot.writeFieldBegin(PARTITION_FIELD_DESC);
+        {
+          oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, struct.partition.size()));
+          for (byte _iter87 : struct.partition)
+          {
+            oprot.writeByte(_iter87);
+          }
+          oprot.writeSetEnd();
+        }
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -638,7 +886,13 @@ public class SymlinkCmd implements org.apache.thrift.TBase<SymlinkCmd, SymlinkCm
       if (struct.isSetGid()) {
         optionals.set(3);
       }
-      oprot.writeBitSet(optionals, 4);
+      if (struct.isSetParentPartition()) {
+        optionals.set(4);
+      }
+      if (struct.isSetPartition()) {
+        optionals.set(5);
+      }
+      oprot.writeBitSet(optionals, 6);
       if (struct.isSetTarget()) {
         oprot.writeString(struct.target);
       }
@@ -651,12 +905,30 @@ public class SymlinkCmd implements org.apache.thrift.TBase<SymlinkCmd, SymlinkCm
       if (struct.isSetGid()) {
         oprot.writeI32(struct.gid);
       }
+      if (struct.isSetParentPartition()) {
+        {
+          oprot.writeI32(struct.parentPartition.size());
+          for (byte _iter88 : struct.parentPartition)
+          {
+            oprot.writeByte(_iter88);
+          }
+        }
+      }
+      if (struct.isSetPartition()) {
+        {
+          oprot.writeI32(struct.partition.size());
+          for (byte _iter89 : struct.partition)
+          {
+            oprot.writeByte(_iter89);
+          }
+        }
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, SymlinkCmd struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(4);
+      BitSet incoming = iprot.readBitSet(6);
       if (incoming.get(0)) {
         struct.target = iprot.readString();
         struct.setTargetIsSet(true);
@@ -672,6 +944,32 @@ public class SymlinkCmd implements org.apache.thrift.TBase<SymlinkCmd, SymlinkCm
       if (incoming.get(3)) {
         struct.gid = iprot.readI32();
         struct.setGidIsSet(true);
+      }
+      if (incoming.get(4)) {
+        {
+          org.apache.thrift.protocol.TSet _set90 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, iprot.readI32());
+          struct.parentPartition = new HashSet<Byte>(2*_set90.size);
+          for (int _i91 = 0; _i91 < _set90.size; ++_i91)
+          {
+            byte _elem92;
+            _elem92 = iprot.readByte();
+            struct.parentPartition.add(_elem92);
+          }
+        }
+        struct.setParentPartitionIsSet(true);
+      }
+      if (incoming.get(5)) {
+        {
+          org.apache.thrift.protocol.TSet _set93 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, iprot.readI32());
+          struct.partition = new HashSet<Byte>(2*_set93.size);
+          for (int _i94 = 0; _i94 < _set93.size; ++_i94)
+          {
+            byte _elem95;
+            _elem95 = iprot.readByte();
+            struct.partition.add(_elem95);
+          }
+        }
+        struct.setPartitionIsSet(true);
       }
     }
   }

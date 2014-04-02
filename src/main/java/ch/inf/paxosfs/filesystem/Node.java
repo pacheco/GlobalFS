@@ -7,4 +7,5 @@ public interface Node {
 	boolean isLink();
 	boolean isFile();
 	Attr getAttributes();
+	int typeMode();
 }

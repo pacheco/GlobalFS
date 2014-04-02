@@ -1,6 +1,6 @@
 package ch.inf.paxosfs.partitioning;
 
-
+import java.util.Set;
 
 public interface PartitioningOracle {
 	/**
@@ -8,13 +8,5 @@ public interface PartitioningOracle {
 	 * @param path
 	 * @return
 	 */
-	public int[] partitionsOf(String path);
-	
-	/**
-	 * Returns true if a given partition is responsible for this path
-	 * @param path
-	 * @param partition
-	 * @return
-	 */
-	public boolean partitionHasPath(String path, int partition);
+	public Set<Byte> partitionsOf(String path);
 }

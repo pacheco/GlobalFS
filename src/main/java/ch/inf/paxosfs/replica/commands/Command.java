@@ -38,6 +38,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
   private static final org.apache.thrift.protocol.TField TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("type", org.apache.thrift.protocol.TType.I32, (short)1);
   private static final org.apache.thrift.protocol.TField REQ_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("reqId", org.apache.thrift.protocol.TType.I64, (short)2);
   private static final org.apache.thrift.protocol.TField REQ_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("reqTime", org.apache.thrift.protocol.TType.I32, (short)3);
+  private static final org.apache.thrift.protocol.TField GETDIR_FIELD_DESC = new org.apache.thrift.protocol.TField("getdir", org.apache.thrift.protocol.TType.STRUCT, (short)4);
   private static final org.apache.thrift.protocol.TField ATTR_FIELD_DESC = new org.apache.thrift.protocol.TField("attr", org.apache.thrift.protocol.TType.STRUCT, (short)5);
   private static final org.apache.thrift.protocol.TField MKNOD_FIELD_DESC = new org.apache.thrift.protocol.TField("mknod", org.apache.thrift.protocol.TType.STRUCT, (short)7);
   private static final org.apache.thrift.protocol.TField MKDIR_FIELD_DESC = new org.apache.thrift.protocol.TField("mkdir", org.apache.thrift.protocol.TType.STRUCT, (short)8);
@@ -65,6 +66,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
   public int type; // required
   public long reqId; // required
   public int reqTime; // required
+  public GetdirCmd getdir; // optional
   public AttrCmd attr; // optional
   public MknodCmd mknod; // optional
   public MkdirCmd mkdir; // optional
@@ -88,6 +90,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     TYPE((short)1, "type"),
     REQ_ID((short)2, "reqId"),
     REQ_TIME((short)3, "reqTime"),
+    GETDIR((short)4, "getdir"),
     ATTR((short)5, "attr"),
     MKNOD((short)7, "mknod"),
     MKDIR((short)8, "mkdir"),
@@ -125,6 +128,8 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
           return REQ_ID;
         case 3: // REQ_TIME
           return REQ_TIME;
+        case 4: // GETDIR
+          return GETDIR;
         case 5: // ATTR
           return ATTR;
         case 7: // MKNOD
@@ -203,7 +208,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
   private static final int __REQID_ISSET_ID = 1;
   private static final int __REQTIME_ISSET_ID = 2;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.ATTR,_Fields.MKNOD,_Fields.MKDIR,_Fields.UNLINK,_Fields.RMDIR,_Fields.SYMLINK,_Fields.RENAME,_Fields.CHMOD,_Fields.CHOWN,_Fields.TRUNCATE,_Fields.UTIME,_Fields.OPEN,_Fields.READ,_Fields.WRITE,_Fields.RELEASE,_Fields.STATFS,_Fields.SIGNAL};
+  private _Fields optionals[] = {_Fields.GETDIR,_Fields.ATTR,_Fields.MKNOD,_Fields.MKDIR,_Fields.UNLINK,_Fields.RMDIR,_Fields.SYMLINK,_Fields.RENAME,_Fields.CHMOD,_Fields.CHOWN,_Fields.TRUNCATE,_Fields.UTIME,_Fields.OPEN,_Fields.READ,_Fields.WRITE,_Fields.RELEASE,_Fields.STATFS,_Fields.SIGNAL};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -213,6 +218,8 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     tmpMap.put(_Fields.REQ_TIME, new org.apache.thrift.meta_data.FieldMetaData("reqTime", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.GETDIR, new org.apache.thrift.meta_data.FieldMetaData("getdir", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, GetdirCmd.class)));
     tmpMap.put(_Fields.ATTR, new org.apache.thrift.meta_data.FieldMetaData("attr", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, AttrCmd.class)));
     tmpMap.put(_Fields.MKNOD, new org.apache.thrift.meta_data.FieldMetaData("mknod", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -276,6 +283,9 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     this.type = other.type;
     this.reqId = other.reqId;
     this.reqTime = other.reqTime;
+    if (other.isSetGetdir()) {
+      this.getdir = new GetdirCmd(other.getdir);
+    }
     if (other.isSetAttr()) {
       this.attr = new AttrCmd(other.attr);
     }
@@ -341,6 +351,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     this.reqId = 0;
     setReqTimeIsSet(false);
     this.reqTime = 0;
+    this.getdir = null;
     this.attr = null;
     this.mknod = null;
     this.mkdir = null;
@@ -427,6 +438,30 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
 
   public void setReqTimeIsSet(boolean value) {
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __REQTIME_ISSET_ID, value);
+  }
+
+  public GetdirCmd getGetdir() {
+    return this.getdir;
+  }
+
+  public Command setGetdir(GetdirCmd getdir) {
+    this.getdir = getdir;
+    return this;
+  }
+
+  public void unsetGetdir() {
+    this.getdir = null;
+  }
+
+  /** Returns true if field getdir is set (has been assigned a value) and false otherwise */
+  public boolean isSetGetdir() {
+    return this.getdir != null;
+  }
+
+  public void setGetdirIsSet(boolean value) {
+    if (!value) {
+      this.getdir = null;
+    }
   }
 
   public AttrCmd getAttr() {
@@ -863,6 +898,14 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       }
       break;
 
+    case GETDIR:
+      if (value == null) {
+        unsetGetdir();
+      } else {
+        setGetdir((GetdirCmd)value);
+      }
+      break;
+
     case ATTR:
       if (value == null) {
         unsetAttr();
@@ -1013,6 +1056,9 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     case REQ_TIME:
       return Integer.valueOf(getReqTime());
 
+    case GETDIR:
+      return getGetdir();
+
     case ATTR:
       return getAttr();
 
@@ -1081,6 +1127,8 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       return isSetReqId();
     case REQ_TIME:
       return isSetReqTime();
+    case GETDIR:
+      return isSetGetdir();
     case ATTR:
       return isSetAttr();
     case MKNOD:
@@ -1156,6 +1204,15 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       if (!(this_present_reqTime && that_present_reqTime))
         return false;
       if (this.reqTime != that.reqTime)
+        return false;
+    }
+
+    boolean this_present_getdir = true && this.isSetGetdir();
+    boolean that_present_getdir = true && that.isSetGetdir();
+    if (this_present_getdir || that_present_getdir) {
+      if (!(this_present_getdir && that_present_getdir))
+        return false;
+      if (!this.getdir.equals(that.getdir))
         return false;
     }
 
@@ -1354,6 +1411,16 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     }
     if (isSetReqTime()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.reqTime, other.reqTime);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetGetdir()).compareTo(other.isSetGetdir());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetGetdir()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.getdir, other.getdir);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1559,6 +1626,16 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     sb.append("reqTime:");
     sb.append(this.reqTime);
     first = false;
+    if (isSetGetdir()) {
+      if (!first) sb.append(", ");
+      sb.append("getdir:");
+      if (this.getdir == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.getdir);
+      }
+      first = false;
+    }
     if (isSetAttr()) {
       if (!first) sb.append(", ");
       sb.append("attr:");
@@ -1736,6 +1813,9 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
     // check for sub-struct validity
+    if (getdir != null) {
+      getdir.validate();
+    }
     if (attr != null) {
       attr.validate();
     }
@@ -1845,6 +1925,15 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.reqTime = iprot.readI32();
               struct.setReqTimeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 4: // GETDIR
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+              struct.getdir = new GetdirCmd();
+              struct.getdir.read(iprot);
+              struct.setGetdirIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -2026,6 +2115,13 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       oprot.writeFieldBegin(REQ_TIME_FIELD_DESC);
       oprot.writeI32(struct.reqTime);
       oprot.writeFieldEnd();
+      if (struct.getdir != null) {
+        if (struct.isSetGetdir()) {
+          oprot.writeFieldBegin(GETDIR_FIELD_DESC);
+          struct.getdir.write(oprot);
+          oprot.writeFieldEnd();
+        }
+      }
       if (struct.attr != null) {
         if (struct.isSetAttr()) {
           oprot.writeFieldBegin(ATTR_FIELD_DESC);
@@ -2172,58 +2268,61 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       if (struct.isSetReqTime()) {
         optionals.set(2);
       }
-      if (struct.isSetAttr()) {
+      if (struct.isSetGetdir()) {
         optionals.set(3);
       }
-      if (struct.isSetMknod()) {
+      if (struct.isSetAttr()) {
         optionals.set(4);
       }
-      if (struct.isSetMkdir()) {
+      if (struct.isSetMknod()) {
         optionals.set(5);
       }
-      if (struct.isSetUnlink()) {
+      if (struct.isSetMkdir()) {
         optionals.set(6);
       }
-      if (struct.isSetRmdir()) {
+      if (struct.isSetUnlink()) {
         optionals.set(7);
       }
-      if (struct.isSetSymlink()) {
+      if (struct.isSetRmdir()) {
         optionals.set(8);
       }
-      if (struct.isSetRename()) {
+      if (struct.isSetSymlink()) {
         optionals.set(9);
       }
-      if (struct.isSetChmod()) {
+      if (struct.isSetRename()) {
         optionals.set(10);
       }
-      if (struct.isSetChown()) {
+      if (struct.isSetChmod()) {
         optionals.set(11);
       }
-      if (struct.isSetTruncate()) {
+      if (struct.isSetChown()) {
         optionals.set(12);
       }
-      if (struct.isSetUtime()) {
+      if (struct.isSetTruncate()) {
         optionals.set(13);
       }
-      if (struct.isSetOpen()) {
+      if (struct.isSetUtime()) {
         optionals.set(14);
       }
-      if (struct.isSetRead()) {
+      if (struct.isSetOpen()) {
         optionals.set(15);
       }
-      if (struct.isSetWrite()) {
+      if (struct.isSetRead()) {
         optionals.set(16);
       }
-      if (struct.isSetRelease()) {
+      if (struct.isSetWrite()) {
         optionals.set(17);
       }
-      if (struct.isSetStatfs()) {
+      if (struct.isSetRelease()) {
         optionals.set(18);
       }
-      if (struct.isSetSignal()) {
+      if (struct.isSetStatfs()) {
         optionals.set(19);
       }
-      oprot.writeBitSet(optionals, 20);
+      if (struct.isSetSignal()) {
+        optionals.set(20);
+      }
+      oprot.writeBitSet(optionals, 21);
       if (struct.isSetType()) {
         oprot.writeI32(struct.type);
       }
@@ -2232,6 +2331,9 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       }
       if (struct.isSetReqTime()) {
         oprot.writeI32(struct.reqTime);
+      }
+      if (struct.isSetGetdir()) {
+        struct.getdir.write(oprot);
       }
       if (struct.isSetAttr()) {
         struct.attr.write(oprot);
@@ -2289,7 +2391,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, Command struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(20);
+      BitSet incoming = iprot.readBitSet(21);
       if (incoming.get(0)) {
         struct.type = iprot.readI32();
         struct.setTypeIsSet(true);
@@ -2303,86 +2405,91 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
         struct.setReqTimeIsSet(true);
       }
       if (incoming.get(3)) {
+        struct.getdir = new GetdirCmd();
+        struct.getdir.read(iprot);
+        struct.setGetdirIsSet(true);
+      }
+      if (incoming.get(4)) {
         struct.attr = new AttrCmd();
         struct.attr.read(iprot);
         struct.setAttrIsSet(true);
       }
-      if (incoming.get(4)) {
+      if (incoming.get(5)) {
         struct.mknod = new MknodCmd();
         struct.mknod.read(iprot);
         struct.setMknodIsSet(true);
       }
-      if (incoming.get(5)) {
+      if (incoming.get(6)) {
         struct.mkdir = new MkdirCmd();
         struct.mkdir.read(iprot);
         struct.setMkdirIsSet(true);
       }
-      if (incoming.get(6)) {
+      if (incoming.get(7)) {
         struct.unlink = new UnlinkCmd();
         struct.unlink.read(iprot);
         struct.setUnlinkIsSet(true);
       }
-      if (incoming.get(7)) {
+      if (incoming.get(8)) {
         struct.rmdir = new RmdirCmd();
         struct.rmdir.read(iprot);
         struct.setRmdirIsSet(true);
       }
-      if (incoming.get(8)) {
+      if (incoming.get(9)) {
         struct.symlink = new SymlinkCmd();
         struct.symlink.read(iprot);
         struct.setSymlinkIsSet(true);
       }
-      if (incoming.get(9)) {
+      if (incoming.get(10)) {
         struct.rename = new RenameCmd();
         struct.rename.read(iprot);
         struct.setRenameIsSet(true);
       }
-      if (incoming.get(10)) {
+      if (incoming.get(11)) {
         struct.chmod = new ChmodCmd();
         struct.chmod.read(iprot);
         struct.setChmodIsSet(true);
       }
-      if (incoming.get(11)) {
+      if (incoming.get(12)) {
         struct.chown = new ChownCmd();
         struct.chown.read(iprot);
         struct.setChownIsSet(true);
       }
-      if (incoming.get(12)) {
+      if (incoming.get(13)) {
         struct.truncate = new TruncateCmd();
         struct.truncate.read(iprot);
         struct.setTruncateIsSet(true);
       }
-      if (incoming.get(13)) {
+      if (incoming.get(14)) {
         struct.utime = new UtimeCmd();
         struct.utime.read(iprot);
         struct.setUtimeIsSet(true);
       }
-      if (incoming.get(14)) {
+      if (incoming.get(15)) {
         struct.open = new OpenCmd();
         struct.open.read(iprot);
         struct.setOpenIsSet(true);
       }
-      if (incoming.get(15)) {
+      if (incoming.get(16)) {
         struct.read = new ReadBlocksCmd();
         struct.read.read(iprot);
         struct.setReadIsSet(true);
       }
-      if (incoming.get(16)) {
+      if (incoming.get(17)) {
         struct.write = new WriteBlocksCmd();
         struct.write.read(iprot);
         struct.setWriteIsSet(true);
       }
-      if (incoming.get(17)) {
+      if (incoming.get(18)) {
         struct.release = new ReleaseCmd();
         struct.release.read(iprot);
         struct.setReleaseIsSet(true);
       }
-      if (incoming.get(18)) {
+      if (incoming.get(19)) {
         struct.statfs = new StatFsCmd();
         struct.statfs.read(iprot);
         struct.setStatfsIsSet(true);
       }
-      if (incoming.get(19)) {
+      if (incoming.get(20)) {
         struct.signal = new Signal();
         struct.signal.read(iprot);
         struct.setSignalIsSet(true);

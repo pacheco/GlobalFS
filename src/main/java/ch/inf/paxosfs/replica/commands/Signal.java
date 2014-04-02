@@ -38,6 +38,7 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
   private static final org.apache.thrift.protocol.TField FROM_PARTITION_FIELD_DESC = new org.apache.thrift.protocol.TField("fromPartition", org.apache.thrift.protocol.TType.I32, (short)1);
   private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.BOOL, (short)2);
   private static final org.apache.thrift.protocol.TField RENAME_DATA_FIELD_DESC = new org.apache.thrift.protocol.TField("renameData", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+  private static final org.apache.thrift.protocol.TField ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("error", org.apache.thrift.protocol.TType.STRUCT, (short)4);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -48,12 +49,14 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
   public int fromPartition; // required
   public boolean success; // required
   public RenameData renameData; // optional
+  public ch.inf.paxosfs.rpc.FSError error; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     FROM_PARTITION((short)1, "fromPartition"),
     SUCCESS((short)2, "success"),
-    RENAME_DATA((short)3, "renameData");
+    RENAME_DATA((short)3, "renameData"),
+    ERROR((short)4, "error");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -74,6 +77,8 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
           return SUCCESS;
         case 3: // RENAME_DATA
           return RENAME_DATA;
+        case 4: // ERROR
+          return ERROR;
         default:
           return null;
       }
@@ -117,7 +122,7 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
   private static final int __FROMPARTITION_ISSET_ID = 0;
   private static final int __SUCCESS_ISSET_ID = 1;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.RENAME_DATA};
+  private _Fields optionals[] = {_Fields.RENAME_DATA,_Fields.ERROR};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -127,6 +132,8 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.RENAME_DATA, new org.apache.thrift.meta_data.FieldMetaData("renameData", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, RenameData.class)));
+    tmpMap.put(_Fields.ERROR, new org.apache.thrift.meta_data.FieldMetaData("error", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Signal.class, metaDataMap);
   }
@@ -155,6 +162,9 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
     if (other.isSetRenameData()) {
       this.renameData = new RenameData(other.renameData);
     }
+    if (other.isSetError()) {
+      this.error = new ch.inf.paxosfs.rpc.FSError(other.error);
+    }
   }
 
   public Signal deepCopy() {
@@ -168,6 +178,7 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
     setSuccessIsSet(false);
     this.success = false;
     this.renameData = null;
+    this.error = null;
   }
 
   public int getFromPartition() {
@@ -240,6 +251,30 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
     }
   }
 
+  public ch.inf.paxosfs.rpc.FSError getError() {
+    return this.error;
+  }
+
+  public Signal setError(ch.inf.paxosfs.rpc.FSError error) {
+    this.error = error;
+    return this;
+  }
+
+  public void unsetError() {
+    this.error = null;
+  }
+
+  /** Returns true if field error is set (has been assigned a value) and false otherwise */
+  public boolean isSetError() {
+    return this.error != null;
+  }
+
+  public void setErrorIsSet(boolean value) {
+    if (!value) {
+      this.error = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case FROM_PARTITION:
@@ -266,6 +301,14 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
       }
       break;
 
+    case ERROR:
+      if (value == null) {
+        unsetError();
+      } else {
+        setError((ch.inf.paxosfs.rpc.FSError)value);
+      }
+      break;
+
     }
   }
 
@@ -279,6 +322,9 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
 
     case RENAME_DATA:
       return getRenameData();
+
+    case ERROR:
+      return getError();
 
     }
     throw new IllegalStateException();
@@ -297,6 +343,8 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
       return isSetSuccess();
     case RENAME_DATA:
       return isSetRenameData();
+    case ERROR:
+      return isSetError();
     }
     throw new IllegalStateException();
   }
@@ -338,6 +386,15 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
       if (!(this_present_renameData && that_present_renameData))
         return false;
       if (!this.renameData.equals(that.renameData))
+        return false;
+    }
+
+    boolean this_present_error = true && this.isSetError();
+    boolean that_present_error = true && that.isSetError();
+    if (this_present_error || that_present_error) {
+      if (!(this_present_error && that_present_error))
+        return false;
+      if (!this.error.equals(that.error))
         return false;
     }
 
@@ -387,6 +444,16 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetError()).compareTo(other.isSetError());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetError()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.error, other.error);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -421,6 +488,16 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
         sb.append("null");
       } else {
         sb.append(this.renameData);
+      }
+      first = false;
+    }
+    if (isSetError()) {
+      if (!first) sb.append(", ");
+      sb.append("error:");
+      if (this.error == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.error);
       }
       first = false;
     }
@@ -497,6 +574,15 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 4: // ERROR
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+              struct.error = new ch.inf.paxosfs.rpc.FSError();
+              struct.error.read(iprot);
+              struct.setErrorIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -522,6 +608,13 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
         if (struct.isSetRenameData()) {
           oprot.writeFieldBegin(RENAME_DATA_FIELD_DESC);
           struct.renameData.write(oprot);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.error != null) {
+        if (struct.isSetError()) {
+          oprot.writeFieldBegin(ERROR_FIELD_DESC);
+          struct.error.write(oprot);
           oprot.writeFieldEnd();
         }
       }
@@ -552,7 +645,10 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
       if (struct.isSetRenameData()) {
         optionals.set(2);
       }
-      oprot.writeBitSet(optionals, 3);
+      if (struct.isSetError()) {
+        optionals.set(3);
+      }
+      oprot.writeBitSet(optionals, 4);
       if (struct.isSetFromPartition()) {
         oprot.writeI32(struct.fromPartition);
       }
@@ -562,12 +658,15 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
       if (struct.isSetRenameData()) {
         struct.renameData.write(oprot);
       }
+      if (struct.isSetError()) {
+        struct.error.write(oprot);
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, Signal struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(3);
+      BitSet incoming = iprot.readBitSet(4);
       if (incoming.get(0)) {
         struct.fromPartition = iprot.readI32();
         struct.setFromPartitionIsSet(true);
@@ -580,6 +679,11 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
         struct.renameData = new RenameData();
         struct.renameData.read(iprot);
         struct.setRenameDataIsSet(true);
+      }
+      if (incoming.get(3)) {
+        struct.error = new ch.inf.paxosfs.rpc.FSError();
+        struct.error.read(iprot);
+        struct.setErrorIsSet(true);
       }
     }
   }

@@ -966,13 +966,13 @@ public class RenameData implements org.apache.thrift.TBase<RenameData, RenameDat
           case 6: // BLOCKS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list8 = iprot.readListBegin();
-                struct.blocks = new ArrayList<Long>(_list8.size);
-                for (int _i9 = 0; _i9 < _list8.size; ++_i9)
+                org.apache.thrift.protocol.TList _list200 = iprot.readListBegin();
+                struct.blocks = new ArrayList<Long>(_list200.size);
+                for (int _i201 = 0; _i201 < _list200.size; ++_i201)
                 {
-                  long _elem10;
-                  _elem10 = iprot.readI64();
-                  struct.blocks.add(_elem10);
+                  long _elem202;
+                  _elem202 = iprot.readI64();
+                  struct.blocks.add(_elem202);
                 }
                 iprot.readListEnd();
               }
@@ -1039,9 +1039,9 @@ public class RenameData implements org.apache.thrift.TBase<RenameData, RenameDat
         oprot.writeFieldBegin(BLOCKS_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I64, struct.blocks.size()));
-          for (long _iter11 : struct.blocks)
+          for (long _iter203 : struct.blocks)
           {
-            oprot.writeI64(_iter11);
+            oprot.writeI64(_iter203);
           }
           oprot.writeListEnd();
         }
@@ -1120,9 +1120,9 @@ public class RenameData implements org.apache.thrift.TBase<RenameData, RenameDat
       if (struct.isSetBlocks()) {
         {
           oprot.writeI32(struct.blocks.size());
-          for (long _iter12 : struct.blocks)
+          for (long _iter204 : struct.blocks)
           {
-            oprot.writeI64(_iter12);
+            oprot.writeI64(_iter204);
           }
         }
       }
@@ -1163,13 +1163,13 @@ public class RenameData implements org.apache.thrift.TBase<RenameData, RenameDat
       }
       if (incoming.get(5)) {
         {
-          org.apache.thrift.protocol.TList _list13 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I64, iprot.readI32());
-          struct.blocks = new ArrayList<Long>(_list13.size);
-          for (int _i14 = 0; _i14 < _list13.size; ++_i14)
+          org.apache.thrift.protocol.TList _list205 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I64, iprot.readI32());
+          struct.blocks = new ArrayList<Long>(_list205.size);
+          for (int _i206 = 0; _i206 < _list205.size; ++_i206)
           {
-            long _elem15;
-            _elem15 = iprot.readI64();
-            struct.blocks.add(_elem15);
+            long _elem207;
+            _elem207 = iprot.readI64();
+            struct.blocks.add(_elem207);
           }
         }
         struct.setBlocksIsSet(true);

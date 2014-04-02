@@ -13,6 +13,7 @@ import org.apache.thrift.TEnum;
 
 public enum CommandType implements org.apache.thrift.TEnum {
   ATTR(0),
+  GETDIR(1),
   MKNOD(2),
   MKDIR(3),
   UNLINK(4),
@@ -50,6 +51,8 @@ public enum CommandType implements org.apache.thrift.TEnum {
     switch (value) {
       case 0:
         return ATTR;
+      case 1:
+        return GETDIR;
       case 2:
         return MKNOD;
       case 3:

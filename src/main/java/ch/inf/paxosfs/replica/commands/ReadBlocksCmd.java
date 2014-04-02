@@ -39,6 +39,7 @@ public class ReadBlocksCmd implements org.apache.thrift.TBase<ReadBlocksCmd, Rea
   private static final org.apache.thrift.protocol.TField FILE_HANDLE_FIELD_DESC = new org.apache.thrift.protocol.TField("fileHandle", org.apache.thrift.protocol.TType.I32, (short)4);
   private static final org.apache.thrift.protocol.TField OFFSET_FIELD_DESC = new org.apache.thrift.protocol.TField("offset", org.apache.thrift.protocol.TType.I64, (short)5);
   private static final org.apache.thrift.protocol.TField BYTES_FIELD_DESC = new org.apache.thrift.protocol.TField("bytes", org.apache.thrift.protocol.TType.I64, (short)6);
+  private static final org.apache.thrift.protocol.TField PARTITION_FIELD_DESC = new org.apache.thrift.protocol.TField("partition", org.apache.thrift.protocol.TType.SET, (short)7);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -50,13 +51,15 @@ public class ReadBlocksCmd implements org.apache.thrift.TBase<ReadBlocksCmd, Rea
   public int fileHandle; // required
   public long offset; // required
   public long bytes; // required
+  public Set<Byte> partition; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     PATH((short)3, "path"),
     FILE_HANDLE((short)4, "fileHandle"),
     OFFSET((short)5, "offset"),
-    BYTES((short)6, "bytes");
+    BYTES((short)6, "bytes"),
+    PARTITION((short)7, "partition");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -79,6 +82,8 @@ public class ReadBlocksCmd implements org.apache.thrift.TBase<ReadBlocksCmd, Rea
           return OFFSET;
         case 6: // BYTES
           return BYTES;
+        case 7: // PARTITION
+          return PARTITION;
         default:
           return null;
       }
@@ -134,6 +139,9 @@ public class ReadBlocksCmd implements org.apache.thrift.TBase<ReadBlocksCmd, Rea
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     tmpMap.put(_Fields.BYTES, new org.apache.thrift.meta_data.FieldMetaData("bytes", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
+    tmpMap.put(_Fields.PARTITION, new org.apache.thrift.meta_data.FieldMetaData("partition", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.SetMetaData(org.apache.thrift.protocol.TType.SET, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ReadBlocksCmd.class, metaDataMap);
   }
@@ -145,7 +153,8 @@ public class ReadBlocksCmd implements org.apache.thrift.TBase<ReadBlocksCmd, Rea
     String path,
     int fileHandle,
     long offset,
-    long bytes)
+    long bytes,
+    Set<Byte> partition)
   {
     this();
     this.path = path;
@@ -155,6 +164,7 @@ public class ReadBlocksCmd implements org.apache.thrift.TBase<ReadBlocksCmd, Rea
     setOffsetIsSet(true);
     this.bytes = bytes;
     setBytesIsSet(true);
+    this.partition = partition;
   }
 
   /**
@@ -168,6 +178,10 @@ public class ReadBlocksCmd implements org.apache.thrift.TBase<ReadBlocksCmd, Rea
     this.fileHandle = other.fileHandle;
     this.offset = other.offset;
     this.bytes = other.bytes;
+    if (other.isSetPartition()) {
+      Set<Byte> __this__partition = new HashSet<Byte>(other.partition);
+      this.partition = __this__partition;
+    }
   }
 
   public ReadBlocksCmd deepCopy() {
@@ -183,6 +197,7 @@ public class ReadBlocksCmd implements org.apache.thrift.TBase<ReadBlocksCmd, Rea
     this.offset = 0;
     setBytesIsSet(false);
     this.bytes = 0;
+    this.partition = null;
   }
 
   public String getPath() {
@@ -278,6 +293,45 @@ public class ReadBlocksCmd implements org.apache.thrift.TBase<ReadBlocksCmd, Rea
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __BYTES_ISSET_ID, value);
   }
 
+  public int getPartitionSize() {
+    return (this.partition == null) ? 0 : this.partition.size();
+  }
+
+  public java.util.Iterator<Byte> getPartitionIterator() {
+    return (this.partition == null) ? null : this.partition.iterator();
+  }
+
+  public void addToPartition(byte elem) {
+    if (this.partition == null) {
+      this.partition = new HashSet<Byte>();
+    }
+    this.partition.add(elem);
+  }
+
+  public Set<Byte> getPartition() {
+    return this.partition;
+  }
+
+  public ReadBlocksCmd setPartition(Set<Byte> partition) {
+    this.partition = partition;
+    return this;
+  }
+
+  public void unsetPartition() {
+    this.partition = null;
+  }
+
+  /** Returns true if field partition is set (has been assigned a value) and false otherwise */
+  public boolean isSetPartition() {
+    return this.partition != null;
+  }
+
+  public void setPartitionIsSet(boolean value) {
+    if (!value) {
+      this.partition = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case PATH:
@@ -312,6 +366,14 @@ public class ReadBlocksCmd implements org.apache.thrift.TBase<ReadBlocksCmd, Rea
       }
       break;
 
+    case PARTITION:
+      if (value == null) {
+        unsetPartition();
+      } else {
+        setPartition((Set<Byte>)value);
+      }
+      break;
+
     }
   }
 
@@ -328,6 +390,9 @@ public class ReadBlocksCmd implements org.apache.thrift.TBase<ReadBlocksCmd, Rea
 
     case BYTES:
       return Long.valueOf(getBytes());
+
+    case PARTITION:
+      return getPartition();
 
     }
     throw new IllegalStateException();
@@ -348,6 +413,8 @@ public class ReadBlocksCmd implements org.apache.thrift.TBase<ReadBlocksCmd, Rea
       return isSetOffset();
     case BYTES:
       return isSetBytes();
+    case PARTITION:
+      return isSetPartition();
     }
     throw new IllegalStateException();
   }
@@ -398,6 +465,15 @@ public class ReadBlocksCmd implements org.apache.thrift.TBase<ReadBlocksCmd, Rea
       if (!(this_present_bytes && that_present_bytes))
         return false;
       if (this.bytes != that.bytes)
+        return false;
+    }
+
+    boolean this_present_partition = true && this.isSetPartition();
+    boolean that_present_partition = true && that.isSetPartition();
+    if (this_present_partition || that_present_partition) {
+      if (!(this_present_partition && that_present_partition))
+        return false;
+      if (!this.partition.equals(that.partition))
         return false;
     }
 
@@ -457,6 +533,16 @@ public class ReadBlocksCmd implements org.apache.thrift.TBase<ReadBlocksCmd, Rea
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetPartition()).compareTo(other.isSetPartition());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetPartition()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.partition, other.partition);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -495,6 +581,14 @@ public class ReadBlocksCmd implements org.apache.thrift.TBase<ReadBlocksCmd, Rea
     if (!first) sb.append(", ");
     sb.append("bytes:");
     sb.append(this.bytes);
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("partition:");
+    if (this.partition == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.partition);
+    }
     first = false;
     sb.append(")");
     return sb.toString();
@@ -573,6 +667,24 @@ public class ReadBlocksCmd implements org.apache.thrift.TBase<ReadBlocksCmd, Rea
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 7: // PARTITION
+            if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
+              {
+                org.apache.thrift.protocol.TSet _set168 = iprot.readSetBegin();
+                struct.partition = new HashSet<Byte>(2*_set168.size);
+                for (int _i169 = 0; _i169 < _set168.size; ++_i169)
+                {
+                  byte _elem170;
+                  _elem170 = iprot.readByte();
+                  struct.partition.add(_elem170);
+                }
+                iprot.readSetEnd();
+              }
+              struct.setPartitionIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -602,6 +714,18 @@ public class ReadBlocksCmd implements org.apache.thrift.TBase<ReadBlocksCmd, Rea
       oprot.writeFieldBegin(BYTES_FIELD_DESC);
       oprot.writeI64(struct.bytes);
       oprot.writeFieldEnd();
+      if (struct.partition != null) {
+        oprot.writeFieldBegin(PARTITION_FIELD_DESC);
+        {
+          oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, struct.partition.size()));
+          for (byte _iter171 : struct.partition)
+          {
+            oprot.writeByte(_iter171);
+          }
+          oprot.writeSetEnd();
+        }
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -632,7 +756,10 @@ public class ReadBlocksCmd implements org.apache.thrift.TBase<ReadBlocksCmd, Rea
       if (struct.isSetBytes()) {
         optionals.set(3);
       }
-      oprot.writeBitSet(optionals, 4);
+      if (struct.isSetPartition()) {
+        optionals.set(4);
+      }
+      oprot.writeBitSet(optionals, 5);
       if (struct.isSetPath()) {
         oprot.writeString(struct.path);
       }
@@ -645,12 +772,21 @@ public class ReadBlocksCmd implements org.apache.thrift.TBase<ReadBlocksCmd, Rea
       if (struct.isSetBytes()) {
         oprot.writeI64(struct.bytes);
       }
+      if (struct.isSetPartition()) {
+        {
+          oprot.writeI32(struct.partition.size());
+          for (byte _iter172 : struct.partition)
+          {
+            oprot.writeByte(_iter172);
+          }
+        }
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ReadBlocksCmd struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(4);
+      BitSet incoming = iprot.readBitSet(5);
       if (incoming.get(0)) {
         struct.path = iprot.readString();
         struct.setPathIsSet(true);
@@ -666,6 +802,19 @@ public class ReadBlocksCmd implements org.apache.thrift.TBase<ReadBlocksCmd, Rea
       if (incoming.get(3)) {
         struct.bytes = iprot.readI64();
         struct.setBytesIsSet(true);
+      }
+      if (incoming.get(4)) {
+        {
+          org.apache.thrift.protocol.TSet _set173 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, iprot.readI32());
+          struct.partition = new HashSet<Byte>(2*_set173.size);
+          for (int _i174 = 0; _i174 < _set173.size; ++_i174)
+          {
+            byte _elem175;
+            _elem175 = iprot.readByte();
+            struct.partition.add(_elem175);
+          }
+        }
+        struct.setPartitionIsSet(true);
       }
     }
   }

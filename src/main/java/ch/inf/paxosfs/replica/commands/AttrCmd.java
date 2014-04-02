@@ -36,6 +36,7 @@ public class AttrCmd implements org.apache.thrift.TBase<AttrCmd, AttrCmd._Fields
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("AttrCmd");
 
   private static final org.apache.thrift.protocol.TField PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("path", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField PARTITION_FIELD_DESC = new org.apache.thrift.protocol.TField("partition", org.apache.thrift.protocol.TType.SET, (short)2);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -44,10 +45,12 @@ public class AttrCmd implements org.apache.thrift.TBase<AttrCmd, AttrCmd._Fields
   }
 
   public String path; // required
+  public Set<Byte> partition; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    PATH((short)1, "path");
+    PATH((short)1, "path"),
+    PARTITION((short)2, "partition");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -64,6 +67,8 @@ public class AttrCmd implements org.apache.thrift.TBase<AttrCmd, AttrCmd._Fields
       switch(fieldId) {
         case 1: // PATH
           return PATH;
+        case 2: // PARTITION
+          return PARTITION;
         default:
           return null;
       }
@@ -109,6 +114,9 @@ public class AttrCmd implements org.apache.thrift.TBase<AttrCmd, AttrCmd._Fields
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.PATH, new org.apache.thrift.meta_data.FieldMetaData("path", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.PARTITION, new org.apache.thrift.meta_data.FieldMetaData("partition", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.SetMetaData(org.apache.thrift.protocol.TType.SET, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(AttrCmd.class, metaDataMap);
   }
@@ -117,10 +125,12 @@ public class AttrCmd implements org.apache.thrift.TBase<AttrCmd, AttrCmd._Fields
   }
 
   public AttrCmd(
-    String path)
+    String path,
+    Set<Byte> partition)
   {
     this();
     this.path = path;
+    this.partition = partition;
   }
 
   /**
@@ -129,6 +139,10 @@ public class AttrCmd implements org.apache.thrift.TBase<AttrCmd, AttrCmd._Fields
   public AttrCmd(AttrCmd other) {
     if (other.isSetPath()) {
       this.path = other.path;
+    }
+    if (other.isSetPartition()) {
+      Set<Byte> __this__partition = new HashSet<Byte>(other.partition);
+      this.partition = __this__partition;
     }
   }
 
@@ -139,6 +153,7 @@ public class AttrCmd implements org.apache.thrift.TBase<AttrCmd, AttrCmd._Fields
   @Override
   public void clear() {
     this.path = null;
+    this.partition = null;
   }
 
   public String getPath() {
@@ -165,6 +180,45 @@ public class AttrCmd implements org.apache.thrift.TBase<AttrCmd, AttrCmd._Fields
     }
   }
 
+  public int getPartitionSize() {
+    return (this.partition == null) ? 0 : this.partition.size();
+  }
+
+  public java.util.Iterator<Byte> getPartitionIterator() {
+    return (this.partition == null) ? null : this.partition.iterator();
+  }
+
+  public void addToPartition(byte elem) {
+    if (this.partition == null) {
+      this.partition = new HashSet<Byte>();
+    }
+    this.partition.add(elem);
+  }
+
+  public Set<Byte> getPartition() {
+    return this.partition;
+  }
+
+  public AttrCmd setPartition(Set<Byte> partition) {
+    this.partition = partition;
+    return this;
+  }
+
+  public void unsetPartition() {
+    this.partition = null;
+  }
+
+  /** Returns true if field partition is set (has been assigned a value) and false otherwise */
+  public boolean isSetPartition() {
+    return this.partition != null;
+  }
+
+  public void setPartitionIsSet(boolean value) {
+    if (!value) {
+      this.partition = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case PATH:
@@ -175,6 +229,14 @@ public class AttrCmd implements org.apache.thrift.TBase<AttrCmd, AttrCmd._Fields
       }
       break;
 
+    case PARTITION:
+      if (value == null) {
+        unsetPartition();
+      } else {
+        setPartition((Set<Byte>)value);
+      }
+      break;
+
     }
   }
 
@@ -182,6 +244,9 @@ public class AttrCmd implements org.apache.thrift.TBase<AttrCmd, AttrCmd._Fields
     switch (field) {
     case PATH:
       return getPath();
+
+    case PARTITION:
+      return getPartition();
 
     }
     throw new IllegalStateException();
@@ -196,6 +261,8 @@ public class AttrCmd implements org.apache.thrift.TBase<AttrCmd, AttrCmd._Fields
     switch (field) {
     case PATH:
       return isSetPath();
+    case PARTITION:
+      return isSetPartition();
     }
     throw new IllegalStateException();
   }
@@ -219,6 +286,15 @@ public class AttrCmd implements org.apache.thrift.TBase<AttrCmd, AttrCmd._Fields
       if (!(this_present_path && that_present_path))
         return false;
       if (!this.path.equals(that.path))
+        return false;
+    }
+
+    boolean this_present_partition = true && this.isSetPartition();
+    boolean that_present_partition = true && that.isSetPartition();
+    if (this_present_partition || that_present_partition) {
+      if (!(this_present_partition && that_present_partition))
+        return false;
+      if (!this.partition.equals(that.partition))
         return false;
     }
 
@@ -248,6 +324,16 @@ public class AttrCmd implements org.apache.thrift.TBase<AttrCmd, AttrCmd._Fields
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetPartition()).compareTo(other.isSetPartition());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetPartition()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.partition, other.partition);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -273,6 +359,14 @@ public class AttrCmd implements org.apache.thrift.TBase<AttrCmd, AttrCmd._Fields
       sb.append("null");
     } else {
       sb.append(this.path);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("partition:");
+    if (this.partition == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.partition);
     }
     first = false;
     sb.append(")");
@@ -326,6 +420,24 @@ public class AttrCmd implements org.apache.thrift.TBase<AttrCmd, AttrCmd._Fields
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 2: // PARTITION
+            if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
+              {
+                org.apache.thrift.protocol.TSet _set0 = iprot.readSetBegin();
+                struct.partition = new HashSet<Byte>(2*_set0.size);
+                for (int _i1 = 0; _i1 < _set0.size; ++_i1)
+                {
+                  byte _elem2;
+                  _elem2 = iprot.readByte();
+                  struct.partition.add(_elem2);
+                }
+                iprot.readSetEnd();
+              }
+              struct.setPartitionIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -344,6 +456,18 @@ public class AttrCmd implements org.apache.thrift.TBase<AttrCmd, AttrCmd._Fields
       if (struct.path != null) {
         oprot.writeFieldBegin(PATH_FIELD_DESC);
         oprot.writeString(struct.path);
+        oprot.writeFieldEnd();
+      }
+      if (struct.partition != null) {
+        oprot.writeFieldBegin(PARTITION_FIELD_DESC);
+        {
+          oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, struct.partition.size()));
+          for (byte _iter3 : struct.partition)
+          {
+            oprot.writeByte(_iter3);
+          }
+          oprot.writeSetEnd();
+        }
         oprot.writeFieldEnd();
       }
       oprot.writeFieldStop();
@@ -367,19 +491,44 @@ public class AttrCmd implements org.apache.thrift.TBase<AttrCmd, AttrCmd._Fields
       if (struct.isSetPath()) {
         optionals.set(0);
       }
-      oprot.writeBitSet(optionals, 1);
+      if (struct.isSetPartition()) {
+        optionals.set(1);
+      }
+      oprot.writeBitSet(optionals, 2);
       if (struct.isSetPath()) {
         oprot.writeString(struct.path);
+      }
+      if (struct.isSetPartition()) {
+        {
+          oprot.writeI32(struct.partition.size());
+          for (byte _iter4 : struct.partition)
+          {
+            oprot.writeByte(_iter4);
+          }
+        }
       }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, AttrCmd struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(1);
+      BitSet incoming = iprot.readBitSet(2);
       if (incoming.get(0)) {
         struct.path = iprot.readString();
         struct.setPathIsSet(true);
+      }
+      if (incoming.get(1)) {
+        {
+          org.apache.thrift.protocol.TSet _set5 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, iprot.readI32());
+          struct.partition = new HashSet<Byte>(2*_set5.size);
+          for (int _i6 = 0; _i6 < _set5.size; ++_i6)
+          {
+            byte _elem7;
+            _elem7 = iprot.readByte();
+            struct.partition.add(_elem7);
+          }
+        }
+        struct.setPartitionIsSet(true);
       }
     }
   }

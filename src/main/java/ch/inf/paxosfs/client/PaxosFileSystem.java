@@ -2,9 +2,12 @@ package ch.inf.paxosfs.client;
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
@@ -20,13 +23,16 @@ import ch.inf.paxosfs.rpc.FileSystemStats;
 import ch.inf.paxosfs.rpc.FuseOps;
 import ch.inf.paxosfs.rpc.ReadResult;
 import fuse.Filesystem3;
+import fuse.FuseContext;
 import fuse.FuseDirFiller;
 import fuse.FuseException;
 import fuse.FuseGetattrSetter;
+import fuse.FuseMount;
 import fuse.FuseOpenSetter;
 import fuse.FuseStatfsSetter;
 
 public class PaxosFileSystem implements Filesystem3 {
+    private static Log log = LogFactory.getLog(PaxosFileSystem.class);
 	private static int MAXBLOCKSIZE = 1024;
 	
 	private String replicaHost;
@@ -86,7 +92,7 @@ public class PaxosFileSystem implements Filesystem3 {
 
 	public int mknod(String path, int mode, int rdev) throws FuseException {
 		try {
-			client.mknod(path, mode, rdev);
+			client.mknod(path, mode, rdev, callerUid(), callerGid());
 		} catch (TException e) {
 			e.printStackTrace();
 			throw thriftError(e);
@@ -96,7 +102,7 @@ public class PaxosFileSystem implements Filesystem3 {
 
 	public int mkdir(String path, int mode) throws FuseException {
 		try {
-			client.mkdir(path, mode);
+			client.mkdir(path, mode, callerUid(), callerGid());
 		} catch (TException e) {
 			e.printStackTrace();
 			throw thriftError(e);
@@ -126,7 +132,7 @@ public class PaxosFileSystem implements Filesystem3 {
 
 	public int symlink(String from, String to) throws FuseException {
 		try {
-			client.symlink(from, to);
+			client.symlink(from, to, callerUid(), callerGid());
 		} catch (TException e) {
 			e.printStackTrace();
 			throw thriftError(e);
@@ -284,4 +290,28 @@ public class PaxosFileSystem implements Filesystem3 {
 		setter.set(attr.getInode(), attr.getMode(), attr.getNlink(), attr.getUid(), attr.getGid(),
 				attr.getRdev(), attr.getSize(), attr.getBlocks(), attr.getAtime(), attr.getMtime(), attr.getCtime());
 	}
+
+    private int callerUid() {
+    	return FuseContext.get().uid;
+    }
+    
+    private int callerGid() {
+    	return FuseContext.get().gid;
+    }
+    
+    public static void main(String[] args) {
+        System.out.println("entering");
+
+        PaxosFileSystem fs = new PaxosFileSystem(args[0], Integer.parseInt(args[1]));
+        try {
+        	fs.start();
+        	FuseMount.mount(Arrays.copyOfRange(args, 2, args.length), fs, log);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            System.out.println("exiting");
+        }
+    }	
 }

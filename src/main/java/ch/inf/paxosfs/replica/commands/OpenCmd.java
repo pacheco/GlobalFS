@@ -37,6 +37,7 @@ public class OpenCmd implements org.apache.thrift.TBase<OpenCmd, OpenCmd._Fields
 
   private static final org.apache.thrift.protocol.TField PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("path", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField FLAGS_FIELD_DESC = new org.apache.thrift.protocol.TField("flags", org.apache.thrift.protocol.TType.I32, (short)4);
+  private static final org.apache.thrift.protocol.TField PARTITION_FIELD_DESC = new org.apache.thrift.protocol.TField("partition", org.apache.thrift.protocol.TType.SET, (short)7);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -46,11 +47,13 @@ public class OpenCmd implements org.apache.thrift.TBase<OpenCmd, OpenCmd._Fields
 
   public String path; // required
   public int flags; // required
+  public Set<Byte> partition; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     PATH((short)3, "path"),
-    FLAGS((short)4, "flags");
+    FLAGS((short)4, "flags"),
+    PARTITION((short)7, "partition");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -69,6 +72,8 @@ public class OpenCmd implements org.apache.thrift.TBase<OpenCmd, OpenCmd._Fields
           return PATH;
         case 4: // FLAGS
           return FLAGS;
+        case 7: // PARTITION
+          return PARTITION;
         default:
           return null;
       }
@@ -118,6 +123,9 @@ public class OpenCmd implements org.apache.thrift.TBase<OpenCmd, OpenCmd._Fields
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.FLAGS, new org.apache.thrift.meta_data.FieldMetaData("flags", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.PARTITION, new org.apache.thrift.meta_data.FieldMetaData("partition", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.SetMetaData(org.apache.thrift.protocol.TType.SET, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(OpenCmd.class, metaDataMap);
   }
@@ -127,12 +135,14 @@ public class OpenCmd implements org.apache.thrift.TBase<OpenCmd, OpenCmd._Fields
 
   public OpenCmd(
     String path,
-    int flags)
+    int flags,
+    Set<Byte> partition)
   {
     this();
     this.path = path;
     this.flags = flags;
     setFlagsIsSet(true);
+    this.partition = partition;
   }
 
   /**
@@ -144,6 +154,10 @@ public class OpenCmd implements org.apache.thrift.TBase<OpenCmd, OpenCmd._Fields
       this.path = other.path;
     }
     this.flags = other.flags;
+    if (other.isSetPartition()) {
+      Set<Byte> __this__partition = new HashSet<Byte>(other.partition);
+      this.partition = __this__partition;
+    }
   }
 
   public OpenCmd deepCopy() {
@@ -155,6 +169,7 @@ public class OpenCmd implements org.apache.thrift.TBase<OpenCmd, OpenCmd._Fields
     this.path = null;
     setFlagsIsSet(false);
     this.flags = 0;
+    this.partition = null;
   }
 
   public String getPath() {
@@ -204,6 +219,45 @@ public class OpenCmd implements org.apache.thrift.TBase<OpenCmd, OpenCmd._Fields
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __FLAGS_ISSET_ID, value);
   }
 
+  public int getPartitionSize() {
+    return (this.partition == null) ? 0 : this.partition.size();
+  }
+
+  public java.util.Iterator<Byte> getPartitionIterator() {
+    return (this.partition == null) ? null : this.partition.iterator();
+  }
+
+  public void addToPartition(byte elem) {
+    if (this.partition == null) {
+      this.partition = new HashSet<Byte>();
+    }
+    this.partition.add(elem);
+  }
+
+  public Set<Byte> getPartition() {
+    return this.partition;
+  }
+
+  public OpenCmd setPartition(Set<Byte> partition) {
+    this.partition = partition;
+    return this;
+  }
+
+  public void unsetPartition() {
+    this.partition = null;
+  }
+
+  /** Returns true if field partition is set (has been assigned a value) and false otherwise */
+  public boolean isSetPartition() {
+    return this.partition != null;
+  }
+
+  public void setPartitionIsSet(boolean value) {
+    if (!value) {
+      this.partition = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case PATH:
@@ -222,6 +276,14 @@ public class OpenCmd implements org.apache.thrift.TBase<OpenCmd, OpenCmd._Fields
       }
       break;
 
+    case PARTITION:
+      if (value == null) {
+        unsetPartition();
+      } else {
+        setPartition((Set<Byte>)value);
+      }
+      break;
+
     }
   }
 
@@ -232,6 +294,9 @@ public class OpenCmd implements org.apache.thrift.TBase<OpenCmd, OpenCmd._Fields
 
     case FLAGS:
       return Integer.valueOf(getFlags());
+
+    case PARTITION:
+      return getPartition();
 
     }
     throw new IllegalStateException();
@@ -248,6 +313,8 @@ public class OpenCmd implements org.apache.thrift.TBase<OpenCmd, OpenCmd._Fields
       return isSetPath();
     case FLAGS:
       return isSetFlags();
+    case PARTITION:
+      return isSetPartition();
     }
     throw new IllegalStateException();
   }
@@ -280,6 +347,15 @@ public class OpenCmd implements org.apache.thrift.TBase<OpenCmd, OpenCmd._Fields
       if (!(this_present_flags && that_present_flags))
         return false;
       if (this.flags != that.flags)
+        return false;
+    }
+
+    boolean this_present_partition = true && this.isSetPartition();
+    boolean that_present_partition = true && that.isSetPartition();
+    if (this_present_partition || that_present_partition) {
+      if (!(this_present_partition && that_present_partition))
+        return false;
+      if (!this.partition.equals(that.partition))
         return false;
     }
 
@@ -319,6 +395,16 @@ public class OpenCmd implements org.apache.thrift.TBase<OpenCmd, OpenCmd._Fields
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetPartition()).compareTo(other.isSetPartition());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetPartition()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.partition, other.partition);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -349,6 +435,14 @@ public class OpenCmd implements org.apache.thrift.TBase<OpenCmd, OpenCmd._Fields
     if (!first) sb.append(", ");
     sb.append("flags:");
     sb.append(this.flags);
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("partition:");
+    if (this.partition == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.partition);
+    }
     first = false;
     sb.append(")");
     return sb.toString();
@@ -411,6 +505,24 @@ public class OpenCmd implements org.apache.thrift.TBase<OpenCmd, OpenCmd._Fields
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 7: // PARTITION
+            if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
+              {
+                org.apache.thrift.protocol.TSet _set160 = iprot.readSetBegin();
+                struct.partition = new HashSet<Byte>(2*_set160.size);
+                for (int _i161 = 0; _i161 < _set160.size; ++_i161)
+                {
+                  byte _elem162;
+                  _elem162 = iprot.readByte();
+                  struct.partition.add(_elem162);
+                }
+                iprot.readSetEnd();
+              }
+              struct.setPartitionIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -434,6 +546,18 @@ public class OpenCmd implements org.apache.thrift.TBase<OpenCmd, OpenCmd._Fields
       oprot.writeFieldBegin(FLAGS_FIELD_DESC);
       oprot.writeI32(struct.flags);
       oprot.writeFieldEnd();
+      if (struct.partition != null) {
+        oprot.writeFieldBegin(PARTITION_FIELD_DESC);
+        {
+          oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, struct.partition.size()));
+          for (byte _iter163 : struct.partition)
+          {
+            oprot.writeByte(_iter163);
+          }
+          oprot.writeSetEnd();
+        }
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -458,19 +582,31 @@ public class OpenCmd implements org.apache.thrift.TBase<OpenCmd, OpenCmd._Fields
       if (struct.isSetFlags()) {
         optionals.set(1);
       }
-      oprot.writeBitSet(optionals, 2);
+      if (struct.isSetPartition()) {
+        optionals.set(2);
+      }
+      oprot.writeBitSet(optionals, 3);
       if (struct.isSetPath()) {
         oprot.writeString(struct.path);
       }
       if (struct.isSetFlags()) {
         oprot.writeI32(struct.flags);
       }
+      if (struct.isSetPartition()) {
+        {
+          oprot.writeI32(struct.partition.size());
+          for (byte _iter164 : struct.partition)
+          {
+            oprot.writeByte(_iter164);
+          }
+        }
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, OpenCmd struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(2);
+      BitSet incoming = iprot.readBitSet(3);
       if (incoming.get(0)) {
         struct.path = iprot.readString();
         struct.setPathIsSet(true);
@@ -478,6 +614,19 @@ public class OpenCmd implements org.apache.thrift.TBase<OpenCmd, OpenCmd._Fields
       if (incoming.get(1)) {
         struct.flags = iprot.readI32();
         struct.setFlagsIsSet(true);
+      }
+      if (incoming.get(2)) {
+        {
+          org.apache.thrift.protocol.TSet _set165 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, iprot.readI32());
+          struct.partition = new HashSet<Byte>(2*_set165.size);
+          for (int _i166 = 0; _i166 < _set165.size; ++_i166)
+          {
+            byte _elem167;
+            _elem167 = iprot.readByte();
+            struct.partition.add(_elem167);
+          }
+        }
+        struct.setPartitionIsSet(true);
       }
     }
   }

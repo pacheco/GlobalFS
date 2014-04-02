@@ -2,6 +2,7 @@ package ch.inf.paxosfs.replica;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -24,7 +25,7 @@ import ch.usi.da.paxos.storage.Decision;
  *
  */
 public class CommunicationService {
-	private final int GLOBAL_RING = 0;
+	private final byte GLOBAL_RING = 0;
 	/**
 	 * Queue of commands received. Will be filled as commands arrive.
 	 */
@@ -67,6 +68,7 @@ public class CommunicationService {
 				while (!stop) {
 					try {
 						Decision d = paxos.getLearner().getDecisions().take();
+						/* FIXME: commands that don't need to exchange state can send signals as soon as the command is delivered. It would be done here */
 						if (!d.getValue().isSkip()) {
 							System.out.println("Delivered command: " + d);
 							Command c = new Command();
@@ -97,15 +99,16 @@ public class CommunicationService {
 	}
 	
 	/**
-	 * Atomically multicast command given command.involvedPartitions.
+	 * Atomically multicast command.
 	 * @param ringId
 	 * @param command
 	 * @return A FutureDecision that can be waited on
 	 */
-	public void amcast(Command command, int... partitions) throws FSError {
-		int ringid = GLOBAL_RING;
-		if (partitions.length == 1) {
-			ringid = partitions[0];
+	public void amcast(Command command, Set<Byte> partitions) throws FSError {
+		// right now, it either sends to the given partition or to the global ring
+		byte ringid = GLOBAL_RING;
+		if (partitions.size() == 1) {
+			ringid = partitions.iterator().next();
 		}
 		System.out.println("Submitting command " + command.getReqId() + " to ring " + ringid);
 		Proposer p = this.proposers.get(ringid);
@@ -127,10 +130,11 @@ public class CommunicationService {
 	 * @param command
 	 * @throws FSError
 	 */
-	public void signal(long reqId, Signal signal) throws FSError {
+	public void signal(long reqId, Signal signal, Set<Byte> partitions) throws FSError {
+		// right now it just sends signals to the big ring
 		Command cmd = new Command(CommandType.SIGNAL.getValue(), reqId, 0);
 		cmd.setSignal(signal);
-		this.amcast(cmd, GLOBAL_RING);
+		this.amcast(cmd, partitions);
 	}
 	
 	public BlockingQueue<Command> getCommands() {
@@ -140,11 +144,4 @@ public class CommunicationService {
 	public BlockingQueue<Command> getSignals() {
 		return signals;
 	}	
-	
-//	private class ThriftProposerClient implements Proposer {
-//		@Override
-//		public FutureDecision propose(byte[] b) {
-//			return null;
-//		}
-//	}	
 }
