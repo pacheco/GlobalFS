@@ -5,9 +5,9 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.inf.paxosfs.filesystem.FileNode;
-import ch.inf.paxosfs.filesystem.memory.MemFile;
-import ch.inf.paxosfs.rpc.DBlock;
+import ch.usi.paxosfs.filesystem.FileNode;
+import ch.usi.paxosfs.filesystem.memory.MemFile;
+import ch.usi.paxosfs.rpc.DBlock;
 
 public class FileNodeTest {
 
