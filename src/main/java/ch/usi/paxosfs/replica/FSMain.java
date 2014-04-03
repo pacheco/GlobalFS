@@ -62,10 +62,11 @@ public class FSMain {
 		CommandLine line;
 		try {
 			line = parser.parse(opts, args);
+			return line;
 		} catch (ParseException e) {
+			e.printStackTrace();
 			return null;
 		}		
-		return line;
 	}
 	
 	private static Node startPaxos(List<RingDescription> rings, String zoohost) {
@@ -108,9 +109,11 @@ public class FSMain {
 		int nodeid;
 		int globalRing = 0;
 		int globalid; // id of the node in the global ring
-		
+
 		// argument parsing
+		System.out.println(Arrays.toString(rawargs));
 		CommandLine args = parseArgs(rawargs);
+		
 		if (args == null) {
 			printUsage();
 			System.exit(1);
