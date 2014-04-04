@@ -1,4 +1,4 @@
-namespace java ch.inf.paxosfs.replica.commands
+namespace java ch.usi.paxosfs.replica.commands
 
 include "fuseops.thrift"
 
@@ -166,7 +166,7 @@ struct RenameData {
 }
 
 struct Signal {
-    1: i32 fromPartition
+    1: byte fromPartition
     2: bool success
     3: optional RenameData renameData
     4: optional fuseops.FSError error

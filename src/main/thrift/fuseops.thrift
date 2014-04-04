@@ -1,4 +1,4 @@
-namespace java ch.inf.paxosfs.rpc
+namespace java ch.usi.paxosfs.rpc
 
 exception FSError {
 	1: i32 errorCode,
