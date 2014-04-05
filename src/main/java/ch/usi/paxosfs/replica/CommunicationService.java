@@ -70,7 +70,6 @@ public class CommunicationService {
 						Decision d = paxos.getLearner().getDecisions().take();
 						/* FIXME: commands that don't need to exchange state can send signals as soon as the command is delivered. It would be done here */
 						if (!d.getValue().isSkip()) {
-							System.out.println("Delivered command: " + d);
 							Command c = new Command();
 							deserializer.deserialize(c, d.getValue().getValue());
 							if (c.getType() == CommandType.SIGNAL.getValue()) {

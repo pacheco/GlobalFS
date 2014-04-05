@@ -53,7 +53,9 @@ public class FuseOpsHandler implements FuseOps.Iface {
 		Command cmd = newCommand(CommandType.ATTR);
 		AttrCmd attr = new AttrCmd(path, Sets.newHashSet(parts.iterator().next()));
 		cmd.setAttr(attr);
-		return (Attr) replica.submitCommand(cmd, attr.getPartition());
+		Attr result = (Attr) replica.submitCommand(cmd, attr.getPartition());
+		//System.out.println(result);
+		return result;
 	}
 
 	@Override

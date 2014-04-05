@@ -93,7 +93,9 @@ public class FileSystemReplica implements Runnable {
 				}
 				Node n = fs.get(c.getAttr().getPath());
 				res.setSuccess(true);
-				res.setResponse(new Attr(n.getAttributes()));
+				Attr response = new Attr(n.getAttributes());
+				response.setMode(response.getMode() | n.typeMode());
+				res.setResponse(response);
 				break;
 			}
 			/* -------------------------------- */
@@ -141,7 +143,7 @@ public class FileSystemReplica implements Runnable {
 				
 				List<DirEntry> entries = new LinkedList<DirEntry>();
 				for (String child: dir.getChildren()) {
-					entries.add(new DirEntry(child, 0, dir.typeMode()));
+					entries.add(new DirEntry(child, 0, dir.getChild(child).typeMode()));
 				}
 				res.setSuccess(true);
 				res.setResponse(entries);

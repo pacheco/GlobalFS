@@ -58,7 +58,10 @@ public class PaxosFileSystem implements Filesystem3 {
 	
 	public int getattr(String path, FuseGetattrSetter getattrSetter) throws FuseException {
 		try {
-			Attr attr = client.getattr(path);
+			Attr attr;
+			synchronized (this) {
+				attr = client.getattr(path);
+			}
 			attrSetterFill(attr, getattrSetter);
 		} catch (TException e) {
 			e.printStackTrace();
@@ -69,7 +72,9 @@ public class PaxosFileSystem implements Filesystem3 {
 
 	public int readlink(String path, CharBuffer link) throws FuseException {
 		try {
-			link.append(client.readlink(path));
+			synchronized (this) {
+				link.append(client.readlink(path));
+			}
 		} catch (TException e) {
 			e.printStackTrace();
 			throw thriftError(e);
@@ -79,7 +84,10 @@ public class PaxosFileSystem implements Filesystem3 {
 
 	public int getdir(String path, FuseDirFiller dirFiller) throws FuseException {
 		try {
-			List<DirEntry> entries = client.getdir(path);
+			List<DirEntry> entries;
+			synchronized (this) {
+				entries = client.getdir(path);
+			}
 			for (DirEntry entry: entries) {
 				dirFiller.add(entry.getName(), entry.getInode(), entry.getMode());
 			}
@@ -92,7 +100,9 @@ public class PaxosFileSystem implements Filesystem3 {
 
 	public int mknod(String path, int mode, int rdev) throws FuseException {
 		try {
-			client.mknod(path, mode, rdev, callerUid(), callerGid());
+			synchronized (this) {
+				client.mknod(path, mode, rdev, callerUid(), callerGid());
+			}
 		} catch (TException e) {
 			e.printStackTrace();
 			throw thriftError(e);
@@ -102,7 +112,9 @@ public class PaxosFileSystem implements Filesystem3 {
 
 	public int mkdir(String path, int mode) throws FuseException {
 		try {
-			client.mkdir(path, mode, callerUid(), callerGid());
+			synchronized (this) {
+				client.mkdir(path, mode, callerUid(), callerGid());
+			}
 		} catch (TException e) {
 			e.printStackTrace();
 			throw thriftError(e);
@@ -112,7 +124,9 @@ public class PaxosFileSystem implements Filesystem3 {
 
 	public int unlink(String path) throws FuseException {
 		try {
-			client.unlink(path);
+			synchronized (this) {
+				client.unlink(path);
+			}
 		} catch (TException e) {
 			e.printStackTrace();
 			throw thriftError(e);
@@ -122,7 +136,9 @@ public class PaxosFileSystem implements Filesystem3 {
 
 	public int rmdir(String path) throws FuseException {
 		try {
-			client.rmdir(path);
+			synchronized (this) {
+				client.rmdir(path);
+			}
 		} catch (TException e) {
 			e.printStackTrace();
 			throw thriftError(e);
@@ -132,7 +148,9 @@ public class PaxosFileSystem implements Filesystem3 {
 
 	public int symlink(String from, String to) throws FuseException {
 		try {
-			client.symlink(from, to, callerUid(), callerGid());
+			synchronized (this) {
+				client.symlink(from, to, callerUid(), callerGid());
+			}
 		} catch (TException e) {
 			e.printStackTrace();
 			throw thriftError(e);
@@ -142,7 +160,9 @@ public class PaxosFileSystem implements Filesystem3 {
 
 	public int rename(String from, String to) throws FuseException {
 		try {
-			client.rename(from, to);
+			synchronized (this) {
+				client.rename(from, to);
+			}
 		} catch (TException e) {
 			e.printStackTrace();
 			throw thriftError(e);
@@ -156,7 +176,9 @@ public class PaxosFileSystem implements Filesystem3 {
 
 	public int chmod(String path, int mode) throws FuseException {
 		try {
-			client.chmod(path, mode);
+			synchronized (this) {
+				client.chmod(path, mode);
+			}
 		} catch (TException e) {
 			e.printStackTrace();
 			throw thriftError(e);
@@ -166,7 +188,9 @@ public class PaxosFileSystem implements Filesystem3 {
 
 	public int chown(String path, int uid, int gid) throws FuseException {
 		try {
-			client.chown(path, uid, gid);
+			synchronized (this) {
+				client.chown(path, uid, gid);
+			}
 		} catch (TException e) {
 			e.printStackTrace();
 			throw thriftError(e);
@@ -176,7 +200,9 @@ public class PaxosFileSystem implements Filesystem3 {
 
 	public int truncate(String path, long size) throws FuseException {
 		try {
-			client.truncate(path, size);
+			synchronized (this) {
+				client.truncate(path, size);
+			}
 		} catch (TException e) {
 			e.printStackTrace();
 			throw thriftError(e);
@@ -186,7 +212,9 @@ public class PaxosFileSystem implements Filesystem3 {
 
 	public int utime(String path, int atime, int mtime) throws FuseException {
 		try {
-			client.utime(path, atime, mtime);
+			synchronized (this) {
+				client.utime(path, atime, mtime);
+			}
 		} catch (TException e) {
 			e.printStackTrace();
 			throw thriftError(e);
@@ -196,7 +224,10 @@ public class PaxosFileSystem implements Filesystem3 {
 
 	public int statfs(FuseStatfsSetter statfsSetter) throws FuseException {
 		try {
-			FileSystemStats s = client.statfs();
+			FileSystemStats s;
+			synchronized (this) {
+				s = client.statfs();
+			}
 			statfsSetter.set(s.getBlockSize(), s.getBlocks(), s.getBlocksFree(), s.getBlocksAvail(),
 					s.getFiles(), s.getFilesFree(), s.getNamelen());
 		} catch (TException e) {
@@ -208,7 +239,10 @@ public class PaxosFileSystem implements Filesystem3 {
 
 	public int open(String path, int flags, FuseOpenSetter openSetter) throws FuseException {
 		try {
-			FileHandle h = client.open(path, flags);
+			FileHandle h;
+			synchronized (this) {
+				h = client.open(path, flags);
+			}
 			openSetter.setFh(h);
 		} catch (TException e) {
 			e.printStackTrace();
@@ -220,7 +254,10 @@ public class PaxosFileSystem implements Filesystem3 {
 	// TODO: fetch data from the DHT
 	public int read(String path, Object fh, ByteBuffer buf, long offset) throws FuseException {
 		try {
-			ReadResult res = client.readBlocks(path, (FileHandle) fh, offset, (long) buf.remaining());
+			ReadResult res;
+			synchronized (this) {
+				res = client.readBlocks(path, (FileHandle) fh, offset, (long) buf.remaining());
+			}
 			// TODO: fetch data from dht here
 			// write data to client using buf.put()
 			buf.put("Placeholder for content".getBytes());
@@ -254,7 +291,9 @@ public class PaxosFileSystem implements Filesystem3 {
 				blocks.add(b);
 			}
 			
-			client.writeBlocks(path, (FileHandle) fh, offset, blocks);
+			synchronized (this) {
+				client.writeBlocks(path, (FileHandle) fh, offset, blocks);
+			}
 		} catch (TException e) {
 			e.printStackTrace();
 			throw thriftError(e);
@@ -269,7 +308,9 @@ public class PaxosFileSystem implements Filesystem3 {
 
 	public int release(String path, Object fh, int flags) throws FuseException {
 		try {
-			client.release(path, (FileHandle) fh, flags);
+			synchronized (this) {
+				client.release(path, (FileHandle) fh, flags);
+			}
 		} catch (TException e) {
 			e.printStackTrace();
 			throw thriftError(e);
