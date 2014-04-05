@@ -27,6 +27,7 @@ import ch.usi.paxosfs.filesystem.memory.MemFileSystem;
 import ch.usi.paxosfs.partitioning.TwoPartitionOracle;
 import ch.usi.paxosfs.replica.commands.Command;
 import ch.usi.paxosfs.replica.commands.CommandType;
+import ch.usi.paxosfs.replica.commands.RenameCmd;
 import ch.usi.paxosfs.replica.commands.Signal;
 import ch.usi.paxosfs.rpc.Attr;
 import ch.usi.paxosfs.rpc.DirEntry;
@@ -40,7 +41,7 @@ public class FileSystemReplica implements Runnable {
 	private ConcurrentHashMap<Long, CommandResult> pendingCommands;
 	private List<Command> signalsReceived; // to keep track of signals received in advance
 	private int id;
-	private byte localPartition;
+	private Byte localPartition;
 	private FileSystem fs;
 	private Map<Long, FileNode> openFiles; // map file handles to files
 	private ReplicaManager manager;
@@ -142,7 +143,7 @@ public class FileSystemReplica implements Runnable {
 			switch (CommandType.findByValue(c.getType())) {
 			case ATTR: {
 				System.out.println("attr");
-				if (!c.getAttr().getPartition().contains(Byte.valueOf(this.localPartition))) {
+				if (!c.getAttr().getPartition().contains(this.localPartition)) {
 					break; // not for us
 				}
 				Node n = fs.get(c.getAttr().getPath());
@@ -156,7 +157,7 @@ public class FileSystemReplica implements Runnable {
 			case MKNOD: {
 				System.out.println("mknod");
 				Set<Byte> involvedPartitions = unionOf(c.getMknod().getParentPartition(), c.getMknod().getPartition());
-				if (!involvedPartitions.contains(Byte.valueOf(localPartition))) {
+				if (!involvedPartitions.contains(localPartition)) {
 					break; // not for us
 				}
 				boolean isSinglePartition = involvedPartitions.size() == 1;
@@ -170,8 +171,8 @@ public class FileSystemReplica implements Runnable {
 				
 				if (!isSinglePartition) {
 					// send signal
-					involvedPartitions.remove(Byte.valueOf(localPartition));
-					comm.signal(c.getReqId(), new Signal(localPartition, true), involvedPartitions);
+					involvedPartitions.remove(localPartition);
+					comm.signal(c.getReqId(), new Signal(localPartition.byteValue(), true), involvedPartitions);
 					// wait for other signals
 					for (Byte part: involvedPartitions) {
 						// not possible for other partitions to fail (if this succeeded), no need to check signal.success
@@ -184,9 +185,9 @@ public class FileSystemReplica implements Runnable {
 				break;
 			}
 			/* -------------------------------- */
-			case GETDIR:
+			case GETDIR: {
 				System.out.println("getdir");
-				if (!c.getGetdir().getPartition().contains(Byte.valueOf(localPartition))) {
+				if (!c.getGetdir().getPartition().contains(localPartition)) {
 					break; // not for us
 				}
 				Node n = fs.get(c.getGetdir().getPath());
@@ -202,33 +203,128 @@ public class FileSystemReplica implements Runnable {
 				res.setSuccess(true);
 				res.setResponse(entries);
 				break;
+			}
 			/* -------------------------------- */
-			case MKDIR:
+			case MKDIR: {
 				System.out.println("mkdir");
+				Set<Byte> involvedPartitions = unionOf(c.getMkdir().getParentPartition(), c.getMkdir().getPartition());
+				if (!involvedPartitions.contains(localPartition)) {
+					break; // not for us
+				}
+				boolean isSinglePartition = involvedPartitions.size() == 1;
+				
+				// if the create fails here, there is no need for signals, the other partitions also fail
+				fs.createDir(c.getMkdir().getPath(), 
+					c.getMkdir().getMode(), 
+					c.getReqTime(), 
+					c.getMkdir().getUid(), 
+					c.getMkdir().getGid());
+				
+				if (!isSinglePartition) {
+					// send signal
+					involvedPartitions.remove(localPartition);
+					comm.signal(c.getReqId(), new Signal(localPartition.byteValue(), true), involvedPartitions);
+					// wait for other signals
+					for (Byte part: involvedPartitions) {
+						// not possible for other partitions to fail (if this succeeded), no need to check signal.success
+						this.waitForSignal(c.getReqId(), part.byteValue());
+					}						
+				}
 				res.setSuccess(true);
 				res.setResponse(null);
 				break;
+			}
 			/* -------------------------------- */
-			case UNLINK:
+			case UNLINK: {
 				System.out.println("unlink");
+				Set<Byte> involvedPartitions = unionOf(c.getUnlink().getParentPartition(), c.getUnlink().getPartition());
+				if (!involvedPartitions.contains(localPartition)) {
+					break; // not for us
+				}
+				boolean isSinglePartition = involvedPartitions.size() == 1;
+				
+				// if the remove fails here, there is no need for signals, the other partitions also fail
+				fs.removeFileOrLink(c.getUnlink().getPath());;
+				
+				if (!isSinglePartition) {
+					// send signal
+					involvedPartitions.remove(localPartition);
+					comm.signal(c.getReqId(), new Signal(localPartition.byteValue(), true), involvedPartitions);
+					// wait for other signals
+					for (Byte part: involvedPartitions) {
+						// not possible for other partitions to fail (if this succeeded), no need to check signal.success
+						this.waitForSignal(c.getReqId(), part.byteValue());
+					}						
+				}
+			
 				res.setSuccess(true);
 				res.setResponse(null);
 				break;
+			}
 			/* -------------------------------- */
-			case RMDIR:
+			case RMDIR: {
 				System.out.println("rmdir");
+				Set<Byte> involvedPartitions = unionOf(c.getRmdir().getParentPartition(), c.getRmdir().getPartition());
+				if (!involvedPartitions.contains(localPartition)) {
+					break; // not for us
+				}
+				boolean isSinglePartition = involvedPartitions.size() == 1;
+				
+				// if the remove fails here, there is no need for signals, the other partitions also fail
+				fs.removeDir(c.getRmdir().getPath());
+				
+				if (!isSinglePartition) {
+					// send signal
+					involvedPartitions.remove(localPartition);
+					comm.signal(c.getReqId(), new Signal(localPartition.byteValue(), true), involvedPartitions);
+					// wait for other signals
+					for (Byte part: involvedPartitions) {
+						// not possible for other partitions to fail (if this succeeded), no need to check signal.success
+						this.waitForSignal(c.getReqId(), part.byteValue());
+					}						
+				}
+
 				res.setSuccess(true);
 				res.setResponse(null);
 				break;
+			}
+			/* -------------------------------- */
+			case RENAME: {
+				System.out.println("rename");
+				RenameCmd rename = c.getRename();
+				Set<Byte> involvedPartitions = unionOf(
+						rename.getPartitionFrom(), rename.getParentPartitionFrom(),
+						rename.getPartitionTo(), rename.getParentPartitionTo());
+				if (!involvedPartitions.contains(localPartition)) {
+					break; // not for us
+				}
+				boolean isSinglePartition = involvedPartitions.size() == 1;
+				
+				if (isSinglePartition) {
+					// no signaling. just move file
+					fs.rename(rename.getFrom(), rename.getTo());
+				}
+				
+				if (!isSinglePartition) {
+/*					
+					// send signal
+					involvedPartitions.remove(localPartition);
+					comm.signal(c.getReqId(), new Signal(localPartition.byteValue(), true), involvedPartitions);
+					// wait for other signals
+					for (Byte part: involvedPartitions) {
+						// not possible for other partitions to fail (if this succeeded), no need to check signal.success
+						this.waitForSignal(c.getReqId(), part.byteValue());
+					}						
+*/
+				}				
+				
+				res.setSuccess(true);
+				res.setResponse(null);
+				break;
+			}
 			/* -------------------------------- */
 			case SYMLINK:
 				System.out.println("symlink");
-				res.setSuccess(true);
-				res.setResponse(null);
-				break;
-			/* -------------------------------- */
-			case RENAME:
-				System.out.println("rename");
 				res.setSuccess(true);
 				res.setResponse(null);
 				break;
@@ -320,7 +416,7 @@ public class FileSystemReplica implements Runnable {
 				c = comm.signals.take();
 				if (c.getSignal().getFromPartition() == fromPartition && c.getReqId() == reqId) {
 					return c.getSignal();
-				} else if (c.getSignal().getFromPartition() == this.localPartition) {
+				} else if (c.getSignal().getFromPartition() == this.localPartition.byteValue()) {
 					// ignore signals from our own partition
 				} else {
 					// some other unrelated signal arrived. Store it

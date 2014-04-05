@@ -59,28 +59,58 @@ public class CommandLineClient {
 			String cmd = s.next();
 			try {
 			switch (cmd) {
-			case "statfs":
+			case "statfs": {
 				System.out.println(client[0].statfs());
 				break;
+			}
 			case "getdir": {
 				String path = s.next();
 				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
 				System.out.println(client[partition].getdir(path));
-			}
 				break;
+			}
 			case "mknod": {
 				String path = s.next();
 				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
 				client[partition].mknod(path, 0, 0, 0, 0);
 				System.out.println("File created.");
-			}
 				break;
+			}
 			case "getattr": {
 				String path = s.next();
 				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
 				System.out.println(client[partition].getattr(path));
-			}
 				break;
+			}
+			case "mkdir": {
+				String path = s.next();
+				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
+				client[partition].mkdir(path, 0, 0, 0);
+				System.out.println("Dir created.");
+				break;
+			}
+			case "rmdir": {
+				String path = s.next();
+				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
+				client[partition].rmdir(path);
+				System.out.println("Dir removed.");
+				break;
+			}
+			case "unlink": {
+				String path = s.next();
+				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
+				client[partition].unlink(path);
+				System.out.println("File removed.");
+				break;
+			}
+			case "rename": {
+				String from = s.next();
+				String to = s.next();
+				int partition = oracle.partitionsOf(from).iterator().next().intValue()-1;
+				client[partition].rename(from, to);
+				System.out.println("File renamed.");
+				break;			
+			}
 			default:
 				System.out.println("Unknown command");
 			}

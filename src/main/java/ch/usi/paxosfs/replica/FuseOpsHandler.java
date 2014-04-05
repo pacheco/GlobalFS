@@ -1,5 +1,6 @@
 package ch.usi.paxosfs.replica;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -13,7 +14,11 @@ import ch.usi.paxosfs.replica.commands.AttrCmd;
 import ch.usi.paxosfs.replica.commands.Command;
 import ch.usi.paxosfs.replica.commands.CommandType;
 import ch.usi.paxosfs.replica.commands.GetdirCmd;
+import ch.usi.paxosfs.replica.commands.MkdirCmd;
 import ch.usi.paxosfs.replica.commands.MknodCmd;
+import ch.usi.paxosfs.replica.commands.RenameCmd;
+import ch.usi.paxosfs.replica.commands.RmdirCmd;
+import ch.usi.paxosfs.replica.commands.UnlinkCmd;
 import ch.usi.paxosfs.rpc.Attr;
 import ch.usi.paxosfs.rpc.DBlock;
 import ch.usi.paxosfs.rpc.DirEntry;
@@ -23,6 +28,7 @@ import ch.usi.paxosfs.rpc.FileSystemStats;
 import ch.usi.paxosfs.rpc.FuseOps;
 import ch.usi.paxosfs.rpc.ReadResult;
 import ch.usi.paxosfs.util.Paths;
+import fuse.FuseException;
 
 /**
  * Implementation for the thrift server receiving client requests for fuse operations
@@ -80,35 +86,60 @@ public class FuseOpsHandler implements FuseOps.Iface {
 
 	@Override
 	public void mkdir(String path, int mode, int uid, int gid) throws FSError, TException {
-		
-	}
-
-	@Override
-	public String readlink(String path) throws FSError, TException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void unlink(String path) throws FSError, TException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void rmdir(String path) throws FSError, TException {
-		// TODO Auto-generated method stub
+		Set<Byte> parts = oracle.partitionsOf(path);
+		Set<Byte> parentParts = oracle.partitionsOf(Paths.dirname(path));
+		Command cmd = newCommand(CommandType.MKDIR);
+		MkdirCmd mkdir = new MkdirCmd(path, mode, uid, gid, parentParts, parts); 
+		cmd.setMkdir(mkdir);
+		replica.submitCommand(cmd, Sets.union(parts, parentParts));
 	}
 
 	@Override
 	public void symlink(String target, String path, int uid, int gid) throws FSError, TException {
+		throw new FSError(FuseException.ENOTSUPP, "symlinks not supported.");
+	}
+	
+	@Override
+	public String readlink(String path) throws FSError, TException {
 		// TODO Auto-generated method stub
-		
+		throw new FSError(FuseException.ENOTSUPP, "symlinks not supported.");
+	}
+
+	@Override
+	public void unlink(String path) throws FSError, TException {
+		Set<Byte> parts = oracle.partitionsOf(path);
+		Set<Byte> parentParts = oracle.partitionsOf(Paths.dirname(path));
+		Command cmd = newCommand(CommandType.UNLINK);
+		UnlinkCmd unlink = new UnlinkCmd(path, parentParts, parts); 
+		cmd.setUnlink(unlink);
+		replica.submitCommand(cmd, Sets.union(parts, parentParts));
+	}
+
+	@Override
+	public void rmdir(String path) throws FSError, TException {
+		Set<Byte> parts = oracle.partitionsOf(path);
+		Set<Byte> parentParts = oracle.partitionsOf(Paths.dirname(path));
+		Command cmd = newCommand(CommandType.RMDIR);
+		RmdirCmd rmdir = new RmdirCmd(path, parentParts, parts); 
+		cmd.setRmdir(rmdir);
+		replica.submitCommand(cmd, Sets.union(parts, parentParts));
 	}
 
 	@Override
 	public void rename(String from, String to) throws FSError, TException {
-		
+		Set<Byte> fromParts = oracle.partitionsOf(from);
+		Set<Byte> fromParentParts = oracle.partitionsOf(Paths.dirname(from));
+		Set<Byte> toParts = oracle.partitionsOf(to);
+		Set<Byte> toParentParts = oracle.partitionsOf(Paths.dirname(to));
+		Command cmd = newCommand(CommandType.RENAME);
+		RenameCmd rename = new RenameCmd(from, to, fromParentParts, fromParts, toParentParts, toParts);
+		cmd.setRename(rename);
+		Set<Byte> allParts = new HashSet<>();
+		allParts.addAll(fromParts);
+		allParts.addAll(fromParentParts);
+		allParts.addAll(toParts);
+		allParts.addAll(toParentParts);
+		replica.submitCommand(cmd, allParts);
 	}
 
 	@Override

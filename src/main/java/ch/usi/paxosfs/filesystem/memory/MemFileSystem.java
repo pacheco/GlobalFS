@@ -83,7 +83,39 @@ public class MemFileSystem implements FileSystem {
 		return current;
 	}
 	
-	
+	@Override
+	public void removeFileOrLink(String path) throws FSError {
+		String parentPath = Paths.dirname(path);
+		DirNode parent = getDir(parentPath);
+		String name = Paths.basename(path);
+		Node child = parent.getChild(name);
+		if (child == null) {
+			throw notFound(path);
+		} else if (child.isDir()) {
+			throw isDir(path);
+		}
+		parent.removeChild(Paths.basename(name));
+	}
+
+
+	@Override
+	public void removeDir(String path) throws FSError {
+		String parentPath = Paths.dirname(path);
+		DirNode parent = getDir(parentPath);
+		String name = Paths.basename(path);
+		Node child = parent.getChild(name);
+		if (child == null) {
+			throw notFound(path);
+		} else if (!child.isDir()) {
+			throw notDir(path);
+		}
+		DirNode dir = (DirNode) child;
+		if (!dir.getChildren().isEmpty()) {
+			throw notEmpty(path);
+		}
+		parent.removeChild(Paths.basename(name));
+	}
+
 	// helper to get a directory. Throws exception if not found or if not a directory
 	private DirNode getDir(String path) throws FSError {
 		Node n = this.get(path);
@@ -93,25 +125,54 @@ public class MemFileSystem implements FileSystem {
 		return (DirNode) n;
 	}
 	
+	@Override
+	public void rename(String from, String to) throws FSError {
+		DirNode parentFrom = getDir(Paths.dirname(from));
+		String nameFrom = Paths.basename(from);
+		DirNode parentTo = getDir(Paths.dirname(to));
+		String nameTo = Paths.basename(to);
+		
+		Node nodeFrom = parentFrom.getChild(nameFrom);
+		if (nodeFrom == null) {
+			throw notFound(from);
+		}
+		Node nodeTo = parentTo.getChild(nameTo);
+		if (nodeTo != null) {
+			if (nodeFrom.isDir()) {
+				if (!nodeTo.isDir()) { 
+					throw notDir(to); 
+				} else if (!((DirNode) nodeTo).getChildren().isEmpty()) {
+					throw notEmpty(to);
+				}
+			} else { // nodeFrom is a file or link
+				if (nodeTo.isDir()) {
+					throw isDir(to);
+				}
+			}
+			parentTo.removeChild(nameTo);
+		}
+		parentFrom.removeChild(nameFrom);
+		parentTo.addChild(nameTo, nodeFrom);
+	}
+	
 	private FSError notFound(String file) {
-		return new FSError(FuseException.ENOENT, file + ": No such file or directory");
+		return new FSError(FuseException.ENOENT, "No such file or directory");
 	}
 	
 	private FSError notDir(String file) {
-		return new FSError(FuseException.ENOTDIR, file + ": Not a directory");
+		return new FSError(FuseException.ENOTDIR, "Not a directory");
 	}
 	
 	private FSError alreadyExists(String file) {
-		return new FSError(FuseException.EEXIST, file + ": File already exists");
+		return new FSError(FuseException.EEXIST, "File already exists");
 	}
 
-	@Override
-	public void removeFileOrLink(String path) throws FSError {
-		
+
+	private FSError isDir(String file) {
+		return new FSError(FuseException.EISDIR, "Is a directory");
 	}
 
-	@Override
-	public void removeDir(String path) throws FSError {
-		
+	private FSError notEmpty(String path) {
+		return new FSError(FuseException.ENOTEMPTY, "Not empty");
 	}
 }
