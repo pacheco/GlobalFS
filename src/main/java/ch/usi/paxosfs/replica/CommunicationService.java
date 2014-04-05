@@ -10,6 +10,8 @@ import org.apache.thrift.TDeserializer;
 import org.apache.thrift.TException;
 import org.apache.thrift.TSerializer;
 
+import com.google.common.collect.Sets;
+
 import ch.usi.da.paxos.api.Proposer;
 import ch.usi.da.paxos.ring.Node;
 import ch.usi.da.paxos.ring.RingDescription;
@@ -109,10 +111,9 @@ public class CommunicationService {
 		if (partitions.size() == 1) {
 			ringid = partitions.iterator().next().byteValue();
 		}
+		// FIXME: right now its not possible to submit to rings the replica is not part of
 		System.out.println("Submitting command " + command.getReqId() + " to ring " + ringid);
 		Proposer p = this.proposers.get(Byte.valueOf(ringid));
-		// TODO: Replica not part of the ring. Implement using thrift client if we need to support this.
-		assert(p != null);
 		// TSerializer is not threadsafe, create a new one for each amcast. Is this too expensive?
 		final TSerializer serializer = new TSerializer();
 		try {
@@ -133,7 +134,8 @@ public class CommunicationService {
 		// right now it just sends signals to the big ring
 		Command cmd = new Command(CommandType.SIGNAL.getValue(), reqId, 0);
 		cmd.setSignal(signal);
-		this.amcast(cmd, partitions);
+		// TODO: right now signals are sent to global ring
+		this.amcast(cmd, Sets.newHashSet(Byte.valueOf((byte)0)));
 	}
 	
 	public BlockingQueue<Command> getCommands() {

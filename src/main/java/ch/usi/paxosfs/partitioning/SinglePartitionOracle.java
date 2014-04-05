@@ -8,8 +8,8 @@ import com.google.common.collect.Sets;
 public class SinglePartitionOracle implements PartitioningOracle {
 	byte partition;
 	
-	public SinglePartitionOracle(byte partition) {
-		this.partition = partition;
+	public SinglePartitionOracle() {
+		this.partition = 1;
 	}
 
 	@Override

@@ -2,30 +2,23 @@ package ch.usi.paxosfs.replica;
 
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.thrift.TProcessor;
 import org.apache.thrift.server.TServer;
-import org.apache.thrift.server.TThreadPoolServer;
-import org.apache.thrift.transport.TServerSocket;
-import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
 import org.apache.zookeeper.KeeperException;
 
 import ch.usi.da.paxos.api.PaxosRole;
+import ch.usi.da.paxos.examples.Util;
 import ch.usi.da.paxos.ring.Node;
 import ch.usi.da.paxos.ring.RingDescription;
-import ch.usi.paxosfs.partitioning.SinglePartitionOracle;
-import ch.usi.paxosfs.rpc.FuseOps;
 
 public class FSMain {
-	static Thread[] thriftProposers;
-	static Thread fuseOpsServer;
 	static Thread replica;
 	static TServer thriftServer;
-	static int workerThreads = 20;
 	
 	private static class Options {
 		public int serverPort = 7777;
@@ -68,20 +61,11 @@ public class FSMain {
 	 * @param partition
 	 * @throws TTransportException
 	 */
-	private static void startReplica(int id, byte partition, int port, CommunicationService comm) throws TTransportException {
+	private static void startReplica(int id, byte partition, String host, int port, CommunicationService comm, String zoohost) throws TTransportException {
 		// start replica thread
-		FileSystemReplica learner = new FileSystemReplica(id, partition, comm);
+		FileSystemReplica learner = new FileSystemReplica(id, partition, comm, host, port, zoohost);
 		replica = new Thread(learner);
 		replica.start();
-		// start thrift server
-		FuseOpsHandler fuseHandler = new FuseOpsHandler(id, partition, learner, new SinglePartitionOracle(partition));
-		TProcessor fuseProcessor = new FuseOps.Processor<FuseOpsHandler>(fuseHandler);
-		TServerTransport serverTransport = new TServerSocket(port);
-		TThreadPoolServer.Args args = new TThreadPoolServer.Args(serverTransport);
-		args.maxWorkerThreads(workerThreads);
-		args.minWorkerThreads(workerThreads);
-		TThreadPoolServer server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).processor(fuseProcessor));
-		server.serve();
 	}
 	
 	public static void main(String[] rawargs) {
@@ -118,7 +102,8 @@ public class FSMain {
 
 		// start the replica
 		try {
-			startReplica(args.replicaId, args.replicaPartition, args.serverPort, comm);
+			InetSocketAddress addr = new InetSocketAddress(Util.getHostAddress(false), args.serverPort);
+			startReplica(args.replicaId, args.replicaPartition, addr.getHostString(), args.serverPort, comm, args.zookeeperHost);
 		} catch (TTransportException e) {
 			e.printStackTrace();
 			System.exit(1);

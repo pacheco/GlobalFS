@@ -1,5 +1,6 @@
 package ch.usi.paxosfs.replica;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -11,20 +12,30 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.thrift.TProcessor;
+import org.apache.thrift.server.TThreadPoolServer;
+import org.apache.thrift.transport.TServerSocket;
+import org.apache.thrift.transport.TServerTransport;
+import org.apache.thrift.transport.TTransportException;
+import org.apache.zookeeper.KeeperException;
+
 import ch.usi.paxosfs.filesystem.DirNode;
 import ch.usi.paxosfs.filesystem.FileNode;
 import ch.usi.paxosfs.filesystem.FileSystem;
 import ch.usi.paxosfs.filesystem.Node;
 import ch.usi.paxosfs.filesystem.memory.MemFileSystem;
+import ch.usi.paxosfs.partitioning.TwoPartitionOracle;
 import ch.usi.paxosfs.replica.commands.Command;
 import ch.usi.paxosfs.replica.commands.CommandType;
 import ch.usi.paxosfs.replica.commands.Signal;
 import ch.usi.paxosfs.rpc.Attr;
 import ch.usi.paxosfs.rpc.DirEntry;
 import ch.usi.paxosfs.rpc.FSError;
+import ch.usi.paxosfs.rpc.FuseOps;
 import fuse.FuseException;
 
 public class FileSystemReplica implements Runnable {
+	public int WORKER_THREADS = 20;
 	private CommunicationService comm;
 	private ConcurrentHashMap<Long, CommandResult> pendingCommands;
 	private List<Command> signalsReceived; // to keep track of signals received in advance
@@ -32,13 +43,24 @@ public class FileSystemReplica implements Runnable {
 	private byte localPartition;
 	private FileSystem fs;
 	private Map<Long, FileNode> openFiles; // map file handles to files
+	private ReplicaManager manager;
+	private String zoohost;
+	private Thread thriftServer;
 
-	public FileSystemReplica(int id, byte partition, CommunicationService comm) {
+	private FuseOpsHandler thriftHandler;
+	private String host;
+	private int port;
+
+	public FileSystemReplica(int id, byte partition, CommunicationService comm, String host, int port, String zoohost) {
 		this.comm = comm;
 		this.pendingCommands = new ConcurrentHashMap<Long, CommandResult>();
 		this.signalsReceived = new LinkedList<Command>();
+		this.id = id;
 		this.localPartition = partition;
 		this.openFiles = new HashMap<Long, FileNode>();
+		this.zoohost = zoohost;
+		this.host = host;
+		this.port = port;
 	}
 	
 	@SafeVarargs
@@ -55,7 +77,39 @@ public class FileSystemReplica implements Runnable {
 	 */
 	@Override
 	public void run() {
+		// start thrift server
+		this.thriftHandler = new FuseOpsHandler(id, localPartition, this, new TwoPartitionOracle("/a", "/b"));
+		TProcessor fuseProcessor = new FuseOps.Processor<FuseOpsHandler>(this.thriftHandler);
+		TServerTransport serverTransport;
+		try {
+			serverTransport = new TServerSocket(port);
+		} catch (TTransportException e1) {
+			e1.printStackTrace();
+			return;
+		}
+		TThreadPoolServer.Args args = new TThreadPoolServer.Args(serverTransport);
+		args.maxWorkerThreads(this.WORKER_THREADS);
+		args.minWorkerThreads(this.WORKER_THREADS);
+		final TThreadPoolServer server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).processor(fuseProcessor));
+		
+		this.thriftServer = new Thread() {
+			@Override
+			public void run() {
+				server.serve();
+			};
+		};
+		this.thriftServer.start();
+
+		// start the replica
 		fs = new MemFileSystem((int) (System.currentTimeMillis() / 1000), 0, 0);
+		this.manager = new ReplicaManager(this.zoohost);
+		try {
+			this.manager.start();
+			this.manager.registerReplica(this.localPartition, this.id, this.host + ":" + Integer.toString(this.port));
+		} catch (KeeperException | InterruptedException | IOException e) {
+			e.printStackTrace();
+			return;
+		}
 		
 		while (!Thread.currentThread().isInterrupted()) {
 			try {
