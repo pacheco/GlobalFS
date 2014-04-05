@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, java.io.Serializable, Cloneable, Comparable<Signal> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Signal");
 
-  private static final org.apache.thrift.protocol.TField FROM_PARTITION_FIELD_DESC = new org.apache.thrift.protocol.TField("fromPartition", org.apache.thrift.protocol.TType.I32, (short)1);
+  private static final org.apache.thrift.protocol.TField FROM_PARTITION_FIELD_DESC = new org.apache.thrift.protocol.TField("fromPartition", org.apache.thrift.protocol.TType.BYTE, (short)1);
   private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.BOOL, (short)2);
   private static final org.apache.thrift.protocol.TField RENAME_DATA_FIELD_DESC = new org.apache.thrift.protocol.TField("renameData", org.apache.thrift.protocol.TType.STRUCT, (short)3);
   private static final org.apache.thrift.protocol.TField ERROR_FIELD_DESC = new org.apache.thrift.protocol.TField("error", org.apache.thrift.protocol.TType.STRUCT, (short)4);
@@ -46,7 +46,7 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
     schemes.put(TupleScheme.class, new SignalTupleSchemeFactory());
   }
 
-  public int fromPartition; // required
+  public byte fromPartition; // required
   public boolean success; // required
   public RenameData renameData; // optional
   public ch.usi.paxosfs.rpc.FSError error; // optional
@@ -127,7 +127,7 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.FROM_PARTITION, new org.apache.thrift.meta_data.FieldMetaData("fromPartition", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE)));
     tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.RENAME_DATA, new org.apache.thrift.meta_data.FieldMetaData("renameData", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -142,7 +142,7 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
   }
 
   public Signal(
-    int fromPartition,
+    byte fromPartition,
     boolean success)
   {
     this();
@@ -181,11 +181,11 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
     this.error = null;
   }
 
-  public int getFromPartition() {
+  public byte getFromPartition() {
     return this.fromPartition;
   }
 
-  public Signal setFromPartition(int fromPartition) {
+  public Signal setFromPartition(byte fromPartition) {
     this.fromPartition = fromPartition;
     setFromPartitionIsSet(true);
     return this;
@@ -281,7 +281,7 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
       if (value == null) {
         unsetFromPartition();
       } else {
-        setFromPartition((Integer)value);
+        setFromPartition((Byte)value);
       }
       break;
 
@@ -315,7 +315,7 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
   public Object getFieldValue(_Fields field) {
     switch (field) {
     case FROM_PARTITION:
-      return Integer.valueOf(getFromPartition());
+      return Byte.valueOf(getFromPartition());
 
     case SUCCESS:
       return Boolean.valueOf(isSuccess());
@@ -550,8 +550,8 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
         }
         switch (schemeField.id) {
           case 1: // FROM_PARTITION
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.fromPartition = iprot.readI32();
+            if (schemeField.type == org.apache.thrift.protocol.TType.BYTE) {
+              struct.fromPartition = iprot.readByte();
               struct.setFromPartitionIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -599,7 +599,7 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
 
       oprot.writeStructBegin(STRUCT_DESC);
       oprot.writeFieldBegin(FROM_PARTITION_FIELD_DESC);
-      oprot.writeI32(struct.fromPartition);
+      oprot.writeByte(struct.fromPartition);
       oprot.writeFieldEnd();
       oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
       oprot.writeBool(struct.success);
@@ -650,7 +650,7 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
       }
       oprot.writeBitSet(optionals, 4);
       if (struct.isSetFromPartition()) {
-        oprot.writeI32(struct.fromPartition);
+        oprot.writeByte(struct.fromPartition);
       }
       if (struct.isSetSuccess()) {
         oprot.writeBool(struct.success);
@@ -668,7 +668,7 @@ public class Signal implements org.apache.thrift.TBase<Signal, Signal._Fields>, 
       TTupleProtocol iprot = (TTupleProtocol) prot;
       BitSet incoming = iprot.readBitSet(4);
       if (incoming.get(0)) {
-        struct.fromPartition = iprot.readI32();
+        struct.fromPartition = iprot.readByte();
         struct.setFromPartitionIsSet(true);
       }
       if (incoming.get(1)) {

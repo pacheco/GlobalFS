@@ -28,6 +28,10 @@ public class MemFileSystem implements FileSystem {
 	public DirNode createDir(String absolutePath, int mode, int time, int uid, int gid) throws FSError {
 		String parentPath = Paths.dirname(absolutePath);
 		DirNode parent = this.getDir(parentPath);
+		Node child = parent.getChild(Paths.basename(absolutePath));
+		if (child != null) {
+			throw alreadyExists(absolutePath);
+		}
 		DirNode newDir = new MemDir(mode, time, uid, gid);
 		parent.addChild(Paths.basename(absolutePath), newDir);
 		return newDir;
@@ -36,6 +40,10 @@ public class MemFileSystem implements FileSystem {
 	public FileNode createFile(String absolutePath, int mode, int time, int uid, int gid) throws FSError {
 		String parentPath = Paths.dirname(absolutePath);
 		DirNode parent = this.getDir(parentPath);
+		Node child = parent.getChild(Paths.basename(absolutePath));
+		if (child != null) {
+			throw alreadyExists(absolutePath);
+		}
 		FileNode newFile = new MemFile(mode, time, uid, gid);
 		parent.addChild(Paths.basename(absolutePath), newFile);
 		return newFile;
@@ -44,6 +52,10 @@ public class MemFileSystem implements FileSystem {
 	public LinkNode createLink(String absolutePath, String absoluteTarget, int time, int uid, int gid) throws FSError {
 		String parentPath = Paths.dirname(absolutePath);
 		DirNode parent = this.getDir(parentPath);
+		Node child = parent.getChild(Paths.basename(absolutePath));
+		if (child != null) {
+			throw alreadyExists(absolutePath);
+		}
 		LinkNode newLink = new MemLink(absoluteTarget, time, uid, gid);
 		parent.addChild(Paths.basename(absolutePath), newLink);
 		return newLink;
@@ -87,6 +99,10 @@ public class MemFileSystem implements FileSystem {
 	
 	private FSError notDir(String file) {
 		return new FSError(FuseException.ENOTDIR, file + ": Not a directory");
+	}
+	
+	private FSError alreadyExists(String file) {
+		return new FSError(FuseException.EEXIST, file + ": File already exists");
 	}
 
 	@Override

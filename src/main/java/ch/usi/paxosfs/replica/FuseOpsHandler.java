@@ -72,6 +72,8 @@ public class FuseOpsHandler implements FuseOps.Iface {
 		Set<Byte> parentParts = oracle.partitionsOf(Paths.dirname(path));
 		Command cmd = newCommand(CommandType.MKNOD);
 		MknodCmd mknod = new MknodCmd(path, mode, uid, gid, parentParts, parts); 
+		cmd.setMknod(mknod);
+		replica.submitCommand(cmd, Sets.union(parts, parentParts));
 	}
 
 	@Override

@@ -14,6 +14,6 @@ public class SinglePartitionOracle implements PartitioningOracle {
 
 	@Override
 	public Set<Byte> partitionsOf(String path) {
-		return Sets.newHashSet(partition);
+		return Sets.newHashSet(Byte.valueOf(partition));
 	}
 }

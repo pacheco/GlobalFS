@@ -35,7 +35,7 @@ public class CommunicationService {
 	 */
 	public final BlockingQueue<Command> signals;
 	private Node paxos;
-	private Map<Integer, Proposer> proposers;
+	private Map<Byte, Proposer> proposers;
 	private Thread learnerThr;
 	private volatile boolean stop = false; 
 	
@@ -47,11 +47,11 @@ public class CommunicationService {
 		this.paxos = paxos;
 		this.commands = new LinkedBlockingQueue<>();
 		this.signals = new LinkedBlockingQueue<>();
-		this.proposers = new HashMap<Integer, Proposer>();
+		this.proposers = new HashMap<Byte, Proposer>();
 		for (RingDescription r: paxos.getRings()) {
 			Proposer p = paxos.getProposer(r.getRingID());
 			if (p != null) {
-				this.proposers.put(r.getRingID(), p);
+				this.proposers.put(Byte.valueOf(Integer.valueOf(r.getRingID()).byteValue()), p);
 			}
 		}
 	}
@@ -108,10 +108,10 @@ public class CommunicationService {
 		// right now, it either sends to the given partition or to the global ring
 		byte ringid = GLOBAL_RING;
 		if (partitions.size() == 1) {
-			ringid = partitions.iterator().next();
+			ringid = partitions.iterator().next().byteValue();
 		}
 		System.out.println("Submitting command " + command.getReqId() + " to ring " + ringid);
-		Proposer p = this.proposers.get(ringid);
+		Proposer p = this.proposers.get(Byte.valueOf(ringid));
 		// TODO: Replica not part of the ring. Implement using thrift client if we need to support this.
 		assert(p != null);
 		// TSerializer is not threadsafe, create a new one for each amcast. Is this too expensive?
