@@ -52,7 +52,7 @@ public class FuseOps {
 
     public void symlink(String target, String path, int uid, int gid) throws FSError, org.apache.thrift.TException;
 
-    public void rename(String from, String to) throws FSError, org.apache.thrift.TException;
+    public void rename(String fromPath, String toPath) throws FSError, org.apache.thrift.TException;
 
     public void chmod(String path, int mode) throws FSError, org.apache.thrift.TException;
 
@@ -92,7 +92,7 @@ public class FuseOps {
 
     public void symlink(String target, String path, int uid, int gid, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void rename(String from, String to, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void rename(String fromPath, String toPath, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void chmod(String path, int mode, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -337,17 +337,17 @@ public class FuseOps {
       return;
     }
 
-    public void rename(String from, String to) throws FSError, org.apache.thrift.TException
+    public void rename(String fromPath, String toPath) throws FSError, org.apache.thrift.TException
     {
-      send_rename(from, to);
+      send_rename(fromPath, toPath);
       recv_rename();
     }
 
-    public void send_rename(String from, String to) throws org.apache.thrift.TException
+    public void send_rename(String fromPath, String toPath) throws org.apache.thrift.TException
     {
       rename_args args = new rename_args();
-      args.setFrom(from);
-      args.setTo(to);
+      args.setFromPath(fromPath);
+      args.setToPath(toPath);
       sendBase("rename", args);
     }
 
@@ -895,27 +895,27 @@ public class FuseOps {
       }
     }
 
-    public void rename(String from, String to, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void rename(String fromPath, String toPath, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      rename_call method_call = new rename_call(from, to, resultHandler, this, ___protocolFactory, ___transport);
+      rename_call method_call = new rename_call(fromPath, toPath, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class rename_call extends org.apache.thrift.async.TAsyncMethodCall {
-      private String from;
-      private String to;
-      public rename_call(String from, String to, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private String fromPath;
+      private String toPath;
+      public rename_call(String fromPath, String toPath, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
-        this.from = from;
-        this.to = to;
+        this.fromPath = fromPath;
+        this.toPath = toPath;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("rename", org.apache.thrift.protocol.TMessageType.CALL, 0));
         rename_args args = new rename_args();
-        args.setFrom(from);
-        args.setTo(to);
+        args.setFromPath(fromPath);
+        args.setToPath(toPath);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -1502,7 +1502,7 @@ public class FuseOps {
       public rename_result getResult(I iface, rename_args args) throws org.apache.thrift.TException {
         rename_result result = new rename_result();
         try {
-          iface.rename(args.from, args.to);
+          iface.rename(args.fromPath, args.toPath);
         } catch (FSError e) {
           result.e = e;
         }
@@ -2263,7 +2263,7 @@ public class FuseOps {
       }
 
       public void start(I iface, rename_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
-        iface.rename(args.from, args.to,resultHandler);
+        iface.rename(args.fromPath, args.toPath,resultHandler);
       }
     }
 
@@ -9776,8 +9776,8 @@ public class FuseOps {
   public static class rename_args implements org.apache.thrift.TBase<rename_args, rename_args._Fields>, java.io.Serializable, Cloneable, Comparable<rename_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("rename_args");
 
-    private static final org.apache.thrift.protocol.TField FROM_FIELD_DESC = new org.apache.thrift.protocol.TField("from", org.apache.thrift.protocol.TType.STRING, (short)1);
-    private static final org.apache.thrift.protocol.TField TO_FIELD_DESC = new org.apache.thrift.protocol.TField("to", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField FROM_PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("fromPath", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField TO_PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("toPath", org.apache.thrift.protocol.TType.STRING, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -9785,13 +9785,13 @@ public class FuseOps {
       schemes.put(TupleScheme.class, new rename_argsTupleSchemeFactory());
     }
 
-    public String from; // required
-    public String to; // required
+    public String fromPath; // required
+    public String toPath; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      FROM((short)1, "from"),
-      TO((short)2, "to");
+      FROM_PATH((short)1, "fromPath"),
+      TO_PATH((short)2, "toPath");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -9806,10 +9806,10 @@ public class FuseOps {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // FROM
-            return FROM;
-          case 2: // TO
-            return TO;
+          case 1: // FROM_PATH
+            return FROM_PATH;
+          case 2: // TO_PATH
+            return TO_PATH;
           default:
             return null;
         }
@@ -9853,9 +9853,9 @@ public class FuseOps {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.FROM, new org.apache.thrift.meta_data.FieldMetaData("from", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+      tmpMap.put(_Fields.FROM_PATH, new org.apache.thrift.meta_data.FieldMetaData("fromPath", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-      tmpMap.put(_Fields.TO, new org.apache.thrift.meta_data.FieldMetaData("to", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+      tmpMap.put(_Fields.TO_PATH, new org.apache.thrift.meta_data.FieldMetaData("toPath", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(rename_args.class, metaDataMap);
@@ -9865,23 +9865,23 @@ public class FuseOps {
     }
 
     public rename_args(
-      String from,
-      String to)
+      String fromPath,
+      String toPath)
     {
       this();
-      this.from = from;
-      this.to = to;
+      this.fromPath = fromPath;
+      this.toPath = toPath;
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
     public rename_args(rename_args other) {
-      if (other.isSetFrom()) {
-        this.from = other.from;
+      if (other.isSetFromPath()) {
+        this.fromPath = other.fromPath;
       }
-      if (other.isSetTo()) {
-        this.to = other.to;
+      if (other.isSetToPath()) {
+        this.toPath = other.toPath;
       }
     }
 
@@ -9891,73 +9891,73 @@ public class FuseOps {
 
     @Override
     public void clear() {
-      this.from = null;
-      this.to = null;
+      this.fromPath = null;
+      this.toPath = null;
     }
 
-    public String getFrom() {
-      return this.from;
+    public String getFromPath() {
+      return this.fromPath;
     }
 
-    public rename_args setFrom(String from) {
-      this.from = from;
+    public rename_args setFromPath(String fromPath) {
+      this.fromPath = fromPath;
       return this;
     }
 
-    public void unsetFrom() {
-      this.from = null;
+    public void unsetFromPath() {
+      this.fromPath = null;
     }
 
-    /** Returns true if field from is set (has been assigned a value) and false otherwise */
-    public boolean isSetFrom() {
-      return this.from != null;
+    /** Returns true if field fromPath is set (has been assigned a value) and false otherwise */
+    public boolean isSetFromPath() {
+      return this.fromPath != null;
     }
 
-    public void setFromIsSet(boolean value) {
+    public void setFromPathIsSet(boolean value) {
       if (!value) {
-        this.from = null;
+        this.fromPath = null;
       }
     }
 
-    public String getTo() {
-      return this.to;
+    public String getToPath() {
+      return this.toPath;
     }
 
-    public rename_args setTo(String to) {
-      this.to = to;
+    public rename_args setToPath(String toPath) {
+      this.toPath = toPath;
       return this;
     }
 
-    public void unsetTo() {
-      this.to = null;
+    public void unsetToPath() {
+      this.toPath = null;
     }
 
-    /** Returns true if field to is set (has been assigned a value) and false otherwise */
-    public boolean isSetTo() {
-      return this.to != null;
+    /** Returns true if field toPath is set (has been assigned a value) and false otherwise */
+    public boolean isSetToPath() {
+      return this.toPath != null;
     }
 
-    public void setToIsSet(boolean value) {
+    public void setToPathIsSet(boolean value) {
       if (!value) {
-        this.to = null;
+        this.toPath = null;
       }
     }
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
-      case FROM:
+      case FROM_PATH:
         if (value == null) {
-          unsetFrom();
+          unsetFromPath();
         } else {
-          setFrom((String)value);
+          setFromPath((String)value);
         }
         break;
 
-      case TO:
+      case TO_PATH:
         if (value == null) {
-          unsetTo();
+          unsetToPath();
         } else {
-          setTo((String)value);
+          setToPath((String)value);
         }
         break;
 
@@ -9966,11 +9966,11 @@ public class FuseOps {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
-      case FROM:
-        return getFrom();
+      case FROM_PATH:
+        return getFromPath();
 
-      case TO:
-        return getTo();
+      case TO_PATH:
+        return getToPath();
 
       }
       throw new IllegalStateException();
@@ -9983,10 +9983,10 @@ public class FuseOps {
       }
 
       switch (field) {
-      case FROM:
-        return isSetFrom();
-      case TO:
-        return isSetTo();
+      case FROM_PATH:
+        return isSetFromPath();
+      case TO_PATH:
+        return isSetToPath();
       }
       throw new IllegalStateException();
     }
@@ -10004,21 +10004,21 @@ public class FuseOps {
       if (that == null)
         return false;
 
-      boolean this_present_from = true && this.isSetFrom();
-      boolean that_present_from = true && that.isSetFrom();
-      if (this_present_from || that_present_from) {
-        if (!(this_present_from && that_present_from))
+      boolean this_present_fromPath = true && this.isSetFromPath();
+      boolean that_present_fromPath = true && that.isSetFromPath();
+      if (this_present_fromPath || that_present_fromPath) {
+        if (!(this_present_fromPath && that_present_fromPath))
           return false;
-        if (!this.from.equals(that.from))
+        if (!this.fromPath.equals(that.fromPath))
           return false;
       }
 
-      boolean this_present_to = true && this.isSetTo();
-      boolean that_present_to = true && that.isSetTo();
-      if (this_present_to || that_present_to) {
-        if (!(this_present_to && that_present_to))
+      boolean this_present_toPath = true && this.isSetToPath();
+      boolean that_present_toPath = true && that.isSetToPath();
+      if (this_present_toPath || that_present_toPath) {
+        if (!(this_present_toPath && that_present_toPath))
           return false;
-        if (!this.to.equals(that.to))
+        if (!this.toPath.equals(that.toPath))
           return false;
       }
 
@@ -10038,22 +10038,22 @@ public class FuseOps {
 
       int lastComparison = 0;
 
-      lastComparison = Boolean.valueOf(isSetFrom()).compareTo(other.isSetFrom());
+      lastComparison = Boolean.valueOf(isSetFromPath()).compareTo(other.isSetFromPath());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetFrom()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.from, other.from);
+      if (isSetFromPath()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.fromPath, other.fromPath);
         if (lastComparison != 0) {
           return lastComparison;
         }
       }
-      lastComparison = Boolean.valueOf(isSetTo()).compareTo(other.isSetTo());
+      lastComparison = Boolean.valueOf(isSetToPath()).compareTo(other.isSetToPath());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetTo()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.to, other.to);
+      if (isSetToPath()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.toPath, other.toPath);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -10078,19 +10078,19 @@ public class FuseOps {
       StringBuilder sb = new StringBuilder("rename_args(");
       boolean first = true;
 
-      sb.append("from:");
-      if (this.from == null) {
+      sb.append("fromPath:");
+      if (this.fromPath == null) {
         sb.append("null");
       } else {
-        sb.append(this.from);
+        sb.append(this.fromPath);
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("to:");
-      if (this.to == null) {
+      sb.append("toPath:");
+      if (this.toPath == null) {
         sb.append("null");
       } else {
-        sb.append(this.to);
+        sb.append(this.toPath);
       }
       first = false;
       sb.append(")");
@@ -10136,18 +10136,18 @@ public class FuseOps {
             break;
           }
           switch (schemeField.id) {
-            case 1: // FROM
+            case 1: // FROM_PATH
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.from = iprot.readString();
-                struct.setFromIsSet(true);
+                struct.fromPath = iprot.readString();
+                struct.setFromPathIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
-            case 2: // TO
+            case 2: // TO_PATH
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.to = iprot.readString();
-                struct.setToIsSet(true);
+                struct.toPath = iprot.readString();
+                struct.setToPathIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -10167,14 +10167,14 @@ public class FuseOps {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
-        if (struct.from != null) {
-          oprot.writeFieldBegin(FROM_FIELD_DESC);
-          oprot.writeString(struct.from);
+        if (struct.fromPath != null) {
+          oprot.writeFieldBegin(FROM_PATH_FIELD_DESC);
+          oprot.writeString(struct.fromPath);
           oprot.writeFieldEnd();
         }
-        if (struct.to != null) {
-          oprot.writeFieldBegin(TO_FIELD_DESC);
-          oprot.writeString(struct.to);
+        if (struct.toPath != null) {
+          oprot.writeFieldBegin(TO_PATH_FIELD_DESC);
+          oprot.writeString(struct.toPath);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -10195,18 +10195,18 @@ public class FuseOps {
       public void write(org.apache.thrift.protocol.TProtocol prot, rename_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetFrom()) {
+        if (struct.isSetFromPath()) {
           optionals.set(0);
         }
-        if (struct.isSetTo()) {
+        if (struct.isSetToPath()) {
           optionals.set(1);
         }
         oprot.writeBitSet(optionals, 2);
-        if (struct.isSetFrom()) {
-          oprot.writeString(struct.from);
+        if (struct.isSetFromPath()) {
+          oprot.writeString(struct.fromPath);
         }
-        if (struct.isSetTo()) {
-          oprot.writeString(struct.to);
+        if (struct.isSetToPath()) {
+          oprot.writeString(struct.toPath);
         }
       }
 
@@ -10215,12 +10215,12 @@ public class FuseOps {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
-          struct.from = iprot.readString();
-          struct.setFromIsSet(true);
+          struct.fromPath = iprot.readString();
+          struct.setFromPathIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.to = iprot.readString();
-          struct.setToIsSet(true);
+          struct.toPath = iprot.readString();
+          struct.setToPathIsSet(true);
         }
       }
     }
