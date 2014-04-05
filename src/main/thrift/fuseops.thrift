@@ -1,4 +1,5 @@
 namespace java ch.usi.paxosfs.rpc
+namespace py paxosfs
 
 exception FSError {
 	1: i32 errorCode,
@@ -65,7 +66,7 @@ service FuseOps {
 	void unlink(1: string path) throws (1: FSError e),
 	void rmdir(1: string path) throws (1: FSError e),
 	void symlink(1: string target, 2: string path, 3: i32 uid, 4: i32 gid) throws (1: FSError e),
-	void rename(1: string from, 2: string to) throws (1: FSError e),
+	void rename(1: string fromPath, 2: string toPath) throws (1: FSError e),
 	void chmod(1: string path, 2: i32 mode) throws (1: FSError e),
 	void chown(1: string path, 2: i32 uid, 3: i32 gid) throws (1: FSError e),
 	void truncate(1: string path, 2: i64 size) throws (1: FSError e),
