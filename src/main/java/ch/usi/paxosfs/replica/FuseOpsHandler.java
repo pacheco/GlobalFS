@@ -7,8 +7,6 @@ import java.util.Set;
 
 import org.apache.thrift.TException;
 
-import com.google.common.collect.Sets;
-
 import ch.usi.paxosfs.partitioning.PartitioningOracle;
 import ch.usi.paxosfs.replica.commands.AttrCmd;
 import ch.usi.paxosfs.replica.commands.Command;
@@ -28,6 +26,9 @@ import ch.usi.paxosfs.rpc.FileSystemStats;
 import ch.usi.paxosfs.rpc.FuseOps;
 import ch.usi.paxosfs.rpc.ReadResult;
 import ch.usi.paxosfs.util.Paths;
+
+import com.google.common.collect.Sets;
+
 import fuse.FuseException;
 
 /**
@@ -41,8 +42,8 @@ public class FuseOpsHandler implements FuseOps.Iface {
 	private PartitioningOracle oracle;
 	private FileSystemReplica replica;
 	
-	public Command newCommand(CommandType type) {
-		return new Command(type.getValue(), new Random().nextLong(), (int) (System.currentTimeMillis() / 1000L));
+	public Command newCommand(CommandType type, Set<Byte> involvedPartitions) {
+		return new Command(type.getValue(), new Random().nextLong(), (int) (System.currentTimeMillis() / 1000L), involvedPartitions);
 	}
 	
 	public FuseOpsHandler(int id, byte partition, FileSystemReplica replica, PartitioningOracle oracle) {
@@ -56,10 +57,10 @@ public class FuseOpsHandler implements FuseOps.Iface {
 	public Attr getattr(String path) throws FSError, TException {
 		// can be sent to ANY partition that replicates the path - we send it to the first returned by the oracle
 		Set<Byte> parts = oracle.partitionsOf(path);
-		Command cmd = newCommand(CommandType.ATTR);
+		Command cmd = newCommand(CommandType.ATTR, parts);
 		AttrCmd attr = new AttrCmd(path, Sets.newHashSet(parts.iterator().next()));
 		cmd.setAttr(attr);
-		Attr result = (Attr) replica.submitCommand(cmd, attr.getPartition());
+		Attr result = (Attr) replica.submitCommand(cmd);
 		//System.out.println(result);
 		return result;
 	}
@@ -68,30 +69,32 @@ public class FuseOpsHandler implements FuseOps.Iface {
 	public List<DirEntry> getdir(String path) throws FSError, TException {
 		// can be sent to ANY partition that replicates the path - we send it to the first returned by the oracle
 		Set<Byte> parts = oracle.partitionsOf(path);
-		Command cmd = newCommand(CommandType.GETDIR);
+		Command cmd = newCommand(CommandType.GETDIR, parts);
 		GetdirCmd getdir = new GetdirCmd(path, Sets.newHashSet(parts.iterator().next()));
 		cmd.setGetdir(getdir);
-		return (List<DirEntry>) replica.submitCommand(cmd, getdir.getPartition());
+		return (List<DirEntry>) replica.submitCommand(cmd);
 	}
 
 	@Override
 	public void mknod(String path, int mode, int rdev, int uid, int gid) throws FSError, TException {
 		Set<Byte> parts = oracle.partitionsOf(path);
 		Set<Byte> parentParts = oracle.partitionsOf(Paths.dirname(path));
-		Command cmd = newCommand(CommandType.MKNOD);
+		Set<Byte> involvedPartitions = Sets.union(parts, parentParts);
+		Command cmd = newCommand(CommandType.MKNOD, involvedPartitions);
 		MknodCmd mknod = new MknodCmd(path, mode, uid, gid, parentParts, parts); 
 		cmd.setMknod(mknod);
-		replica.submitCommand(cmd, Sets.union(parts, parentParts));
+		replica.submitCommand(cmd);
 	}
 
 	@Override
 	public void mkdir(String path, int mode, int uid, int gid) throws FSError, TException {
 		Set<Byte> parts = oracle.partitionsOf(path);
 		Set<Byte> parentParts = oracle.partitionsOf(Paths.dirname(path));
-		Command cmd = newCommand(CommandType.MKDIR);
+		Set<Byte> involvedPartitions = Sets.union(parts, parentParts);
+		Command cmd = newCommand(CommandType.MKDIR, involvedPartitions);
 		MkdirCmd mkdir = new MkdirCmd(path, mode, uid, gid, parentParts, parts); 
 		cmd.setMkdir(mkdir);
-		replica.submitCommand(cmd, Sets.union(parts, parentParts));
+		replica.submitCommand(cmd);
 	}
 
 	@Override
@@ -109,20 +112,22 @@ public class FuseOpsHandler implements FuseOps.Iface {
 	public void unlink(String path) throws FSError, TException {
 		Set<Byte> parts = oracle.partitionsOf(path);
 		Set<Byte> parentParts = oracle.partitionsOf(Paths.dirname(path));
-		Command cmd = newCommand(CommandType.UNLINK);
+		Set<Byte> involvedPartitions = Sets.union(parts, parentParts);
+		Command cmd = newCommand(CommandType.UNLINK, involvedPartitions);
 		UnlinkCmd unlink = new UnlinkCmd(path, parentParts, parts); 
 		cmd.setUnlink(unlink);
-		replica.submitCommand(cmd, Sets.union(parts, parentParts));
+		replica.submitCommand(cmd);
 	}
 
 	@Override
 	public void rmdir(String path) throws FSError, TException {
 		Set<Byte> parts = oracle.partitionsOf(path);
 		Set<Byte> parentParts = oracle.partitionsOf(Paths.dirname(path));
-		Command cmd = newCommand(CommandType.RMDIR);
+		Set<Byte> involvedPartitions = Sets.union(parts, parentParts);
+		Command cmd = newCommand(CommandType.RMDIR, involvedPartitions);
 		RmdirCmd rmdir = new RmdirCmd(path, parentParts, parts); 
 		cmd.setRmdir(rmdir);
-		replica.submitCommand(cmd, Sets.union(parts, parentParts));
+		replica.submitCommand(cmd);
 	}
 
 	@Override
@@ -131,15 +136,16 @@ public class FuseOpsHandler implements FuseOps.Iface {
 		Set<Byte> fromParentParts = oracle.partitionsOf(Paths.dirname(from));
 		Set<Byte> toParts = oracle.partitionsOf(to);
 		Set<Byte> toParentParts = oracle.partitionsOf(Paths.dirname(to));
-		Command cmd = newCommand(CommandType.RENAME);
+		Set<Byte> involvedPartitions = new HashSet<>();
+		involvedPartitions.addAll(fromParts);
+		involvedPartitions.addAll(fromParentParts);
+		involvedPartitions.addAll(toParts);
+		involvedPartitions.addAll(toParentParts);
+
+		Command cmd = newCommand(CommandType.RENAME, involvedPartitions);
 		RenameCmd rename = new RenameCmd(from, to, fromParentParts, fromParts, toParentParts, toParts);
 		cmd.setRename(rename);
-		Set<Byte> allParts = new HashSet<>();
-		allParts.addAll(fromParts);
-		allParts.addAll(fromParentParts);
-		allParts.addAll(toParts);
-		allParts.addAll(toParentParts);
-		replica.submitCommand(cmd, allParts);
+		replica.submitCommand(cmd);
 	}
 
 	@Override

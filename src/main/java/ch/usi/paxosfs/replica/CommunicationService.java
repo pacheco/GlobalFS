@@ -10,8 +10,6 @@ import org.apache.thrift.TDeserializer;
 import org.apache.thrift.TException;
 import org.apache.thrift.TSerializer;
 
-import com.google.common.collect.Sets;
-
 import ch.usi.da.paxos.api.Proposer;
 import ch.usi.da.paxos.ring.Node;
 import ch.usi.da.paxos.ring.RingDescription;
@@ -39,17 +37,21 @@ public class CommunicationService {
 	private Node paxos;
 	private Map<Byte, Proposer> proposers;
 	private Thread learnerThr;
-	private volatile boolean stop = false; 
+	private volatile boolean stop = false;
+	private int id;
+	private byte partition; 
 	
 	/** 
 	 * Expects to receive a running paxos Node
 	 * @param paxos
 	 */
-	public CommunicationService(Node paxos) {
+	public CommunicationService(int id, byte partition, Node paxos) {
 		this.paxos = paxos;
 		this.commands = new LinkedBlockingQueue<>();
 		this.signals = new LinkedBlockingQueue<>();
 		this.proposers = new HashMap<Byte, Proposer>();
+		this.id = id;
+		this.partition = partition;
 		for (RingDescription r: paxos.getRings()) {
 			Proposer p = paxos.getProposer(r.getRingID());
 			if (p != null) {
@@ -70,13 +72,59 @@ public class CommunicationService {
 				while (!stop) {
 					try {
 						Decision d = paxos.getLearner().getDecisions().take();
-						/* FIXME: commands that don't need to exchange state can send signals as soon as the command is delivered. It would be done here */
 						if (!d.getValue().isSkip()) {
 							Command c = new Command();
 							deserializer.deserialize(c, d.getValue().getValue());
+							if (!c.getInvolvedPartitions().contains(Byte.valueOf(partition))) {
+								// command does not involve this partition. Ignore
+								System.out.println("Got a command I dont care about. Discarding...");
+								continue;
+							}
 							if (c.getType() == CommandType.SIGNAL.getValue()) {
 								signals.add(c);
 							} else {
+								/*
+								 * Here we are already sending signals for commands that can decide on fail/success without the signal result.
+								 */
+								switch (CommandType.findByValue(c.getType())) {
+								/* these are single partition always */
+								case GETDIR:
+								case ATTR:
+								case OPEN:
+								case RELEASE:
+								case READ_BLOCKS:
+									// no need to signal
+									break;
+								/* these might be replicated */
+								case CHMOD: 
+								case CHOWN:
+								case TRUNCATE:
+								case WRITE_BLOCKS:
+								case UTIME:
+									if (c.getInvolvedPartitions().size() > 1) {
+										signal(c.getReqId(), new Signal(partition, true), c.getInvolvedPartitions());
+									}
+									break;
+								/* these might be multi-partition */
+								case RMDIR:
+								case MKDIR:
+								case MKNOD:
+								case SYMLINK:
+								case UNLINK:
+									if (c.getInvolvedPartitions().size() > 1) {
+										signal(c.getReqId(), new Signal(partition, true), c.getInvolvedPartitions());
+									}
+									break;
+								/* rename is a special case */
+								case RENAME:
+									if (c.getInvolvedPartitions().size() > 1) {
+										// TODO: implement
+									}
+									break;
+								default:
+									break;
+								}
+								// add command to queue
 								commands.add(c);
 							}
 						}
@@ -105,11 +153,11 @@ public class CommunicationService {
 	 * @param command
 	 * @return A FutureDecision that can be waited on
 	 */
-	public void amcast(Command command, Set<Byte> partitions) throws FSError {
+	public void amcast(Command command) throws FSError {
 		// right now, it either sends to the given partition or to the global ring
 		byte ringid = GLOBAL_RING;
-		if (partitions.size() == 1) {
-			ringid = partitions.iterator().next().byteValue();
+		if (command.getInvolvedPartitions().size() == 1) {
+			ringid = command.getInvolvedPartitions().iterator().next().byteValue();
 		}
 		// FIXME: right now its not possible to submit to rings the replica is not part of
 		System.out.println("Submitting command " + command.getReqId() + " to ring " + ringid);
@@ -130,12 +178,15 @@ public class CommunicationService {
 	 * @param command
 	 * @throws FSError
 	 */
-	public void signal(long reqId, Signal signal, Set<Byte> partitions) throws FSError {
+	public void signal(long reqId, Signal signal, Set<Byte> involvedPartitions) throws FSError {
+		// FIXME: only one replica sends the signal: we just picked id 2
+		if (id != 2) {
+			return;
+		}
 		// right now it just sends signals to the big ring
-		Command cmd = new Command(CommandType.SIGNAL.getValue(), reqId, 0);
+		Command cmd = new Command(CommandType.SIGNAL.getValue(), reqId, 0, involvedPartitions);
 		cmd.setSignal(signal);
-		// TODO: right now signals are sent to global ring
-		this.amcast(cmd, Sets.newHashSet(Byte.valueOf((byte)0)));
+		this.amcast(cmd);
 	}
 	
 	public BlockingQueue<Command> getCommands() {

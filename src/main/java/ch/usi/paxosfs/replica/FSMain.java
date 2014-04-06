@@ -86,7 +86,7 @@ public class FSMain {
 		}
 		
 		// start communication service
-		final CommunicationService comm = new CommunicationService(node);
+		final CommunicationService comm = new CommunicationService(args.replicaId, args.replicaPartition, node);
 		comm.start();
 		
 		Runtime.getRuntime().addShutdownHook(new Thread(){

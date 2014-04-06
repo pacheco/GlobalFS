@@ -194,4 +194,5 @@ struct Command {
     20: optional ReleaseCmd release
     21: optional StatFsCmd statfs
     22: optional Signal signal
+    23: set<byte> involvedPartitions
 }

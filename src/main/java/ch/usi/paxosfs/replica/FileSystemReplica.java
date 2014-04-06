@@ -58,7 +58,7 @@ public class FileSystemReplica implements Runnable {
 		this.pendingCommands = new ConcurrentHashMap<Long, CommandResult>();
 		this.signalsReceived = new LinkedList<Command>();
 		this.id = id;
-		this.localPartition = partition;
+		this.localPartition = Byte.valueOf(partition);
 		this.openFiles = new HashMap<Long, FileNode>();
 		this.zoohost = zoohost;
 		this.host = host;
@@ -80,7 +80,7 @@ public class FileSystemReplica implements Runnable {
 	@Override
 	public void run() {
 		// start thrift server
-		this.thriftHandler = new FuseOpsHandler(id, localPartition, this, new TwoPartitionOracle("/a", "/b"));
+		this.thriftHandler = new FuseOpsHandler(id, localPartition.byteValue(), this, new TwoPartitionOracle("/a", "/b"));
 		TProcessor fuseProcessor = new FuseOps.Processor<FuseOpsHandler>(this.thriftHandler);
 		TServerTransport serverTransport;
 		try {
@@ -107,7 +107,7 @@ public class FileSystemReplica implements Runnable {
 		this.manager = new ReplicaManager(this.zoohost);
 		try {
 			this.manager.start();
-			this.manager.registerReplica(this.localPartition, this.id, this.host + ":" + Integer.toString(this.port));
+			this.manager.registerReplica(this.localPartition.byteValue(), this.id, this.host + ":" + Integer.toString(this.port));
 		} catch (KeeperException | InterruptedException | IOException e) {
 			e.printStackTrace();
 			return;
@@ -157,11 +157,6 @@ public class FileSystemReplica implements Runnable {
 			/* -------------------------------- */
 			case MKNOD: {
 				System.out.println("mknod");
-				Set<Byte> involvedPartitions = unionOf(c.getMknod().getParentPartition(), c.getMknod().getPartition());
-				if (!involvedPartitions.contains(localPartition)) {
-					break; // not for us
-				}
-				boolean isSinglePartition = involvedPartitions.size() == 1;
 				
 				// if the create fails here, there is no need for signals, the other partitions also fail
 				fs.createFile(c.getMknod().getPath(), 
@@ -170,13 +165,10 @@ public class FileSystemReplica implements Runnable {
 					c.getMknod().getUid(), 
 					c.getMknod().getGid());
 				
-				if (!isSinglePartition) {
-					// send signal
-					involvedPartitions.remove(localPartition);
-					comm.signal(c.getReqId(), new Signal(localPartition.byteValue(), true), involvedPartitions);
+				if (c.getInvolvedPartitions().size() > 1) {
 					// wait for other signals
-					for (Byte part: involvedPartitions) {
-						// not possible for other partitions to fail (if this succeeded), no need to check signal.success
+					for (Byte part: c.getInvolvedPartitions()) {
+						if (part == localPartition) continue;
 						this.waitForSignal(c.getReqId(), part.byteValue());
 					}						
 				}
@@ -188,9 +180,7 @@ public class FileSystemReplica implements Runnable {
 			/* -------------------------------- */
 			case GETDIR: {
 				System.out.println("getdir");
-				if (!c.getGetdir().getPartition().contains(localPartition)) {
-					break; // not for us
-				}
+
 				Node n = fs.get(c.getGetdir().getPath());
 				if (!n.isDir()) {
 					throw new FSError(FuseException.ENOTDIR, "Not a directory");
@@ -201,6 +191,8 @@ public class FileSystemReplica implements Runnable {
 				for (String child: dir.getChildren()) {
 					entries.add(new DirEntry(child, 0, dir.getChild(child).typeMode()));
 				}
+				
+				// read-only. No need to wait for signals
 				res.setSuccess(true);
 				res.setResponse(entries);
 				break;
@@ -208,26 +200,17 @@ public class FileSystemReplica implements Runnable {
 			/* -------------------------------- */
 			case MKDIR: {
 				System.out.println("mkdir");
-				Set<Byte> involvedPartitions = unionOf(c.getMkdir().getParentPartition(), c.getMkdir().getPartition());
-				if (!involvedPartitions.contains(localPartition)) {
-					break; // not for us
-				}
-				boolean isSinglePartition = involvedPartitions.size() == 1;
-				
-				// if the create fails here, there is no need for signals, the other partitions also fail
+
 				fs.createDir(c.getMkdir().getPath(), 
 					c.getMkdir().getMode(), 
 					c.getReqTime(), 
 					c.getMkdir().getUid(), 
 					c.getMkdir().getGid());
 				
-				if (!isSinglePartition) {
-					// send signal
-					involvedPartitions.remove(localPartition);
-					comm.signal(c.getReqId(), new Signal(localPartition.byteValue(), true), involvedPartitions);
+				if (c.getInvolvedPartitions().size() > 1) {
 					// wait for other signals
-					for (Byte part: involvedPartitions) {
-						// not possible for other partitions to fail (if this succeeded), no need to check signal.success
+					for (Byte part: c.getInvolvedPartitions()) {
+						if (part == localPartition) continue;
 						this.waitForSignal(c.getReqId(), part.byteValue());
 					}						
 				}
@@ -238,26 +221,16 @@ public class FileSystemReplica implements Runnable {
 			/* -------------------------------- */
 			case UNLINK: {
 				System.out.println("unlink");
-				Set<Byte> involvedPartitions = unionOf(c.getUnlink().getParentPartition(), c.getUnlink().getPartition());
-				if (!involvedPartitions.contains(localPartition)) {
-					break; // not for us
-				}
-				boolean isSinglePartition = involvedPartitions.size() == 1;
-				
-				// if the remove fails here, there is no need for signals, the other partitions also fail
+
 				fs.removeFileOrLink(c.getUnlink().getPath());;
 				
-				if (!isSinglePartition) {
-					// send signal
-					involvedPartitions.remove(localPartition);
-					comm.signal(c.getReqId(), new Signal(localPartition.byteValue(), true), involvedPartitions);
+				if (c.getInvolvedPartitions().size() > 1) {
 					// wait for other signals
-					for (Byte part: involvedPartitions) {
-						// not possible for other partitions to fail (if this succeeded), no need to check signal.success
+					for (Byte part: c.getInvolvedPartitions()) {
+						if (part == localPartition) continue;
 						this.waitForSignal(c.getReqId(), part.byteValue());
 					}						
 				}
-			
 				res.setSuccess(true);
 				res.setResponse(null);
 				break;
@@ -265,26 +238,16 @@ public class FileSystemReplica implements Runnable {
 			/* -------------------------------- */
 			case RMDIR: {
 				System.out.println("rmdir");
-				Set<Byte> involvedPartitions = unionOf(c.getRmdir().getParentPartition(), c.getRmdir().getPartition());
-				if (!involvedPartitions.contains(localPartition)) {
-					break; // not for us
-				}
-				boolean isSinglePartition = involvedPartitions.size() == 1;
 				
-				// if the remove fails here, there is no need for signals, the other partitions also fail
 				fs.removeDir(c.getRmdir().getPath());
 				
-				if (!isSinglePartition) {
-					// send signal
-					involvedPartitions.remove(localPartition);
-					comm.signal(c.getReqId(), new Signal(localPartition.byteValue(), true), involvedPartitions);
+				if (c.getInvolvedPartitions().size() > 1) {
 					// wait for other signals
-					for (Byte part: involvedPartitions) {
-						// not possible for other partitions to fail (if this succeeded), no need to check signal.success
+					for (Byte part: c.getInvolvedPartitions()) {
+						if (part == localPartition) continue;
 						this.waitForSignal(c.getReqId(), part.byteValue());
 					}						
 				}
-
 				res.setSuccess(true);
 				res.setResponse(null);
 				break;
@@ -293,16 +256,9 @@ public class FileSystemReplica implements Runnable {
 			case RENAME: {
 				System.out.println("rename");
 				RenameCmd rename = c.getRename();
-				Set<Byte> involvedPartitions = unionOf(
-						rename.getPartitionFrom(), rename.getParentPartitionFrom(),
-						rename.getPartitionTo(), rename.getParentPartitionTo());
-				if (!involvedPartitions.contains(localPartition)) {
-					break; // not for us
-				}
-				boolean isSinglePartition = involvedPartitions.size() == 1;
 
-				if (isSinglePartition) {
-					// no signaling. just move the file
+				if (c.getInvolvedPartitions().size() == 1) {
+					// single partition. just move the file
 					fs.rename(rename.getFrom(), rename.getTo());
 				} else {
 				}				
@@ -377,6 +333,7 @@ public class FileSystemReplica implements Runnable {
 			res.setError(e);
 		}
 		// signal waiting client, if any
+		System.out.println("Replying to client " + c.getReqId());
 		res.countDown();
 	}
 
@@ -442,13 +399,13 @@ public class FileSystemReplica implements Runnable {
 	 *             If there was any error processing the request, FSError will
 	 *             be raised with the error code and message.
 	 */
-	public Object submitCommand(Command c, Set<Byte> partitions) throws FSError {
+	public Object submitCommand(Command c) throws FSError {
 		// We will wait later on the command result
 		CommandResult res = new CommandResult();
 		pendingCommands.put(Long.valueOf(c.getReqId()), res);
 
 		// submit the command
-		comm.amcast(c, partitions);
+		comm.amcast(c);
 
 		// Wait for the command to be applied and result
 		boolean timeout = false;

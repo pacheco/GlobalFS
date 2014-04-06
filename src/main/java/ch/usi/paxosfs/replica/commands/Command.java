@@ -56,6 +56,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
   private static final org.apache.thrift.protocol.TField RELEASE_FIELD_DESC = new org.apache.thrift.protocol.TField("release", org.apache.thrift.protocol.TType.STRUCT, (short)20);
   private static final org.apache.thrift.protocol.TField STATFS_FIELD_DESC = new org.apache.thrift.protocol.TField("statfs", org.apache.thrift.protocol.TType.STRUCT, (short)21);
   private static final org.apache.thrift.protocol.TField SIGNAL_FIELD_DESC = new org.apache.thrift.protocol.TField("signal", org.apache.thrift.protocol.TType.STRUCT, (short)22);
+  private static final org.apache.thrift.protocol.TField INVOLVED_PARTITIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("involvedPartitions", org.apache.thrift.protocol.TType.SET, (short)23);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -84,6 +85,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
   public ReleaseCmd release; // optional
   public StatFsCmd statfs; // optional
   public Signal signal; // optional
+  public Set<Byte> involvedPartitions; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -107,7 +109,8 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     WRITE((short)19, "write"),
     RELEASE((short)20, "release"),
     STATFS((short)21, "statfs"),
-    SIGNAL((short)22, "signal");
+    SIGNAL((short)22, "signal"),
+    INVOLVED_PARTITIONS((short)23, "involvedPartitions");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -164,6 +167,8 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
           return STATFS;
         case 22: // SIGNAL
           return SIGNAL;
+        case 23: // INVOLVED_PARTITIONS
+          return INVOLVED_PARTITIONS;
         default:
           return null;
       }
@@ -254,6 +259,9 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, StatFsCmd.class)));
     tmpMap.put(_Fields.SIGNAL, new org.apache.thrift.meta_data.FieldMetaData("signal", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Signal.class)));
+    tmpMap.put(_Fields.INVOLVED_PARTITIONS, new org.apache.thrift.meta_data.FieldMetaData("involvedPartitions", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.SetMetaData(org.apache.thrift.protocol.TType.SET, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Command.class, metaDataMap);
   }
@@ -264,7 +272,8 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
   public Command(
     int type,
     long reqId,
-    int reqTime)
+    int reqTime,
+    Set<Byte> involvedPartitions)
   {
     this();
     this.type = type;
@@ -273,6 +282,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     setReqIdIsSet(true);
     this.reqTime = reqTime;
     setReqTimeIsSet(true);
+    this.involvedPartitions = involvedPartitions;
   }
 
   /**
@@ -337,6 +347,10 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     if (other.isSetSignal()) {
       this.signal = new Signal(other.signal);
     }
+    if (other.isSetInvolvedPartitions()) {
+      Set<Byte> __this__involvedPartitions = new HashSet<Byte>(other.involvedPartitions);
+      this.involvedPartitions = __this__involvedPartitions;
+    }
   }
 
   public Command deepCopy() {
@@ -369,6 +383,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     this.release = null;
     this.statfs = null;
     this.signal = null;
+    this.involvedPartitions = null;
   }
 
   public int getType() {
@@ -872,6 +887,45 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     }
   }
 
+  public int getInvolvedPartitionsSize() {
+    return (this.involvedPartitions == null) ? 0 : this.involvedPartitions.size();
+  }
+
+  public java.util.Iterator<Byte> getInvolvedPartitionsIterator() {
+    return (this.involvedPartitions == null) ? null : this.involvedPartitions.iterator();
+  }
+
+  public void addToInvolvedPartitions(byte elem) {
+    if (this.involvedPartitions == null) {
+      this.involvedPartitions = new HashSet<Byte>();
+    }
+    this.involvedPartitions.add(elem);
+  }
+
+  public Set<Byte> getInvolvedPartitions() {
+    return this.involvedPartitions;
+  }
+
+  public Command setInvolvedPartitions(Set<Byte> involvedPartitions) {
+    this.involvedPartitions = involvedPartitions;
+    return this;
+  }
+
+  public void unsetInvolvedPartitions() {
+    this.involvedPartitions = null;
+  }
+
+  /** Returns true if field involvedPartitions is set (has been assigned a value) and false otherwise */
+  public boolean isSetInvolvedPartitions() {
+    return this.involvedPartitions != null;
+  }
+
+  public void setInvolvedPartitionsIsSet(boolean value) {
+    if (!value) {
+      this.involvedPartitions = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case TYPE:
@@ -1042,6 +1096,14 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       }
       break;
 
+    case INVOLVED_PARTITIONS:
+      if (value == null) {
+        unsetInvolvedPartitions();
+      } else {
+        setInvolvedPartitions((Set<Byte>)value);
+      }
+      break;
+
     }
   }
 
@@ -1110,6 +1172,9 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     case SIGNAL:
       return getSignal();
 
+    case INVOLVED_PARTITIONS:
+      return getInvolvedPartitions();
+
     }
     throw new IllegalStateException();
   }
@@ -1163,6 +1228,8 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       return isSetStatfs();
     case SIGNAL:
       return isSetSignal();
+    case INVOLVED_PARTITIONS:
+      return isSetInvolvedPartitions();
     }
     throw new IllegalStateException();
   }
@@ -1366,6 +1433,15 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       if (!(this_present_signal && that_present_signal))
         return false;
       if (!this.signal.equals(that.signal))
+        return false;
+    }
+
+    boolean this_present_involvedPartitions = true && this.isSetInvolvedPartitions();
+    boolean that_present_involvedPartitions = true && that.isSetInvolvedPartitions();
+    if (this_present_involvedPartitions || that_present_involvedPartitions) {
+      if (!(this_present_involvedPartitions && that_present_involvedPartitions))
+        return false;
+      if (!this.involvedPartitions.equals(that.involvedPartitions))
         return false;
     }
 
@@ -1595,6 +1671,16 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetInvolvedPartitions()).compareTo(other.isSetInvolvedPartitions());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetInvolvedPartitions()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.involvedPartitions, other.involvedPartitions);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -1806,6 +1892,14 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       }
       first = false;
     }
+    if (!first) sb.append(", ");
+    sb.append("involvedPartitions:");
+    if (this.involvedPartitions == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.involvedPartitions);
+    }
+    first = false;
     sb.append(")");
     return sb.toString();
   }
@@ -2091,6 +2185,24 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 23: // INVOLVED_PARTITIONS
+            if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
+              {
+                org.apache.thrift.protocol.TSet _set208 = iprot.readSetBegin();
+                struct.involvedPartitions = new HashSet<Byte>(2*_set208.size);
+                for (int _i209 = 0; _i209 < _set208.size; ++_i209)
+                {
+                  byte _elem210;
+                  _elem210 = iprot.readByte();
+                  struct.involvedPartitions.add(_elem210);
+                }
+                iprot.readSetEnd();
+              }
+              struct.setInvolvedPartitionsIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -2241,6 +2353,18 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
           oprot.writeFieldEnd();
         }
       }
+      if (struct.involvedPartitions != null) {
+        oprot.writeFieldBegin(INVOLVED_PARTITIONS_FIELD_DESC);
+        {
+          oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, struct.involvedPartitions.size()));
+          for (byte _iter211 : struct.involvedPartitions)
+          {
+            oprot.writeByte(_iter211);
+          }
+          oprot.writeSetEnd();
+        }
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -2322,7 +2446,10 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       if (struct.isSetSignal()) {
         optionals.set(20);
       }
-      oprot.writeBitSet(optionals, 21);
+      if (struct.isSetInvolvedPartitions()) {
+        optionals.set(21);
+      }
+      oprot.writeBitSet(optionals, 22);
       if (struct.isSetType()) {
         oprot.writeI32(struct.type);
       }
@@ -2386,12 +2513,21 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       if (struct.isSetSignal()) {
         struct.signal.write(oprot);
       }
+      if (struct.isSetInvolvedPartitions()) {
+        {
+          oprot.writeI32(struct.involvedPartitions.size());
+          for (byte _iter212 : struct.involvedPartitions)
+          {
+            oprot.writeByte(_iter212);
+          }
+        }
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, Command struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(21);
+      BitSet incoming = iprot.readBitSet(22);
       if (incoming.get(0)) {
         struct.type = iprot.readI32();
         struct.setTypeIsSet(true);
@@ -2493,6 +2629,19 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
         struct.signal = new Signal();
         struct.signal.read(iprot);
         struct.setSignalIsSet(true);
+      }
+      if (incoming.get(21)) {
+        {
+          org.apache.thrift.protocol.TSet _set213 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, iprot.readI32());
+          struct.involvedPartitions = new HashSet<Byte>(2*_set213.size);
+          for (int _i214 = 0; _i214 < _set213.size; ++_i214)
+          {
+            byte _elem215;
+            _elem215 = iprot.readByte();
+            struct.involvedPartitions.add(_elem215);
+          }
+        }
+        struct.setInvolvedPartitionsIsSet(true);
       }
     }
   }
