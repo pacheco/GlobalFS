@@ -28,6 +28,7 @@ import ch.usi.paxosfs.partitioning.TwoPartitionOracle;
 import ch.usi.paxosfs.replica.commands.Command;
 import ch.usi.paxosfs.replica.commands.CommandType;
 import ch.usi.paxosfs.replica.commands.RenameCmd;
+import ch.usi.paxosfs.replica.commands.RenameData;
 import ch.usi.paxosfs.replica.commands.Signal;
 import ch.usi.paxosfs.rpc.Attr;
 import ch.usi.paxosfs.rpc.DirEntry;
@@ -299,23 +300,11 @@ public class FileSystemReplica implements Runnable {
 					break; // not for us
 				}
 				boolean isSinglePartition = involvedPartitions.size() == 1;
-				
+
 				if (isSinglePartition) {
-					// no signaling. just move file
+					// no signaling. just move the file
 					fs.rename(rename.getFrom(), rename.getTo());
-				}
-				
-				if (!isSinglePartition) {
-/*					
-					// send signal
-					involvedPartitions.remove(localPartition);
-					comm.signal(c.getReqId(), new Signal(localPartition.byteValue(), true), involvedPartitions);
-					// wait for other signals
-					for (Byte part: involvedPartitions) {
-						// not possible for other partitions to fail (if this succeeded), no need to check signal.success
-						this.waitForSignal(c.getReqId(), part.byteValue());
-					}						
-*/
+				} else {
 				}				
 				
 				res.setSuccess(true);
@@ -389,6 +378,17 @@ public class FileSystemReplica implements Runnable {
 		}
 		// signal waiting client, if any
 		res.countDown();
+	}
+
+	private RenameData renameDataFromNode(Node n) {
+		Attr a = n.getAttributes();
+		RenameData r = new RenameData(a.getMode() | n.typeMode(), a.getRdev(), a.getUid(), a.getGid(), a.getSize(), null, a.getAtime(), a.getMtime(), a.getCtime());
+		if (n.isFile()) {
+			r.setBlocks(((FileNode)n).getBlocks());
+		} else {
+			r.setBlocksIsSet(false);
+		}
+		return r;
 	}
 
 	/**

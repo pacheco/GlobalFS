@@ -11,4 +11,5 @@ public interface FileSystem {
 	public void removeFileOrLink(String path) throws FSError;
 	public void removeDir(String path) throws FSError;
 	public void rename(String from, String to) throws FSError;
+	public DirNode getDir(String path) throws FSError;
 }

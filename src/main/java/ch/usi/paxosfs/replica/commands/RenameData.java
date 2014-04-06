@@ -56,7 +56,7 @@ public class RenameData implements org.apache.thrift.TBase<RenameData, RenameDat
   public int uid; // required
   public int gid; // required
   public long size; // required
-  public List<Long> blocks; // required
+  public List<ch.usi.paxosfs.rpc.DBlock> blocks; // required
   public int atime; // required
   public int mtime; // required
   public int ctime; // required
@@ -168,7 +168,7 @@ public class RenameData implements org.apache.thrift.TBase<RenameData, RenameDat
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     tmpMap.put(_Fields.BLOCKS, new org.apache.thrift.meta_data.FieldMetaData("blocks", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64))));
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ch.usi.paxosfs.rpc.DBlock.class))));
     tmpMap.put(_Fields.ATIME, new org.apache.thrift.meta_data.FieldMetaData("atime", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.MTIME, new org.apache.thrift.meta_data.FieldMetaData("mtime", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -188,7 +188,7 @@ public class RenameData implements org.apache.thrift.TBase<RenameData, RenameDat
     int uid,
     int gid,
     long size,
-    List<Long> blocks,
+    List<ch.usi.paxosfs.rpc.DBlock> blocks,
     int atime,
     int mtime,
     int ctime)
@@ -224,7 +224,10 @@ public class RenameData implements org.apache.thrift.TBase<RenameData, RenameDat
     this.gid = other.gid;
     this.size = other.size;
     if (other.isSetBlocks()) {
-      List<Long> __this__blocks = new ArrayList<Long>(other.blocks);
+      List<ch.usi.paxosfs.rpc.DBlock> __this__blocks = new ArrayList<ch.usi.paxosfs.rpc.DBlock>(other.blocks.size());
+      for (ch.usi.paxosfs.rpc.DBlock other_element : other.blocks) {
+        __this__blocks.add(new ch.usi.paxosfs.rpc.DBlock(other_element));
+      }
       this.blocks = __this__blocks;
     }
     this.atime = other.atime;
@@ -376,22 +379,22 @@ public class RenameData implements org.apache.thrift.TBase<RenameData, RenameDat
     return (this.blocks == null) ? 0 : this.blocks.size();
   }
 
-  public java.util.Iterator<Long> getBlocksIterator() {
+  public java.util.Iterator<ch.usi.paxosfs.rpc.DBlock> getBlocksIterator() {
     return (this.blocks == null) ? null : this.blocks.iterator();
   }
 
-  public void addToBlocks(long elem) {
+  public void addToBlocks(ch.usi.paxosfs.rpc.DBlock elem) {
     if (this.blocks == null) {
-      this.blocks = new ArrayList<Long>();
+      this.blocks = new ArrayList<ch.usi.paxosfs.rpc.DBlock>();
     }
     this.blocks.add(elem);
   }
 
-  public List<Long> getBlocks() {
+  public List<ch.usi.paxosfs.rpc.DBlock> getBlocks() {
     return this.blocks;
   }
 
-  public RenameData setBlocks(List<Long> blocks) {
+  public RenameData setBlocks(List<ch.usi.paxosfs.rpc.DBlock> blocks) {
     this.blocks = blocks;
     return this;
   }
@@ -526,7 +529,7 @@ public class RenameData implements org.apache.thrift.TBase<RenameData, RenameDat
       if (value == null) {
         unsetBlocks();
       } else {
-        setBlocks((List<Long>)value);
+        setBlocks((List<ch.usi.paxosfs.rpc.DBlock>)value);
       }
       break;
 
@@ -967,11 +970,12 @@ public class RenameData implements org.apache.thrift.TBase<RenameData, RenameDat
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list200 = iprot.readListBegin();
-                struct.blocks = new ArrayList<Long>(_list200.size);
+                struct.blocks = new ArrayList<ch.usi.paxosfs.rpc.DBlock>(_list200.size);
                 for (int _i201 = 0; _i201 < _list200.size; ++_i201)
                 {
-                  long _elem202;
-                  _elem202 = iprot.readI64();
+                  ch.usi.paxosfs.rpc.DBlock _elem202;
+                  _elem202 = new ch.usi.paxosfs.rpc.DBlock();
+                  _elem202.read(iprot);
                   struct.blocks.add(_elem202);
                 }
                 iprot.readListEnd();
@@ -1038,10 +1042,10 @@ public class RenameData implements org.apache.thrift.TBase<RenameData, RenameDat
       if (struct.blocks != null) {
         oprot.writeFieldBegin(BLOCKS_FIELD_DESC);
         {
-          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I64, struct.blocks.size()));
-          for (long _iter203 : struct.blocks)
+          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.blocks.size()));
+          for (ch.usi.paxosfs.rpc.DBlock _iter203 : struct.blocks)
           {
-            oprot.writeI64(_iter203);
+            _iter203.write(oprot);
           }
           oprot.writeListEnd();
         }
@@ -1120,9 +1124,9 @@ public class RenameData implements org.apache.thrift.TBase<RenameData, RenameDat
       if (struct.isSetBlocks()) {
         {
           oprot.writeI32(struct.blocks.size());
-          for (long _iter204 : struct.blocks)
+          for (ch.usi.paxosfs.rpc.DBlock _iter204 : struct.blocks)
           {
-            oprot.writeI64(_iter204);
+            _iter204.write(oprot);
           }
         }
       }
@@ -1163,12 +1167,13 @@ public class RenameData implements org.apache.thrift.TBase<RenameData, RenameDat
       }
       if (incoming.get(5)) {
         {
-          org.apache.thrift.protocol.TList _list205 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.I64, iprot.readI32());
-          struct.blocks = new ArrayList<Long>(_list205.size);
+          org.apache.thrift.protocol.TList _list205 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.blocks = new ArrayList<ch.usi.paxosfs.rpc.DBlock>(_list205.size);
           for (int _i206 = 0; _i206 < _list205.size; ++_i206)
           {
-            long _elem207;
-            _elem207 = iprot.readI64();
+            ch.usi.paxosfs.rpc.DBlock _elem207;
+            _elem207 = new ch.usi.paxosfs.rpc.DBlock();
+            _elem207.read(iprot);
             struct.blocks.add(_elem207);
           }
         }

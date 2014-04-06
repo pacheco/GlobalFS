@@ -84,7 +84,6 @@ public class PaxosFileSystem implements Filesystem3 {
 			}
 			attrSetterFill(attr, getattrSetter);
 		} catch (TException e) {
-			e.printStackTrace();
 			throw thriftError(e);
 		}
 		return 0;
@@ -97,7 +96,6 @@ public class PaxosFileSystem implements Filesystem3 {
 				link.append(client[partition].readlink(path));
 			}
 		} catch (TException e) {
-			e.printStackTrace();
 			throw thriftError(e);
 		}
 		return 0;
@@ -114,7 +112,6 @@ public class PaxosFileSystem implements Filesystem3 {
 				dirFiller.add(entry.getName(), entry.getInode(), entry.getMode());
 			}
 		} catch (TException e) {
-			e.printStackTrace();
 			throw thriftError(e);
 		}
 		return 0;
@@ -127,7 +124,6 @@ public class PaxosFileSystem implements Filesystem3 {
 				client[partition].mknod(path, mode, rdev, callerUid(), callerGid());
 			}
 		} catch (TException e) {
-			e.printStackTrace();
 			throw thriftError(e);
 		}
 		return 0;
@@ -140,7 +136,6 @@ public class PaxosFileSystem implements Filesystem3 {
 				client[partition].mkdir(path, mode, callerUid(), callerGid());
 			}
 		} catch (TException e) {
-			e.printStackTrace();
 			throw thriftError(e);
 		}
 		return 0;
@@ -153,7 +148,6 @@ public class PaxosFileSystem implements Filesystem3 {
 				client[partition].unlink(path);
 			}
 		} catch (TException e) {
-			e.printStackTrace();
 			throw thriftError(e);
 		}
 		return 0;
@@ -166,7 +160,6 @@ public class PaxosFileSystem implements Filesystem3 {
 				client[partition].rmdir(path);
 			}
 		} catch (TException e) {
-			e.printStackTrace();
 			throw thriftError(e);
 		}
 		return 0;
@@ -179,7 +172,6 @@ public class PaxosFileSystem implements Filesystem3 {
 				client[partition].symlink(from, to, callerUid(), callerGid());
 			}
 		} catch (TException e) {
-			e.printStackTrace();
 			throw thriftError(e);
 		}
 		return 0;
@@ -192,7 +184,6 @@ public class PaxosFileSystem implements Filesystem3 {
 				client[partition].rename(from, to);
 			}
 		} catch (TException e) {
-			e.printStackTrace();
 			throw thriftError(e);
 		}
 		return 0;
@@ -209,7 +200,6 @@ public class PaxosFileSystem implements Filesystem3 {
 				client[partition].chmod(path, mode);
 			}
 		} catch (TException e) {
-			e.printStackTrace();
 			throw thriftError(e);
 		}
 		return 0;
@@ -222,7 +212,6 @@ public class PaxosFileSystem implements Filesystem3 {
 				client[partition].chown(path, uid, gid);
 			}
 		} catch (TException e) {
-			e.printStackTrace();
 			throw thriftError(e);
 		}
 		return 0;
@@ -235,7 +224,6 @@ public class PaxosFileSystem implements Filesystem3 {
 				client[partition].truncate(path, size);
 			}
 		} catch (TException e) {
-			e.printStackTrace();
 			throw thriftError(e);
 		}
 		return 0;
@@ -248,7 +236,6 @@ public class PaxosFileSystem implements Filesystem3 {
 				client[partition].utime(path, atime, mtime);
 			}
 		} catch (TException e) {
-			e.printStackTrace();
 			throw thriftError(e);
 		}
 		return 0;
@@ -263,7 +250,6 @@ public class PaxosFileSystem implements Filesystem3 {
 			statfsSetter.set(s.getBlockSize(), s.getBlocks(), s.getBlocksFree(), s.getBlocksAvail(),
 					s.getFiles(), s.getFilesFree(), s.getNamelen());
 		} catch (TException e) {
-			e.printStackTrace();
 			throw thriftError(e);
 		}
 		return 0;
@@ -278,7 +264,6 @@ public class PaxosFileSystem implements Filesystem3 {
 			}
 			openSetter.setFh(h);
 		} catch (TException e) {
-			e.printStackTrace();
 			throw thriftError(e);
 		}
 		return 0;
@@ -296,7 +281,6 @@ public class PaxosFileSystem implements Filesystem3 {
 			// write data to client using buf.put()
 			buf.put("Placeholder for content".getBytes());
 		} catch (TException e) {
-			e.printStackTrace();
 			throw thriftError(e);
 		}
 		return 0;
@@ -330,7 +314,6 @@ public class PaxosFileSystem implements Filesystem3 {
 				client[partition].writeBlocks(path, (FileHandle) fh, offset, blocks);
 			}
 		} catch (TException e) {
-			e.printStackTrace();
 			throw thriftError(e);
 		}
 		return 0;
@@ -348,7 +331,6 @@ public class PaxosFileSystem implements Filesystem3 {
 				client[partition].release(path, (FileHandle) fh, flags);
 			}
 		} catch (TException e) {
-			e.printStackTrace();
 			throw thriftError(e);
 		}
 		return 0;

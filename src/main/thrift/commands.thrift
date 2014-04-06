@@ -159,7 +159,7 @@ struct RenameData {
     3: i32 uid
     4: i32 gid
     5: i64 size
-    6: list<i64> blocks
+    6: list<fuseops.DBlock> blocks
     7: i32 atime
     8: i32 mtime
     9: i32 ctime

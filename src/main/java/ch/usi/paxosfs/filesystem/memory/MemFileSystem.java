@@ -116,8 +116,8 @@ public class MemFileSystem implements FileSystem {
 		parent.removeChild(Paths.basename(name));
 	}
 
-	// helper to get a directory. Throws exception if not found or if not a directory
-	private DirNode getDir(String path) throws FSError {
+	@Override
+	public DirNode getDir(String path) throws FSError {
 		Node n = this.get(path);
 		if (!n.isDir()){
 			throw notDir(path);
