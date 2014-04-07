@@ -7,4 +7,5 @@ public interface DirNode extends Node {
 	Node getChild(String name);
 	void addChild(String name, Node child);
 	Node removeChild(String name);
+	boolean isEmpty();
 }

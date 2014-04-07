@@ -16,6 +16,7 @@ import ch.usi.da.paxos.ring.RingDescription;
 import ch.usi.da.paxos.storage.Decision;
 import ch.usi.paxosfs.replica.commands.Command;
 import ch.usi.paxosfs.replica.commands.CommandType;
+import ch.usi.paxosfs.replica.commands.RenameCmd;
 import ch.usi.paxosfs.replica.commands.Signal;
 import ch.usi.paxosfs.rpc.FSError;
 
@@ -39,7 +40,7 @@ public class CommunicationService {
 	private Thread learnerThr;
 	private volatile boolean stop = false;
 	private int id;
-	private byte partition; 
+	private Byte partition; 
 	
 	/** 
 	 * Expects to receive a running paxos Node
@@ -51,7 +52,7 @@ public class CommunicationService {
 		this.signals = new LinkedBlockingQueue<>();
 		this.proposers = new HashMap<Byte, Proposer>();
 		this.id = id;
-		this.partition = partition;
+		this.partition = Byte.valueOf(partition);
 		for (RingDescription r: paxos.getRings()) {
 			Proposer p = paxos.getProposer(r.getRingID());
 			if (p != null) {
@@ -75,7 +76,7 @@ public class CommunicationService {
 						if (!d.getValue().isSkip()) {
 							Command c = new Command();
 							deserializer.deserialize(c, d.getValue().getValue());
-							if (!c.getInvolvedPartitions().contains(Byte.valueOf(partition))) {
+							if (!c.getInvolvedPartitions().contains(partition)) {
 								// command does not involve this partition. Ignore
 								System.out.println("Got a command I dont care about. Discarding...");
 								continue;
@@ -102,7 +103,7 @@ public class CommunicationService {
 								case WRITE_BLOCKS:
 								case UTIME:
 									if (c.getInvolvedPartitions().size() > 1) {
-										signal(c.getReqId(), new Signal(partition, true), c.getInvolvedPartitions());
+										signal(c.getReqId(), new Signal(partition.byteValue(), true), c.getInvolvedPartitions());
 									}
 									break;
 								/* these might be multi-partition */
@@ -112,13 +113,18 @@ public class CommunicationService {
 								case SYMLINK:
 								case UNLINK:
 									if (c.getInvolvedPartitions().size() > 1) {
-										signal(c.getReqId(), new Signal(partition, true), c.getInvolvedPartitions());
+										signal(c.getReqId(), new Signal(partition.byteValue(), true), c.getInvolvedPartitions());
 									}
 									break;
 								/* rename is a special case */
 								case RENAME:
+									RenameCmd r = c.getRename();
 									if (c.getInvolvedPartitions().size() > 1) {
-										// TODO: implement
+										if (!r.getPartitionFrom().contains(partition)
+												&& !r.getPartitionTo().contains(partition)) {
+											// if only part of the partitions with the parent directories, can signal now
+											signal(c.getReqId(), new Signal(partition.byteValue(), true), c.getInvolvedPartitions());
+										}
 									}
 									break;
 								default:

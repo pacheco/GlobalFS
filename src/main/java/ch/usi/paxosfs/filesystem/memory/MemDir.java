@@ -40,4 +40,8 @@ public class MemDir extends MemNode implements DirNode {
 	public int typeMode() {
 		return FuseFtypeConstants.TYPE_DIR;
 	}
+	
+	public boolean isEmpty() {
+		return this.children.isEmpty();
+	}
 }

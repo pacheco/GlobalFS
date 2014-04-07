@@ -23,6 +23,8 @@ import ch.usi.paxosfs.filesystem.DirNode;
 import ch.usi.paxosfs.filesystem.FileNode;
 import ch.usi.paxosfs.filesystem.FileSystem;
 import ch.usi.paxosfs.filesystem.Node;
+import ch.usi.paxosfs.filesystem.memory.MemDir;
+import ch.usi.paxosfs.filesystem.memory.MemFile;
 import ch.usi.paxosfs.filesystem.memory.MemFileSystem;
 import ch.usi.paxosfs.partitioning.TwoPartitionOracle;
 import ch.usi.paxosfs.replica.commands.Command;
@@ -34,7 +36,12 @@ import ch.usi.paxosfs.rpc.Attr;
 import ch.usi.paxosfs.rpc.DirEntry;
 import ch.usi.paxosfs.rpc.FSError;
 import ch.usi.paxosfs.rpc.FuseOps;
+import ch.usi.paxosfs.util.Paths;
+
+import com.google.common.collect.Sets;
+
 import fuse.FuseException;
+import fuse.FuseFtypeConstants;
 
 public class FileSystemReplica implements Runnable {
 	public int WORKER_THREADS = 20;
@@ -143,7 +150,7 @@ public class FileSystemReplica implements Runnable {
 			// handle each command type
 			switch (CommandType.findByValue(c.getType())) {
 			case ATTR: {
-				System.out.println("attr");
+				System.out.println("attr " + c.getAttr().getPath());
 				if (!c.getAttr().getPartition().contains(this.localPartition)) {
 					break; // not for us
 				}
@@ -179,7 +186,7 @@ public class FileSystemReplica implements Runnable {
 			}
 			/* -------------------------------- */
 			case GETDIR: {
-				System.out.println("getdir");
+				System.out.println("getdir " + c.getGetdir().getPath());
 
 				Node n = fs.get(c.getGetdir().getPath());
 				if (!n.isDir()) {
@@ -254,14 +261,136 @@ public class FileSystemReplica implements Runnable {
 			}
 			/* -------------------------------- */
 			case RENAME: {
-				System.out.println("rename");
-				RenameCmd rename = c.getRename();
+				System.out.println("rename " + c.getRename().getFrom() + " " + c.getRename().getTo());
+				RenameCmd r = c.getRename();
+				// some partition in partitionTo is not in partitionFrom -> it will need data
+				boolean toNeedsData = !Sets.difference(r.getPartitionTo(), r.getPartitionFrom()).isEmpty();
+				// some partition in parentPartitionTo is not in partitionFrom -> it will need data
+				boolean parentToNeedsData = !Sets.difference(r.getParentPartitionTo(), r.getPartitionFrom()).isEmpty();
+				boolean signalWithData = toNeedsData || parentToNeedsData; 
 
 				if (c.getInvolvedPartitions().size() == 1) {
 					// single partition. just move the file
-					fs.rename(rename.getFrom(), rename.getTo());
+					fs.rename(r.getFrom(), r.getTo());
 				} else {
-				}				
+					/* 
+					 * partitions in partitionFrom send the first signal (checks origin exists) and file data 
+					 */					
+					if (r.getPartitionFrom().contains(localPartition)) {
+						Signal s = new Signal();
+						s.setFromPartition(localPartition.byteValue());
+						try {
+							Node n = fs.get(r.getFrom());
+							if (signalWithData) {
+								if (n.isDir() && !((DirNode) n).isEmpty()) {
+									// TODO: we don't support moving non-empty directories accross partitions
+									throw new FSError(FuseException.ENOTEMPTY, "Moving non-empty directory accross partitions");
+								}
+								s.setRenameData(this.renameDataFromNode(n));
+							}
+							s.setSuccess(true);
+							// partitionFrom signals if file exists (possibly with data)
+							comm.signal(c.getReqId(), s, c.getInvolvedPartitions());
+						} catch (FSError e) {
+							// origin does not exist.
+							// FIXME: we fail early by throwing e. Is it ok (linearizable) to not wait for signals in this case?
+							s.setSuccess(false);
+							s.setError(e);
+							comm.signal(c.getReqId(), s, c.getInvolvedPartitions());
+							throw e;
+						}
+					}
+					
+					/* 
+					 * wait for signals 
+					 */
+					boolean allSuccess = true;
+					RenameData data = null;
+					FSError error = null;
+					if (c.getInvolvedPartitions().size() > 1) {
+						// wait for other signals
+						for (Byte part: c.getInvolvedPartitions()) {
+							if (part == localPartition) continue;
+							Signal s = this.waitForSignal(c.getReqId(), part.byteValue());
+							if (!s.isSuccess()) {
+								allSuccess = false;
+								error = s.getError();
+							} else if (s.isSetRenameData()) {
+								data = s.getRenameData();
+							}
+						}
+					}
+					
+					if (allSuccess) {
+						/*
+						 * partitions in To check if operation fails on its side and signals the others
+						 */
+						if (r.getPartitionTo().contains(localPartition)) {
+							try {
+								DirNode d = fs.getDir(Paths.dirname(r.getTo()));
+								Node n = d.getChild(Paths.basename(r.getTo()));
+								// check if the rename can proceed. It fails when:
+								// - origin and destination differ in type
+								// - destination is directory and is not empty
+								if (n != null) {
+									boolean originIsDir = (signalWithData && renameDataOriginIsDir(data)) || 
+											(!signalWithData && fs.get(r.getFrom()).isDir()); 
+									if (n.isDir()) {
+										if (!originIsDir) {
+											throw new FSError(FuseException.ENOTDIR, "Not a directory");
+										} else if (!((DirNode)n).isEmpty()) {
+											throw new FSError(FuseException.ENOTEMPTY, "Directory not empty");
+										}
+									} else if (!n.isDir() && originIsDir) {
+										throw new FSError(FuseException.EISDIR, "Is a directory");
+									}
+								}
+								// signal that operation can succeed
+								comm.signal(c.getReqId(), new Signal(localPartition.byteValue(), true), c.getInvolvedPartitions());
+							} catch (FSError e) {
+								Signal s = new Signal(localPartition.byteValue(), false);
+								s.setError(e);
+								comm.signal(c.getReqId(), s, c.getInvolvedPartitions());
+								// FIXME: we fail early by throwing e. Is it ok (linearizable) to not wait for signals in this case?
+								throw e;
+							}
+						}
+						
+						/*
+						 * Perform the rename
+						 */
+						if (signalWithData) {
+							Node removedNode = null; // this is used because a partition does not receive a signal from itself (so it can't use signal data)
+							if (r.getPartitionFrom().contains(localPartition) || r.getParentPartitionFrom().contains(localPartition)) {
+								// remove node
+								DirNode d = fs.getDir(Paths.dirname(r.getFrom()));
+								removedNode = d.removeChild(Paths.basename(r.getFrom()));
+							}
+							if (r.getPartitionTo().contains(localPartition)
+									|| r.getParentPartitionTo().contains(localPartition)) { // TODO: parentTo does not need "full" file
+								Node n = (data == null) ? removedNode : renameDataNewNode(data);
+								DirNode d = fs.getDir(Paths.dirname(r.getTo()));
+								d.addChild(Paths.basename(r.getTo()), n);
+							}
+						} else { // no need of the data from signal
+							if (r.getPartitionTo().contains(localPartition) 
+									|| r.getParentPartitionTo().contains(localPartition)) {
+								// to and parentTo have the origin. Just rename
+								fs.rename(r.getFrom(), r.getTo());
+							} else {
+								// remove node
+								DirNode d = fs.getDir(Paths.dirname(r.getFrom()));
+								d.removeChild(Paths.basename(r.getFrom()));
+							}
+						}
+					} else { // some signal received was NOT success
+						if (r.getPartitionTo().contains(localPartition)) {
+							// partitionTo still needs to send its signal
+							comm.signal(c.getReqId(), new Signal(localPartition.byteValue(), false), c.getInvolvedPartitions());
+						}
+						throw error;
+					}
+				}
 				
 				res.setSuccess(true);
 				res.setResponse(null);
@@ -336,7 +465,31 @@ public class FileSystemReplica implements Runnable {
 		System.out.println("Replying to client " + c.getReqId());
 		res.countDown();
 	}
+	
+	private boolean renameDataOriginIsDir(RenameData r) {
+		return (r.getMode() & FuseFtypeConstants.TYPE_DIR) != 0;
+	}
 
+	private Node renameDataNewNode(RenameData r) {
+		Node n;
+		if ((r.getMode() & FuseFtypeConstants.TYPE_DIR) != 0) {
+			n = new MemDir(r.getMode(), r.getCtime(), r.getUid(), r.getGid());
+			n.getAttributes().setAtime(r.getAtime())
+				.setCtime(r.getCtime())
+				.setMtime(r.getMtime());
+		} else if ((r.getMode() & FuseFtypeConstants.TYPE_FILE) != 0) {
+			n = new MemFile(r.getMode(), r.getCtime(), r.getUid(), r.getGid());
+			n.getAttributes().setAtime(r.getAtime())
+				.setCtime(r.getCtime())
+				.setMtime(r.getMtime())
+				.setBlocks(0);
+			((MemFile) n).setData(r.getBlocks());
+		} else {
+			throw new RuntimeException("symlinks not supported!!!!");
+		}
+		return n;
+	}
+	
 	private RenameData renameDataFromNode(Node n) {
 		Attr a = n.getAttributes();
 		RenameData r = new RenameData(a.getMode() | n.typeMode(), a.getRdev(), a.getUid(), a.getGid(), a.getSize(), null, a.getAtime(), a.getMtime(), a.getCtime());
