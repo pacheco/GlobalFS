@@ -3,6 +3,7 @@ package ch.usi.paxosfs.filesystem;
 import java.util.List;
 
 import ch.usi.paxosfs.rpc.DBlock;
+import ch.usi.paxosfs.rpc.ReadResult;
 
 public interface FileNode extends Node {
 	/**
@@ -16,7 +17,7 @@ public interface FileNode extends Node {
 	 * @param bytes
 	 * @return
 	 */
-	List<DBlock> getBlocks(long offset, long bytes);
+	ReadResult getBlocks(long offset, long bytes);
 	/**
 	 * Set file contents
 	 * @param blocks

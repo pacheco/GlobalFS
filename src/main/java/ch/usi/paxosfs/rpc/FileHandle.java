@@ -35,7 +35,8 @@ import org.slf4j.LoggerFactory;
 public class FileHandle implements org.apache.thrift.TBase<FileHandle, FileHandle._Fields>, java.io.Serializable, Cloneable, Comparable<FileHandle> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("FileHandle");
 
-  private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.I32, (short)1);
+  private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.I64, (short)1);
+  private static final org.apache.thrift.protocol.TField FLAGS_FIELD_DESC = new org.apache.thrift.protocol.TField("flags", org.apache.thrift.protocol.TType.I32, (short)2);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -43,11 +44,13 @@ public class FileHandle implements org.apache.thrift.TBase<FileHandle, FileHandl
     schemes.put(TupleScheme.class, new FileHandleTupleSchemeFactory());
   }
 
-  public int id; // required
+  public long id; // required
+  public int flags; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    ID((short)1, "id");
+    ID((short)1, "id"),
+    FLAGS((short)2, "flags");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -64,6 +67,8 @@ public class FileHandle implements org.apache.thrift.TBase<FileHandle, FileHandl
       switch(fieldId) {
         case 1: // ID
           return ID;
+        case 2: // FLAGS
+          return FLAGS;
         default:
           return null;
       }
@@ -105,11 +110,14 @@ public class FileHandle implements org.apache.thrift.TBase<FileHandle, FileHandl
 
   // isset id assignments
   private static final int __ID_ISSET_ID = 0;
+  private static final int __FLAGS_ISSET_ID = 1;
   private byte __isset_bitfield = 0;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.ID, new org.apache.thrift.meta_data.FieldMetaData("id", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
+    tmpMap.put(_Fields.FLAGS, new org.apache.thrift.meta_data.FieldMetaData("flags", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(FileHandle.class, metaDataMap);
@@ -119,11 +127,14 @@ public class FileHandle implements org.apache.thrift.TBase<FileHandle, FileHandl
   }
 
   public FileHandle(
-    int id)
+    long id,
+    int flags)
   {
     this();
     this.id = id;
     setIdIsSet(true);
+    this.flags = flags;
+    setFlagsIsSet(true);
   }
 
   /**
@@ -132,6 +143,7 @@ public class FileHandle implements org.apache.thrift.TBase<FileHandle, FileHandl
   public FileHandle(FileHandle other) {
     __isset_bitfield = other.__isset_bitfield;
     this.id = other.id;
+    this.flags = other.flags;
   }
 
   public FileHandle deepCopy() {
@@ -142,13 +154,15 @@ public class FileHandle implements org.apache.thrift.TBase<FileHandle, FileHandl
   public void clear() {
     setIdIsSet(false);
     this.id = 0;
+    setFlagsIsSet(false);
+    this.flags = 0;
   }
 
-  public int getId() {
+  public long getId() {
     return this.id;
   }
 
-  public FileHandle setId(int id) {
+  public FileHandle setId(long id) {
     this.id = id;
     setIdIsSet(true);
     return this;
@@ -167,13 +181,44 @@ public class FileHandle implements org.apache.thrift.TBase<FileHandle, FileHandl
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ID_ISSET_ID, value);
   }
 
+  public int getFlags() {
+    return this.flags;
+  }
+
+  public FileHandle setFlags(int flags) {
+    this.flags = flags;
+    setFlagsIsSet(true);
+    return this;
+  }
+
+  public void unsetFlags() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __FLAGS_ISSET_ID);
+  }
+
+  /** Returns true if field flags is set (has been assigned a value) and false otherwise */
+  public boolean isSetFlags() {
+    return EncodingUtils.testBit(__isset_bitfield, __FLAGS_ISSET_ID);
+  }
+
+  public void setFlagsIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __FLAGS_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case ID:
       if (value == null) {
         unsetId();
       } else {
-        setId((Integer)value);
+        setId((Long)value);
+      }
+      break;
+
+    case FLAGS:
+      if (value == null) {
+        unsetFlags();
+      } else {
+        setFlags((Integer)value);
       }
       break;
 
@@ -183,7 +228,10 @@ public class FileHandle implements org.apache.thrift.TBase<FileHandle, FileHandl
   public Object getFieldValue(_Fields field) {
     switch (field) {
     case ID:
-      return Integer.valueOf(getId());
+      return Long.valueOf(getId());
+
+    case FLAGS:
+      return Integer.valueOf(getFlags());
 
     }
     throw new IllegalStateException();
@@ -198,6 +246,8 @@ public class FileHandle implements org.apache.thrift.TBase<FileHandle, FileHandl
     switch (field) {
     case ID:
       return isSetId();
+    case FLAGS:
+      return isSetFlags();
     }
     throw new IllegalStateException();
   }
@@ -221,6 +271,15 @@ public class FileHandle implements org.apache.thrift.TBase<FileHandle, FileHandl
       if (!(this_present_id && that_present_id))
         return false;
       if (this.id != that.id)
+        return false;
+    }
+
+    boolean this_present_flags = true;
+    boolean that_present_flags = true;
+    if (this_present_flags || that_present_flags) {
+      if (!(this_present_flags && that_present_flags))
+        return false;
+      if (this.flags != that.flags)
         return false;
     }
 
@@ -250,6 +309,16 @@ public class FileHandle implements org.apache.thrift.TBase<FileHandle, FileHandl
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetFlags()).compareTo(other.isSetFlags());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetFlags()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.flags, other.flags);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -272,6 +341,10 @@ public class FileHandle implements org.apache.thrift.TBase<FileHandle, FileHandl
 
     sb.append("id:");
     sb.append(this.id);
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("flags:");
+    sb.append(this.flags);
     first = false;
     sb.append(")");
     return sb.toString();
@@ -319,9 +392,17 @@ public class FileHandle implements org.apache.thrift.TBase<FileHandle, FileHandl
         }
         switch (schemeField.id) {
           case 1: // ID
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.id = iprot.readI32();
+            if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+              struct.id = iprot.readI64();
               struct.setIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 2: // FLAGS
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.flags = iprot.readI32();
+              struct.setFlagsIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -342,7 +423,10 @@ public class FileHandle implements org.apache.thrift.TBase<FileHandle, FileHandl
 
       oprot.writeStructBegin(STRUCT_DESC);
       oprot.writeFieldBegin(ID_FIELD_DESC);
-      oprot.writeI32(struct.id);
+      oprot.writeI64(struct.id);
+      oprot.writeFieldEnd();
+      oprot.writeFieldBegin(FLAGS_FIELD_DESC);
+      oprot.writeI32(struct.flags);
       oprot.writeFieldEnd();
       oprot.writeFieldStop();
       oprot.writeStructEnd();
@@ -365,19 +449,29 @@ public class FileHandle implements org.apache.thrift.TBase<FileHandle, FileHandl
       if (struct.isSetId()) {
         optionals.set(0);
       }
-      oprot.writeBitSet(optionals, 1);
+      if (struct.isSetFlags()) {
+        optionals.set(1);
+      }
+      oprot.writeBitSet(optionals, 2);
       if (struct.isSetId()) {
-        oprot.writeI32(struct.id);
+        oprot.writeI64(struct.id);
+      }
+      if (struct.isSetFlags()) {
+        oprot.writeI32(struct.flags);
       }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, FileHandle struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(1);
+      BitSet incoming = iprot.readBitSet(2);
       if (incoming.get(0)) {
-        struct.id = iprot.readI32();
+        struct.id = iprot.readI64();
         struct.setIdIsSet(true);
+      }
+      if (incoming.get(1)) {
+        struct.flags = iprot.readI32();
+        struct.setFlagsIsSet(true);
       }
     }
   }

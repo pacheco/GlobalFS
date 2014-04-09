@@ -37,7 +37,8 @@ struct FileSystemStats {
 }
 
 struct FileHandle {
-	1: i32 id,
+	1: i64 id,
+    2: i32 flags,
 }
 
 struct DBlock {
@@ -53,8 +54,7 @@ struct DBlock {
 
 
 struct ReadResult {
-	1: i64 len,
-	2: list<DBlock> blocks,
+	1: list<DBlock> blocks,
 }
 
 service FuseOps {

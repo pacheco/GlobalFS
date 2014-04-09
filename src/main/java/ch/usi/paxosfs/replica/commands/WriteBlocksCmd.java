@@ -36,7 +36,7 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("WriteBlocksCmd");
 
   private static final org.apache.thrift.protocol.TField PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("path", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField FILE_HANDLE_FIELD_DESC = new org.apache.thrift.protocol.TField("fileHandle", org.apache.thrift.protocol.TType.I32, (short)4);
+  private static final org.apache.thrift.protocol.TField FILE_HANDLE_FIELD_DESC = new org.apache.thrift.protocol.TField("fileHandle", org.apache.thrift.protocol.TType.STRUCT, (short)4);
   private static final org.apache.thrift.protocol.TField OFFSET_FIELD_DESC = new org.apache.thrift.protocol.TField("offset", org.apache.thrift.protocol.TType.I64, (short)5);
   private static final org.apache.thrift.protocol.TField BLOCKS_FIELD_DESC = new org.apache.thrift.protocol.TField("blocks", org.apache.thrift.protocol.TType.LIST, (short)6);
   private static final org.apache.thrift.protocol.TField PARTITION_FIELD_DESC = new org.apache.thrift.protocol.TField("partition", org.apache.thrift.protocol.TType.SET, (short)7);
@@ -48,7 +48,7 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
   }
 
   public String path; // required
-  public int fileHandle; // required
+  public ch.usi.paxosfs.rpc.FileHandle fileHandle; // required
   public long offset; // required
   public List<ch.usi.paxosfs.rpc.DBlock> blocks; // required
   public Set<Byte> partition; // required
@@ -124,8 +124,7 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
   }
 
   // isset id assignments
-  private static final int __FILEHANDLE_ISSET_ID = 0;
-  private static final int __OFFSET_ISSET_ID = 1;
+  private static final int __OFFSET_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
@@ -133,7 +132,7 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
     tmpMap.put(_Fields.PATH, new org.apache.thrift.meta_data.FieldMetaData("path", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.FILE_HANDLE, new org.apache.thrift.meta_data.FieldMetaData("fileHandle", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ch.usi.paxosfs.rpc.FileHandle.class)));
     tmpMap.put(_Fields.OFFSET, new org.apache.thrift.meta_data.FieldMetaData("offset", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     tmpMap.put(_Fields.BLOCKS, new org.apache.thrift.meta_data.FieldMetaData("blocks", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -151,7 +150,7 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
 
   public WriteBlocksCmd(
     String path,
-    int fileHandle,
+    ch.usi.paxosfs.rpc.FileHandle fileHandle,
     long offset,
     List<ch.usi.paxosfs.rpc.DBlock> blocks,
     Set<Byte> partition)
@@ -159,7 +158,6 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
     this();
     this.path = path;
     this.fileHandle = fileHandle;
-    setFileHandleIsSet(true);
     this.offset = offset;
     setOffsetIsSet(true);
     this.blocks = blocks;
@@ -174,7 +172,9 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
     if (other.isSetPath()) {
       this.path = other.path;
     }
-    this.fileHandle = other.fileHandle;
+    if (other.isSetFileHandle()) {
+      this.fileHandle = new ch.usi.paxosfs.rpc.FileHandle(other.fileHandle);
+    }
     this.offset = other.offset;
     if (other.isSetBlocks()) {
       List<ch.usi.paxosfs.rpc.DBlock> __this__blocks = new ArrayList<ch.usi.paxosfs.rpc.DBlock>(other.blocks.size());
@@ -196,8 +196,7 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
   @Override
   public void clear() {
     this.path = null;
-    setFileHandleIsSet(false);
-    this.fileHandle = 0;
+    this.fileHandle = null;
     setOffsetIsSet(false);
     this.offset = 0;
     this.blocks = null;
@@ -228,27 +227,28 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
     }
   }
 
-  public int getFileHandle() {
+  public ch.usi.paxosfs.rpc.FileHandle getFileHandle() {
     return this.fileHandle;
   }
 
-  public WriteBlocksCmd setFileHandle(int fileHandle) {
+  public WriteBlocksCmd setFileHandle(ch.usi.paxosfs.rpc.FileHandle fileHandle) {
     this.fileHandle = fileHandle;
-    setFileHandleIsSet(true);
     return this;
   }
 
   public void unsetFileHandle() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __FILEHANDLE_ISSET_ID);
+    this.fileHandle = null;
   }
 
   /** Returns true if field fileHandle is set (has been assigned a value) and false otherwise */
   public boolean isSetFileHandle() {
-    return EncodingUtils.testBit(__isset_bitfield, __FILEHANDLE_ISSET_ID);
+    return this.fileHandle != null;
   }
 
   public void setFileHandleIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __FILEHANDLE_ISSET_ID, value);
+    if (!value) {
+      this.fileHandle = null;
+    }
   }
 
   public long getOffset() {
@@ -366,7 +366,7 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
       if (value == null) {
         unsetFileHandle();
       } else {
-        setFileHandle((Integer)value);
+        setFileHandle((ch.usi.paxosfs.rpc.FileHandle)value);
       }
       break;
 
@@ -403,7 +403,7 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
       return getPath();
 
     case FILE_HANDLE:
-      return Integer.valueOf(getFileHandle());
+      return getFileHandle();
 
     case OFFSET:
       return Long.valueOf(getOffset());
@@ -461,12 +461,12 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
         return false;
     }
 
-    boolean this_present_fileHandle = true;
-    boolean that_present_fileHandle = true;
+    boolean this_present_fileHandle = true && this.isSetFileHandle();
+    boolean that_present_fileHandle = true && that.isSetFileHandle();
     if (this_present_fileHandle || that_present_fileHandle) {
       if (!(this_present_fileHandle && that_present_fileHandle))
         return false;
-      if (this.fileHandle != that.fileHandle)
+      if (!this.fileHandle.equals(that.fileHandle))
         return false;
     }
 
@@ -592,7 +592,11 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
     first = false;
     if (!first) sb.append(", ");
     sb.append("fileHandle:");
-    sb.append(this.fileHandle);
+    if (this.fileHandle == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.fileHandle);
+    }
     first = false;
     if (!first) sb.append(", ");
     sb.append("offset:");
@@ -621,6 +625,9 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
     // check for sub-struct validity
+    if (fileHandle != null) {
+      fileHandle.validate();
+    }
   }
 
   private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -668,8 +675,9 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
             }
             break;
           case 4: // FILE_HANDLE
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.fileHandle = iprot.readI32();
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+              struct.fileHandle = new ch.usi.paxosfs.rpc.FileHandle();
+              struct.fileHandle.read(iprot);
               struct.setFileHandleIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -740,9 +748,11 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
         oprot.writeString(struct.path);
         oprot.writeFieldEnd();
       }
-      oprot.writeFieldBegin(FILE_HANDLE_FIELD_DESC);
-      oprot.writeI32(struct.fileHandle);
-      oprot.writeFieldEnd();
+      if (struct.fileHandle != null) {
+        oprot.writeFieldBegin(FILE_HANDLE_FIELD_DESC);
+        struct.fileHandle.write(oprot);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldBegin(OFFSET_FIELD_DESC);
       oprot.writeI64(struct.offset);
       oprot.writeFieldEnd();
@@ -808,7 +818,7 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
         oprot.writeString(struct.path);
       }
       if (struct.isSetFileHandle()) {
-        oprot.writeI32(struct.fileHandle);
+        struct.fileHandle.write(oprot);
       }
       if (struct.isSetOffset()) {
         oprot.writeI64(struct.offset);
@@ -842,7 +852,8 @@ public class WriteBlocksCmd implements org.apache.thrift.TBase<WriteBlocksCmd, W
         struct.setPathIsSet(true);
       }
       if (incoming.get(1)) {
-        struct.fileHandle = iprot.readI32();
+        struct.fileHandle = new ch.usi.paxosfs.rpc.FileHandle();
+        struct.fileHandle.read(iprot);
         struct.setFileHandleIsSet(true);
       }
       if (incoming.get(2)) {

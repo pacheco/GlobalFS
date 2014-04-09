@@ -88,15 +88,13 @@ public class CommunicationService {
 								 * Here we are already sending signals for commands that can decide on fail/success without the signal result.
 								 */
 								switch (CommandType.findByValue(c.getType())) {
-								/* these are single partition always */
+								/* these would be the read-only */
 								case GETDIR:
 								case ATTR:
 								case OPEN:
 								case RELEASE:
 								case READ_BLOCKS:
-									// no need to signal
-									break;
-								/* these might be replicated */
+								/* these can be replicated */
 								case CHMOD: 
 								case CHOWN:
 								case TRUNCATE:

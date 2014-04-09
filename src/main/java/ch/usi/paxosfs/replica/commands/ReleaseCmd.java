@@ -36,7 +36,7 @@ public class ReleaseCmd implements org.apache.thrift.TBase<ReleaseCmd, ReleaseCm
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ReleaseCmd");
 
   private static final org.apache.thrift.protocol.TField PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("path", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField FILE_HANDLE_FIELD_DESC = new org.apache.thrift.protocol.TField("fileHandle", org.apache.thrift.protocol.TType.I32, (short)4);
+  private static final org.apache.thrift.protocol.TField FILE_HANDLE_FIELD_DESC = new org.apache.thrift.protocol.TField("fileHandle", org.apache.thrift.protocol.TType.STRUCT, (short)4);
   private static final org.apache.thrift.protocol.TField FLAGS_FIELD_DESC = new org.apache.thrift.protocol.TField("flags", org.apache.thrift.protocol.TType.I32, (short)5);
   private static final org.apache.thrift.protocol.TField PARTITION_FIELD_DESC = new org.apache.thrift.protocol.TField("partition", org.apache.thrift.protocol.TType.SET, (short)7);
 
@@ -47,7 +47,7 @@ public class ReleaseCmd implements org.apache.thrift.TBase<ReleaseCmd, ReleaseCm
   }
 
   public String path; // required
-  public int fileHandle; // required
+  public ch.usi.paxosfs.rpc.FileHandle fileHandle; // required
   public int flags; // required
   public Set<Byte> partition; // required
 
@@ -119,8 +119,7 @@ public class ReleaseCmd implements org.apache.thrift.TBase<ReleaseCmd, ReleaseCm
   }
 
   // isset id assignments
-  private static final int __FILEHANDLE_ISSET_ID = 0;
-  private static final int __FLAGS_ISSET_ID = 1;
+  private static final int __FLAGS_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
@@ -128,7 +127,7 @@ public class ReleaseCmd implements org.apache.thrift.TBase<ReleaseCmd, ReleaseCm
     tmpMap.put(_Fields.PATH, new org.apache.thrift.meta_data.FieldMetaData("path", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.FILE_HANDLE, new org.apache.thrift.meta_data.FieldMetaData("fileHandle", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ch.usi.paxosfs.rpc.FileHandle.class)));
     tmpMap.put(_Fields.FLAGS, new org.apache.thrift.meta_data.FieldMetaData("flags", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.PARTITION, new org.apache.thrift.meta_data.FieldMetaData("partition", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -143,14 +142,13 @@ public class ReleaseCmd implements org.apache.thrift.TBase<ReleaseCmd, ReleaseCm
 
   public ReleaseCmd(
     String path,
-    int fileHandle,
+    ch.usi.paxosfs.rpc.FileHandle fileHandle,
     int flags,
     Set<Byte> partition)
   {
     this();
     this.path = path;
     this.fileHandle = fileHandle;
-    setFileHandleIsSet(true);
     this.flags = flags;
     setFlagsIsSet(true);
     this.partition = partition;
@@ -164,7 +162,9 @@ public class ReleaseCmd implements org.apache.thrift.TBase<ReleaseCmd, ReleaseCm
     if (other.isSetPath()) {
       this.path = other.path;
     }
-    this.fileHandle = other.fileHandle;
+    if (other.isSetFileHandle()) {
+      this.fileHandle = new ch.usi.paxosfs.rpc.FileHandle(other.fileHandle);
+    }
     this.flags = other.flags;
     if (other.isSetPartition()) {
       Set<Byte> __this__partition = new HashSet<Byte>(other.partition);
@@ -179,8 +179,7 @@ public class ReleaseCmd implements org.apache.thrift.TBase<ReleaseCmd, ReleaseCm
   @Override
   public void clear() {
     this.path = null;
-    setFileHandleIsSet(false);
-    this.fileHandle = 0;
+    this.fileHandle = null;
     setFlagsIsSet(false);
     this.flags = 0;
     this.partition = null;
@@ -210,27 +209,28 @@ public class ReleaseCmd implements org.apache.thrift.TBase<ReleaseCmd, ReleaseCm
     }
   }
 
-  public int getFileHandle() {
+  public ch.usi.paxosfs.rpc.FileHandle getFileHandle() {
     return this.fileHandle;
   }
 
-  public ReleaseCmd setFileHandle(int fileHandle) {
+  public ReleaseCmd setFileHandle(ch.usi.paxosfs.rpc.FileHandle fileHandle) {
     this.fileHandle = fileHandle;
-    setFileHandleIsSet(true);
     return this;
   }
 
   public void unsetFileHandle() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __FILEHANDLE_ISSET_ID);
+    this.fileHandle = null;
   }
 
   /** Returns true if field fileHandle is set (has been assigned a value) and false otherwise */
   public boolean isSetFileHandle() {
-    return EncodingUtils.testBit(__isset_bitfield, __FILEHANDLE_ISSET_ID);
+    return this.fileHandle != null;
   }
 
   public void setFileHandleIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __FILEHANDLE_ISSET_ID, value);
+    if (!value) {
+      this.fileHandle = null;
+    }
   }
 
   public int getFlags() {
@@ -309,7 +309,7 @@ public class ReleaseCmd implements org.apache.thrift.TBase<ReleaseCmd, ReleaseCm
       if (value == null) {
         unsetFileHandle();
       } else {
-        setFileHandle((Integer)value);
+        setFileHandle((ch.usi.paxosfs.rpc.FileHandle)value);
       }
       break;
 
@@ -338,7 +338,7 @@ public class ReleaseCmd implements org.apache.thrift.TBase<ReleaseCmd, ReleaseCm
       return getPath();
 
     case FILE_HANDLE:
-      return Integer.valueOf(getFileHandle());
+      return getFileHandle();
 
     case FLAGS:
       return Integer.valueOf(getFlags());
@@ -391,12 +391,12 @@ public class ReleaseCmd implements org.apache.thrift.TBase<ReleaseCmd, ReleaseCm
         return false;
     }
 
-    boolean this_present_fileHandle = true;
-    boolean that_present_fileHandle = true;
+    boolean this_present_fileHandle = true && this.isSetFileHandle();
+    boolean that_present_fileHandle = true && that.isSetFileHandle();
     if (this_present_fileHandle || that_present_fileHandle) {
       if (!(this_present_fileHandle && that_present_fileHandle))
         return false;
-      if (this.fileHandle != that.fileHandle)
+      if (!this.fileHandle.equals(that.fileHandle))
         return false;
     }
 
@@ -503,7 +503,11 @@ public class ReleaseCmd implements org.apache.thrift.TBase<ReleaseCmd, ReleaseCm
     first = false;
     if (!first) sb.append(", ");
     sb.append("fileHandle:");
-    sb.append(this.fileHandle);
+    if (this.fileHandle == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.fileHandle);
+    }
     first = false;
     if (!first) sb.append(", ");
     sb.append("flags:");
@@ -524,6 +528,9 @@ public class ReleaseCmd implements org.apache.thrift.TBase<ReleaseCmd, ReleaseCm
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
     // check for sub-struct validity
+    if (fileHandle != null) {
+      fileHandle.validate();
+    }
   }
 
   private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -571,8 +578,9 @@ public class ReleaseCmd implements org.apache.thrift.TBase<ReleaseCmd, ReleaseCm
             }
             break;
           case 4: // FILE_HANDLE
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.fileHandle = iprot.readI32();
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+              struct.fileHandle = new ch.usi.paxosfs.rpc.FileHandle();
+              struct.fileHandle.read(iprot);
               struct.setFileHandleIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -624,9 +632,11 @@ public class ReleaseCmd implements org.apache.thrift.TBase<ReleaseCmd, ReleaseCm
         oprot.writeString(struct.path);
         oprot.writeFieldEnd();
       }
-      oprot.writeFieldBegin(FILE_HANDLE_FIELD_DESC);
-      oprot.writeI32(struct.fileHandle);
-      oprot.writeFieldEnd();
+      if (struct.fileHandle != null) {
+        oprot.writeFieldBegin(FILE_HANDLE_FIELD_DESC);
+        struct.fileHandle.write(oprot);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldBegin(FLAGS_FIELD_DESC);
       oprot.writeI32(struct.flags);
       oprot.writeFieldEnd();
@@ -677,7 +687,7 @@ public class ReleaseCmd implements org.apache.thrift.TBase<ReleaseCmd, ReleaseCm
         oprot.writeString(struct.path);
       }
       if (struct.isSetFileHandle()) {
-        oprot.writeI32(struct.fileHandle);
+        struct.fileHandle.write(oprot);
       }
       if (struct.isSetFlags()) {
         oprot.writeI32(struct.flags);
@@ -702,7 +712,8 @@ public class ReleaseCmd implements org.apache.thrift.TBase<ReleaseCmd, ReleaseCm
         struct.setPathIsSet(true);
       }
       if (incoming.get(1)) {
-        struct.fileHandle = iprot.readI32();
+        struct.fileHandle = new ch.usi.paxosfs.rpc.FileHandle();
+        struct.fileHandle.read(iprot);
         struct.setFileHandleIsSet(true);
       }
       if (incoming.get(2)) {

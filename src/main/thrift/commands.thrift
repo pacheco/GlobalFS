@@ -126,7 +126,7 @@ struct OpenCmd {
 
 struct ReadBlocksCmd {
     3: string path
-    4: i32 fileHandle
+    4: fuseops.FileHandle fileHandle
     5: i64 offset
     6: i64 bytes
 
@@ -135,7 +135,7 @@ struct ReadBlocksCmd {
 
 struct WriteBlocksCmd {
     3: string path
-    4: i32 fileHandle
+    4: fuseops.FileHandle fileHandle
     5: i64 offset
     6: list<fuseops.DBlock> blocks
 
@@ -144,7 +144,7 @@ struct WriteBlocksCmd {
 
 struct ReleaseCmd {
     3: string path
-    4: i32 fileHandle
+    4: fuseops.FileHandle fileHandle
     5: i32 flags
 
     7: set<byte> partition

@@ -35,8 +35,7 @@ import org.slf4j.LoggerFactory;
 public class ReadResult implements org.apache.thrift.TBase<ReadResult, ReadResult._Fields>, java.io.Serializable, Cloneable, Comparable<ReadResult> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ReadResult");
 
-  private static final org.apache.thrift.protocol.TField LEN_FIELD_DESC = new org.apache.thrift.protocol.TField("len", org.apache.thrift.protocol.TType.I64, (short)1);
-  private static final org.apache.thrift.protocol.TField BLOCKS_FIELD_DESC = new org.apache.thrift.protocol.TField("blocks", org.apache.thrift.protocol.TType.LIST, (short)2);
+  private static final org.apache.thrift.protocol.TField BLOCKS_FIELD_DESC = new org.apache.thrift.protocol.TField("blocks", org.apache.thrift.protocol.TType.LIST, (short)1);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -44,13 +43,11 @@ public class ReadResult implements org.apache.thrift.TBase<ReadResult, ReadResul
     schemes.put(TupleScheme.class, new ReadResultTupleSchemeFactory());
   }
 
-  public long len; // required
   public List<DBlock> blocks; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    LEN((short)1, "len"),
-    BLOCKS((short)2, "blocks");
+    BLOCKS((short)1, "blocks");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -65,9 +62,7 @@ public class ReadResult implements org.apache.thrift.TBase<ReadResult, ReadResul
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // LEN
-          return LEN;
-        case 2: // BLOCKS
+        case 1: // BLOCKS
           return BLOCKS;
         default:
           return null;
@@ -109,13 +104,9 @@ public class ReadResult implements org.apache.thrift.TBase<ReadResult, ReadResul
   }
 
   // isset id assignments
-  private static final int __LEN_ISSET_ID = 0;
-  private byte __isset_bitfield = 0;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.LEN, new org.apache.thrift.meta_data.FieldMetaData("len", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     tmpMap.put(_Fields.BLOCKS, new org.apache.thrift.meta_data.FieldMetaData("blocks", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, DBlock.class))));
@@ -127,12 +118,9 @@ public class ReadResult implements org.apache.thrift.TBase<ReadResult, ReadResul
   }
 
   public ReadResult(
-    long len,
     List<DBlock> blocks)
   {
     this();
-    this.len = len;
-    setLenIsSet(true);
     this.blocks = blocks;
   }
 
@@ -140,8 +128,6 @@ public class ReadResult implements org.apache.thrift.TBase<ReadResult, ReadResul
    * Performs a deep copy on <i>other</i>.
    */
   public ReadResult(ReadResult other) {
-    __isset_bitfield = other.__isset_bitfield;
-    this.len = other.len;
     if (other.isSetBlocks()) {
       List<DBlock> __this__blocks = new ArrayList<DBlock>(other.blocks.size());
       for (DBlock other_element : other.blocks) {
@@ -157,32 +143,7 @@ public class ReadResult implements org.apache.thrift.TBase<ReadResult, ReadResul
 
   @Override
   public void clear() {
-    setLenIsSet(false);
-    this.len = 0;
     this.blocks = null;
-  }
-
-  public long getLen() {
-    return this.len;
-  }
-
-  public ReadResult setLen(long len) {
-    this.len = len;
-    setLenIsSet(true);
-    return this;
-  }
-
-  public void unsetLen() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __LEN_ISSET_ID);
-  }
-
-  /** Returns true if field len is set (has been assigned a value) and false otherwise */
-  public boolean isSetLen() {
-    return EncodingUtils.testBit(__isset_bitfield, __LEN_ISSET_ID);
-  }
-
-  public void setLenIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __LEN_ISSET_ID, value);
   }
 
   public int getBlocksSize() {
@@ -226,14 +187,6 @@ public class ReadResult implements org.apache.thrift.TBase<ReadResult, ReadResul
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case LEN:
-      if (value == null) {
-        unsetLen();
-      } else {
-        setLen((Long)value);
-      }
-      break;
-
     case BLOCKS:
       if (value == null) {
         unsetBlocks();
@@ -247,9 +200,6 @@ public class ReadResult implements org.apache.thrift.TBase<ReadResult, ReadResul
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case LEN:
-      return Long.valueOf(getLen());
-
     case BLOCKS:
       return getBlocks();
 
@@ -264,8 +214,6 @@ public class ReadResult implements org.apache.thrift.TBase<ReadResult, ReadResul
     }
 
     switch (field) {
-    case LEN:
-      return isSetLen();
     case BLOCKS:
       return isSetBlocks();
     }
@@ -284,15 +232,6 @@ public class ReadResult implements org.apache.thrift.TBase<ReadResult, ReadResul
   public boolean equals(ReadResult that) {
     if (that == null)
       return false;
-
-    boolean this_present_len = true;
-    boolean that_present_len = true;
-    if (this_present_len || that_present_len) {
-      if (!(this_present_len && that_present_len))
-        return false;
-      if (this.len != that.len)
-        return false;
-    }
 
     boolean this_present_blocks = true && this.isSetBlocks();
     boolean that_present_blocks = true && that.isSetBlocks();
@@ -319,16 +258,6 @@ public class ReadResult implements org.apache.thrift.TBase<ReadResult, ReadResul
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetLen()).compareTo(other.isSetLen());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetLen()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.len, other.len);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     lastComparison = Boolean.valueOf(isSetBlocks()).compareTo(other.isSetBlocks());
     if (lastComparison != 0) {
       return lastComparison;
@@ -359,10 +288,6 @@ public class ReadResult implements org.apache.thrift.TBase<ReadResult, ReadResul
     StringBuilder sb = new StringBuilder("ReadResult(");
     boolean first = true;
 
-    sb.append("len:");
-    sb.append(this.len);
-    first = false;
-    if (!first) sb.append(", ");
     sb.append("blocks:");
     if (this.blocks == null) {
       sb.append("null");
@@ -389,8 +314,6 @@ public class ReadResult implements org.apache.thrift.TBase<ReadResult, ReadResul
 
   private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
     try {
-      // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
-      __isset_bitfield = 0;
       read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
     } catch (org.apache.thrift.TException te) {
       throw new java.io.IOException(te);
@@ -415,15 +338,7 @@ public class ReadResult implements org.apache.thrift.TBase<ReadResult, ReadResul
           break;
         }
         switch (schemeField.id) {
-          case 1: // LEN
-            if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
-              struct.len = iprot.readI64();
-              struct.setLenIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 2: // BLOCKS
+          case 1: // BLOCKS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
@@ -457,9 +372,6 @@ public class ReadResult implements org.apache.thrift.TBase<ReadResult, ReadResul
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      oprot.writeFieldBegin(LEN_FIELD_DESC);
-      oprot.writeI64(struct.len);
-      oprot.writeFieldEnd();
       if (struct.blocks != null) {
         oprot.writeFieldBegin(BLOCKS_FIELD_DESC);
         {
@@ -490,16 +402,10 @@ public class ReadResult implements org.apache.thrift.TBase<ReadResult, ReadResul
     public void write(org.apache.thrift.protocol.TProtocol prot, ReadResult struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       BitSet optionals = new BitSet();
-      if (struct.isSetLen()) {
+      if (struct.isSetBlocks()) {
         optionals.set(0);
       }
-      if (struct.isSetBlocks()) {
-        optionals.set(1);
-      }
-      oprot.writeBitSet(optionals, 2);
-      if (struct.isSetLen()) {
-        oprot.writeI64(struct.len);
-      }
+      oprot.writeBitSet(optionals, 1);
       if (struct.isSetBlocks()) {
         {
           oprot.writeI32(struct.blocks.size());
@@ -514,12 +420,8 @@ public class ReadResult implements org.apache.thrift.TBase<ReadResult, ReadResul
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ReadResult struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(2);
+      BitSet incoming = iprot.readBitSet(1);
       if (incoming.get(0)) {
-        struct.len = iprot.readI64();
-        struct.setLenIsSet(true);
-      }
-      if (incoming.get(1)) {
         {
           org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
           struct.blocks = new ArrayList<DBlock>(_list5.size);

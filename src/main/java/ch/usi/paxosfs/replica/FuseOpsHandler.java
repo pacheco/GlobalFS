@@ -14,9 +14,13 @@ import ch.usi.paxosfs.replica.commands.CommandType;
 import ch.usi.paxosfs.replica.commands.GetdirCmd;
 import ch.usi.paxosfs.replica.commands.MkdirCmd;
 import ch.usi.paxosfs.replica.commands.MknodCmd;
+import ch.usi.paxosfs.replica.commands.OpenCmd;
+import ch.usi.paxosfs.replica.commands.ReadBlocksCmd;
+import ch.usi.paxosfs.replica.commands.ReleaseCmd;
 import ch.usi.paxosfs.replica.commands.RenameCmd;
 import ch.usi.paxosfs.replica.commands.RmdirCmd;
 import ch.usi.paxosfs.replica.commands.UnlinkCmd;
+import ch.usi.paxosfs.replica.commands.WriteBlocksCmd;
 import ch.usi.paxosfs.rpc.Attr;
 import ch.usi.paxosfs.rpc.DBlock;
 import ch.usi.paxosfs.rpc.DirEntry;
@@ -56,9 +60,9 @@ public class FuseOpsHandler implements FuseOps.Iface {
 	@Override
 	public Attr getattr(String path) throws FSError, TException {
 		// can be sent to ANY partition that replicates the path - we send it to the first returned by the oracle
-		Set<Byte> parts = oracle.partitionsOf(path);
+		Set<Byte> parts = Sets.newHashSet(oracle.partitionsOf(path).iterator().next());
 		Command cmd = newCommand(CommandType.ATTR, parts);
-		AttrCmd attr = new AttrCmd(path, Sets.newHashSet(parts.iterator().next()));
+		AttrCmd attr = new AttrCmd(path, parts);
 		cmd.setAttr(attr);
 		Attr result = (Attr) replica.submitCommand(cmd);
 		//System.out.println(result);
@@ -68,9 +72,9 @@ public class FuseOpsHandler implements FuseOps.Iface {
 	@Override
 	public List<DirEntry> getdir(String path) throws FSError, TException {
 		// can be sent to ANY partition that replicates the path - we send it to the first returned by the oracle
-		Set<Byte> parts = oracle.partitionsOf(path);
+		Set<Byte> parts = Sets.newHashSet(oracle.partitionsOf(path).iterator().next());
 		Command cmd = newCommand(CommandType.GETDIR, parts);
-		GetdirCmd getdir = new GetdirCmd(path, Sets.newHashSet(parts.iterator().next()));
+		GetdirCmd getdir = new GetdirCmd(path, parts);
 		cmd.setGetdir(getdir);
 		return (List<DirEntry>) replica.submitCommand(cmd);
 	}
@@ -180,24 +184,46 @@ public class FuseOpsHandler implements FuseOps.Iface {
 
 	@Override
 	public FileHandle open(String path, int flags) throws FSError, TException {
-		// TODO Auto-generated method stub
-		return null;
+		// can be sent to ANY partition that replicates the file - we send it to
+		// the first returned by the oracle. All operations using this handler
+		// have then to be sent to this same partition. TODO: store locally a
+		// mapping from FileHandlers to partition so commands can be sent to the
+		// correct one.
+		Set<Byte> parts = Sets.newHashSet(oracle.partitionsOf(path).iterator().next());
+		Command cmd = newCommand(CommandType.OPEN, parts);
+		OpenCmd open = new OpenCmd(path, flags, parts);
+		cmd.setOpen(open);
+		FileHandle fh = (FileHandle) replica.submitCommand(cmd);
+		return fh;
 	}
 
 	@Override
 	public void release(String path, FileHandle fh, int flags) throws FSError, TException {
-		// TODO Auto-generated method stub
+		// can be sent to ANY partition that replicates the file - we send it to the first returned by the oracle
+		Set<Byte> parts = Sets.newHashSet(oracle.partitionsOf(path).iterator().next());
+		Command cmd = newCommand(CommandType.RELEASE, parts);
+		ReleaseCmd release = new ReleaseCmd(path, fh, flags, parts);
+		cmd.setRelease(release);
+		replica.submitCommand(cmd);
 	}
 
 	@Override
 	public ReadResult readBlocks(String path, FileHandle fh, long offset, long bytes) throws FSError, TException {
-		// TODO Auto-generated method stub
-		return null;
+		// can be sent to ANY partition that replicates the file - we send it to the first returned by the oracle
+		Set<Byte> parts = Sets.newHashSet(oracle.partitionsOf(path).iterator().next());
+		Command cmd = newCommand(CommandType.READ_BLOCKS, parts);
+		ReadBlocksCmd read = new ReadBlocksCmd(path, fh, offset, bytes, parts);
+		cmd.setRead(read);
+		ReadResult rr = (ReadResult) replica.submitCommand(cmd);
+		return rr;
 	}
 
 	@Override
 	public void writeBlocks(String path, FileHandle fh, long offset, List<DBlock> blocks) throws FSError, TException {
-		// TODO Auto-generated method stub
-		
+		Set<Byte> parts = oracle.partitionsOf(path);
+		Command cmd = newCommand(CommandType.WRITE_BLOCKS, parts);
+		WriteBlocksCmd write = new WriteBlocksCmd(path, fh, offset, blocks, parts);
+		cmd.setWrite(write);
+		replica.submitCommand(cmd);
 	}
 }

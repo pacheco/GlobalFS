@@ -1,6 +1,7 @@
 package ch.usi.paxosfs.replica;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -29,14 +30,22 @@ import ch.usi.paxosfs.filesystem.memory.MemFileSystem;
 import ch.usi.paxosfs.partitioning.TwoPartitionOracle;
 import ch.usi.paxosfs.replica.commands.Command;
 import ch.usi.paxosfs.replica.commands.CommandType;
+import ch.usi.paxosfs.replica.commands.OpenCmd;
+import ch.usi.paxosfs.replica.commands.ReadBlocksCmd;
+import ch.usi.paxosfs.replica.commands.ReleaseCmd;
 import ch.usi.paxosfs.replica.commands.RenameCmd;
 import ch.usi.paxosfs.replica.commands.RenameData;
 import ch.usi.paxosfs.replica.commands.Signal;
+import ch.usi.paxosfs.replica.commands.WriteBlocksCmd;
 import ch.usi.paxosfs.rpc.Attr;
+import ch.usi.paxosfs.rpc.DBlock;
 import ch.usi.paxosfs.rpc.DirEntry;
 import ch.usi.paxosfs.rpc.FSError;
+import ch.usi.paxosfs.rpc.FileHandle;
 import ch.usi.paxosfs.rpc.FuseOps;
+import ch.usi.paxosfs.rpc.ReadResult;
 import ch.usi.paxosfs.util.Paths;
+import ch.usi.paxosfs.util.UnixConstants;
 
 import com.google.common.collect.Sets;
 
@@ -134,6 +143,7 @@ public class FileSystemReplica implements Runnable {
 	
 	/**
 	 * Apply a new command to the FileSystem state.
+	 * FIXME: Assuming it's correct to return upon error without waiting for signals. Check if this is true!
 	 * 
 	 * @param c
 	 *            the command to be applied
@@ -151,12 +161,18 @@ public class FileSystemReplica implements Runnable {
 			switch (CommandType.findByValue(c.getType())) {
 			case ATTR: {
 				System.out.println("attr " + c.getAttr().getPath());
-				if (!c.getAttr().getPartition().contains(this.localPartition)) {
-					break; // not for us
-				}
 				Node n = fs.get(c.getAttr().getPath());
 				res.setSuccess(true);
 				Attr response = new Attr(n.getAttributes());
+				
+				if (c.getInvolvedPartitions().size() > 1) {
+					// wait for other signals
+					for (Byte part: c.getInvolvedPartitions()) {
+						if (part == localPartition) continue;
+						this.waitForSignal(c.getReqId(), part.byteValue());
+					}						
+				}
+				
 				response.setMode(response.getMode() | n.typeMode());
 				res.setResponse(response);
 				break;
@@ -199,7 +215,14 @@ public class FileSystemReplica implements Runnable {
 					entries.add(new DirEntry(child, 0, dir.getChild(child).typeMode()));
 				}
 				
-				// read-only. No need to wait for signals
+				if (c.getInvolvedPartitions().size() > 1) {
+					// wait for other signals
+					for (Byte part: c.getInvolvedPartitions()) {
+						if (part == localPartition) continue;
+						this.waitForSignal(c.getReqId(), part.byteValue());
+					}						
+				}
+
 				res.setSuccess(true);
 				res.setResponse(entries);
 				break;
@@ -427,29 +450,124 @@ public class FileSystemReplica implements Runnable {
 				res.setResponse(null);
 				break;
 			/* -------------------------------- */
-			case OPEN:
-				System.out.println("open");
+			case OPEN: {
+				System.out.println("open " + c.getOpen().getPath());
+				OpenCmd open = c.getOpen();
+				Node n = fs.get(open.getPath());
+				if (n.isDir()) {
+					throw new FSError(FuseException.EISDIR, "Is a directory");
+				}
+				/*
+				 * Flags from open(2) - already removed flags the Fuse docs say are not passed on
+				 * 
+				 * O_RDONLY        open for reading only
+                 * O_WRONLY        open for writing only
+                 * O_RDWR          open for reading and writing
+                 * O_NONBLOCK      do not block on open or for data to become available
+                 * O_APPEND        append on each write
+                 * O_TRUNC         truncate size to 0
+                 * O_SHLOCK        atomically obtain a shared lock
+                 * O_EXLOCK        atomically obtain an exclusive lock
+                 * O_NOFOLLOW      do not follow symlinks
+                 * O_SYMLINK       allow open of symlinks
+                 * O_EVTONLY       descriptor requested for event notifications only
+                 * O_CLOEXEC       mark as close-on-exec
+				 */
+				FileHandle fh = new FileHandle(c.getReqId(), open.getFlags());
+				this.openFiles.put(Long.valueOf(fh.getId()), (FileNode) n);
+				
+				if (c.getInvolvedPartitions().size() > 1) {
+					// wait for other signals
+					for (Byte part: c.getInvolvedPartitions()) {
+						if (part == localPartition) continue;
+						this.waitForSignal(c.getReqId(), part.byteValue());
+					}						
+				}
+				
 				res.setSuccess(true);
-				res.setResponse(null);
+				res.setResponse(fh);
 				break;
+			}
 			/* -------------------------------- */
-			case READ_BLOCKS:
+			case READ_BLOCKS: {
 				System.out.println("readblocks");
+				ReadBlocksCmd read = c.getRead();
+				FileNode f = openFiles.get(Long.valueOf(read.getFileHandle().getId()));
+				if (f == null) {
+					throw new FSError(FuseException.EBADF, "Bad file descriptor");
+				}
+				if ((read.getFileHandle().getFlags() & UnixConstants.O_ACCMODE.getValue()) == UnixConstants.O_WRONLY.getValue()) {
+					throw new FSError(FuseException.EBADF, "File not open for reading");
+				}
+				// FIXME: check for negative offset?
+				ReadResult rr = f.getBlocks(read.getOffset(), read.getBytes());
+				if (rr == null) {
+					rr = new ReadResult(new ArrayList<DBlock>());
+				}
+
+				if (c.getInvolvedPartitions().size() > 1) {
+					// wait for other signals
+					for (Byte part: c.getInvolvedPartitions()) {
+						if (part == localPartition) continue;
+						this.waitForSignal(c.getReqId(), part.byteValue());
+					}						
+				}
+				
 				res.setSuccess(true);
-				res.setResponse(null);
+				res.setResponse(rr);
 				break;
+			}
 			/* -------------------------------- */
-			case WRITE_BLOCKS:
+			case WRITE_BLOCKS: {
 				System.out.println("writeblocks");
+				WriteBlocksCmd write = c.getWrite();
+				FileNode f = openFiles.get(Long.valueOf(write.getFileHandle().getId()));
+				if (f == null) {
+					throw new FSError(FuseException.EBADF, "Bad file descriptor");
+				}
+				if ((write.getFileHandle().getFlags() & UnixConstants.O_ACCMODE.getValue()) == UnixConstants.O_RDONLY.getValue()) {
+					throw new FSError(FuseException.EBADF, "File not open for writing");
+				}
+				// FIXME: check for negative offset?
+				if ((write.getFileHandle().getFlags() & UnixConstants.O_APPEND.getValue()) != 0) {
+					f.appendData(write.getBlocks());
+				} else {
+					f.updateData(write.getBlocks(), write.getOffset());
+				}
+
+				if (c.getInvolvedPartitions().size() > 1) {
+					// wait for other signals
+					for (Byte part: c.getInvolvedPartitions()) {
+						if (part == localPartition) continue;
+						this.waitForSignal(c.getReqId(), part.byteValue());
+					}						
+				}
+				
 				res.setSuccess(true);
 				res.setResponse(null);
 				break;
+			}
 			/* -------------------------------- */
-			case RELEASE:
+			case RELEASE: {
 				System.out.println("release");
+				ReleaseCmd rel = c.getRelease();
+				FileNode f = openFiles.remove(Long.valueOf(rel.getFileHandle().getId()));
+				if (f == null) {
+					throw new FSError(FuseException.EBADF, "Bad file descriptor");
+				}
+				
+				if (c.getInvolvedPartitions().size() > 1) {
+					// wait for other signals
+					for (Byte part: c.getInvolvedPartitions()) {
+						if (part == localPartition) continue;
+						this.waitForSignal(c.getReqId(), part.byteValue());
+					}						
+				}
+				
 				res.setSuccess(true);
 				res.setResponse(null);
 				break;
+			}
 			/* -------------------------------- */
 			default:
 				System.err.println("Replica: Invalid command");

@@ -8,6 +8,7 @@ import java.util.ListIterator;
 import ch.usi.paxosfs.filesystem.FileNode;
 import ch.usi.paxosfs.rpc.Attr;
 import ch.usi.paxosfs.rpc.DBlock;
+import ch.usi.paxosfs.rpc.ReadResult;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -32,7 +33,7 @@ public class MemFile extends MemNode implements FileNode {
 	}
 	
 	@Override
-	public List<DBlock> getBlocks(long offset, long bytes) {
+	public ReadResult getBlocks(long offset, long bytes) {
 		if (offset < 0 || offset >= this.getAttributes().getSize() || bytes <= 0) {
 			return null;
 		}
@@ -55,22 +56,23 @@ public class MemFile extends MemNode implements FileNode {
 		int startingBlockIdx = iter.previousIndex();
 		
 		// find ending block and calculate its endOffset
-		while (currOffset <= offset + bytes && iter.hasNext()) {
+		while (currOffset < offset + bytes && iter.hasNext()) {
 			b = iter.next();
 			currOffset += b.size();
 		}
 		
-		ArrayList<DBlock> ret = Lists.newArrayList(this.blocks.subList(startingBlockIdx, iter.previousIndex()+1));
-		ret.set(startingBlockIdx, startingBlock); // put adjusted starting block on the return list
+		ArrayList<DBlock> readBlocks = Lists.newArrayList(this.blocks.subList(startingBlockIdx, iter.previousIndex()+1));
+		readBlocks.set(0, startingBlock); // put adjusted starting block on the return list
 
 		if (currOffset > offset + bytes) {
 			// put adjusted ending block
 			long endingBlockOffset = b.getEndOffset() - (currOffset - (offset + bytes));
 			DBlock endingBlock = new DBlock(b.getId(), b.getStartOffset(), endingBlockOffset);
-			ret.set(iter.previousIndex(), endingBlock);
+			readBlocks.set(iter.previousIndex(), endingBlock);
 		}
+		ReadResult rr = new ReadResult(readBlocks);
 					
-		return ret;
+		return rr;
 	}
 
 	@Override

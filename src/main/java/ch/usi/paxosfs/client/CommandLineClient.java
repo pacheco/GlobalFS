@@ -1,6 +1,9 @@
 package ch.usi.paxosfs.client;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 import org.apache.thrift.TException;
@@ -14,8 +17,12 @@ import ch.usi.paxosfs.partitioning.PartitioningOracle;
 import ch.usi.paxosfs.partitioning.SinglePartitionOracle;
 import ch.usi.paxosfs.partitioning.TwoPartitionOracle;
 import ch.usi.paxosfs.replica.ReplicaManager;
+import ch.usi.paxosfs.rpc.DBlock;
 import ch.usi.paxosfs.rpc.FSError;
+import ch.usi.paxosfs.rpc.FileHandle;
 import ch.usi.paxosfs.rpc.FuseOps;
+import ch.usi.paxosfs.rpc.ReadResult;
+import ch.usi.paxosfs.util.UnixConstants;
 
 public class CommandLineClient {
 	private static TTransport[] transport;
@@ -55,6 +62,7 @@ public class CommandLineClient {
 
 
 		Scanner s = new Scanner(System.in);
+		FileHandle fh = null;
 		while (s.hasNext()) {
 			String cmd = s.next();
 			try {
@@ -111,6 +119,52 @@ public class CommandLineClient {
 				System.out.println("File renamed.");
 				break;			
 			}
+			case "open": {
+				String path = s.next();
+				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
+				fh = client[partition].open(path, UnixConstants.O_RDWR.getValue());
+				System.out.println(fh);
+				break;
+			}
+			case "write": {
+				String path = s.next();
+				int offset = s.nextInt();
+				if (fh == null) {
+					System.out.println("Open a file first");
+					break;
+				}
+				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
+				List<DBlock> blocks = new ArrayList<DBlock>();
+				blocks.add(new DBlock(new Random().nextLong(), 0, 1024));
+				client[partition].writeBlocks(path, fh, offset, blocks);
+				System.out.println("File written");
+				break;
+			}
+			case "read": {
+				String path = s.next();
+				int offset = s.nextInt();
+				int bytes = s.nextInt();
+				if (fh == null) {
+					System.out.println("Open a file first");
+					break;
+				}
+				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
+				ReadResult rr = client[partition].readBlocks(path, fh, offset, bytes);
+				System.out.println(rr);
+				break;
+			}
+			case "release": {
+				String path = s.next();
+				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
+				if (fh == null) {
+					System.out.println("Open a file first");
+					break;
+				}
+				client[partition].release(path, fh, 0);
+				System.out.println("File closed");
+				fh = null;
+				break;
+			}			
 			default:
 				System.out.println("Unknown command");
 			}
