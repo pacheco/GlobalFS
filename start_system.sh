@@ -46,7 +46,7 @@ xterm -geometry 120x20+900+300 -e "cd $PAXOSFSDIR; ./runreplica.sh 2 2 7778 loca
 sleep 0.2
 
 # start dht
-xterm -geometry 120x20+0+600 -e "cd $PAXOSFSDIR; ./dht.py" &
+xterm -geometry 120x20+0+600 -e "cd $PAXOSFSDIR; ./src/main/python/dht.py" &
 sleep 0.2
 
 
