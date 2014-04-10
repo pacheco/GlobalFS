@@ -96,6 +96,7 @@ struct ChmodCmd {
 }
 
 struct ChownCmd {
+    2: string path
     3: i32 uid
     4: i32 gid
 

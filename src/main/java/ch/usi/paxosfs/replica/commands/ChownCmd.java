@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fields>, java.io.Serializable, Cloneable, Comparable<ChownCmd> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ChownCmd");
 
+  private static final org.apache.thrift.protocol.TField PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("path", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField UID_FIELD_DESC = new org.apache.thrift.protocol.TField("uid", org.apache.thrift.protocol.TType.I32, (short)3);
   private static final org.apache.thrift.protocol.TField GID_FIELD_DESC = new org.apache.thrift.protocol.TField("gid", org.apache.thrift.protocol.TType.I32, (short)4);
   private static final org.apache.thrift.protocol.TField PARTITION_FIELD_DESC = new org.apache.thrift.protocol.TField("partition", org.apache.thrift.protocol.TType.SET, (short)7);
@@ -45,12 +46,14 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
     schemes.put(TupleScheme.class, new ChownCmdTupleSchemeFactory());
   }
 
+  public String path; // required
   public int uid; // required
   public int gid; // required
   public Set<Byte> partition; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+    PATH((short)2, "path"),
     UID((short)3, "uid"),
     GID((short)4, "gid"),
     PARTITION((short)7, "partition");
@@ -68,6 +71,8 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
+        case 2: // PATH
+          return PATH;
         case 3: // UID
           return UID;
         case 4: // GID
@@ -120,6 +125,8 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.PATH, new org.apache.thrift.meta_data.FieldMetaData("path", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.UID, new org.apache.thrift.meta_data.FieldMetaData("uid", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.GID, new org.apache.thrift.meta_data.FieldMetaData("gid", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -135,11 +142,13 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
   }
 
   public ChownCmd(
+    String path,
     int uid,
     int gid,
     Set<Byte> partition)
   {
     this();
+    this.path = path;
     this.uid = uid;
     setUidIsSet(true);
     this.gid = gid;
@@ -152,6 +161,9 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
    */
   public ChownCmd(ChownCmd other) {
     __isset_bitfield = other.__isset_bitfield;
+    if (other.isSetPath()) {
+      this.path = other.path;
+    }
     this.uid = other.uid;
     this.gid = other.gid;
     if (other.isSetPartition()) {
@@ -166,11 +178,36 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
 
   @Override
   public void clear() {
+    this.path = null;
     setUidIsSet(false);
     this.uid = 0;
     setGidIsSet(false);
     this.gid = 0;
     this.partition = null;
+  }
+
+  public String getPath() {
+    return this.path;
+  }
+
+  public ChownCmd setPath(String path) {
+    this.path = path;
+    return this;
+  }
+
+  public void unsetPath() {
+    this.path = null;
+  }
+
+  /** Returns true if field path is set (has been assigned a value) and false otherwise */
+  public boolean isSetPath() {
+    return this.path != null;
+  }
+
+  public void setPathIsSet(boolean value) {
+    if (!value) {
+      this.path = null;
+    }
   }
 
   public int getUid() {
@@ -260,6 +297,14 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
+    case PATH:
+      if (value == null) {
+        unsetPath();
+      } else {
+        setPath((String)value);
+      }
+      break;
+
     case UID:
       if (value == null) {
         unsetUid();
@@ -289,6 +334,9 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
+    case PATH:
+      return getPath();
+
     case UID:
       return Integer.valueOf(getUid());
 
@@ -309,6 +357,8 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
     }
 
     switch (field) {
+    case PATH:
+      return isSetPath();
     case UID:
       return isSetUid();
     case GID:
@@ -331,6 +381,15 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
   public boolean equals(ChownCmd that) {
     if (that == null)
       return false;
+
+    boolean this_present_path = true && this.isSetPath();
+    boolean that_present_path = true && that.isSetPath();
+    if (this_present_path || that_present_path) {
+      if (!(this_present_path && that_present_path))
+        return false;
+      if (!this.path.equals(that.path))
+        return false;
+    }
 
     boolean this_present_uid = true;
     boolean that_present_uid = true;
@@ -375,6 +434,16 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
 
     int lastComparison = 0;
 
+    lastComparison = Boolean.valueOf(isSetPath()).compareTo(other.isSetPath());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetPath()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.path, other.path);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = Boolean.valueOf(isSetUid()).compareTo(other.isSetUid());
     if (lastComparison != 0) {
       return lastComparison;
@@ -425,6 +494,14 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
     StringBuilder sb = new StringBuilder("ChownCmd(");
     boolean first = true;
 
+    sb.append("path:");
+    if (this.path == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.path);
+    }
+    first = false;
+    if (!first) sb.append(", ");
     sb.append("uid:");
     sb.append(this.uid);
     first = false;
@@ -485,6 +562,14 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
           break;
         }
         switch (schemeField.id) {
+          case 2: // PATH
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.path = iprot.readString();
+              struct.setPathIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           case 3: // UID
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.uid = iprot.readI32();
@@ -534,6 +619,11 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
+      if (struct.path != null) {
+        oprot.writeFieldBegin(PATH_FIELD_DESC);
+        oprot.writeString(struct.path);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldBegin(UID_FIELD_DESC);
       oprot.writeI32(struct.uid);
       oprot.writeFieldEnd();
@@ -570,16 +660,22 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
     public void write(org.apache.thrift.protocol.TProtocol prot, ChownCmd struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       BitSet optionals = new BitSet();
-      if (struct.isSetUid()) {
+      if (struct.isSetPath()) {
         optionals.set(0);
       }
-      if (struct.isSetGid()) {
+      if (struct.isSetUid()) {
         optionals.set(1);
       }
-      if (struct.isSetPartition()) {
+      if (struct.isSetGid()) {
         optionals.set(2);
       }
-      oprot.writeBitSet(optionals, 3);
+      if (struct.isSetPartition()) {
+        optionals.set(3);
+      }
+      oprot.writeBitSet(optionals, 4);
+      if (struct.isSetPath()) {
+        oprot.writeString(struct.path);
+      }
       if (struct.isSetUid()) {
         oprot.writeI32(struct.uid);
       }
@@ -600,16 +696,20 @@ public class ChownCmd implements org.apache.thrift.TBase<ChownCmd, ChownCmd._Fie
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ChownCmd struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(3);
+      BitSet incoming = iprot.readBitSet(4);
       if (incoming.get(0)) {
+        struct.path = iprot.readString();
+        struct.setPathIsSet(true);
+      }
+      if (incoming.get(1)) {
         struct.uid = iprot.readI32();
         struct.setUidIsSet(true);
       }
-      if (incoming.get(1)) {
+      if (incoming.get(2)) {
         struct.gid = iprot.readI32();
         struct.setGidIsSet(true);
       }
-      if (incoming.get(2)) {
+      if (incoming.get(3)) {
         {
           org.apache.thrift.protocol.TSet _set141 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, iprot.readI32());
           struct.partition = new HashSet<Byte>(2*_set141.size);
