@@ -126,7 +126,7 @@ public class MemFileSystem implements FileSystem {
 	}
 	
 	@Override
-	public void rename(String from, String to) throws FSError {
+	public Node rename(String from, String to) throws FSError {
 		DirNode parentFrom = getDir(Paths.dirname(from));
 		String nameFrom = Paths.basename(from);
 		DirNode parentTo = getDir(Paths.dirname(to));
@@ -153,6 +153,7 @@ public class MemFileSystem implements FileSystem {
 		}
 		parentFrom.removeChild(nameFrom);
 		parentTo.addChild(nameTo, nodeFrom);
+		return nodeFrom;
 	}
 	
 	private FSError notFound(String file) {

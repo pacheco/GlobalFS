@@ -10,6 +10,7 @@ public interface FileSystem {
 	public Node getRoot();
 	public void removeFileOrLink(String path) throws FSError;
 	public void removeDir(String path) throws FSError;
-	public void rename(String from, String to) throws FSError;
+	// returns the resulting node
+	public Node rename(String from, String to) throws FSError;
 	public DirNode getDir(String path) throws FSError;
 }
