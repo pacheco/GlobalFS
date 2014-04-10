@@ -3,12 +3,10 @@ package ch.usi.paxosfs.replica;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -23,7 +21,6 @@ import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
 import org.apache.zookeeper.KeeperException;
 
-import ch.usi.paxosfs.client.PaxosFileSystem;
 import ch.usi.paxosfs.filesystem.DirNode;
 import ch.usi.paxosfs.filesystem.FileNode;
 import ch.usi.paxosfs.filesystem.FileSystem;
@@ -40,6 +37,7 @@ import ch.usi.paxosfs.replica.commands.ReleaseCmd;
 import ch.usi.paxosfs.replica.commands.RenameCmd;
 import ch.usi.paxosfs.replica.commands.RenameData;
 import ch.usi.paxosfs.replica.commands.Signal;
+import ch.usi.paxosfs.replica.commands.TruncateCmd;
 import ch.usi.paxosfs.replica.commands.WriteBlocksCmd;
 import ch.usi.paxosfs.rpc.Attr;
 import ch.usi.paxosfs.rpc.DBlock;
@@ -84,15 +82,6 @@ public class FileSystemReplica implements Runnable {
 		this.zoohost = zoohost;
 		this.host = host;
 		this.port = port;
-	}
-	
-	@SafeVarargs
-	private static Set<Byte> unionOf(Set<Byte>... sets) {
-		Set<Byte> union = new HashSet<>();
-		for (Set<Byte> parts: sets){
-			union.addAll(parts);
-		}
-		return union;
 	}
 
 	/**
@@ -451,11 +440,31 @@ public class FileSystemReplica implements Runnable {
 				res.setResponse(null);
 				break;
 			/* -------------------------------- */
-			case TRUNCATE:
+			case TRUNCATE: {
 				log.debug(new StrBuilder().append("truncate ").append(c.getTruncate().getPath()).toString());
+				TruncateCmd t = c.getTruncate();
+				Node f = fs.get(t.getPath());
+				if (f == null) {
+					throw new FSError(FuseException.ENOENT, "File not found");
+				} else if (!f.isFile()) {
+					throw new FSError(FuseException.EINVAL, "Not a file");
+				}
+				((FileNode) f).truncate(t.getSize());
+				f.getAttributes().setCtime(c.getReqTime());
+				f.getAttributes().setMtime(c.getReqTime());
+
+				if (c.getInvolvedPartitions().size() > 1) {
+					// wait for other signals
+					for (Byte part: c.getInvolvedPartitions()) {
+						if (part == localPartition) continue;
+						this.waitForSignal(c.getReqId(), part.byteValue());
+					}						
+				}
+				
 				res.setSuccess(true);
 				res.setResponse(null);
 				break;
+			}
 			/* -------------------------------- */
 			case UTIME:
 				log.debug(new StrBuilder().append("utime ").append(c.getUtime().getPath()).toString());

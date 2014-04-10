@@ -19,6 +19,7 @@ import ch.usi.paxosfs.replica.commands.ReadBlocksCmd;
 import ch.usi.paxosfs.replica.commands.ReleaseCmd;
 import ch.usi.paxosfs.replica.commands.RenameCmd;
 import ch.usi.paxosfs.replica.commands.RmdirCmd;
+import ch.usi.paxosfs.replica.commands.TruncateCmd;
 import ch.usi.paxosfs.replica.commands.UnlinkCmd;
 import ch.usi.paxosfs.replica.commands.WriteBlocksCmd;
 import ch.usi.paxosfs.rpc.Attr;
@@ -166,8 +167,11 @@ public class FuseOpsHandler implements FuseOps.Iface {
 
 	@Override
 	public void truncate(String path, long size) throws FSError, TException {
-		// TODO Auto-generated method stub
-		
+		Set<Byte> parts = oracle.partitionsOf(path);
+		Command cmd = newCommand(CommandType.TRUNCATE, parts);
+		TruncateCmd truncate = new TruncateCmd(path, size, parts);
+		cmd.setTruncate(truncate);
+		replica.submitCommand(cmd);
 	}
 
 	@Override
