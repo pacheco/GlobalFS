@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang3.text.StrBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.thrift.TException;
@@ -78,7 +79,7 @@ public class PaxosFileSystem implements Filesystem3 {
 			transport[i-1] = new TSocket(replicaHost, replicaPort);
 			transport[i-1].open();
 			TProtocol protocol = new TBinaryProtocol(transport[i-1]);
-			System.out.println("Connecting to replica at " + replicaAddr);
+			log.debug(new StrBuilder().append("Connecting to replica at ").append(replicaAddr).toString());
 			client[i-1] = new FuseOps.Client(protocol);
 		}
 	}
@@ -381,8 +382,6 @@ public class PaxosFileSystem implements Filesystem3 {
     }
     
     public static void main(String[] args) throws MalformedURLException {
-        System.out.println("entering");
-        
         // small sanity check to avoid problems later (fuse hangs on exceptions sometimes)
         new URL(args[2]);
         
@@ -395,7 +394,7 @@ public class PaxosFileSystem implements Filesystem3 {
             e.printStackTrace();
         }
         finally {
-            System.out.println("exiting");
+        	log.debug("Exiting...");
         }
     }	
 }

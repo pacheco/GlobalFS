@@ -13,6 +13,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.text.StrBuilder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.thrift.TProcessor;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
@@ -20,6 +23,7 @@ import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
 import org.apache.zookeeper.KeeperException;
 
+import ch.usi.paxosfs.client.PaxosFileSystem;
 import ch.usi.paxosfs.filesystem.DirNode;
 import ch.usi.paxosfs.filesystem.FileNode;
 import ch.usi.paxosfs.filesystem.FileSystem;
@@ -53,7 +57,8 @@ import fuse.FuseException;
 import fuse.FuseFtypeConstants;
 
 public class FileSystemReplica implements Runnable {
-	public int WORKER_THREADS = 20;
+	private Log log = LogFactory.getLog(FileSystemReplica.class);
+	public int WORKER_THREADS = 50;
 	private CommunicationService comm;
 	private ConcurrentHashMap<Long, CommandResult> pendingCommands;
 	private List<Command> signalsReceived; // to keep track of signals received in advance
@@ -151,7 +156,7 @@ public class FileSystemReplica implements Runnable {
 	private void applyCommand(Command c) {
 		CommandResult res = pendingCommands.remove(Long.valueOf(c.getReqId()));
 		if (res == null) {
-			System.out.println("No pending command for " + c.getReqId());
+			log.debug("No pending command requests");
 			// creating a dummy command so we don't have to check for null all the time
 			res = new CommandResult();
 		}
@@ -160,7 +165,7 @@ public class FileSystemReplica implements Runnable {
 			// handle each command type
 			switch (CommandType.findByValue(c.getType())) {
 			case ATTR: {
-				System.out.println("attr " + c.getAttr().getPath());
+				log.debug(new StringBuilder().append("attr ").append(c.getAttr().getPath()).toString());
 				Node n = fs.get(c.getAttr().getPath());
 				res.setSuccess(true);
 				Attr response = new Attr(n.getAttributes());
@@ -179,8 +184,7 @@ public class FileSystemReplica implements Runnable {
 			}
 			/* -------------------------------- */
 			case MKNOD: {
-				System.out.println("mknod");
-				
+				log.debug(new StrBuilder().append("mknod ").append(c.getMknod().getPath()).toString());
 				// if the create fails here, there is no need for signals, the other partitions also fail
 				fs.createFile(c.getMknod().getPath(), 
 					c.getMknod().getMode(), 
@@ -202,7 +206,7 @@ public class FileSystemReplica implements Runnable {
 			}
 			/* -------------------------------- */
 			case GETDIR: {
-				System.out.println("getdir " + c.getGetdir().getPath());
+				log.debug(new StrBuilder().append("getdir ").append(c.getGetdir().getPath()).toString());
 
 				Node n = fs.get(c.getGetdir().getPath());
 				if (!n.isDir()) {
@@ -229,7 +233,7 @@ public class FileSystemReplica implements Runnable {
 			}
 			/* -------------------------------- */
 			case MKDIR: {
-				System.out.println("mkdir");
+				log.debug(new StrBuilder().append("mkdir ").append(c.getMkdir().getPath()).toString());
 
 				fs.createDir(c.getMkdir().getPath(), 
 					c.getMkdir().getMode(), 
@@ -250,7 +254,7 @@ public class FileSystemReplica implements Runnable {
 			}
 			/* -------------------------------- */
 			case UNLINK: {
-				System.out.println("unlink");
+				log.debug(new StrBuilder().append("unlink ").append(c.getUnlink().getPath()).toString());
 
 				fs.removeFileOrLink(c.getUnlink().getPath());;
 				
@@ -267,7 +271,7 @@ public class FileSystemReplica implements Runnable {
 			}
 			/* -------------------------------- */
 			case RMDIR: {
-				System.out.println("rmdir");
+				log.debug(new StrBuilder().append("rmdir ").append(c.getRmdir().getPath()).toString());
 				
 				fs.removeDir(c.getRmdir().getPath());
 				
@@ -284,7 +288,10 @@ public class FileSystemReplica implements Runnable {
 			}
 			/* -------------------------------- */
 			case RENAME: {
-				System.out.println("rename " + c.getRename().getFrom() + " " + c.getRename().getTo());
+				log.debug(new StrBuilder().append("rename ")
+						.append(c.getRename().getFrom())
+						.append(" ")
+						.append(c.getRename().getTo()).toString());
 				RenameCmd r = c.getRename();
 				// some partition in partitionTo is not in partitionFrom -> it will need data
 				boolean toNeedsData = !Sets.difference(r.getPartitionTo(), r.getPartitionFrom()).isEmpty();
@@ -424,37 +431,40 @@ public class FileSystemReplica implements Runnable {
 			}
 			/* -------------------------------- */
 			case SYMLINK:
-				System.out.println("symlink");
+				log.debug(new StrBuilder().append("symlink ")
+						.append(c.getSymlink().getPath())
+						.append(" ")
+						.append(c.getSymlink().getTarget()).toString());
 				res.setSuccess(true);
 				res.setResponse(null);
 				break;
 			/* -------------------------------- */
 			case CHMOD:
-				System.out.println("chmod");
+				log.debug(new StrBuilder().append("chmod ").append(c.getChmod().getPath()).toString());
 				res.setSuccess(true);
 				res.setResponse(null);
 				break;
 			/* -------------------------------- */
 			case CHOWN:
-				System.out.println("chown");
+				log.debug(new StrBuilder().append("chown ").append(c.getChown().getPath()).toString());
 				res.setSuccess(true);
 				res.setResponse(null);
 				break;
 			/* -------------------------------- */
 			case TRUNCATE:
-				System.out.println("truncate");
+				log.debug(new StrBuilder().append("truncate ").append(c.getTruncate().getPath()).toString());
 				res.setSuccess(true);
 				res.setResponse(null);
 				break;
 			/* -------------------------------- */
 			case UTIME:
-				System.out.println("utime");
+				log.debug(new StrBuilder().append("utime ").append(c.getUtime().getPath()).toString());
 				res.setSuccess(true);
 				res.setResponse(null);
 				break;
 			/* -------------------------------- */
 			case OPEN: {
-				System.out.println("open " + c.getOpen().getPath());
+				log.debug(new StrBuilder().append("open ").append(c.getOpen().getPath()).toString());
 				OpenCmd open = c.getOpen();
 				Node n = fs.get(open.getPath());
 				if (n.isDir()) {
@@ -493,7 +503,7 @@ public class FileSystemReplica implements Runnable {
 			}
 			/* -------------------------------- */
 			case READ_BLOCKS: {
-				System.out.println("readblocks");
+				log.debug(new StrBuilder().append("read ").append(c.getRead().getPath()).toString());
 				ReadBlocksCmd read = c.getRead();
 				FileNode f = openFiles.get(Long.valueOf(read.getFileHandle().getId()));
 				if (f == null) {
@@ -522,7 +532,7 @@ public class FileSystemReplica implements Runnable {
 			}
 			/* -------------------------------- */
 			case WRITE_BLOCKS: {
-				System.out.println("writeblocks");
+				log.debug(new StrBuilder().append("write ").append(c.getWrite().getPath()).toString());
 				WriteBlocksCmd write = c.getWrite();
 				FileNode f = openFiles.get(Long.valueOf(write.getFileHandle().getId()));
 				if (f == null) {
@@ -555,7 +565,7 @@ public class FileSystemReplica implements Runnable {
 			}
 			/* -------------------------------- */
 			case RELEASE: {
-				System.out.println("release");
+				log.debug(new StrBuilder().append("release ").append(c.getRelease().getPath()).toString());
 				ReleaseCmd rel = c.getRelease();
 				FileNode f = openFiles.remove(Long.valueOf(rel.getFileHandle().getId()));
 				if (f == null) {
@@ -576,7 +586,7 @@ public class FileSystemReplica implements Runnable {
 			}
 			/* -------------------------------- */
 			default:
-				System.err.println("Replica: Invalid command");
+				log.error(new StrBuilder().append("Invalid command").toString());
 				res.setSuccess(false);
 				res.setError(new FSError(-1, "Invalid command"));
 				break;
@@ -586,7 +596,6 @@ public class FileSystemReplica implements Runnable {
 			res.setError(e);
 		}
 		// signal waiting client, if any
-		System.out.println("Replying to client " + c.getReqId());
 		res.countDown();
 	}
 	

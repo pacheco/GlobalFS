@@ -7,7 +7,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.thrift.server.TServer;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.thrift.transport.TTransportException;
 import org.apache.zookeeper.KeeperException;
 
@@ -17,8 +18,8 @@ import ch.usi.da.paxos.ring.Node;
 import ch.usi.da.paxos.ring.RingDescription;
 
 public class FSMain {
-	static Thread replica;
-	static TServer thriftServer;
+	private static Log log = LogFactory.getLog(FSMain.class); 
+	private static Thread replica;
 	
 	private static class Options {
 		public int serverPort = 7777;
@@ -81,7 +82,7 @@ public class FSMain {
 		rings.add(new RingDescription(args.replicaPartition, args.replicaId, Arrays.asList(PaxosRole.Acceptor, PaxosRole.Learner, PaxosRole.Proposer)));
 		final Node node = startPaxos(rings, args.zookeeperHost);
 		if (node == null) {
-			System.err.println("Error starting paxos");
+			log.error("Error starting paxos");
 			System.exit(1);
 		}
 		

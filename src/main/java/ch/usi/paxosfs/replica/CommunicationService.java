@@ -6,6 +6,9 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.apache.commons.lang3.text.StrBuilder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.thrift.TDeserializer;
 import org.apache.thrift.TException;
 import org.apache.thrift.TSerializer;
@@ -26,6 +29,7 @@ import ch.usi.paxosfs.rpc.FSError;
  *
  */
 public class CommunicationService {
+	private static Log log = LogFactory.getLog(CommunicationService.class);
 	private final byte GLOBAL_RING = 0;
 	/**
 	 * Queue of commands received. Will be filled as commands arrive.
@@ -69,7 +73,7 @@ public class CommunicationService {
 			@Override
 			public void run() {
 				final TDeserializer deserializer = new TDeserializer();
-				System.out.println("Starting communication service");
+				log.debug(new StrBuilder().append("Starting communication service ").toString());
 				while (!stop) {
 					try {
 						Decision d = paxos.getLearner().getDecisions().take();
@@ -78,7 +82,7 @@ public class CommunicationService {
 							deserializer.deserialize(c, d.getValue().getValue());
 							if (!c.getInvolvedPartitions().contains(partition)) {
 								// command does not involve this partition. Ignore
-								System.out.println("Got a command I dont care about. Discarding...");
+								log.error(new StrBuilder().append("Received a command we dont care about. Discarding.").toString());
 								continue;
 							}
 							if (c.getType() == CommandType.SIGNAL.getValue()) {
@@ -164,7 +168,7 @@ public class CommunicationService {
 			ringid = command.getInvolvedPartitions().iterator().next().byteValue();
 		}
 		// FIXME: right now its not possible to submit to rings the replica is not part of
-		System.out.println("Submitting command " + command.getReqId() + " to ring " + ringid);
+		log.debug(new StrBuilder().append("Submitting command to ring ").append(ringid).toString());
 		Proposer p = this.proposers.get(Byte.valueOf(ringid));
 		// TSerializer is not threadsafe, create a new one for each amcast. Is this too expensive?
 		final TSerializer serializer = new TSerializer();
