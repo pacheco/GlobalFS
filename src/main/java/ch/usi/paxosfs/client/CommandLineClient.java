@@ -3,8 +3,8 @@ package ch.usi.paxosfs.client;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
+import java.util.UUID;
 
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
@@ -22,6 +22,9 @@ import ch.usi.paxosfs.rpc.FSError;
 import ch.usi.paxosfs.rpc.FileHandle;
 import ch.usi.paxosfs.rpc.FuseOps;
 import ch.usi.paxosfs.rpc.ReadResult;
+import ch.usi.paxosfs.storage.HttpStorageClient;
+import ch.usi.paxosfs.storage.Storage;
+import ch.usi.paxosfs.util.UUIDUtils;
 import ch.usi.paxosfs.util.UnixConstants;
 
 public class CommandLineClient {
@@ -33,6 +36,8 @@ public class CommandLineClient {
 	public static void main(String[] args) throws FSError, TException, KeeperException, InterruptedException, IOException {
 		int nReplicas = Integer.parseInt(args[0]);
 		String zoohost = args[1];
+		String storageHost = args[2];
+		Storage storage = new HttpStorageClient(storageHost);
 		
 		rm = new ReplicaManager(zoohost);
 		rm.start();
@@ -129,13 +134,16 @@ public class CommandLineClient {
 			case "write": {
 				String path = s.next();
 				int offset = s.nextInt();
+				String data = s.next();
 				if (fh == null) {
 					System.out.println("Open a file first");
 					break;
 				}
 				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
 				List<DBlock> blocks = new ArrayList<DBlock>();
-				blocks.add(new DBlock(new Random().nextLong(), 0, 1024));
+				blocks.add(new DBlock(null, 0, data.length()));
+				blocks.get(0).setId(UUIDUtils.toBytes(UUID.randomUUID()));
+				storage.put(blocks.get(0).getId(), data.getBytes());
 				client[partition].writeBlocks(path, fh, offset, blocks);
 				System.out.println("File written");
 				break;
@@ -150,7 +158,14 @@ public class CommandLineClient {
 				}
 				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
 				ReadResult rr = client[partition].readBlocks(path, fh, offset, bytes);
-				System.out.println(rr);
+				for (DBlock b : rr.getBlocks()) {
+//					System.out.println(new String(b.getId()));
+					if (b.getId().length == 0) {
+						System.out.print(new byte[(int)b.size()]);
+					}
+					System.out.print(new String(storage.get(b.getId())));
+				}
+				System.out.println("");
 				break;
 			}
 			case "release": {

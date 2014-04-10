@@ -23,10 +23,24 @@ public class HttpStorageClient implements Storage {
 		this.serverUrl = serverUrl + "/";
 	}
 	
+	/**
+	 * Taken from http://stackoverflow.com/questions/9655181/convert-from-byte-array-to-hex-string-in-java
+	 */
+	final private static char[] hexArray = "0123456789ABCDEF".toCharArray();
+	public static String bytesToHex(byte[] bytes) {
+	    char[] hexChars = new char[bytes.length * 2];
+	    for ( int j = 0; j < bytes.length; j++ ) {
+	        int v = bytes[j] & 0xFF;
+	        hexChars[j * 2] = hexArray[v >>> 4];
+	        hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+	    }
+	    return new String(hexChars);
+	}
+	
 	@Override
 	public boolean put(byte[] key, byte[] data) {
 			try {
-				Response r = this.executor.execute(Request.Put(this.serverUrl + new String(key))
+				Response r = this.executor.execute(Request.Put(this.serverUrl + bytesToHex(key))
 						.addHeader("Content-Type", "text/plain")
 						.addHeader("Sync-Mode", "sync")
 						.connectTimeout(3000)
@@ -41,7 +55,7 @@ public class HttpStorageClient implements Storage {
 	@Override
 	public byte[] get(byte[] key) {
 		try {
-			Response r = this.executor.execute(Request.Get(this.serverUrl + new String(key))
+			Response r = this.executor.execute(Request.Get(this.serverUrl + bytesToHex(key))
 					.connectTimeout(3000));
 			HttpResponse resp = r.returnResponse();
 			if (resp.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {

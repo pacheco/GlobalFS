@@ -1,11 +1,14 @@
 package ch.usi.paxosfs.client;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,6 +31,9 @@ import ch.usi.paxosfs.rpc.FileHandle;
 import ch.usi.paxosfs.rpc.FileSystemStats;
 import ch.usi.paxosfs.rpc.FuseOps;
 import ch.usi.paxosfs.rpc.ReadResult;
+import ch.usi.paxosfs.storage.HttpStorageClient;
+import ch.usi.paxosfs.storage.Storage;
+import ch.usi.paxosfs.util.UUIDUtils;
 import fuse.Filesystem3;
 import fuse.FuseContext;
 import fuse.FuseDirFiller;
@@ -39,18 +45,20 @@ import fuse.FuseStatfsSetter;
 
 public class PaxosFileSystem implements Filesystem3 {
     private static Log log = LogFactory.getLog(PaxosFileSystem.class);
-	private static int MAXBLOCKSIZE = 1024;
+	private static int MAXBLOCKSIZE = 1024*65;
 	
 	private TTransport[] transport;
 	private FuseOps.Client[] client;
 	private ReplicaManager rm;
 	private String zoohost;
 	private PartitioningOracle oracle = new TwoPartitionOracle("/a", "/b");
+	private Storage storage;
 	
-	public PaxosFileSystem(int numberOfPartitions, String zoohost) {
+	public PaxosFileSystem(int numberOfPartitions, String zoohost, String storageHost) {
 		this.client = new FuseOps.Client[numberOfPartitions];
 		this.transport = new TTransport[numberOfPartitions];
 		this.zoohost = zoohost;
+		this.storage = new HttpStorageClient(storageHost);
 	}
 	
 	/** 
@@ -277,9 +285,18 @@ public class PaxosFileSystem implements Filesystem3 {
 				int partition = this.oracle.partitionsOf(path).iterator().next().intValue() - 1;
 				res = client[partition].readBlocks(path, (FileHandle) fh, offset, (long) buf.remaining());
 			}
-			// TODO: fetch data from dht here
-			// write data to client using buf.put()
-			buf.put("Placeholder for content".getBytes());
+			for (DBlock b: res.getBlocks()) {
+				byte[] data;
+				if (b.getId().length == 0) {
+					data = new byte[(int) b.getId().length];
+				} else {
+					data = storage.get(b.getId());
+				}
+				if (data == null) {
+					throw new FSError(-1, "Data block not found!");
+				}
+				buf.put(data, (int)b.getStartOffset(), (int)b.getEndOffset());
+			}
 		} catch (TException e) {
 			throw thriftError(e);
 		}
@@ -293,19 +310,21 @@ public class PaxosFileSystem implements Filesystem3 {
 			byte[] data = new byte[MAXBLOCKSIZE];
 			while (buf.remaining() >= MAXBLOCKSIZE) {
 				buf.get(data);
-				DBlock b = new DBlock();
-				// TODO: put data into DHT here. Set DBlock id
-				b.setStartOffset(0);
-				b.setEndOffset(MAXBLOCKSIZE);
+				DBlock b = new DBlock(null, 0, MAXBLOCKSIZE);
+				b.setId(UUIDUtils.toBytes(UUID.randomUUID()));
+				if (!storage.put(b.getId(), data)) {
+					throw new FSError(-1, "Could not store data block!");
+				}
 				blocks.add(b);
 			}
 			if (buf.hasRemaining()) {
 				byte[] remainingData = new byte[buf.remaining()];
 				buf.get(remainingData);
-				DBlock b = new DBlock();
-				// TODO: put data into DHT here. Set DBlock id
-				b.setStartOffset(0);
-				b.setEndOffset(remainingData.length);
+				DBlock b = new DBlock(null, 0, remainingData.length);
+				b.setId(UUIDUtils.toBytes(UUID.randomUUID()));
+				if (!storage.put(b.getId(), remainingData)){
+					throw new FSError(-1, "Could not store data block!");
+				}
 				blocks.add(b);
 			}
 			
@@ -361,13 +380,16 @@ public class PaxosFileSystem implements Filesystem3 {
     	return FuseContext.get().gid;
     }
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws MalformedURLException {
         System.out.println("entering");
-
-        PaxosFileSystem fs = new PaxosFileSystem(Integer.parseInt(args[0]), args[1]);
+        
+        // small sanity check to avoid problems later (fuse hangs on exceptions sometimes)
+        new URL(args[2]);
+        
+        PaxosFileSystem fs = new PaxosFileSystem(Integer.parseInt(args[0]), args[1], args[2]);
         try {
         	fs.start();
-        	FuseMount.mount(Arrays.copyOfRange(args, 2, args.length), fs, log);
+        	FuseMount.mount(Arrays.copyOfRange(args, 3, args.length), fs, log);
         }
         catch (Exception e) {
             e.printStackTrace();

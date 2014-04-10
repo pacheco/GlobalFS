@@ -51,8 +51,9 @@ public class MemFile extends MemNode implements FileNode {
 		}
 		assert(currOffset > offset);
 		
-		long startingBlockOffset = b.getEndOffset() - (currOffset - offset); 
-		DBlock startingBlock = new DBlock(b.getId(), startingBlockOffset, b.getEndOffset());
+		int startingBlockOffset = b.getEndOffset() - (int)(currOffset - offset); 
+		DBlock startingBlock = new DBlock(null, startingBlockOffset, b.getEndOffset());
+		startingBlock.setId(b.getId());
 		int startingBlockIdx = iter.previousIndex();
 		
 		// find ending block and calculate its endOffset
@@ -66,8 +67,9 @@ public class MemFile extends MemNode implements FileNode {
 
 		if (currOffset > offset + bytes) {
 			// put adjusted ending block
-			long endingBlockOffset = b.getEndOffset() - (currOffset - (offset + bytes));
-			DBlock endingBlock = new DBlock(b.getId(), b.getStartOffset(), endingBlockOffset);
+			int endingBlockOffset = b.getEndOffset() - (int) (currOffset - (offset + bytes));
+			DBlock endingBlock = new DBlock(null, b.getStartOffset(), endingBlockOffset);
+			endingBlock.setId(b.getId());
 			readBlocks.set(iter.previousIndex(), endingBlock);
 		}
 		ReadResult rr = new ReadResult(readBlocks);
@@ -132,28 +134,29 @@ public class MemFile extends MemNode implements FileNode {
 		}
 		
 		// add new data
-		long bytesWritten = 0;
+		int bytesWritten = 0;
 		for (DBlock b: blocks) {
 			iter.add(b);
 			bytesWritten += b.size();
 		}
 		
-		long bytesToRemove = bytesWritten;
+		int bytesToRemove = bytesWritten;
 
 		// now we need to remove blocks and fix offsets
 		
 		if (startOverwrite) {
 			// write starts in the middle of a block
-			long offdiff = currentOffset - offset;
+			int offdiff = (int) (currentOffset - offset);
 			offsetBlock.setEndOffset(offsetBlock.getEndOffset() - offdiff);
 			bytesToRemove -= offdiff;
 		}
 		
 		if (startOverwrite && bytesWritten < currentOffset - offset) { 
 			// handling special case: data written is "splitting" a single block. Copy it and fix the offsets
-			DBlock copy = new DBlock(offsetBlock.id, 
+			DBlock copy = new DBlock(null, 
 					offsetBlock.getEndOffset() + bytesWritten, 
-					offsetBlock.getEndOffset() + currentOffset - offset);
+					offsetBlock.getEndOffset() + (int) (currentOffset - offset));
+			copy.setId(offsetBlock.getId());
 			iter.add(copy);
 		} else {
 			// iterate remaining blocks removing until we "overwrite" (that is, remove from the block list) bytesWritten bytes
@@ -181,7 +184,10 @@ public class MemFile extends MemNode implements FileNode {
 		long sizeDiff = size - this.getAttributes().getSize();
 		if (sizeDiff > 0) {
 			// increase file size by adding a null block of the size difference
-			blocks.add(new DBlock(0, 0, sizeDiff));
+			// FIXME: we are casting long to int here. The correct way would be create blocks multiple blocks of max size int
+			DBlock nullBlock = new DBlock(null, 0, (int) sizeDiff); 
+			blocks.add(nullBlock);
+			nullBlock.setId(new byte[0]);
 			this.getAttributes().setSize(size);
 		} else if (sizeDiff == 0) {
 			// same size
@@ -195,7 +201,7 @@ public class MemFile extends MemNode implements FileNode {
 				acumm += b.size();
 				if (acumm >= size) {
 					// new last block
-					b.setEndOffset(b.getEndOffset() - (acumm - size));
+					b.setEndOffset(b.getEndOffset() - (int)(acumm - size));
 					if (b.size() == 0) {
 						iter.remove();
 					}

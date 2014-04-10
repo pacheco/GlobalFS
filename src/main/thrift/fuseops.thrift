@@ -42,9 +42,9 @@ struct FileHandle {
 }
 
 struct DBlock {
-    1: i64 id,
-    2: i64 startOffset,
-    3: i64 endOffset,
+    1: binary id,
+    2: i32 startOffset,
+    3: i32 endOffset,
 }
 
 // THIS METHOD HAS TO BE ADDED TO THE DBLOCK CLASS
