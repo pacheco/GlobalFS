@@ -294,7 +294,8 @@ public class FileSystemReplica implements Runnable {
 
 				if (c.getInvolvedPartitions().size() == 1) {
 					// single partition. just move the file
-					fs.rename(r.getFrom(), r.getTo());
+					Node n = fs.rename(r.getFrom(), r.getTo());
+					n.getAttributes().setCtime(c.getReqTime());
 				} else {
 					/* 
 					 * partitions in partitionFrom send the first signal (checks origin exists) and file data 
@@ -393,13 +394,15 @@ public class FileSystemReplica implements Runnable {
 									|| r.getParentPartitionTo().contains(localPartition)) { // TODO: parentTo does not need "full" file
 								Node n = (data == null) ? removedNode : renameDataNewNode(data);
 								DirNode d = fs.getDir(Paths.dirname(r.getTo()));
+								n.getAttributes().setCtime(c.getReqTime());
 								d.addChild(Paths.basename(r.getTo()), n);
 							}
 						} else { // no need of the data from signal
 							if (r.getPartitionTo().contains(localPartition) 
 									|| r.getParentPartitionTo().contains(localPartition)) {
 								// to and parentTo have the origin. Just rename
-								fs.rename(r.getFrom(), r.getTo());
+								Node n = fs.rename(r.getFrom(), r.getTo());
+								n.getAttributes().setCtime(c.getReqTime());
 							} else {
 								// remove node
 								DirNode d = fs.getDir(Paths.dirname(r.getFrom()));
@@ -534,6 +537,9 @@ public class FileSystemReplica implements Runnable {
 				} else {
 					f.updateData(write.getBlocks(), write.getOffset());
 				}
+				
+				f.getAttributes().setCtime(c.getReqTime());
+				f.getAttributes().setMtime(c.getReqTime());
 
 				if (c.getInvolvedPartitions().size() > 1) {
 					// wait for other signals
