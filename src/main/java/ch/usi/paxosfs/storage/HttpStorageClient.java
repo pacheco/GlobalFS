@@ -9,6 +9,8 @@ import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
 
+import ch.usi.paxosfs.util.UUIDUtils;
+
 public class HttpStorageClient implements Storage {
 	private Executor executor;
 	private String serverUrl;
@@ -27,7 +29,7 @@ public class HttpStorageClient implements Storage {
 	 * Taken from http://stackoverflow.com/questions/9655181/convert-from-byte-array-to-hex-string-in-java
 	 */
 	final private static char[] hexArray = "0123456789ABCDEF".toCharArray();
-	public static String bytesToHex(byte[] bytes) {
+	private static String bytesToHex(byte[] bytes) {
 	    char[] hexChars = new char[bytes.length * 2];
 	    for ( int j = 0; j < bytes.length; j++ ) {
 	        int v = bytes[j] & 0xFF;
@@ -37,10 +39,15 @@ public class HttpStorageClient implements Storage {
 	    return new String(hexChars);
 	}
 	
+	private static String bytesToLongAsString(byte[] bytes) {
+		long l = UUIDUtils.bytesToLong(bytes);
+		return String.valueOf(l);
+	}
+	
 	@Override
 	public boolean put(byte[] key, byte[] data) {
 			try {
-				Response r = this.executor.execute(Request.Put(this.serverUrl + bytesToHex(key))
+				Response r = this.executor.execute(Request.Put(this.serverUrl + bytesToLongAsString(key))
 						.addHeader("Content-Type", "text/plain")
 						.addHeader("Sync-Mode", "sync")
 						.connectTimeout(3000)
@@ -55,7 +62,7 @@ public class HttpStorageClient implements Storage {
 	@Override
 	public byte[] get(byte[] key) {
 		try {
-			Response r = this.executor.execute(Request.Get(this.serverUrl + bytesToHex(key))
+			Response r = this.executor.execute(Request.Get(this.serverUrl + bytesToLongAsString(key))
 					.connectTimeout(3000));
 			HttpResponse resp = r.returnResponse();
 			if (resp.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {

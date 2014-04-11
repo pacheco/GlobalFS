@@ -142,7 +142,7 @@ public class CommandLineClient {
 				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
 				List<DBlock> blocks = new ArrayList<DBlock>();
 				blocks.add(new DBlock(null, 0, data.length()));
-				blocks.get(0).setId(UUIDUtils.toBytes(UUID.randomUUID()));
+				blocks.get(0).setId(UUIDUtils.uuidToBytes(UUID.randomUUID()));
 				storage.put(blocks.get(0).getId(), data.getBytes());
 				client[partition].writeBlocks(path, fh, offset, blocks);
 				System.out.println("File written");
