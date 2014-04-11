@@ -3,6 +3,7 @@ package ch.usi.paxosfs.client;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -34,6 +35,7 @@ public class CommandLineClient {
 	private static PartitioningOracle oracle;
 
 	public static void main(String[] args) throws FSError, TException, KeeperException, InterruptedException, IOException {
+		Random rand = new Random();
 		int nReplicas = Integer.parseInt(args[0]);
 		String zoohost = args[1];
 		String storageHost = args[2];
@@ -142,7 +144,7 @@ public class CommandLineClient {
 				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
 				List<DBlock> blocks = new ArrayList<DBlock>();
 				blocks.add(new DBlock(null, 0, data.length()));
-				blocks.get(0).setId(UUIDUtils.uuidToBytes(UUID.randomUUID()));
+				blocks.get(0).setId(UUIDUtils.longToBytes(rand.nextLong()));
 				storage.put(blocks.get(0).getId(), data.getBytes());
 				client[partition].writeBlocks(path, fh, offset, blocks);
 				System.out.println("File written");

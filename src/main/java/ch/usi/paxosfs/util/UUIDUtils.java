@@ -37,7 +37,6 @@ public class UUIDUtils {
 		}
 		ByteBuffer bb = ByteBuffer.wrap(b)
 				.order(ByteOrder.BIG_ENDIAN);
-		bb.flip();
 		return bb.getLong();
 	}
 }
