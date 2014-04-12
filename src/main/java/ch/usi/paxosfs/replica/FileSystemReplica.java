@@ -12,8 +12,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.text.StrBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.thrift.TProcessor;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
@@ -29,6 +29,7 @@ import ch.usi.paxosfs.filesystem.memory.MemDir;
 import ch.usi.paxosfs.filesystem.memory.MemFile;
 import ch.usi.paxosfs.filesystem.memory.MemFileSystem;
 import ch.usi.paxosfs.partitioning.DefaultMultiPartitionOracle;
+import ch.usi.paxosfs.replica.commands.ChmodCmd;
 import ch.usi.paxosfs.replica.commands.Command;
 import ch.usi.paxosfs.replica.commands.CommandType;
 import ch.usi.paxosfs.replica.commands.OpenCmd;
@@ -55,7 +56,7 @@ import fuse.FuseException;
 import fuse.FuseFtypeConstants;
 
 public class FileSystemReplica implements Runnable {
-	private Log log = LogFactory.getLog(FileSystemReplica.class);
+	private Logger log = Logger.getLogger(FileSystemReplica.class);
 	public int WORKER_THREADS = 50;
 	private CommunicationService comm;
 	private ConcurrentHashMap<Long, CommandResult> pendingCommands;
@@ -84,6 +85,7 @@ public class FileSystemReplica implements Runnable {
 		this.zoohost = zoohost;
 		this.host = host;
 		this.port = port;
+		log.setLevel(Level.DEBUG);
 	}
 
 	/**
@@ -430,11 +432,27 @@ public class FileSystemReplica implements Runnable {
 				res.setResponse(null);
 				break;
 			/* -------------------------------- */
-			case CHMOD:
+			case CHMOD: {
 				log.debug(new StrBuilder().append("chmod ").append(c.getChmod().getPath()).toString());
+				ChmodCmd chmod = c.getChmod();
+				Node f = fs.get(chmod.getPath());
+				if (f == null) {
+					throw new FSError(FuseException.ENOENT, "File not found");
+				}
+				((FileNode) f).getAttributes().setMode(chmod.getMode());
+				f.getAttributes().setCtime(c.getReqTime());
+
+				if (c.getInvolvedPartitions().size() > 1) {
+					// wait for other signals
+					for (Byte part: c.getInvolvedPartitions()) {
+						if (part == localPartition) continue;
+						this.waitForSignal(c.getReqId(), part.byteValue());
+					}						
+				}
 				res.setSuccess(true);
 				res.setResponse(null);
 				break;
+			}
 			/* -------------------------------- */
 			case CHOWN:
 				log.debug(new StrBuilder().append("chown ").append(c.getChown().getPath()).toString());
@@ -497,6 +515,7 @@ public class FileSystemReplica implements Runnable {
                  * O_EVTONLY       descriptor requested for event notifications only
                  * O_CLOEXEC       mark as close-on-exec
 				 */
+				log.debug("Flags " + Integer.toHexString(open.getFlags()));
 				FileHandle fh = new FileHandle(c.getReqId(), open.getFlags());
 				this.openFiles.put(Long.valueOf(fh.getId()), (FileNode) n);
 				

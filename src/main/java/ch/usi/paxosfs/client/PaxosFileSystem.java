@@ -316,7 +316,8 @@ public class PaxosFileSystem implements Filesystem3 {
 				if (data == null) {
 					throw new FSError(-1, "Data block not found!");
 				}
-				buf.put(data, (int)b.getStartOffset(), (int)b.getEndOffset());
+				//log.debug(data.length + " " + b.getStartOffset() + " " + b.getEndOffset());
+				buf.put(data, b.getStartOffset(), b.getEndOffset());
 			}
 		} catch (TException e) {
 			throw thriftError(e);

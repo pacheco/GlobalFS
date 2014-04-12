@@ -9,6 +9,7 @@ import org.apache.thrift.TException;
 
 import ch.usi.paxosfs.partitioning.PartitioningOracle;
 import ch.usi.paxosfs.replica.commands.AttrCmd;
+import ch.usi.paxosfs.replica.commands.ChmodCmd;
 import ch.usi.paxosfs.replica.commands.Command;
 import ch.usi.paxosfs.replica.commands.CommandType;
 import ch.usi.paxosfs.replica.commands.GetdirCmd;
@@ -155,8 +156,13 @@ public class FuseOpsHandler implements FuseOps.Iface {
 
 	@Override
 	public void chmod(String path, int mode) throws FSError, TException {
-		// TODO Auto-generated method stub
-		
+		// can be sent to ANY partition that replicates the path - we send it to the first returned by the oracle
+		Set<Byte> parts = Sets.newHashSet(oracle.partitionsOf(path).iterator().next());
+		Command cmd = newCommand(CommandType.CHMOD, parts);
+		ChmodCmd chmod = new ChmodCmd(path, mode, parts);
+		cmd.setChmod(chmod);
+		replica.submitCommand(cmd);
+		return;
 	}
 
 	@Override

@@ -7,8 +7,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.commons.lang3.text.StrBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.thrift.TDeserializer;
 import org.apache.thrift.TException;
 import org.apache.thrift.TSerializer;
@@ -29,7 +29,7 @@ import ch.usi.paxosfs.rpc.FSError;
  *
  */
 public class CommunicationService {
-	private static Log log = LogFactory.getLog(CommunicationService.class);
+	private static Logger log = Logger.getLogger(CommunicationService.class);
 	private final byte GLOBAL_RING = 0;
 	/**
 	 * Queue of commands received. Will be filled as commands arrive.
@@ -51,6 +51,7 @@ public class CommunicationService {
 	 * @param paxos
 	 */
 	public CommunicationService(int id, byte partition, Node paxos) {
+		log.setLevel(Level.DEBUG);
 		this.paxos = paxos;
 		this.commands = new LinkedBlockingQueue<>();
 		this.signals = new LinkedBlockingQueue<>();
