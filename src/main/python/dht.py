@@ -34,9 +34,9 @@ def delele(key):
         return flask.make_response("", 404)
     return ""
 
-@zk.ChildrenWatch("/paxosfs/dht")
-def node_watch(event):
-    print event
+# @zk.ChildrenWatch("/paxosfs/dht")
+# def node_watch(event):
+#     print event
     
 # @app.route('/key')
 # def move():

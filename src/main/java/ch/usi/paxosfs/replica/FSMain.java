@@ -26,21 +26,23 @@ public class FSMain {
 		public String zookeeperHost = "127.0.0.1:2181";
 		public int replicaId;
 		public byte replicaPartition;
+		public int nPartitions;
 	}
 
 	private static Options parseArgs(String[] args) {
 		Options opt = new Options();
 		if (args.length < 2) {
-			System.err.println("usage: FSMain replicaPartition replicaId [serverPort] [zooHost]");
+			System.err.println("usage: FSMain n_partitions replicaPartition replicaId [serverPort] [zooHost]");
 			System.exit(1);
 		}
-		opt.replicaPartition = Byte.parseByte(args[0]);
-		opt.replicaId = Integer.parseInt(args[1]);
-	    if (args.length > 2) {
-	    	opt.serverPort = Integer.parseInt(args[2]);
-	    }
+		opt.nPartitions = Integer.parseInt(args[0]);
+		opt.replicaPartition = Byte.parseByte(args[1]);
+		opt.replicaId = Integer.parseInt(args[2]);
 	    if (args.length > 3) {
-	    	opt.zookeeperHost = args[3];
+	    	opt.serverPort = Integer.parseInt(args[3]);
+	    }
+	    if (args.length > 4) {
+	    	opt.zookeeperHost = args[4];
 	    }
 		return opt;
 	}
@@ -62,9 +64,9 @@ public class FSMain {
 	 * @param partition
 	 * @throws TTransportException
 	 */
-	private static void startReplica(int id, byte partition, String host, int port, CommunicationService comm, String zoohost) throws TTransportException {
+	private static void startReplica(int nPartitions, int id, byte partition, String host, int port, CommunicationService comm, String zoohost) throws TTransportException {
 		// start replica thread
-		FileSystemReplica learner = new FileSystemReplica(id, partition, comm, host, port, zoohost);
+		FileSystemReplica learner = new FileSystemReplica(nPartitions, id, partition, comm, host, port, zoohost);
 		replica = new Thread(learner);
 		replica.start();
 	}
@@ -104,7 +106,7 @@ public class FSMain {
 		// start the replica
 		try {
 			InetSocketAddress addr = new InetSocketAddress(Util.getHostAddress(false), args.serverPort);
-			startReplica(args.replicaId, args.replicaPartition, addr.getHostString(), args.serverPort, comm, args.zookeeperHost);
+			startReplica(args.nPartitions, args.replicaId, args.replicaPartition, addr.getHostString(), args.serverPort, comm, args.zookeeperHost);
 		} catch (TTransportException e) {
 			e.printStackTrace();
 			System.exit(1);

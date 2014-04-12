@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.UUID;
 
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
@@ -14,9 +13,8 @@ import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.zookeeper.KeeperException;
 
+import ch.usi.paxosfs.partitioning.DefaultMultiPartitionOracle;
 import ch.usi.paxosfs.partitioning.PartitioningOracle;
-import ch.usi.paxosfs.partitioning.SinglePartitionOracle;
-import ch.usi.paxosfs.partitioning.TwoPartitionOracle;
 import ch.usi.paxosfs.replica.ReplicaManager;
 import ch.usi.paxosfs.rpc.DBlock;
 import ch.usi.paxosfs.rpc.FSError;
@@ -36,7 +34,7 @@ public class CommandLineClient {
 
 	public static void main(String[] args) throws FSError, TException, KeeperException, InterruptedException, IOException {
 		Random rand = new Random();
-		int nReplicas = Integer.parseInt(args[0]);
+		int nPartitions = Integer.parseInt(args[0]);
 		String zoohost = args[1];
 		String storageHost = args[2];
 		Storage storage = new HttpStorageClient(storageHost);
@@ -44,19 +42,12 @@ public class CommandLineClient {
 		rm = new ReplicaManager(zoohost);
 		rm.start();
 
-		if (nReplicas == 1) {
-			oracle = new SinglePartitionOracle();
-		} else if (nReplicas == 2){
-			oracle = new TwoPartitionOracle("/a", "/b");
-		} else {
-			System.err.println("Only supports 1 or 2 partitions");
-			return;
-		}
+		oracle = new DefaultMultiPartitionOracle(nPartitions);
 		
-		transport = new TTransport[nReplicas];
-		client = new FuseOps.Client[nReplicas];
+		transport = new TTransport[nPartitions];
+		client = new FuseOps.Client[nPartitions];
 		
-		for (byte i=1; i<=nReplicas; i++) {
+		for (byte i=1; i<=nPartitions; i++) {
 			String replicaAddr = rm.getRandomReplicaAddress(i);
 			String replicaHost = replicaAddr.split(":")[0];
 			int replicaPort = Integer.parseInt(replicaAddr.split(":")[1]);

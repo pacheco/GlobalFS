@@ -28,7 +28,7 @@ import ch.usi.paxosfs.filesystem.Node;
 import ch.usi.paxosfs.filesystem.memory.MemDir;
 import ch.usi.paxosfs.filesystem.memory.MemFile;
 import ch.usi.paxosfs.filesystem.memory.MemFileSystem;
-import ch.usi.paxosfs.partitioning.TwoPartitionOracle;
+import ch.usi.paxosfs.partitioning.DefaultMultiPartitionOracle;
 import ch.usi.paxosfs.replica.commands.Command;
 import ch.usi.paxosfs.replica.commands.CommandType;
 import ch.usi.paxosfs.replica.commands.OpenCmd;
@@ -60,6 +60,7 @@ public class FileSystemReplica implements Runnable {
 	private CommunicationService comm;
 	private ConcurrentHashMap<Long, CommandResult> pendingCommands;
 	private List<Command> signalsReceived; // to keep track of signals received in advance
+	private int nPartitions;
 	private int id;
 	private Byte localPartition;
 	private FileSystem fs;
@@ -72,7 +73,8 @@ public class FileSystemReplica implements Runnable {
 	private String host;
 	private int port;
 
-	public FileSystemReplica(int id, byte partition, CommunicationService comm, String host, int port, String zoohost) {
+	public FileSystemReplica(int nPartitions, int id, byte partition, CommunicationService comm, String host, int port, String zoohost) {
+		this.nPartitions = nPartitions;
 		this.comm = comm;
 		this.pendingCommands = new ConcurrentHashMap<Long, CommandResult>();
 		this.signalsReceived = new LinkedList<Command>();
@@ -90,7 +92,7 @@ public class FileSystemReplica implements Runnable {
 	@Override
 	public void run() {
 		// start thrift server
-		this.thriftHandler = new FuseOpsHandler(id, localPartition.byteValue(), this, new TwoPartitionOracle("/a", "/b"));
+		this.thriftHandler = new FuseOpsHandler(id, localPartition.byteValue(), this, new DefaultMultiPartitionOracle(nPartitions));
 		TProcessor fuseProcessor = new FuseOps.Processor<FuseOpsHandler>(this.thriftHandler);
 		TServerTransport serverTransport;
 		try {

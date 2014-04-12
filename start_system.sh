@@ -33,17 +33,22 @@ set /ringpaxos/ring1/config/stable_storage ch.usi.da.paxos.storage.InMemory
 set /ringpaxos/ring2/config/stable_storage ch.usi.da.paxos.storage.InMemory
 " | $ZKDIR/bin/zkCli.sh -server $ZOOHOST
 
-# start acceptors
-xterm -geometry 120x20+0+0 -e "cd $UPAXOSDIR; target/Paxos-trunk/ringpaxos.sh '0,0:A;1,0:A;2,0:A' localhost:2181" &
-sleep 0.2
-xterm -geometry 120x20+0+300 -e "cd $UPAXOSDIR; target/Paxos-trunk/ringpaxos.sh '0,1:A;1,1:A;2,1:A' localhost:2181" &
-sleep 0.2
+# # start acceptors
+#xterm -geometry 120x20+0+900 -e "cd $UPAXOSDIR; target/Paxos-trunk/ringpaxos.sh '0,0:A' localhost:2181" &
+# sleep 0.2
+# xterm -geometry 120x20+0+300 -e "cd $UPAXOSDIR; target/Paxos-trunk/ringpaxos.sh '0,1:A;1,1:A;2,1:A' localhost:2181" &
+# sleep 0.2
 
 # start replicas
-xterm -geometry 120x20+900+0 -e "cd $PAXOSFSDIR; ./runreplica.sh 1 2 7777 localhost:2181" &
-sleep 0.2
-xterm -geometry 120x20+900+300 -e "cd $PAXOSFSDIR; ./runreplica.sh 2 2 7778 localhost:2181" &
-sleep 0.2
+xterm -geometry 120x20+0+0 -e "cd $PAXOSFSDIR; ./runreplica.sh 2 1 1 7777 localhost:2181" &
+sleep 0.5
+xterm -geometry 120x20+0+300 -e "cd $PAXOSFSDIR; ./runreplica.sh 2 2 1 7778 localhost:2181" &
+sleep 0.5
+
+xterm -geometry 120x20+900+0 -e "cd $PAXOSFSDIR; ./runreplica.sh 2 1 2 7779 localhost:2181" &
+sleep 0.5
+xterm -geometry 120x20+900+300 -e "cd $PAXOSFSDIR; ./runreplica.sh 2 2 2 7780 localhost:2181" &
+sleep 0.5
 
 # start dht
 xterm -geometry 120x20+0+600 -e "cd $PAXOSFSDIR; ./src/main/python/dht.py" &

@@ -21,8 +21,8 @@ import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 import org.apache.zookeeper.KeeperException;
 
+import ch.usi.paxosfs.partitioning.DefaultMultiPartitionOracle;
 import ch.usi.paxosfs.partitioning.PartitioningOracle;
-import ch.usi.paxosfs.partitioning.TwoPartitionOracle;
 import ch.usi.paxosfs.replica.ReplicaManager;
 import ch.usi.paxosfs.rpc.Attr;
 import ch.usi.paxosfs.rpc.DBlock;
@@ -45,17 +45,23 @@ import fuse.FuseOpenSetter;
 import fuse.FuseStatfsSetter;
 
 public class PaxosFileSystem implements Filesystem3 {
-	Random rand = new Random();
+	private Random rand = new Random();
+	private int replicaId;
     private static Log log = LogFactory.getLog(PaxosFileSystem.class);
 	private static int MAXBLOCKSIZE = 1024*65;
-	// Each thread has its own connectios to the replicas... Fuse is multithreaded
+	private ReplicaManager rm;
+	private String zoohost;
+	private PartitioningOracle oracle;
+	private Storage storage;
+	private int numberOfPartitions;
+	// Each thread has its own connections to the replicas... Fuse is multithreaded
 	private ThreadLocal<FuseOps.Client[]> client = new ThreadLocal<FuseOps.Client[]>(){
 		protected FuseOps.Client[] initialValue() {
 			FuseOps.Client[] c = new FuseOps.Client[numberOfPartitions];
 			for (byte i=1; i<=numberOfPartitions; i++) {
 				String replicaAddr;
 				try {
-					replicaAddr = rm.getRandomReplicaAddress(i);
+					replicaAddr = rm.getReplicaAddress(i, replicaId);
 				} catch (KeeperException | InterruptedException e) {
 					throw new RuntimeException(e);
 				}
@@ -69,22 +75,20 @@ public class PaxosFileSystem implements Filesystem3 {
 					throw new RuntimeException(e);
 				}
 				TProtocol protocol = new TBinaryProtocol(transport);
-				log.debug(new StrBuilder().append("Connecting to replica at ").append(replicaAddr).toString());
+				log.debug(new StrBuilder().append("Connecting to replica "+ i + "," + replicaId +" at ").append(replicaAddr).toString());
 				c[i-1] = new FuseOps.Client(protocol);
 			}
 			return c;
 		};
 	};
-	private ReplicaManager rm;
-	private String zoohost;
-	private PartitioningOracle oracle = new TwoPartitionOracle("/a", "/b");
-	private Storage storage;
-	private int numberOfPartitions;
 	
-	public PaxosFileSystem(int numberOfPartitions, String zoohost, String storageHost) {
+	
+	public PaxosFileSystem(int numberOfPartitions, String zoohost, String storageHost, int replicaId) {
 		this.numberOfPartitions = numberOfPartitions;
 		this.zoohost = zoohost;
 		this.storage = new HttpStorageClient(storageHost);
+		this.oracle = new DefaultMultiPartitionOracle(numberOfPartitions);
+		this.replicaId = replicaId;
 	}
 	
 	/** 
@@ -399,12 +403,28 @@ public class PaxosFileSystem implements Filesystem3 {
     
     public static void main(String[] args) throws MalformedURLException {
         // small sanity check to avoid problems later (fuse hangs on exceptions sometimes)
-        new URL(args[2]);
+    	if (args.length < 4) {
+    		System.err.println("usage: PaxosFileSystem <n_partitions> <zoohost> <storagehost> <replica_id> <MOUNT PARAMETERS>\n"
+    				+ "\treplica_id -> in each partition, connect to the replica with this id");
+    		return;
+    	}
+    	try {
+    		new URL(args[2]);
+    	} catch (MalformedURLException e) {
+    		System.err.println("usage: PaxosFileSystem <n_partitions> <zoohost> <storagehost> <replica_id> <MOUNT PARAMETERS>\n"
+    				+ "\treplica_id -> in each partition, connect to the replica with this id\n"
+    				+ "\tstoragehost -> this has to be an http url: http://host:port");
+    		return;
+    	}
+    	
+    	System.out.println(Arrays.toString(LogFactory.getFactory().getAttributeNames()));
         
-        PaxosFileSystem fs = new PaxosFileSystem(Integer.parseInt(args[0]), args[1], args[2]);
+        PaxosFileSystem fs = new PaxosFileSystem(Integer.parseInt(args[0]), args[1], args[2], Integer.parseInt(args[3]));
         try {
         	fs.start();
-        	FuseMount.mount(Arrays.copyOfRange(args, 3, args.length), fs, log);
+        	String[] mountArgs = Arrays.copyOfRange(args, 4, args.length);
+        	log.info(Arrays.toString(mountArgs));
+        	FuseMount.mount(mountArgs, fs, log);
         }
         catch (Exception e) {
             e.printStackTrace();
