@@ -1,4 +1,4 @@
 #!/bin/bash
 
-export CLASSPATH="./target/paxosfs-fuse-0.0.1-SNAPSHOT-jar-with-dependencies.jar"
+export CLASSPATH="./target/foo/"
 java ch.usi.paxosfs.replica.FSMain $@

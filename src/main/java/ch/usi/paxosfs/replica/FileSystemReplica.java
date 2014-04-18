@@ -19,7 +19,6 @@ import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
-import org.apache.zookeeper.KeeperException;
 
 import ch.usi.paxosfs.filesystem.DirNode;
 import ch.usi.paxosfs.filesystem.FileNode;
@@ -57,7 +56,7 @@ import fuse.FuseFtypeConstants;
 
 public class FileSystemReplica implements Runnable {
 	private Logger log = Logger.getLogger(FileSystemReplica.class);
-	public int WORKER_THREADS = 50;
+	public int WORKER_THREADS = 200;
 	private CommunicationService comm;
 	private ConcurrentHashMap<Long, CommandResult> pendingCommands;
 	private List<Command> signalsReceived; // to keep track of signals received in advance
@@ -105,7 +104,7 @@ public class FileSystemReplica implements Runnable {
 		}
 		TThreadPoolServer.Args args = new TThreadPoolServer.Args(serverTransport);
 		args.maxWorkerThreads(this.WORKER_THREADS);
-		args.minWorkerThreads(this.WORKER_THREADS);
+		args.minWorkerThreads(this.WORKER_THREADS/2);
 		final TThreadPoolServer server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).processor(fuseProcessor));
 		
 		this.thriftServer = new Thread() {
@@ -118,11 +117,10 @@ public class FileSystemReplica implements Runnable {
 
 		// start the replica
 		fs = new MemFileSystem((int) (System.currentTimeMillis() / 1000), 0, 0);
-		this.manager = new ReplicaManager(this.zoohost);
+		this.manager = new ReplicaManager(this.zoohost, this.localPartition.byteValue(), this.id, this.host + ":" + Integer.toString(this.port));
 		try {
 			this.manager.start();
-			this.manager.registerReplica(this.localPartition.byteValue(), this.id, this.host + ":" + Integer.toString(this.port));
-		} catch (KeeperException | InterruptedException | IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 			return;
 		}
@@ -726,7 +724,7 @@ public class FileSystemReplica implements Runnable {
 		// Wait for the command to be applied and result
 		boolean timeout = false;
 		try {
-			timeout = !res.await(5, TimeUnit.SECONDS);
+			timeout = !res.await(10, TimeUnit.SECONDS);
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 			throw new FSError(-1, "Error waiting for command result");

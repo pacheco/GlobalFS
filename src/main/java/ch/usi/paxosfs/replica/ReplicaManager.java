@@ -9,6 +9,8 @@ import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.KeeperException.Code;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
+import org.apache.zookeeper.Watcher.Event.EventType;
+import org.apache.zookeeper.Watcher.Event.KeeperState;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.ZooKeeper;
 
@@ -24,16 +26,33 @@ public class ReplicaManager implements Watcher {
 	private String zoohost;
 	private ZooKeeper zk;
 	private Random random = new Random();
+	private byte partition;
+	private int id;
+	private String address;
+	private boolean readonly = true;
 
+	/**
+	 * Clients use this constructor. The manager will be used only to find existing replicas.
+	 * @param zoohost
+	 */
 	public ReplicaManager(String zoohost) {
 		this.zoohost = zoohost;
+		this.readonly = true;
+	}
+
+	public ReplicaManager(String zoohost, byte partition, int id, String address) {
+		this.readonly = false;
+		this.zoohost = zoohost;
+		this.partition = partition;
+		this.id = id;
+		this.address = address;
 	}
 
 	public void start() throws IOException {
 		this.zk = new ZooKeeper(this.zoohost, 3000, this);
 	}
 
-	public void registerReplica(byte partition, int id, String address) throws KeeperException, InterruptedException {
+	private void registerReplica() throws KeeperException, InterruptedException {
 		String path = BASEPATH;
 		try {
 			this.zk.create(path, null, Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
@@ -78,15 +97,31 @@ public class ReplicaManager implements Watcher {
 			return new String(data);
 		}
 	}
-	
 
 	public String getReplicaAddress(byte partition, int replicaId) throws KeeperException, InterruptedException {
 		String path = BASEPATH + "/" + Byte.toString(partition) + "/" + Integer.toString(replicaId);
 		byte[] data = zk.getData(path, false, null);
 		return new String(data);
-	}	
+	}
 
 	@Override
 	public void process(WatchedEvent event) {
+		if (this.readonly) { // no replica needs to be registered on zookeeper
+			return;
+		}
+		if (event.getType() == EventType.None) {
+			if (event.getState() == KeeperState.SyncConnected) {
+				while (true) {
+					try {
+						this.registerReplica();
+						break;
+					} catch (KeeperException e) {
+						break;
+					} catch (InterruptedException e) {
+						// try again
+					}
+				}
+			}
+		}
 	}
 }

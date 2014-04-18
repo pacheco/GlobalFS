@@ -48,7 +48,7 @@ public class CommandLineClient {
 		client = new FuseOps.Client[nPartitions];
 		
 		for (byte i=1; i<=nPartitions; i++) {
-			String replicaAddr = rm.getRandomReplicaAddress(i);
+			String replicaAddr = rm.getReplicaAddress(i, 1);
 			String replicaHost = replicaAddr.split(":")[0];
 			int replicaPort = Integer.parseInt(replicaAddr.split(":")[1]);
 			
