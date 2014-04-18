@@ -48,4 +48,4 @@ if __name__ == '__main__':
     # zk.start()
     # zk.create("/paxosfs/dht/1", ephemeral=True)
     # zk.ensure_path("/paxosfs/dht")
-    app.run(debug = True)
+    app.run(debug = False, host="0.0.0.0")
