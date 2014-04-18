@@ -77,9 +77,10 @@ public class FSMain {
 		int globalid = args.replicaId + args.replicaPartition*100; // id of the node in the global ring
 
 		
-		// start paxos node
 		List<RingDescription> rings = new LinkedList<RingDescription>();
-		rings.add(new RingDescription(globalRing, globalid, Arrays.asList(PaxosRole.Acceptor, PaxosRole.Learner, PaxosRole.Proposer)));
+		// replicas are not acceptors on the big ring
+		rings.add(new RingDescription(globalRing, globalid, Arrays.asList(PaxosRole.Learner, PaxosRole.Proposer)));
+		// colocate replicas/acceptors - don't run more than 3 replicas per group!!!
 		rings.add(new RingDescription(args.replicaPartition, args.replicaId, Arrays.asList(PaxosRole.Acceptor, PaxosRole.Learner, PaxosRole.Proposer)));
 		final Node node = startPaxos(rings, args.zookeeperHost);
 		if (node == null) {
