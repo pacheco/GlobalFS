@@ -12,6 +12,7 @@ import org.apache.http.client.fluent.Response;
 import ch.usi.paxosfs.util.UUIDUtils;
 
 public class HttpStorageClient implements Storage {
+	private static int TIMEOUT = 3000;
 	private Executor executor;
 	private String serverUrl;
 
@@ -50,7 +51,7 @@ public class HttpStorageClient implements Storage {
 				Response r = this.executor.execute(Request.Put(this.serverUrl + bytesToLongAsString(key))
 						.addHeader("Content-Type", "text/plain")
 						.addHeader("Sync-Mode", "sync")
-						.connectTimeout(3000)
+						.connectTimeout(TIMEOUT)
 						.bodyByteArray(data));
 				return r.returnResponse().getStatusLine().getStatusCode() == HttpStatus.SC_OK;
 			} catch (IOException e) {
@@ -63,7 +64,7 @@ public class HttpStorageClient implements Storage {
 	public byte[] get(byte[] key) {
 		try {
 			Response r = this.executor.execute(Request.Get(this.serverUrl + bytesToLongAsString(key))
-					.connectTimeout(3000));
+					.connectTimeout(TIMEOUT));
 			HttpResponse resp = r.returnResponse();
 			if (resp.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
 				return null;
