@@ -27,38 +27,53 @@ sleep 6
 EOF
 
 # write configs
+# storage types:
+# InMemory
+# SyncBerkeleyStorage
+# BerkeleyStorage
+
 ssh dslab <<EOF
 echo "
 set /ringpaxos/config/multi_ring_start_time \`date +%s\`000
 set /ringpaxos/config/multi_ring_lambda 900
-set /ringpaxos/ring0/config/stable_storage ch.usi.da.paxos.storage.InMemory
+set /ringpaxos/ring0/config/stable_storage ch.usi.da.paxos.storage.SyncBerkeleyStorage
 set /ringpaxos/ring0/config/tcp_nodelay 1
-set /ringpaxos/ring1/config/stable_storage ch.usi.da.paxos.storage.InMemory
+set /ringpaxos/ring0/config/value_batch_size 0
+set /ringpaxos/ring1/config/stable_storage ch.usi.da.paxos.storage.SyncBerkeleyStorage
 set /ringpaxos/ring1/config/tcp_nodelay 1
-set /ringpaxos/ring2/config/stable_storage ch.usi.da.paxos.storage.InMemory
+set /ringpaxos/ring1/config/value_batch_size 0
+set /ringpaxos/ring2/config/stable_storage ch.usi.da.paxos.storage.SyncBerkeleyStorage
 set /ringpaxos/ring2/config/tcp_nodelay 1
-set /ringpaxos/ring3/config/stable_storage ch.usi.da.paxos.storage.InMemory
+set /ringpaxos/ring2/config/value_batch_size 0
+set /ringpaxos/ring3/config/stable_storage ch.usi.da.paxos.storage.SyncBerkeleyStorage
 set /ringpaxos/ring3/config/tcp_nodelay 1
-set /ringpaxos/ring4/config/stable_storage ch.usi.da.paxos.storage.InMemory
+set /ringpaxos/ring3/config/value_batch_size 0
+set /ringpaxos/ring4/config/stable_storage ch.usi.da.paxos.storage.SyncBerkeleyStorage
 set /ringpaxos/ring4/config/tcp_nodelay 1
-set /ringpaxos/ring5/config/stable_storage ch.usi.da.paxos.storage.InMemory
+set /ringpaxos/ring4/config/value_batch_size 0
+set /ringpaxos/ring5/config/stable_storage ch.usi.da.paxos.storage.SyncBerkeleyStorage
 set /ringpaxos/ring5/config/tcp_nodelay 1
-set /ringpaxos/ring6/config/stable_storage ch.usi.da.paxos.storage.InMemory
+set /ringpaxos/ring5/config/value_batch_size 0
+set /ringpaxos/ring6/config/stable_storage ch.usi.da.paxos.storage.SyncBerkeleyStorage
 set /ringpaxos/ring6/config/tcp_nodelay 1
-set /ringpaxos/ring7/config/stable_storage ch.usi.da.paxos.storage.InMemory
+set /ringpaxos/ring6/config/value_batch_size 0
+set /ringpaxos/ring7/config/stable_storage ch.usi.da.paxos.storage.SyncBerkeleyStorage
 set /ringpaxos/ring7/config/tcp_nodelay 1
-set /ringpaxos/ring8/config/stable_storage ch.usi.da.paxos.storage.InMemory
+set /ringpaxos/ring7/config/value_batch_size 0
+set /ringpaxos/ring8/config/stable_storage ch.usi.da.paxos.storage.SyncBerkeleyStorage
 set /ringpaxos/ring8/config/tcp_nodelay 1
+set /ringpaxos/ring8/config/value_batch_size 0
 " | $ZKDIR/bin/zkCli.sh -server $ZOOHOST
 EOF
 
-
-# 2 replicas (with acceptor) per ring plus the 2 acceptors for the big ring
+# kill java stuff running there
 for n in `seq $START_NODE $[START_NODE + PARTITIONS*2 + 1]`; do
-    ssh node$n sudo killall -9 java
+    ssh node$n "sudo killall -9 java; rm -r /tmp/ringpaxos-db"
 done
 
 sleep 3
+
+# 2 replicas (with acceptor) per ring plus the 2 acceptors for the big ring
 
 # start replicas
 X=200
@@ -81,5 +96,8 @@ sleep 0.5
 xterm -geometry 120x20+0+100 -e ssh node$N cd $UPAXOSDIR\; target/Paxos-trunk/ringpaxos.sh 0,1:A $ZOOHOST &
 N=$[N + 1]
 sleep 0.5
+
+# start storage nodes
+
 
 wait

@@ -25,10 +25,11 @@ STORAGE_PORT=30001
 STORAGE_NODES_N=${#STORAGE_NODES[@]}
 
 #CLIENT_NODES=(24 25 26 27 28 29)
-CLIENT_NODES=(35)
+CLIENT_NODES=(35 36)
 CLIENT_NODES_N=${#CLIENT_NODES[@]}
 
-REP_IDS=(1 2)
+REP_IDS=(1)
+REP_IDS_N=${#REP_IDS[@]}
 
 # kill and umount all
 for C in ${CLIENT_NODES[@]}; do
@@ -45,7 +46,7 @@ done
 for C in `seq 0 $[CLIENTS-1]`; do
     node=node${CLIENT_NODES[C % CLIENT_NODES_N]}
     storage=node${STORAGE_NODES[C % STORAGE_NODES_N]}
-    rep_id=${REP_IDS[C % 2]}
+    rep_id=${REP_IDS[C % REP_IDS_N]}
     dir=/tmp/fs$C
     echo "mounting client $C on $node at $dir"
     ssh $node <<EOF
