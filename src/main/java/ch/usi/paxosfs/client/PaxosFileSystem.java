@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang3.text.StrBuilder;
 import org.apache.commons.logging.Log;
@@ -54,41 +56,71 @@ public class PaxosFileSystem implements Filesystem3 {
 	private PartitioningOracle oracle;
 	private Storage storage;
 	private int numberOfPartitions;
-	// Each thread has its own connections to the replicas... Fuse is
-	// multithreaded
-	private ThreadLocal<FuseOps.Client[]> client = new ThreadLocal<FuseOps.Client[]>() {
-		protected FuseOps.Client[] initialValue() {
-			FuseOps.Client[] c = new FuseOps.Client[numberOfPartitions];
-			for (byte i = 1; i <= numberOfPartitions; i++) {
-				String replicaAddr;
-				try {
-					replicaAddr = rm.getReplicaAddress(i, replicaId);
-				} catch (KeeperException | InterruptedException e) {
-					throw new RuntimeException(e);
-				}
-				String replicaHost = replicaAddr.split(":")[0];
-				int replicaPort = Integer.parseInt(replicaAddr.split(":")[1]);
-				// TODO: should store transport to call transport.close() later
-				TTransport transport = new TSocket(replicaHost, replicaPort);
-				try {
-					transport.open();
-				} catch (TTransportException e) {
-					throw new RuntimeException(e);
-				}
-				TProtocol protocol = new TBinaryProtocol(transport);
-				log.debug(new StrBuilder().append("Connecting to replica " + i + "," + replicaId + " at ").append(replicaAddr).toString());
-				c[i - 1] = new FuseOps.Client(protocol);
-			}
-			return c;
-		};
-	};
+	private ConcurrentLinkedQueue<FuseOps.Client>[] clients;
 
+	private static AtomicLong clientsCreated = new AtomicLong(0);
+	private static AtomicLong clientsUsed = new AtomicLong(0);
+	private static AtomicLong clientsReturned = new AtomicLong(0);
+	private static AtomicLong clientsFreed = new AtomicLong(0);
+
+	/**
+	 * client connection pool return
+	 * 
+	 * @param partition
+	 * @return
+	 */
+	private FuseOps.Client getClient(byte partition) {
+		clientsUsed.incrementAndGet();
+		FuseOps.Client c = clients[partition - 1].poll();
+		if (c == null) {
+			clientsCreated.incrementAndGet();
+			String replicaAddr;
+			try {
+				replicaAddr = rm.getReplicaAddress(partition, replicaId);
+			} catch (KeeperException | InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+			String replicaHost = replicaAddr.split(":")[0];
+			int replicaPort = Integer.parseInt(replicaAddr.split(":")[1]);
+			// TODO: should store transport to call transport.close() later
+			TTransport transport = new TSocket(replicaHost, replicaPort);
+			try {
+				transport.open();
+			} catch (TTransportException e) {
+				throw new RuntimeException(e);
+			}
+			TProtocol protocol = new TBinaryProtocol(transport);
+			log.debug(new StrBuilder().append("Connecting to replica " + partition + "," + replicaId + " at ").append(replicaAddr)
+					.toString());
+			c = new FuseOps.Client(protocol);
+		}
+		return c;
+	}
+
+	/**
+	 * client connection pool return
+	 * 
+	 * @param client
+	 * @param partition
+	 */
+	private void returnClient(FuseOps.Client client, int partition) {
+		clientsReturned.incrementAndGet();
+		clients[partition - 1].add(client);
+	}
+
+	@SuppressWarnings("unchecked")
 	public PaxosFileSystem(int numberOfPartitions, String zoohost, String storageHost, int replicaId) {
 		this.numberOfPartitions = numberOfPartitions;
 		this.zoohost = zoohost;
 		this.storage = new HttpStorageClient(storageHost);
 		this.oracle = new DefaultMultiPartitionOracle(numberOfPartitions);
 		this.replicaId = replicaId;
+
+		// haxxor around generics
+		clients = (ConcurrentLinkedQueue<FuseOps.Client>[]) new ConcurrentLinkedQueue<?>[this.numberOfPartitions];
+		for (byte i = 0; i < this.numberOfPartitions; i++) {
+			clients[i] = new ConcurrentLinkedQueue<>();
+		}
 	}
 
 	/**
@@ -106,96 +138,159 @@ public class PaxosFileSystem implements Filesystem3 {
 	}
 
 	public int getattr(String path, FuseGetattrSetter getattrSetter) throws FuseException {
+		int partition = this.oracle.partitionsOf(path).iterator().next().intValue();
+		FuseOps.Client client = getClient((byte) partition);
 		try {
 			Attr attr;
-			int partition = this.oracle.partitionsOf(path).iterator().next().intValue() - 1;
-			attr = client.get()[partition].getattr(path);
+			attr = client.getattr(path);
 			attrSetterFill(attr, getattrSetter);
-		} catch (TException e) {
+			returnClient(client, (byte) partition);
+		} catch (FSError e) {
+            returnClient(client, (byte) partition);
+			throw thriftError(e);
+        } catch (TException e) {
+            clientsFreed.incrementAndGet();
+			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
 		return 0;
 	}
 
 	public int readlink(String path, CharBuffer link) throws FuseException {
+		int partition = this.oracle.partitionsOf(path).iterator().next().intValue();
+		FuseOps.Client client = getClient((byte) partition);
 		try {
-			int partition = this.oracle.partitionsOf(path).iterator().next().intValue() - 1;
-			link.append(client.get()[partition].readlink(path));
-		} catch (TException e) {
+			link.append(client.readlink(path));
+			returnClient(client, (byte) partition);
+		} catch (FSError e) {
+            returnClient(client, (byte) partition);
+			throw thriftError(e);
+        } catch (TException e) {
+            clientsFreed.incrementAndGet();
+			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
 		return 0;
 	}
 
 	public int getdir(String path, FuseDirFiller dirFiller) throws FuseException {
+		int partition = this.oracle.partitionsOf(path).iterator().next().intValue();
+		FuseOps.Client client = getClient((byte) partition);
 		try {
 			List<DirEntry> entries;
-			int partition = this.oracle.partitionsOf(path).iterator().next().intValue() - 1;
-			entries = client.get()[partition].getdir(path);
+			entries = client.getdir(path);
 			for (DirEntry entry : entries) {
 				dirFiller.add(entry.getName(), entry.getInode(), entry.getMode());
 			}
-		} catch (TException e) {
+			returnClient(client, (byte) partition);
+		} catch (FSError e) {
+            returnClient(client, (byte) partition);
+            throw thriftError(e);
+        } catch (TException e) {
+            clientsFreed.incrementAndGet();
+			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
 		return 0;
 	}
 
 	public int mknod(String path, int mode, int rdev) throws FuseException {
+		int partition = this.oracle.partitionsOf(path).iterator().next().intValue();
+		FuseOps.Client client = getClient((byte) partition);
 		try {
-			int partition = this.oracle.partitionsOf(path).iterator().next().intValue() - 1;
-			client.get()[partition].mknod(path, mode, rdev, callerUid(), callerGid());
-		} catch (TException e) {
+			client.mknod(path, mode, rdev, callerUid(), callerGid());
+			returnClient(client, (byte) partition);
+		} catch (FSError e) {
+            returnClient(client, (byte) partition);
+			throw thriftError(e);
+        } catch (TException e) {
+            clientsFreed.incrementAndGet();
+			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
 		return 0;
 	}
 
 	public int mkdir(String path, int mode) throws FuseException {
+		int partition = this.oracle.partitionsOf(path).iterator().next().intValue();
+		FuseOps.Client client = getClient((byte) partition);
 		try {
-			int partition = this.oracle.partitionsOf(path).iterator().next().intValue() - 1;
-			client.get()[partition].mkdir(path, mode, callerUid(), callerGid());
-		} catch (TException e) {
+			client.mkdir(path, mode, callerUid(), callerGid());
+			returnClient(client, (byte) partition);
+		} catch (FSError e) {
+            returnClient(client, (byte) partition);
+			throw thriftError(e);
+        } catch (TException e) {
+            clientsFreed.incrementAndGet();
+			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
 		return 0;
 	}
 
 	public int unlink(String path) throws FuseException {
+		int partition = this.oracle.partitionsOf(path).iterator().next().intValue();
+		FuseOps.Client client = getClient((byte) partition);
 		try {
-			int partition = this.oracle.partitionsOf(path).iterator().next().intValue() - 1;
-			client.get()[partition].unlink(path);
-		} catch (TException e) {
+			client.unlink(path);
+			returnClient(client, (byte) partition);
+		} catch (FSError e) {
+            returnClient(client, (byte) partition);
+            throw thriftError(e);
+        } catch (TException e) {
+            clientsFreed.incrementAndGet();
+			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
 		return 0;
 	}
 
 	public int rmdir(String path) throws FuseException {
+		int partition = this.oracle.partitionsOf(path).iterator().next().intValue();
+		FuseOps.Client client = getClient((byte) partition);
 		try {
-			int partition = this.oracle.partitionsOf(path).iterator().next().intValue() - 1;
-			client.get()[partition].rmdir(path);
-		} catch (TException e) {
+			client.rmdir(path);
+			returnClient(client, (byte) partition);
+		} catch (FSError e) {
+            returnClient(client, (byte) partition);
+			throw thriftError(e);
+        } catch (TException e) {
+            clientsFreed.incrementAndGet();
+			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
 		return 0;
 	}
 
 	public int symlink(String from, String to) throws FuseException {
+		int partition = this.oracle.partitionsOf(from).iterator().next().intValue();
+		FuseOps.Client client = getClient((byte) partition);
 		try {
-			int partition = this.oracle.partitionsOf(from).iterator().next().intValue() - 1;
-			client.get()[partition].symlink(from, to, callerUid(), callerGid());
-		} catch (TException e) {
+			client.symlink(from, to, callerUid(), callerGid());
+			returnClient(client, (byte) partition);
+		} catch (FSError e) {
+            returnClient(client, (byte) partition);
+			throw thriftError(e);
+        } catch (TException e) {
+            clientsFreed.incrementAndGet();
+			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
 		return 0;
 	}
 
 	public int rename(String from, String to) throws FuseException {
+		int partition = this.oracle.partitionsOf(from).iterator().next().intValue();
+		FuseOps.Client client = getClient((byte) partition);
 		try {
-			int partition = this.oracle.partitionsOf(from).iterator().next().intValue() - 1;
-			client.get()[partition].rename(from, to);
-		} catch (TException e) {
+			client.rename(from, to);
+			returnClient(client, (byte) partition);
+		} catch (FSError e) {
+            returnClient(client, (byte) partition);
+            throw thriftError(e);
+        } catch (TException e) {
+            clientsFreed.incrementAndGet();
+			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
 		return 0;
@@ -206,64 +301,106 @@ public class PaxosFileSystem implements Filesystem3 {
 	}
 
 	public int chmod(String path, int mode) throws FuseException {
+		int partition = this.oracle.partitionsOf(path).iterator().next().intValue();
+		FuseOps.Client client = getClient((byte) partition);
 		try {
-			int partition = this.oracle.partitionsOf(path).iterator().next().intValue() - 1;
-			client.get()[partition].chmod(path, mode);
-		} catch (TException e) {
+			client.chmod(path, mode);
+			returnClient(client, (byte) partition);
+		} catch (FSError e) {
+            returnClient(client, (byte) partition);
+			throw thriftError(e);
+        } catch (TException e) {
+            clientsFreed.incrementAndGet();
+			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
 		return 0;
 	}
 
 	public int chown(String path, int uid, int gid) throws FuseException {
+		int partition = this.oracle.partitionsOf(path).iterator().next().intValue();
+		FuseOps.Client client = getClient((byte) partition);
 		try {
-			int partition = this.oracle.partitionsOf(path).iterator().next().intValue() - 1;
-			client.get()[partition].chown(path, uid, gid);
-		} catch (TException e) {
+			client.chown(path, uid, gid);
+			returnClient(client, (byte) partition);
+		} catch (FSError e) {
+            returnClient(client, (byte) partition);
+            throw thriftError(e);
+        } catch (TException e) {
+            clientsFreed.incrementAndGet();
+			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
 		return 0;
 	}
 
 	public int truncate(String path, long size) throws FuseException {
+		int partition = this.oracle.partitionsOf(path).iterator().next().intValue();
+		FuseOps.Client client = getClient((byte) partition);
 		try {
-			int partition = this.oracle.partitionsOf(path).iterator().next().intValue() - 1;
-			client.get()[partition].truncate(path, size);
-		} catch (TException e) {
+			client.truncate(path, size);
+			returnClient(client, (byte) partition);
+		} catch (FSError e) {
+            returnClient(client, (byte) partition);
+			throw thriftError(e);
+        } catch (TException e) {
+            clientsFreed.incrementAndGet();
+			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
 		return 0;
 	}
 
 	public int utime(String path, int atime, int mtime) throws FuseException {
+		int partition = this.oracle.partitionsOf(path).iterator().next().intValue();
+		FuseOps.Client client = getClient((byte) partition);
 		try {
-			int partition = this.oracle.partitionsOf(path).iterator().next().intValue() - 1;
-			client.get()[partition].utime(path, atime, mtime);
-		} catch (TException e) {
+			client.utime(path, atime, mtime);
+			returnClient(client, (byte) partition);
+		} catch (FSError e) {
+            returnClient(client, (byte) partition);
+			throw thriftError(e);
+        } catch (TException e) {
+            clientsFreed.incrementAndGet();
+			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
 		return 0;
 	}
 
 	public int statfs(FuseStatfsSetter statfsSetter) throws FuseException {
+		FuseOps.Client client = getClient((byte) 1);
 		try {
 			FileSystemStats s;
-			s = client.get()[0].statfs();
+			s = client.statfs();
 			statfsSetter.set(s.getBlockSize(), s.getBlocks(), s.getBlocksFree(), s.getBlocksAvail(), s.getFiles(), s.getFilesFree(),
 					s.getNamelen());
-		} catch (TException e) {
+			returnClient(client, (byte) 1);
+		} catch (FSError e) {
+            returnClient(client, (byte) 1);
+            throw thriftError(e);
+        } catch (TException e) {
+            clientsFreed.incrementAndGet();
+			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
 		return 0;
 	}
 
 	public int open(String path, int flags, FuseOpenSetter openSetter) throws FuseException {
+		int partition = this.oracle.partitionsOf(path).iterator().next().intValue();
+		FuseOps.Client client = getClient((byte) partition);
 		try {
 			FileHandle h;
-			int partition = this.oracle.partitionsOf(path).iterator().next().intValue() - 1;
-			h = client.get()[partition].open(path, flags);
+			h = client.open(path, flags);
 			openSetter.setFh(h);
-		} catch (TException e) {
+			returnClient(client, (byte) partition);
+		} catch (FSError e) {
+            returnClient(client, (byte) partition);
+			throw thriftError(e);
+        } catch (TException e) {
+            clientsFreed.incrementAndGet();
+			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
 		return 0;
@@ -271,10 +408,11 @@ public class PaxosFileSystem implements Filesystem3 {
 
 	// TODO: fetch data from the DHT
 	public int read(String path, Object fh, ByteBuffer buf, long offset) throws FuseException {
+		int partition = this.oracle.partitionsOf(path).iterator().next().intValue();
+		FuseOps.Client client = getClient((byte) partition);
 		try {
 			ReadResult res;
-			int partition = this.oracle.partitionsOf(path).iterator().next().intValue() - 1;
-			res = client.get()[partition].readBlocks(path, (FileHandle) fh, offset, (long) buf.remaining());
+			res = client.readBlocks(path, (FileHandle) fh, offset, (long) buf.remaining());
 			for (DBlock b : res.getBlocks()) {
 				byte[] data;
 				if (b.getId().length == 0) {
@@ -289,7 +427,13 @@ public class PaxosFileSystem implements Filesystem3 {
 				// b.getEndOffset());
 				buf.put(data, b.getStartOffset(), b.getEndOffset());
 			}
-		} catch (TException e) {
+			returnClient(client, (byte) partition);
+		} catch (FSError e) {
+            returnClient(client, (byte) partition);
+            throw thriftError(e);
+        } catch (TException e) {
+            clientsFreed.incrementAndGet();
+			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
 		return 0;
@@ -297,6 +441,8 @@ public class PaxosFileSystem implements Filesystem3 {
 
 	// TODO: write data to the DHT
 	public int write(String path, Object fh, boolean isWritepage, ByteBuffer buf, long offset) throws FuseException {
+		int partition = this.oracle.partitionsOf(path).iterator().next().intValue();
+		FuseOps.Client client = getClient((byte) partition);
 		try {
 			List<DBlock> blocks = new LinkedList<>();
 			byte[] data = new byte[MAXBLOCKSIZE];
@@ -319,10 +465,14 @@ public class PaxosFileSystem implements Filesystem3 {
 				}
 				blocks.add(b);
 			}
-
-			int partition = this.oracle.partitionsOf(path).iterator().next().intValue() - 1;
-			client.get()[partition].writeBlocks(path, (FileHandle) fh, offset, blocks);
-		} catch (TException e) {
+			client.writeBlocks(path, (FileHandle) fh, offset, blocks);
+			returnClient(client, (byte) partition);
+		} catch (FSError e) {
+            returnClient(client, (byte) partition);
+			throw thriftError(e);
+        } catch (TException e) {
+            clientsFreed.incrementAndGet();
+			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
 		return 0;
@@ -334,10 +484,17 @@ public class PaxosFileSystem implements Filesystem3 {
 	}
 
 	public int release(String path, Object fh, int flags) throws FuseException {
+		int partition = this.oracle.partitionsOf(path).iterator().next().intValue();
+		FuseOps.Client client = getClient((byte) partition);
 		try {
-			int partition = this.oracle.partitionsOf(path).iterator().next().intValue() - 1;
-			client.get()[partition].release(path, (FileHandle) fh, flags);
-		} catch (TException e) {
+			client.release(path, (FileHandle) fh, flags);
+			returnClient(client, (byte) partition);
+		} catch (FSError e) {
+            returnClient(client, (byte) partition);
+			throw thriftError(e);
+        } catch (TException e) {
+            clientsFreed.incrementAndGet();
+			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
 		return 0;
@@ -386,6 +543,18 @@ public class PaxosFileSystem implements Filesystem3 {
 		}
 
 		System.out.println(Arrays.toString(LogFactory.getFactory().getAttributeNames()));
+
+		new Thread() {
+			public void run() {
+				while (true) {
+					try {
+						sleep(500);
+					} catch (InterruptedException e) {
+					}
+					log.info(clientsCreated.get() + " " + clientsFreed.get() + " | " + clientsUsed.get() + " " + clientsReturned.get());
+				}
+			};
+		}.start();
 
 		PaxosFileSystem fs = new PaxosFileSystem(Integer.parseInt(args[0]), args[1], args[2], Integer.parseInt(args[3]));
 		try {
