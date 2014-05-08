@@ -51,7 +51,7 @@ public class CommunicationService {
 	 * @param paxos
 	 */
 	public CommunicationService(int id, byte partition, Node paxos) {
-		log.setLevel(Level.DEBUG);
+		log.setLevel(Level.INFO);
 		this.paxos = paxos;
 		this.commands = new LinkedBlockingQueue<>();
 		this.signals = new LinkedBlockingQueue<>();
