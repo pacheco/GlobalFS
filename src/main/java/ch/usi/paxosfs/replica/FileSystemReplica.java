@@ -84,7 +84,7 @@ public class FileSystemReplica implements Runnable {
 		this.zoohost = zoohost;
 		this.host = host;
 		this.port = port;
-		log.setLevel(Level.DEBUG);
+		log.setLevel(Level.INFO);
 	}
 
 	/**
@@ -102,10 +102,12 @@ public class FileSystemReplica implements Runnable {
 			e1.printStackTrace();
 			return;
 		}
+		
 		TThreadPoolServer.Args args = new TThreadPoolServer.Args(serverTransport);
 		args.maxWorkerThreads(this.WORKER_THREADS);
 		args.minWorkerThreads(this.WORKER_THREADS/2);
-		final TThreadPoolServer server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).processor(fuseProcessor));
+		args.processor(fuseProcessor);
+		final TThreadPoolServer server = new TThreadPoolServer(args);
 		
 		this.thriftServer = new Thread() {
 			@Override
