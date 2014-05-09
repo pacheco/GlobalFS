@@ -56,7 +56,7 @@ import fuse.FuseFtypeConstants;
 
 public class FileSystemReplica implements Runnable {
 	private Logger log = Logger.getLogger(FileSystemReplica.class);
-	public int WORKER_THREADS = 200;
+	public int WORKER_THREADS = 4096;
 	private CommunicationService comm;
 	private ConcurrentHashMap<Long, CommandResult> pendingCommands;
 	private List<Command> signalsReceived; // to keep track of signals received in advance
@@ -726,7 +726,7 @@ public class FileSystemReplica implements Runnable {
 		// Wait for the command to be applied and result
 		boolean timeout = false;
 		try {
-			timeout = !res.await(10, TimeUnit.SECONDS);
+			timeout = !res.await(30, TimeUnit.SECONDS);
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 			throw new FSError(-1, "Error waiting for command result");

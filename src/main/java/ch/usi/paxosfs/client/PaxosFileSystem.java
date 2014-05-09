@@ -548,7 +548,7 @@ public class PaxosFileSystem implements Filesystem3 {
 			public void run() {
 				while (true) {
 					try {
-						sleep(500);
+						sleep(1000);
 					} catch (InterruptedException e) {
 					}
 					log.info(clientsCreated.get() + " " + clientsFreed.get() + " | " + clientsUsed.get() + " " + clientsReturned.get());

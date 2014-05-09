@@ -7,12 +7,12 @@ import java.util.Set;
 import com.google.common.collect.Sets;
 
 /**
- * This partitioning oracle will partition the path into the given number n of partitions. The partitioning works like this:
+ * This partitioning oracle will partition the path into the given number n (up to 8) of partitions. The partitioning works like this:
  * "/" - this is replicated by all partitions
- * "/1" - everything under this path is in partition 1
- * "/2" - everything under this path is in partition 2
+ * "/1*" - everything under this path is in partition 1
+ * "/2*" - everything under this path is in partition 2
  * ...
- * "/n" - everything under this path is in partition n 
+ * "/n*" - everything under this path is in partition n 
  * @author pacheco
  *
  */
@@ -37,11 +37,10 @@ public class DefaultMultiPartitionOracle implements PartitioningOracle {
 	
 	@Override
 	public Set<Byte> partitionsOf(String path) {
-		if (path == "/") {
-			return allPartitions;
-		}
+		if (path.length() < 2) return allPartitions;
 		Set<Byte> p;
-		p = partitionMapping.get(firstElem(path));
+		//p = partitionMapping.get(firstElem(path));
+		p = partitionMapping.get(path.substring(1, 2));
 		if (p == null) {
 			return allPartitions;
 		}

@@ -51,8 +51,16 @@ public class PartitioningTest {
 		assertTrue(o.partitionsOf("/").size() == 5);
 		assertTrue(o.partitionsOf("/").containsAll(all));
 
-		assertTrue(o.partitionsOf("/1a").size() == 5);
-		assertTrue(o.partitionsOf("/1a").containsAll(all));
+		assertTrue(o.partitionsOf("/6").size() == 5);
+		assertTrue(o.partitionsOf("/6").containsAll(all));		
+		
+		assertTrue(o.partitionsOf("/1a").contains(Byte.valueOf((byte)1)));
+		assertTrue(o.partitionsOf("/1a").size() == 1);
+		assertTrue(o.partitionsOf("/1a/adsf").contains(Byte.valueOf((byte)1)));
+		assertTrue(o.partitionsOf("/1a/asdf").size() == 1);
+
+		assertTrue(o.partitionsOf("/2/adsf").contains(Byte.valueOf((byte)2)));
+		assertTrue(o.partitionsOf("/2/asdf").size() == 1);
 		
 		assertTrue(o.partitionsOf("/1").size() == 1);
 		assertTrue(o.partitionsOf("/1").contains(Byte.valueOf((byte)1)));

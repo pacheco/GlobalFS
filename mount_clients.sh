@@ -11,7 +11,7 @@ CLIENTS=$2
 START_NODE=1
 
 if [[ -z $PARTITIONS || -z $CLIENTS ]]; then
-    echo "start <n_partitions> <clients_per_partition>"
+    echo "start <n_partitions> <clients>"
     exit 1
 fi
 
@@ -25,7 +25,7 @@ STORAGE_PORT=30001
 STORAGE_NODES_N=${#STORAGE_NODES[@]}
 
 #CLIENT_NODES=(24 25 26 27 28 29)
-CLIENT_NODES=(35 36)
+CLIENT_NODES=(35)
 CLIENT_NODES_N=${#CLIENT_NODES[@]}
 
 REP_IDS=(1)
