@@ -58,11 +58,6 @@ public class PaxosFileSystem implements Filesystem3 {
 	private int numberOfPartitions;
 	private ConcurrentLinkedQueue<FuseOps.Client>[] clients;
 
-	private static AtomicLong clientsCreated = new AtomicLong(0);
-	private static AtomicLong clientsUsed = new AtomicLong(0);
-	private static AtomicLong clientsReturned = new AtomicLong(0);
-	private static AtomicLong clientsFreed = new AtomicLong(0);
-
 	/**
 	 * client connection pool return
 	 * 
@@ -70,10 +65,8 @@ public class PaxosFileSystem implements Filesystem3 {
 	 * @return
 	 */
 	private FuseOps.Client getClient(byte partition) {
-		clientsUsed.incrementAndGet();
 		FuseOps.Client c = clients[partition - 1].poll();
 		if (c == null) {
-			clientsCreated.incrementAndGet();
 			String replicaAddr;
 			try {
 				replicaAddr = rm.getReplicaAddress(partition, replicaId);
@@ -104,7 +97,6 @@ public class PaxosFileSystem implements Filesystem3 {
 	 * @param partition
 	 */
 	private void returnClient(FuseOps.Client client, int partition) {
-		clientsReturned.incrementAndGet();
 		clients[partition - 1].add(client);
 	}
 
@@ -149,7 +141,6 @@ public class PaxosFileSystem implements Filesystem3 {
             returnClient(client, (byte) partition);
 			throw thriftError(e);
         } catch (TException e) {
-            clientsFreed.incrementAndGet();
 			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
@@ -166,7 +157,6 @@ public class PaxosFileSystem implements Filesystem3 {
             returnClient(client, (byte) partition);
 			throw thriftError(e);
         } catch (TException e) {
-            clientsFreed.incrementAndGet();
 			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
@@ -187,7 +177,6 @@ public class PaxosFileSystem implements Filesystem3 {
             returnClient(client, (byte) partition);
             throw thriftError(e);
         } catch (TException e) {
-            clientsFreed.incrementAndGet();
 			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
@@ -204,7 +193,6 @@ public class PaxosFileSystem implements Filesystem3 {
             returnClient(client, (byte) partition);
 			throw thriftError(e);
         } catch (TException e) {
-            clientsFreed.incrementAndGet();
 			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
@@ -221,7 +209,6 @@ public class PaxosFileSystem implements Filesystem3 {
             returnClient(client, (byte) partition);
 			throw thriftError(e);
         } catch (TException e) {
-            clientsFreed.incrementAndGet();
 			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
@@ -238,7 +225,6 @@ public class PaxosFileSystem implements Filesystem3 {
             returnClient(client, (byte) partition);
             throw thriftError(e);
         } catch (TException e) {
-            clientsFreed.incrementAndGet();
 			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
@@ -255,7 +241,6 @@ public class PaxosFileSystem implements Filesystem3 {
             returnClient(client, (byte) partition);
 			throw thriftError(e);
         } catch (TException e) {
-            clientsFreed.incrementAndGet();
 			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
@@ -272,7 +257,6 @@ public class PaxosFileSystem implements Filesystem3 {
             returnClient(client, (byte) partition);
 			throw thriftError(e);
         } catch (TException e) {
-            clientsFreed.incrementAndGet();
 			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
@@ -289,7 +273,6 @@ public class PaxosFileSystem implements Filesystem3 {
             returnClient(client, (byte) partition);
             throw thriftError(e);
         } catch (TException e) {
-            clientsFreed.incrementAndGet();
 			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
@@ -310,7 +293,6 @@ public class PaxosFileSystem implements Filesystem3 {
             returnClient(client, (byte) partition);
 			throw thriftError(e);
         } catch (TException e) {
-            clientsFreed.incrementAndGet();
 			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
@@ -327,7 +309,6 @@ public class PaxosFileSystem implements Filesystem3 {
             returnClient(client, (byte) partition);
             throw thriftError(e);
         } catch (TException e) {
-            clientsFreed.incrementAndGet();
 			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
@@ -344,7 +325,6 @@ public class PaxosFileSystem implements Filesystem3 {
             returnClient(client, (byte) partition);
 			throw thriftError(e);
         } catch (TException e) {
-            clientsFreed.incrementAndGet();
 			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
@@ -361,7 +341,6 @@ public class PaxosFileSystem implements Filesystem3 {
             returnClient(client, (byte) partition);
 			throw thriftError(e);
         } catch (TException e) {
-            clientsFreed.incrementAndGet();
 			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
@@ -380,7 +359,6 @@ public class PaxosFileSystem implements Filesystem3 {
             returnClient(client, (byte) 1);
             throw thriftError(e);
         } catch (TException e) {
-            clientsFreed.incrementAndGet();
 			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
@@ -399,7 +377,6 @@ public class PaxosFileSystem implements Filesystem3 {
             returnClient(client, (byte) partition);
 			throw thriftError(e);
         } catch (TException e) {
-            clientsFreed.incrementAndGet();
 			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
@@ -432,7 +409,6 @@ public class PaxosFileSystem implements Filesystem3 {
             returnClient(client, (byte) partition);
             throw thriftError(e);
         } catch (TException e) {
-            clientsFreed.incrementAndGet();
 			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
@@ -471,7 +447,6 @@ public class PaxosFileSystem implements Filesystem3 {
             returnClient(client, (byte) partition);
 			throw thriftError(e);
         } catch (TException e) {
-            clientsFreed.incrementAndGet();
 			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
@@ -493,7 +468,6 @@ public class PaxosFileSystem implements Filesystem3 {
             returnClient(client, (byte) partition);
 			throw thriftError(e);
         } catch (TException e) {
-            clientsFreed.incrementAndGet();
 			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		}
@@ -543,18 +517,6 @@ public class PaxosFileSystem implements Filesystem3 {
 		}
 
 		System.out.println(Arrays.toString(LogFactory.getFactory().getAttributeNames()));
-
-		new Thread() {
-			public void run() {
-				while (true) {
-					try {
-						sleep(1000);
-					} catch (InterruptedException e) {
-					}
-					log.info(clientsCreated.get() + " " + clientsFreed.get() + " | " + clientsUsed.get() + " " + clientsReturned.get());
-				}
-			};
-		}.start();
 
 		PaxosFileSystem fs = new PaxosFileSystem(Integer.parseInt(args[0]), args[1], args[2], Integer.parseInt(args[3]));
 		try {
