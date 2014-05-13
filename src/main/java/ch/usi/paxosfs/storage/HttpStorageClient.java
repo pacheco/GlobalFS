@@ -1,8 +1,10 @@
 package ch.usi.paxosfs.storage;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HeaderIterator;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.fluent.Executor;
@@ -49,7 +51,7 @@ public class HttpStorageClient implements Storage {
 	public boolean put(byte[] key, byte[] data) {
 			try {
 				Response r = this.executor.execute(Request.Put(this.serverUrl + bytesToLongAsString(key))
-						.addHeader("Content-Type", "text/plain")
+						.addHeader("Content-Type", "application/octet-stream")
 						.addHeader("Sync-Mode", "sync")
 						.connectTimeout(TIMEOUT)
 						.bodyByteArray(data));
@@ -64,12 +66,18 @@ public class HttpStorageClient implements Storage {
 	public byte[] get(byte[] key) {
 		try {
 			Response r = this.executor.execute(Request.Get(this.serverUrl + bytesToLongAsString(key))
+					.addHeader("Content-Type", "application/octet-stream")
+					.addHeader("Sync-Mode", "sync")
 					.connectTimeout(TIMEOUT));
 			HttpResponse resp = r.returnResponse();
 			if (resp.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
 				return null;
 			}
-			return IOUtils.toByteArray(resp.getEntity().getContent());
+			InputStream in = resp.getEntity().getContent();
+			in.skip(6); // header???
+			byte[] value = IOUtils.toByteArray(in); 
+			in.close();
+			return value;
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
