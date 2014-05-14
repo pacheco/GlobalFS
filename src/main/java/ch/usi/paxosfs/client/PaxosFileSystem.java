@@ -50,7 +50,7 @@ public class PaxosFileSystem implements Filesystem3 {
 	private Random rand = new Random();
 	private int replicaId;
 	private static Log log = LogFactory.getLog(PaxosFileSystem.class);
-	private static int MAXBLOCKSIZE = 1024 * 65;
+	private static int MAXBLOCKSIZE = 1024 * 300;
 	private ReplicaManager rm;
 	private String zoohost;
 	private PartitioningOracle oracle;
@@ -383,7 +383,6 @@ public class PaxosFileSystem implements Filesystem3 {
 		return 0;
 	}
 
-	// TODO: fetch data from the DHT
 	public int read(String path, Object fh, ByteBuffer buf, long offset) throws FuseException {
 		int partition = this.oracle.partitionsOf(path).iterator().next().intValue();
 		FuseOps.Client client = getClient((byte) partition);
@@ -415,7 +414,6 @@ public class PaxosFileSystem implements Filesystem3 {
 		return 0;
 	}
 
-	// TODO: write data to the DHT
 	public int write(String path, Object fh, boolean isWritepage, ByteBuffer buf, long offset) throws FuseException {
 		int partition = this.oracle.partitionsOf(path).iterator().next().intValue();
 		FuseOps.Client client = getClient((byte) partition);
