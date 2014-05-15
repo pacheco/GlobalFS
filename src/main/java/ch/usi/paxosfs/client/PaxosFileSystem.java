@@ -34,6 +34,7 @@ import ch.usi.paxosfs.rpc.FileHandle;
 import ch.usi.paxosfs.rpc.FileSystemStats;
 import ch.usi.paxosfs.rpc.FuseOps;
 import ch.usi.paxosfs.rpc.ReadResult;
+import ch.usi.paxosfs.storage.FakeStorage;
 import ch.usi.paxosfs.storage.HttpStorageClient;
 import ch.usi.paxosfs.storage.Storage;
 import ch.usi.paxosfs.util.UUIDUtils;
@@ -104,7 +105,13 @@ public class PaxosFileSystem implements Filesystem3 {
 	public PaxosFileSystem(int numberOfPartitions, String zoohost, String storageHost, int replicaId) {
 		this.numberOfPartitions = numberOfPartitions;
 		this.zoohost = zoohost;
-		this.storage = new HttpStorageClient(storageHost);
+		if (storageHost.equals("http://fake")) {
+			System.out.println("STORAGE: FAKE " + storageHost);
+			this.storage = new FakeStorage();
+		} else {
+			System.out.println("STORAGE: " + storageHost);
+			this.storage = new HttpStorageClient(storageHost);
+		}
 		this.oracle = new DefaultMultiPartitionOracle(numberOfPartitions);
 		this.replicaId = replicaId;
 
