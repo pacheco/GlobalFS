@@ -726,7 +726,7 @@ public class FileSystemReplica implements Runnable {
 		// Wait for the command to be applied and result
 		boolean timeout = false;
 		try {
-			timeout = !res.await(30, TimeUnit.SECONDS);
+			timeout = !res.await(5, TimeUnit.SECONDS);
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 			throw new FSError(-1, "Error waiting for command result");
