@@ -39,6 +39,7 @@ struct FileSystemStats {
 struct FileHandle {
 	1: i64 id,
     2: i32 flags,
+    3: byte partition,
 }
 
 struct DBlock {

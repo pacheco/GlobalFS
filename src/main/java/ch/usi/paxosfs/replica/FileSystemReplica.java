@@ -516,7 +516,7 @@ public class FileSystemReplica implements Runnable {
                  * O_CLOEXEC       mark as close-on-exec
 				 */
 				log.debug("Flags " + Integer.toHexString(open.getFlags()));
-				FileHandle fh = new FileHandle(c.getReqId(), open.getFlags());
+				FileHandle fh = new FileHandle(c.getReqId(), open.getFlags(), localPartition.byteValue());
 				this.openFiles.put(Long.valueOf(fh.getId()), (FileNode) n);
 				
 				if (c.getInvolvedPartitions().size() > 1) {
