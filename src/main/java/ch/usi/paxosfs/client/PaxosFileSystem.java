@@ -400,7 +400,7 @@ public class PaxosFileSystem implements Filesystem3 {
 			for (DBlock b : res.getBlocks()) {
 				byte[] data;
 				if (b.getId().length == 0) {
-					data = new byte[(int) b.getId().length];
+					data = new byte[b.getEndOffset()];
 				} else {
 					data = storage.get(b.getId());
 				}
@@ -409,7 +409,7 @@ public class PaxosFileSystem implements Filesystem3 {
 				}
 				// log.debug(data.length + " " + b.getStartOffset() + " " +
 				// b.getEndOffset());
-				buf.put(data, b.getStartOffset(), b.getEndOffset());
+				buf.put(data, b.getStartOffset(), b.getEndOffset() - b.getStartOffset());
 			}
 			returnClient(client, (byte) partition);
 		} catch (FSError e) {

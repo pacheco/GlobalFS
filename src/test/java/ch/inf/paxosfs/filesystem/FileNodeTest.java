@@ -9,6 +9,7 @@ import org.junit.Test;
 import ch.usi.paxosfs.filesystem.FileNode;
 import ch.usi.paxosfs.filesystem.memory.MemFile;
 import ch.usi.paxosfs.rpc.DBlock;
+import ch.usi.paxosfs.rpc.ReadResult;
 
 public class FileNodeTest {
 	private static byte[] uuid(int i) {
@@ -93,6 +94,14 @@ public class FileNodeTest {
 		f.truncate(0);
 		Assert.assertEquals(0, f.getAttributes().getSize());
 		Assert.assertEquals(0, f.getBlocks().size());
+		
+		f.truncate(1024*1024*1024*1024L);
+		ReadResult rr = f.getBlocks(0, 10);
+		Assert.assertEquals(rr.getBlocks().size(), 1);
+		Assert.assertEquals(rr.getBlocks().get(0).size(), 10);
+		rr = f.getBlocks(10, 10);
+		Assert.assertEquals(rr.getBlocks().size(), 1);
+		Assert.assertEquals(rr.getBlocks().get(0).size(), 10);
 	}
 
 	@Test

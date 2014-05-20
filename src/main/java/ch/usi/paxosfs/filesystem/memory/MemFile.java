@@ -68,9 +68,13 @@ public class MemFile extends MemNode implements FileNode {
 		if (currOffset > offset + bytes) {
 			// put adjusted ending block
 			int endingBlockOffset = b.getEndOffset() - (int) (currOffset - (offset + bytes));
-			DBlock endingBlock = new DBlock(null, b.getStartOffset(), endingBlockOffset);
-			endingBlock.setId(b.getId());
-			readBlocks.set(iter.previousIndex(), endingBlock);
+			if (iter.previousIndex() == startingBlockIdx) {
+				readBlocks.get(startingBlockIdx).setEndOffset(endingBlockOffset);
+			} else {
+				DBlock endingBlock = new DBlock(null, b.getStartOffset(), endingBlockOffset);
+				endingBlock.setId(b.getId());
+				readBlocks.set(iter.previousIndex(), endingBlock);
+			}
 		}
 		ReadResult rr = new ReadResult(readBlocks);
 					
@@ -182,12 +186,20 @@ public class MemFile extends MemNode implements FileNode {
 	@Override
 	public void truncate(long size) {
 		long sizeDiff = size - this.getAttributes().getSize();
-		if (sizeDiff > 0) {
+		if (sizeDiff > 0L) {
 			// increase file size by adding a null block of the size difference
 			// FIXME: we are casting long to int here. The correct way would be create blocks multiple blocks of max size int
-			DBlock nullBlock = new DBlock(null, 0, (int) sizeDiff); 
-			blocks.add(nullBlock);
-			nullBlock.setId(new byte[0]);
+			while (sizeDiff > Integer.MAX_VALUE) {
+				DBlock nullBlock = new DBlock(null, 0, (int) Integer.MAX_VALUE); 
+				blocks.add(nullBlock);
+				sizeDiff -= Integer.MAX_VALUE;
+				nullBlock.setId(new byte[0]);
+			}
+			if (sizeDiff > 0) {
+				DBlock nullBlock = new DBlock(null, 0, (int) sizeDiff); 
+				blocks.add(nullBlock);
+				nullBlock.setId(new byte[0]);
+			}
 			this.getAttributes().setSize(size);
 		} else if (sizeDiff == 0) {
 			// same size

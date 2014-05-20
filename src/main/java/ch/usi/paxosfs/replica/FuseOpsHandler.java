@@ -163,8 +163,7 @@ public class FuseOpsHandler implements FuseOps.Iface {
 
 	@Override
 	public void chmod(String path, int mode) throws FSError, TException {
-		// can be sent to ANY partition that replicates the path - we send it to the first returned by the oracle
-		Set<Byte> parts = Sets.newHashSet(Byte.valueOf(partition));
+		Set<Byte> parts = oracle.partitionsOf(path);
 		Command cmd = newCommand(CommandType.CHMOD, parts);
 		ChmodCmd chmod = new ChmodCmd(path, mode, parts);
 		cmd.setChmod(chmod);
@@ -201,12 +200,7 @@ public class FuseOpsHandler implements FuseOps.Iface {
 
 	@Override
 	public FileHandle open(String path, int flags) throws FSError, TException {
-		// can be sent to ANY partition that replicates the file - we send it to
-		// the first returned by the oracle. All operations using this handler
-		// have then to be sent to this same partition. TODO: store locally a
-		// mapping from FileHandlers to partition so commands can be sent to the
-		// correct one.
-		Set<Byte> parts = Sets.newHashSet(Byte.valueOf(partition));
+		Set<Byte> parts = oracle.partitionsOf(path);
 		Command cmd = newCommand(CommandType.OPEN, parts);
 		OpenCmd open = new OpenCmd(path, flags, parts);
 		cmd.setOpen(open);
@@ -216,8 +210,7 @@ public class FuseOpsHandler implements FuseOps.Iface {
 
 	@Override
 	public void release(String path, FileHandle fh, int flags) throws FSError, TException {
-		// can be sent to ANY partition that replicates the file - we send it to the first returned by the oracle
-		Set<Byte> parts = Sets.newHashSet(Byte.valueOf(partition));
+		Set<Byte> parts = oracle.partitionsOf(path);
 		Command cmd = newCommand(CommandType.RELEASE, parts);
 		ReleaseCmd release = new ReleaseCmd(path, fh, flags, parts);
 		cmd.setRelease(release);
@@ -226,7 +219,7 @@ public class FuseOpsHandler implements FuseOps.Iface {
 
 	@Override
 	public ReadResult readBlocks(String path, FileHandle fh, long offset, long bytes) throws FSError, TException {
-		// can be sent to ANY partition that replicates the file - we send it to the first returned by the oracle
+		// assuming this replica replicates the file, send to own partition
 		Set<Byte> parts = Sets.newHashSet(Byte.valueOf(partition));
 		Command cmd = newCommand(CommandType.READ_BLOCKS, parts);
 		ReadBlocksCmd read = new ReadBlocksCmd(path, fh, offset, bytes, parts);
