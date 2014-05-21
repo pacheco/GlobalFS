@@ -392,7 +392,8 @@ public class PaxosFileSystem implements Filesystem3 {
 
 	public int read(String path, Object fh, ByteBuffer buf, long offset) throws FuseException {
 		FileHandle handle = (FileHandle) fh;
-		int partition = (int) handle.getPartition();
+		//int partition = (int) handle.getPartition();
+		int partition = Utils.randomElem(rand, this.oracle.partitionsOf(path)).intValue();
 		FuseOps.Client client = getClient((byte) partition);
 		try {
 			ReadResult res;
@@ -424,7 +425,8 @@ public class PaxosFileSystem implements Filesystem3 {
 
 	public int write(String path, Object fh, boolean isWritepage, ByteBuffer buf, long offset) throws FuseException {
 		FileHandle handle = (FileHandle) fh;
-		int partition = (int) handle.getPartition();
+		//int partition = (int) handle.getPartition();
+		int partition = Utils.randomElem(rand, this.oracle.partitionsOf(path)).intValue();
 		FuseOps.Client client = getClient((byte) partition);
 		try {
 			List<DBlock> blocks = new LinkedList<>();
@@ -467,7 +469,8 @@ public class PaxosFileSystem implements Filesystem3 {
 
 	public int release(String path, Object fh, int flags) throws FuseException {
 		FileHandle handle = (FileHandle) fh;
-		int partition = (int) handle.getPartition();
+		//int partition = (int) handle.getPartition();
+		int partition = Utils.randomElem(rand, this.oracle.partitionsOf(path)).intValue();
 		FuseOps.Client client = getClient((byte) partition);
 		try {
 			client.release(path, handle, flags);
