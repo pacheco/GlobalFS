@@ -2,9 +2,9 @@ package ch.usi.paxosfs.storage;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HeaderIterator;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.fluent.Executor;
@@ -61,7 +61,7 @@ public class HttpStorageClient implements Storage {
 				return false;
 			}
 	}
-
+	
 	@Override
 	public byte[] get(byte[] key) {
 		try {
@@ -87,6 +87,18 @@ public class HttpStorageClient implements Storage {
 	@Override
 	public boolean delete(byte[] key) {
 		return false;
+	}
+
+	@Override
+	public boolean multiPut(List<byte[]> keys, List<byte[]> data) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public List<byte[]> multiGet(List<byte[]> keys) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	public static void main(String[] args) {
