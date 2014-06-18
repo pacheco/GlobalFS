@@ -105,7 +105,7 @@ public class FSMain {
 
 		// start the replica
 		try {
-			InetSocketAddress addr = new InetSocketAddress(Util.getHostAddress(false), args.serverPort);
+			InetSocketAddress addr = new InetSocketAddress(Util.getHostAddress(), args.serverPort);
 			startReplica(args.nPartitions, args.replicaId, args.replicaPartition, addr.getHostString(), args.serverPort, comm, args.zookeeperHost);
 		} catch (TTransportException e) {
 			e.printStackTrace();
