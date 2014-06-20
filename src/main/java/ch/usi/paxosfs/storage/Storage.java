@@ -9,15 +9,15 @@ public interface Storage {
 	 * @param data
 	 * @return
 	 */
-	boolean put(byte[] key, byte[] data);
+	boolean put(byte[] key, byte[] value);
 	
 	/**
-	 * Put multiple keys into the DHT in parallel
+	 * Put multiple keys into the DHT in parallel. The keys and values need the same number of elements.
 	 * @param keys
 	 * @param data
 	 * @return
 	 */
-	boolean multiPut(List<byte[]> keys, List<byte[]> data);
+	List<Boolean> multiPut(List<byte[]> keys, List<byte[]> values);
 	
 	/**
 	 * Fetch data related to a key. Return null if the key does not exist

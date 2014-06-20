@@ -7,7 +7,7 @@ public class FakeStorage implements Storage {
 	byte[] data = new byte[1024*512];
 	
 	@Override
-	public boolean put(byte[] key, byte[] data) {
+	public boolean put(byte[] key, byte[] value) {
 		return true;
 	}
 
@@ -22,8 +22,12 @@ public class FakeStorage implements Storage {
 	}
 
 	@Override
-	public boolean multiPut(List<byte[]> keys, List<byte[]> data) {
-		return true;
+	public List<Boolean> multiPut(List<byte[]> keys, List<byte[]> values) {
+		List<Boolean> result = new ArrayList<Boolean>(keys.size());
+		for (int i = 0; i < result.size(); i++) {
+			result.add(Boolean.TRUE);
+		}
+		return result;
 	}
 
 	@Override
