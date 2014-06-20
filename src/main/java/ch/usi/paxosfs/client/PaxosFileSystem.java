@@ -6,6 +6,7 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -398,20 +399,32 @@ public class PaxosFileSystem implements Filesystem3 {
 		try {
 			ReadResult res;
 			res = client.readBlocks(path, handle, offset, (long) buf.remaining());
+			List<byte[]> keys = new LinkedList<>();
 			for (DBlock b : res.getBlocks()) {
-				byte[] data;
-				if (b.getId().length == 0) {
-					data = new byte[b.getEndOffset()];
-				} else {
-					data = storage.get(b.getId());
+				if (b.getId().length != 0) {
+					keys.add(b.getId());
 				}
-				if (data == null) {
-					throw new FSError(-1, "Data block not found!");
-				}
-				// log.debug(data.length + " " + b.getStartOffset() + " " +
-				// b.getEndOffset());
-				buf.put(data, b.getStartOffset(), b.getEndOffset() - b.getStartOffset());
 			}
+			// do the remote gets in parallel
+			List<byte[]> values = storage.multiGet(keys);
+			
+			// pass the values to fuse - also checking for and creating zeroed blocks (null id)
+			Iterator<byte[]> valuesIter = values.iterator();
+			for (DBlock b : res.getBlocks()) {
+				if (b.getId().length == 0){ 
+					// zero block
+					int size = b.getEndOffset() - b.getStartOffset();
+					buf.put(new byte[size], 0, size);
+				} else { 
+					// block fetched from the storage
+					byte[] data = valuesIter.next();
+					if (data == null) {
+						throw new FSError(-1, "Error fetching data block!");
+					}
+					buf.put(data, b.getStartOffset(), b.getEndOffset() - b.getStartOffset());
+				}
+			}
+			
 			returnClient(client, (byte) partition);
 		} catch (FSError e) {
             returnClient(client, (byte) partition);
@@ -430,14 +443,16 @@ public class PaxosFileSystem implements Filesystem3 {
 		FuseOps.Client client = getClient((byte) partition);
 		try {
 			List<DBlock> blocks = new LinkedList<>();
+			List<byte[]> keys = new LinkedList<>();
+			List<byte[]> blockValues = new LinkedList<>();
+
 			byte[] data = new byte[MAXBLOCKSIZE];
 			while (buf.remaining() >= MAXBLOCKSIZE) {
 				buf.get(data);
 				DBlock b = new DBlock(null, 0, MAXBLOCKSIZE);
 				b.setId(UUIDUtils.longToBytes(rand.nextLong()));
-				if (!storage.put(b.getId(), data)) {
-					throw new FSError(-1, "Could not store data block!");
-				}
+				keys.add(b.getId());
+				blockValues.add(data);
 				blocks.add(b);
 			}
 			if (buf.hasRemaining()) {
@@ -445,10 +460,15 @@ public class PaxosFileSystem implements Filesystem3 {
 				buf.get(remainingData);
 				DBlock b = new DBlock(null, 0, remainingData.length);
 				b.setId(UUIDUtils.longToBytes(rand.nextLong()));
-				if (!storage.put(b.getId(), remainingData)) {
-					throw new FSError(-1, "Could not store data block!");
-				}
+				keys.add(b.getId());
+				blockValues.add(remainingData);
 				blocks.add(b);
+			}
+			List<Boolean> putRet = storage.multiPut(keys, blockValues);
+			for (Boolean ok : putRet) {
+				if (!ok) {
+					throw new FSError(-1, "Error storing data block!");
+				}
 			}
 			client.writeBlocks(path, handle, offset, blocks);
 			returnClient(client, (byte) partition);
