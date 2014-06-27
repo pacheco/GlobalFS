@@ -38,6 +38,7 @@ public class DBlock implements org.apache.thrift.TBase<DBlock, DBlock._Fields>, 
   private static final org.apache.thrift.protocol.TField ID_FIELD_DESC = new org.apache.thrift.protocol.TField("id", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField START_OFFSET_FIELD_DESC = new org.apache.thrift.protocol.TField("startOffset", org.apache.thrift.protocol.TType.I32, (short)2);
   private static final org.apache.thrift.protocol.TField END_OFFSET_FIELD_DESC = new org.apache.thrift.protocol.TField("endOffset", org.apache.thrift.protocol.TType.I32, (short)3);
+  private static final org.apache.thrift.protocol.TField STORAGE_FIELD_DESC = new org.apache.thrift.protocol.TField("storage", org.apache.thrift.protocol.TType.SET, (short)4);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -48,12 +49,14 @@ public class DBlock implements org.apache.thrift.TBase<DBlock, DBlock._Fields>, 
   public ByteBuffer id; // required
   public int startOffset; // required
   public int endOffset; // required
+  public Set<Byte> storage; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     ID((short)1, "id"),
     START_OFFSET((short)2, "startOffset"),
-    END_OFFSET((short)3, "endOffset");
+    END_OFFSET((short)3, "endOffset"),
+    STORAGE((short)4, "storage");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -74,6 +77,8 @@ public class DBlock implements org.apache.thrift.TBase<DBlock, DBlock._Fields>, 
           return START_OFFSET;
         case 3: // END_OFFSET
           return END_OFFSET;
+        case 4: // STORAGE
+          return STORAGE;
         default:
           return null;
       }
@@ -126,6 +131,9 @@ public class DBlock implements org.apache.thrift.TBase<DBlock, DBlock._Fields>, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.END_OFFSET, new org.apache.thrift.meta_data.FieldMetaData("endOffset", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.STORAGE, new org.apache.thrift.meta_data.FieldMetaData("storage", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+        new org.apache.thrift.meta_data.SetMetaData(org.apache.thrift.protocol.TType.SET, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(DBlock.class, metaDataMap);
   }
@@ -136,7 +144,8 @@ public class DBlock implements org.apache.thrift.TBase<DBlock, DBlock._Fields>, 
   public DBlock(
     ByteBuffer id,
     int startOffset,
-    int endOffset)
+    int endOffset,
+    Set<Byte> storage)
   {
     this();
     this.id = id;
@@ -144,6 +153,7 @@ public class DBlock implements org.apache.thrift.TBase<DBlock, DBlock._Fields>, 
     setStartOffsetIsSet(true);
     this.endOffset = endOffset;
     setEndOffsetIsSet(true);
+    this.storage = storage;
   }
 
   /**
@@ -157,6 +167,10 @@ public class DBlock implements org.apache.thrift.TBase<DBlock, DBlock._Fields>, 
     }
     this.startOffset = other.startOffset;
     this.endOffset = other.endOffset;
+    if (other.isSetStorage()) {
+      Set<Byte> __this__storage = new HashSet<Byte>(other.storage);
+      this.storage = __this__storage;
+    }
   }
 
   public DBlock deepCopy() {
@@ -170,6 +184,7 @@ public class DBlock implements org.apache.thrift.TBase<DBlock, DBlock._Fields>, 
     this.startOffset = 0;
     setEndOffsetIsSet(false);
     this.endOffset = 0;
+    this.storage = null;
   }
 
   public byte[] getId() {
@@ -252,6 +267,45 @@ public class DBlock implements org.apache.thrift.TBase<DBlock, DBlock._Fields>, 
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ENDOFFSET_ISSET_ID, value);
   }
 
+  public int getStorageSize() {
+    return (this.storage == null) ? 0 : this.storage.size();
+  }
+
+  public java.util.Iterator<Byte> getStorageIterator() {
+    return (this.storage == null) ? null : this.storage.iterator();
+  }
+
+  public void addToStorage(byte elem) {
+    if (this.storage == null) {
+      this.storage = new HashSet<Byte>();
+    }
+    this.storage.add(elem);
+  }
+
+  public Set<Byte> getStorage() {
+    return this.storage;
+  }
+
+  public DBlock setStorage(Set<Byte> storage) {
+    this.storage = storage;
+    return this;
+  }
+
+  public void unsetStorage() {
+    this.storage = null;
+  }
+
+  /** Returns true if field storage is set (has been assigned a value) and false otherwise */
+  public boolean isSetStorage() {
+    return this.storage != null;
+  }
+
+  public void setStorageIsSet(boolean value) {
+    if (!value) {
+      this.storage = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case ID:
@@ -278,6 +332,14 @@ public class DBlock implements org.apache.thrift.TBase<DBlock, DBlock._Fields>, 
       }
       break;
 
+    case STORAGE:
+      if (value == null) {
+        unsetStorage();
+      } else {
+        setStorage((Set<Byte>)value);
+      }
+      break;
+
     }
   }
 
@@ -291,6 +353,9 @@ public class DBlock implements org.apache.thrift.TBase<DBlock, DBlock._Fields>, 
 
     case END_OFFSET:
       return Integer.valueOf(getEndOffset());
+
+    case STORAGE:
+      return getStorage();
 
     }
     throw new IllegalStateException();
@@ -309,6 +374,8 @@ public class DBlock implements org.apache.thrift.TBase<DBlock, DBlock._Fields>, 
       return isSetStartOffset();
     case END_OFFSET:
       return isSetEndOffset();
+    case STORAGE:
+      return isSetStorage();
     }
     throw new IllegalStateException();
   }
@@ -350,6 +417,15 @@ public class DBlock implements org.apache.thrift.TBase<DBlock, DBlock._Fields>, 
       if (!(this_present_endOffset && that_present_endOffset))
         return false;
       if (this.endOffset != that.endOffset)
+        return false;
+    }
+
+    boolean this_present_storage = true && this.isSetStorage();
+    boolean that_present_storage = true && that.isSetStorage();
+    if (this_present_storage || that_present_storage) {
+      if (!(this_present_storage && that_present_storage))
+        return false;
+      if (!this.storage.equals(that.storage))
         return false;
     }
 
@@ -399,6 +475,16 @@ public class DBlock implements org.apache.thrift.TBase<DBlock, DBlock._Fields>, 
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetStorage()).compareTo(other.isSetStorage());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetStorage()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.storage, other.storage);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -433,6 +519,14 @@ public class DBlock implements org.apache.thrift.TBase<DBlock, DBlock._Fields>, 
     if (!first) sb.append(", ");
     sb.append("endOffset:");
     sb.append(this.endOffset);
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("storage:");
+    if (this.storage == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.storage);
+    }
     first = false;
     sb.append(")");
     return sb.toString();
@@ -503,6 +597,24 @@ public class DBlock implements org.apache.thrift.TBase<DBlock, DBlock._Fields>, 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 4: // STORAGE
+            if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
+              {
+                org.apache.thrift.protocol.TSet _set0 = iprot.readSetBegin();
+                struct.storage = new HashSet<Byte>(2*_set0.size);
+                for (int _i1 = 0; _i1 < _set0.size; ++_i1)
+                {
+                  byte _elem2;
+                  _elem2 = iprot.readByte();
+                  struct.storage.add(_elem2);
+                }
+                iprot.readSetEnd();
+              }
+              struct.setStorageIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -529,6 +641,18 @@ public class DBlock implements org.apache.thrift.TBase<DBlock, DBlock._Fields>, 
       oprot.writeFieldBegin(END_OFFSET_FIELD_DESC);
       oprot.writeI32(struct.endOffset);
       oprot.writeFieldEnd();
+      if (struct.storage != null) {
+        oprot.writeFieldBegin(STORAGE_FIELD_DESC);
+        {
+          oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, struct.storage.size()));
+          for (byte _iter3 : struct.storage)
+          {
+            oprot.writeByte(_iter3);
+          }
+          oprot.writeSetEnd();
+        }
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -556,7 +680,10 @@ public class DBlock implements org.apache.thrift.TBase<DBlock, DBlock._Fields>, 
       if (struct.isSetEndOffset()) {
         optionals.set(2);
       }
-      oprot.writeBitSet(optionals, 3);
+      if (struct.isSetStorage()) {
+        optionals.set(3);
+      }
+      oprot.writeBitSet(optionals, 4);
       if (struct.isSetId()) {
         oprot.writeBinary(struct.id);
       }
@@ -566,12 +693,21 @@ public class DBlock implements org.apache.thrift.TBase<DBlock, DBlock._Fields>, 
       if (struct.isSetEndOffset()) {
         oprot.writeI32(struct.endOffset);
       }
+      if (struct.isSetStorage()) {
+        {
+          oprot.writeI32(struct.storage.size());
+          for (byte _iter4 : struct.storage)
+          {
+            oprot.writeByte(_iter4);
+          }
+        }
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, DBlock struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(3);
+      BitSet incoming = iprot.readBitSet(4);
       if (incoming.get(0)) {
         struct.id = iprot.readBinary();
         struct.setIdIsSet(true);
@@ -584,12 +720,24 @@ public class DBlock implements org.apache.thrift.TBase<DBlock, DBlock._Fields>, 
         struct.endOffset = iprot.readI32();
         struct.setEndOffsetIsSet(true);
       }
+      if (incoming.get(3)) {
+        {
+          org.apache.thrift.protocol.TSet _set5 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, iprot.readI32());
+          struct.storage = new HashSet<Byte>(2*_set5.size);
+          for (int _i6 = 0; _i6 < _set5.size; ++_i6)
+          {
+            byte _elem7;
+            _elem7 = iprot.readByte();
+            struct.storage.add(_elem7);
+          }
+        }
+        struct.setStorageIsSet(true);
+      }
     }
   }
-
+  
   public long size() {
 	  return this.getEndOffset() - this.getStartOffset();
   }
-
 }
 

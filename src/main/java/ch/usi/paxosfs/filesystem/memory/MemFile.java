@@ -52,7 +52,7 @@ public class MemFile extends MemNode implements FileNode {
 		assert(currOffset > offset);
 		
 		int startingBlockOffset = b.getEndOffset() - (int)(currOffset - offset); 
-		DBlock startingBlock = new DBlock(null, startingBlockOffset, b.getEndOffset());
+		DBlock startingBlock = new DBlock(null, startingBlockOffset, b.getEndOffset(), b.getStorage());
 		startingBlock.setId(b.getId());
 		int startingBlockIdx = iter.previousIndex();
 		
@@ -71,7 +71,7 @@ public class MemFile extends MemNode implements FileNode {
 			if (iter.previousIndex() == startingBlockIdx) {
 				readBlocks.get(startingBlockIdx).setEndOffset(endingBlockOffset);
 			} else {
-				DBlock endingBlock = new DBlock(null, b.getStartOffset(), endingBlockOffset);
+				DBlock endingBlock = new DBlock(null, b.getStartOffset(), endingBlockOffset, b.getStorage());
 				endingBlock.setId(b.getId());
 				readBlocks.set(iter.previousIndex(), endingBlock);
 			}
@@ -159,7 +159,8 @@ public class MemFile extends MemNode implements FileNode {
 			// handling special case: data written is "splitting" a single block. Copy it and fix the offsets
 			DBlock copy = new DBlock(null, 
 					offsetBlock.getEndOffset() + bytesWritten, 
-					offsetBlock.getEndOffset() + (int) (currentOffset - offset));
+					offsetBlock.getEndOffset() + (int) (currentOffset - offset),
+					offsetBlock.getStorage());
 			copy.setId(offsetBlock.getId());
 			iter.add(copy);
 		} else {
@@ -190,13 +191,13 @@ public class MemFile extends MemNode implements FileNode {
 			// increase file size by adding a null block of the size difference
 			// FIXME: we are casting long to int here. The correct way would be create blocks multiple blocks of max size int
 			while (sizeDiff > Integer.MAX_VALUE) {
-				DBlock nullBlock = new DBlock(null, 0, (int) Integer.MAX_VALUE); 
+				DBlock nullBlock = new DBlock(null, 0, (int) Integer.MAX_VALUE, null); 
 				blocks.add(nullBlock);
 				sizeDiff -= Integer.MAX_VALUE;
 				nullBlock.setId(new byte[0]);
 			}
 			if (sizeDiff > 0) {
-				DBlock nullBlock = new DBlock(null, 0, (int) sizeDiff); 
+				DBlock nullBlock = new DBlock(null, 0, (int) sizeDiff, null); 
 				blocks.add(nullBlock);
 				nullBlock.setId(new byte[0]);
 			}

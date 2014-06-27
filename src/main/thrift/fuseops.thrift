@@ -46,6 +46,7 @@ struct DBlock {
     1: binary id,
     2: i32 startOffset,
     3: i32 endOffset,
+    4: set<byte> storage,
 }
 
 // THIS METHOD HAS TO BE ADDED TO THE DBLOCK CLASS

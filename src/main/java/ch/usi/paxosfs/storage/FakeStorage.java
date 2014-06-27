@@ -1,42 +1,62 @@
 package ch.usi.paxosfs.storage;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class FakeStorage implements Storage {
-	byte[] data = new byte[1024*512];
+	private class FakeFuture<T> implements Future<T> {
+		private T theValue;
+		public FakeFuture(T value) {
+			theValue = value;
+		}
+		
+		@Override
+		public boolean cancel(boolean mayInterruptIfRunning) {
+			return false;
+		}
+
+		@Override
+		public boolean isCancelled() {
+			return false;
+		}
+
+		@Override
+		public boolean isDone() {
+			return true;
+		}
+
+		@Override
+		public T get() throws InterruptedException, ExecutionException {
+			return theValue;
+		}
+
+		@Override
+		public T get(long timeout, TimeUnit unit) throws InterruptedException,
+				ExecutionException, TimeoutException {
+			return theValue;
+		}
+	}
 	
+	byte[] data = new byte[1024*512];
+
 	@Override
-	public boolean put(byte[] key, byte[] value) {
-		return true;
+	public Future<Boolean> put(byte[] key, byte[] value) {
+		return new FakeFuture<Boolean>(Boolean.TRUE);
 	}
 
 	@Override
-	public byte[] get(byte[] key) {
-		return data;
+	public Future<byte[]> get(byte[] key) {
+		// TODO Auto-generated method stub
+		return new FakeFuture<byte[]>(data);
 	}
 
 	@Override
-	public boolean delete(byte[] key) {
-		return true;
+	public Future<Boolean> delete(byte[] key) {
+		// TODO Auto-generated method stub
+		return new FakeFuture<Boolean>(Boolean.TRUE);
 	}
-
-	@Override
-	public List<Boolean> multiPut(List<byte[]> keys, List<byte[]> values) {
-		List<Boolean> result = new ArrayList<Boolean>(keys.size());
-		for (int i = 0; i < result.size(); i++) {
-			result.add(Boolean.TRUE);
-		}
-		return result;
-	}
-
-	@Override
-	public List<byte[]> multiGet(List<byte[]> keys) {
-		List<byte[]> result = new ArrayList<byte[]>(keys.size());
-		for (int i = 0; i < keys.size(); i++) {
-			result.add(data);
-		}
-		return result;
-	}
+	
 
 }

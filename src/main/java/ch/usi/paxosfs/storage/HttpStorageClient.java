@@ -2,14 +2,16 @@ package ch.usi.paxosfs.storage;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileSystems;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -18,18 +20,64 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.fluent.Async;
 import org.apache.http.client.fluent.Content;
-import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
-import org.apache.http.client.fluent.Response;
 
 import ch.usi.paxosfs.util.UUIDUtils;
 
 public class HttpStorageClient implements Storage {
 	private static int TIMEOUT = 3000;
-	private Executor executor;
-	private String serverUrl;
+	private List<String> serverUrls;
 	private ExecutorService threadpool;
 	private Async asyncHttp;
+
+	private class GetFuture implements Future<byte[]> {
+		private Future<Content> f;
+		public GetFuture(Future<Content> contentFuture) {
+			f = contentFuture;
+		}
+		@Override
+		public boolean cancel(boolean mayInterruptIfRunning) {
+			return f.cancel(mayInterruptIfRunning);
+		}
+		@Override
+		public boolean isCancelled() {
+			return f.isCancelled();
+		}
+		@Override
+		public boolean isDone() {
+			return f.isDone();
+		}
+		@Override
+		public byte[] get() throws InterruptedException, ExecutionException {
+			try {
+				Content c = f.get();
+				InputStream in = c.asStream();
+				in.skip(6);
+				byte[] value = IOUtils.toByteArray(in);
+				in.close();
+				return value;
+			} catch (IOException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+		@Override
+		public byte[] get(long timeout, TimeUnit unit)
+				throws InterruptedException, ExecutionException,
+				TimeoutException {
+			try {
+				Content c = f.get(timeout, unit);
+				InputStream in = c.asStream();
+				in.skip(6);
+				byte[] value = IOUtils.toByteArray(in);
+				in.close();
+				return value;
+			} catch (IOException e) {
+				e.printStackTrace();
+				return null;
+			}			
+		}
+	}
 	
 	private class PutHandler implements ResponseHandler<Boolean> {
 		@Override
@@ -43,25 +91,15 @@ public class HttpStorageClient implements Storage {
 	 * @param serverUrl
 	 * @throws IOException 
 	 */
-	public HttpStorageClient(String serverUrl) {
+	public HttpStorageClient(String... serverUrls) {
 		threadpool = Executors.newFixedThreadPool(100);
 		asyncHttp = Async.newInstance().use(threadpool);
-		this.executor = Executor.newInstance();
-		this.serverUrl = serverUrl + "/";
+		this.serverUrls = Arrays.asList(serverUrls);
 	}
 	
-	/**
-	 * Taken from http://stackoverflow.com/questions/9655181/convert-from-byte-array-to-hex-string-in-java
-	 */
-	final private static char[] hexArray = "0123456789ABCDEF".toCharArray();
-	private static String bytesToHex(byte[] bytes) {
-	    char[] hexChars = new char[bytes.length * 2];
-	    for ( int j = 0; j < bytes.length; j++ ) {
-	        int v = bytes[j] & 0xFF;
-	        hexChars[j * 2] = hexArray[v >>> 4];
-	        hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-	    }
-	    return new String(hexChars);
+	private String randomServer() {
+		// TODO: implement
+		return this.serverUrls.get(0);
 	}
 	
 	private static String bytesToLongAsString(byte[] bytes) {
@@ -70,112 +108,34 @@ public class HttpStorageClient implements Storage {
 	}
 	
 	@Override
-	public boolean put(byte[] key, byte[] value) {
-			try {
-				Response r = this.executor.execute(Request.Put(this.serverUrl + bytesToLongAsString(key))
-						.addHeader("Content-Type", "application/octet-stream")
-						.addHeader("Sync-Mode", "sync")
-						.connectTimeout(TIMEOUT)
-						.bodyByteArray(value));
-				return r.returnResponse().getStatusLine().getStatusCode() == HttpStatus.SC_OK;
-			} catch (IOException e) {
-				e.printStackTrace();
-				return false;
-			}
+	public Future<Boolean> put(byte[] key, byte[] value) {
+		Request req = Request.Put(this.randomServer() + bytesToLongAsString(key))
+				.addHeader("Content-Type", "application/octet-stream")
+				.addHeader("Sync-Mode", "sync")
+				.connectTimeout(TIMEOUT)
+				.bodyByteArray(value);
+		return asyncHttp.execute(req, new PutHandler());
 	}
+
+	@Override
+	public Future<byte[]> get(byte[] key) {
+		Request req = Request.Get(this.randomServer() + bytesToLongAsString(key))
+				.addHeader("Content-Type", "application/octet-stream")
+				.addHeader("Sync-Mode", "sync")
+				.connectTimeout(TIMEOUT);
+		return new GetFuture(asyncHttp.execute(req));
+	}
+
+	@Override
+	public Future<Boolean> delete(byte[] key) {
+		// TODO Auto-generated method stub
+		return null;
+	}	
 	
-	@Override
-	public byte[] get(byte[] key) {
-		try {
-			Response r = this.executor.execute(Request.Get(this.serverUrl + bytesToLongAsString(key))
-					.addHeader("Content-Type", "application/octet-stream")
-					.addHeader("Sync-Mode", "sync")
-					.connectTimeout(TIMEOUT));
-			HttpResponse resp = r.returnResponse();
-			if (resp.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-				return null;
-			}
-			InputStream in = resp.getEntity().getContent();
-			in.skip(6); // header???
-			byte[] value = IOUtils.toByteArray(in); 
-			in.close();
-			return value;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	@Override
-	public boolean delete(byte[] key) {
-		return false;
-	}
-
-	@Override
-	public List<Boolean> multiPut(List<byte[]> keys, List<byte[]> values) {
-		Queue<Future<Boolean>> futures = new LinkedList<>();
-		ResponseHandler<Boolean> handler = new PutHandler();
-		for (int i = 0; i < keys.size(); i++) {
-			Request req = Request.Put(this.serverUrl + bytesToLongAsString(keys.get(i)))
-					.addHeader("Content-Type", "application/octet-stream")
-					.addHeader("Sync-Mode", "sync")
-					.connectTimeout(TIMEOUT)
-					.bodyByteArray(values.get(i));
-			futures.add(asyncHttp.execute(req, handler));
-		}
-		
-		List<Boolean> result = new ArrayList<>(keys.size());
-		for (Future<Boolean> future: futures) {
-			try {
-				result.add(future.get());
-			} catch (InterruptedException e) {
-				result.add(Boolean.FALSE);
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				result.add(Boolean.FALSE);
-				e.printStackTrace();
-			}
-		}
-		return result;
-	}
-
-	@Override
-	public List<byte[]> multiGet(List<byte[]> keys) {
-		Queue<Future<Content>> futures = new LinkedList<>();
-		for (int i = 0; i < keys.size(); i++) {
-			Request req = Request.Get(this.serverUrl + bytesToLongAsString(keys.get(i)))
-					.addHeader("Content-Type", "application/octet-stream")
-					.addHeader("Sync-Mode", "sync")
-					.connectTimeout(TIMEOUT);
-			futures.add(asyncHttp.execute(req));
-		}
-		
-		List<byte[]> values = new ArrayList<byte[]>(keys.size());
-		for (Future<Content> future: futures) {
-			try {
-				Content c = future.get();
-				InputStream in = c.asStream();
-				in.skip(6);
-				byte[] value = IOUtils.toByteArray(in);
-				in.close();
-				values.add(value);
-			} catch (InterruptedException e) {
-				values.add(null);
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				values.add(null);
-				e.printStackTrace();
-			} catch (IOException e) {
-				values.add(null);
-				e.printStackTrace();
-			}
-		}
-		return values;
-	}
-	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException, ExecutionException {
 		if (args.length < 3) {
 			System.out.println("main host blockLarge blockSmall");
+			return;
 		}
 		Storage st = new HttpStorageClient(args[0]);
 		long keyStart = 0;
@@ -187,7 +147,7 @@ public class HttpStorageClient implements Storage {
 		System.out.print("Sequential put " + n + " times, blocks of " + dataLarge.length + " ... ");
 		for (int i = 0; i < n; i++) {
 			long start = System.currentTimeMillis();
-			st.put(UUIDUtils.longToBytes(keyStart++), dataLarge);
+			st.put(UUIDUtils.longToBytes(keyStart++), dataLarge).get();
 			latencySum += System.currentTimeMillis() - start;
 		}
 		System.out.println(latencySum / n);
@@ -196,25 +156,24 @@ public class HttpStorageClient implements Storage {
 		System.out.print("Parallel put " + n + " times, " + proportion + " blocks of " + dataSmall.length + " ... ");
 		for (int i = 0; i < n; i++) {
 			long start = System.currentTimeMillis();
-			List<byte[]> keys = new ArrayList<>(proportion);
-			List<byte[]> values = new ArrayList<>(proportion);
+			List<Future<Boolean>> putFutures = new ArrayList<>(proportion);
 			for (int j = 0; j < proportion; j++) {
-				keys.add(UUIDUtils.longToBytes(keyStart++));
-				values.add(dataSmall);
+				putFutures.add(st.put(UUIDUtils.longToBytes(keyStart++), dataSmall));
 			}
-			st.multiPut(keys, values);
+			for (Future<Boolean> f: putFutures) {
+				f.get(); // wait for the operations to finish
+			}
 			latencySum += System.currentTimeMillis() - start;
 		}
 		System.out.println(latencySum / n);
-	
+		
 		/// reads
 		latencySum = 0.0f;
-		System.out.print("Sequential get, blocks of " + dataSmall.length + " ... ");
+		keyStart = 0;
+		System.out.print("Sequential get, blocks of " + dataLarge.length + " ... ");
 		for (int i = 0; i < n; i++) {
 			long start = System.currentTimeMillis();
-			for (int j = 0; j < proportion; j++) {
-				st.get(UUIDUtils.longToBytes(0));
-			}
+			st.get(UUIDUtils.longToBytes(keyStart++)).get();
 			latencySum += System.currentTimeMillis() - start;
 		}
 		System.out.println(latencySum / n);
@@ -223,15 +182,16 @@ public class HttpStorageClient implements Storage {
 		System.out.print("Parallel get, blocks of " + dataSmall.length + " ... ");
 		for (int i = 0; i < n; i++) {
 			long start = System.currentTimeMillis();
-			List<byte[]> keys = new ArrayList<>(proportion);
+			List<Future<byte[]>> getFutures = new ArrayList<>(proportion);
 			for (int j = 0; j < proportion; j++) {
-				keys.add(UUIDUtils.longToBytes(0));
+				getFutures.add(st.get(UUIDUtils.longToBytes(keyStart++)));
 			}
-			st.multiGet(keys);
+			for (Future<byte[]> f : getFutures) {
+				f.get(); // wait for operations to finish
+			}
 			latencySum += System.currentTimeMillis() - start;
 		}
 		System.out.println(latencySum / n);
-	
-		
+		System.exit(0);		
 	}
 }

@@ -2,9 +2,11 @@ package ch.usi.paxosfs.client;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.ExecutionException;
 
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
@@ -32,7 +34,7 @@ public class CommandLineClient {
 	private static ReplicaManager rm;
 	private static PartitioningOracle oracle;
 
-	public static void main(String[] args) throws FSError, TException, KeeperException, InterruptedException, IOException {
+	public static void main(String[] args) throws FSError, TException, KeeperException, InterruptedException, IOException, ExecutionException {
 		Random rand = new Random();
 		int nPartitions = Integer.parseInt(args[0]);
 		String zoohost = args[1];
@@ -134,9 +136,9 @@ public class CommandLineClient {
 				}
 				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
 				List<DBlock> blocks = new ArrayList<DBlock>();
-				blocks.add(new DBlock(null, 0, data.length()));
+				blocks.add(new DBlock(null, 0, data.length(), new HashSet<Byte>()));
 				blocks.get(0).setId(UUIDUtils.longToBytes(rand.nextLong()));
-				storage.put(blocks.get(0).getId(), data.getBytes());
+				storage.put(blocks.get(0).getId(), data.getBytes()).get();
 				client[partition].writeBlocks(path, fh, offset, blocks);
 				System.out.println("File written");
 				break;
@@ -156,7 +158,7 @@ public class CommandLineClient {
 					if (b.getId().length == 0) {
 						System.out.print(new byte[(int)b.size()]);
 					}
-					System.out.print(new String(storage.get(b.getId())));
+					System.out.print(new String(storage.get(b.getId()).get()));
 				}
 				System.out.println("");
 				break;

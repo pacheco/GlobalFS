@@ -341,14 +341,14 @@ public class ReadResult implements org.apache.thrift.TBase<ReadResult, ReadResul
           case 1: // BLOCKS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
-                struct.blocks = new ArrayList<DBlock>(_list0.size);
-                for (int _i1 = 0; _i1 < _list0.size; ++_i1)
+                org.apache.thrift.protocol.TList _list8 = iprot.readListBegin();
+                struct.blocks = new ArrayList<DBlock>(_list8.size);
+                for (int _i9 = 0; _i9 < _list8.size; ++_i9)
                 {
-                  DBlock _elem2;
-                  _elem2 = new DBlock();
-                  _elem2.read(iprot);
-                  struct.blocks.add(_elem2);
+                  DBlock _elem10;
+                  _elem10 = new DBlock();
+                  _elem10.read(iprot);
+                  struct.blocks.add(_elem10);
                 }
                 iprot.readListEnd();
               }
@@ -376,9 +376,9 @@ public class ReadResult implements org.apache.thrift.TBase<ReadResult, ReadResul
         oprot.writeFieldBegin(BLOCKS_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.blocks.size()));
-          for (DBlock _iter3 : struct.blocks)
+          for (DBlock _iter11 : struct.blocks)
           {
-            _iter3.write(oprot);
+            _iter11.write(oprot);
           }
           oprot.writeListEnd();
         }
@@ -409,9 +409,9 @@ public class ReadResult implements org.apache.thrift.TBase<ReadResult, ReadResul
       if (struct.isSetBlocks()) {
         {
           oprot.writeI32(struct.blocks.size());
-          for (DBlock _iter4 : struct.blocks)
+          for (DBlock _iter12 : struct.blocks)
           {
-            _iter4.write(oprot);
+            _iter12.write(oprot);
           }
         }
       }
@@ -423,14 +423,14 @@ public class ReadResult implements org.apache.thrift.TBase<ReadResult, ReadResul
       BitSet incoming = iprot.readBitSet(1);
       if (incoming.get(0)) {
         {
-          org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.blocks = new ArrayList<DBlock>(_list5.size);
-          for (int _i6 = 0; _i6 < _list5.size; ++_i6)
+          org.apache.thrift.protocol.TList _list13 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.blocks = new ArrayList<DBlock>(_list13.size);
+          for (int _i14 = 0; _i14 < _list13.size; ++_i14)
           {
-            DBlock _elem7;
-            _elem7 = new DBlock();
-            _elem7.read(iprot);
-            struct.blocks.add(_elem7);
+            DBlock _elem15;
+            _elem15 = new DBlock();
+            _elem15.read(iprot);
+            struct.blocks.add(_elem15);
           }
         }
         struct.setBlocksIsSet(true);

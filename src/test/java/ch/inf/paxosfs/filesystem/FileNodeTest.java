@@ -1,6 +1,7 @@
 package ch.inf.paxosfs.filesystem;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import org.junit.Assert;
@@ -21,7 +22,7 @@ public class FileNodeTest {
 	
 	private DBlock newDBlock(int i, int start, int end) {
 		DBlock b;
-		b = new DBlock(null, start, end);
+		b = new DBlock(null, start, end, new HashSet<Byte>());
 		b.setId(uuid(i));
 		return b;
 	}
