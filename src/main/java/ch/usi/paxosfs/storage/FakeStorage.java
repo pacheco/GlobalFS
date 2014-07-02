@@ -48,13 +48,11 @@ public class FakeStorage implements Storage {
 
 	@Override
 	public Future<byte[]> get(byte[] key) {
-		// TODO Auto-generated method stub
 		return new FakeFuture<byte[]>(data);
 	}
 
 	@Override
 	public Future<Boolean> delete(byte[] key) {
-		// TODO Auto-generated method stub
 		return new FakeFuture<Boolean>(Boolean.TRUE);
 	}
 	

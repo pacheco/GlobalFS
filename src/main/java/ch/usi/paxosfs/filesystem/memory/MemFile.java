@@ -105,7 +105,7 @@ public class MemFile extends MemNode implements FileNode {
 	public void updateData(Iterable<DBlock> blocks, long offset) {
 		// handle some special cases
 		if (offset < 0) {
-			// FIXME: maybe doing this implicitly is not good
+			// FIXME: throw an error instead of using zero implicitly?
 			offset = 0;
 		}
 		if (offset >= this.getAttributes().getSize()) {

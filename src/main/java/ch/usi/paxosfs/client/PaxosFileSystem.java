@@ -87,7 +87,6 @@ public class PaxosFileSystem implements Filesystem3 {
 			}
 			String replicaHost = replicaAddr.split(":")[0];
 			int replicaPort = Integer.parseInt(replicaAddr.split(":")[1]);
-			// TODO: should store transport to call transport.close() later
 			TTransport transport = new TSocket(replicaHost, replicaPort);
 			try {
 				transport.open();
@@ -117,7 +116,7 @@ public class PaxosFileSystem implements Filesystem3 {
 		this.numberOfPartitions = numberOfPartitions;
 		this.zoohost = zoohost;
 		this.storages = new HashMap<>();
-		// TODO: figure out a better (more generic) configure the system. Right now its pretty static and non maleable
+		// TODO: figure out a better (more generic) way to configure the system. Right now its pretty static
 		storageOracle = new DefaultStorageOracle();
 
 		for (byte part=1; part<=numberOfPartitions; part++) {

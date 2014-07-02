@@ -194,7 +194,7 @@ public class FuseOpsHandler implements FuseOps.Iface {
 
 	@Override
 	public FileSystemStats statfs() throws FSError, TException {
-		// FIXME: implement this if we care about statfs
+		// TODO: implement this if we care about statfs
 		return new FileSystemStats(0, 0, 0, 0, 0, 0, 1024);
 	}
 
