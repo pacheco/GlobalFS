@@ -1,12 +1,10 @@
 package ch.usi.paxosfs.replica;
 
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.text.StrBuilder;
 import org.apache.log4j.Level;
@@ -182,8 +180,9 @@ public class CommunicationService {
 		if (command.getInvolvedPartitions().size() == 1) {
 			ringid = command.getInvolvedPartitions().iterator().next().byteValue();
 		}
-		// FIXME: right now its not possible to submit to rings the replica is
-		// not part of
+		// TODO: right now its not possible to submit to rings the replica is
+		// not part of. The simplest way to support this would probably be if
+		// the replica acted as a proxy to one of the responsible replicas.
 		log.debug(new StrBuilder().append("Submitting command to ring ").append(ringid).toString());
 		Proposer p = this.proposers.get(Byte.valueOf(ringid));
 		// TSerializer is not threadsafe, create a new one for each amcast. Is
@@ -205,7 +204,7 @@ public class CommunicationService {
 	 * @throws FSError
 	 */
 	public void signal(long reqId, Signal signal, Set<Byte> involvedPartitions) throws FSError {
-		// FIXME: only one replica sends the signal - here its fixed to replica
+		// FIXME: a fixed replica is sending the signal - experiments assume no failures
 		if (id != 0) {
 			return;
 		}

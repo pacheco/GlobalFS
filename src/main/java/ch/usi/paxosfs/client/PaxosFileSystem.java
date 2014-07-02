@@ -422,8 +422,8 @@ public class PaxosFileSystem implements Filesystem3 {
 			// dispatch the requests
 			for (DBlock b : res.getBlocks()) {
 				if (b.getId().length != 0) {
-					// TODO: maybe read from a random storage instead of the first returned
-					Byte storageId = b.getStorage().iterator().next();
+					// TODO: reading from a random datacenter replicating the file. Implement locality?
+					Byte storageId = Utils.randomElem(rand, b.getStorage());
 					futureValues.add(storages.get(storageId).get(b.getId()));
 				}
 			}
@@ -523,7 +523,7 @@ public class PaxosFileSystem implements Filesystem3 {
 	}
 
 	public int flush(String path, Object fh) throws FuseException {
-		// Right now, flush does not make sense for us
+		// All operations go through paxos. Flush does not make sense for us
 		return 0;
 	}
 
@@ -546,7 +546,7 @@ public class PaxosFileSystem implements Filesystem3 {
 	}
 
 	public int fsync(String path, Object fh, boolean isDatasync) throws FuseException {
-		// Right now, fsync does not make sense for us
+		// Since all reads/writes go through paxos, no need for fsync
 		return 0;
 	}
 
