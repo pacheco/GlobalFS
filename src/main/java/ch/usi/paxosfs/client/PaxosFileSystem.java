@@ -1,5 +1,6 @@
 package ch.usi.paxosfs.client;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -112,13 +113,11 @@ public class PaxosFileSystem implements Filesystem3 {
 	}
 
 	@SuppressWarnings("unchecked")
-	public PaxosFileSystem(int numberOfPartitions, String zoohost, String storageCfgPrefix, int replicaId) {
+	public PaxosFileSystem(int numberOfPartitions, String zoohost, String storageCfgPrefix, int replicaId) throws FileNotFoundException {
 		this.numberOfPartitions = numberOfPartitions;
 		this.zoohost = zoohost;
 		this.storages = new HashMap<>();
 		// TODO: figure out a better (more generic) way to configure the system. Right now its pretty static
-		storageOracle = new DefaultStorageOracle();
-
 		for (byte part=1; part<=numberOfPartitions; part++) {
 			if (storageCfgPrefix.equals("fake")) {
 				System.out.println("STORAGE: FAKE " + storageCfgPrefix);
@@ -131,6 +130,8 @@ public class PaxosFileSystem implements Filesystem3 {
 				storages.put(Byte.valueOf(part), StorageFactory.storageFromConfig(FileSystems.getDefault().getPath(storageCfgPrefix + part)));
 			}
 		}
+
+		this.storageOracle = new DefaultStorageOracle();
 		this.partitionOracle = new DefaultMultiPartitionOracle(numberOfPartitions);
 		this.replicaId = replicaId;
 		
@@ -569,7 +570,7 @@ public class PaxosFileSystem implements Filesystem3 {
 		return FuseContext.get().gid;
 	}
 	
-	public static void main(String[] args) throws MalformedURLException {
+	public static void main(String[] args) throws MalformedURLException, NumberFormatException, FileNotFoundException {
 		// small sanity check to avoid problems later (fuse hangs on exceptions
 		// sometimes)
 		if (args.length < 4) {

@@ -2,10 +2,9 @@ package ch.usi.paxosfs.storage;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.FileSystems;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -26,6 +25,7 @@ import ch.usi.paxosfs.util.UUIDUtils;
 
 public class HttpStorageClient implements Storage {
 	private static int TIMEOUT = 3000;
+	private static Random rand = new Random();
 	private List<String> serverUrls;
 	private ExecutorService threadpool;
 	private Async asyncHttp;
@@ -94,12 +94,15 @@ public class HttpStorageClient implements Storage {
 	public HttpStorageClient(String... serverUrls) {
 		threadpool = Executors.newFixedThreadPool(100);
 		asyncHttp = Async.newInstance().use(threadpool);
-		this.serverUrls = Arrays.asList(serverUrls);
+		this.serverUrls = new ArrayList<>(serverUrls.length);
+		for (String url : serverUrls) {
+			this.serverUrls.add(url + '/');
+		}
 	}
 	
-	private String randomServer() {
-		// TODO: implement
-		return this.serverUrls.get(0);
+	private String randomUrl() {
+		Integer proxy = rand.nextInt(this.serverUrls.size());
+		return this.serverUrls.get(proxy);
 	}
 	
 	private static String bytesToLongAsString(byte[] bytes) {
@@ -109,7 +112,7 @@ public class HttpStorageClient implements Storage {
 	
 	@Override
 	public Future<Boolean> put(byte[] key, byte[] value) {
-		Request req = Request.Put(this.randomServer() + bytesToLongAsString(key))
+		Request req = Request.Put(this.randomUrl() + bytesToLongAsString(key))
 				.addHeader("Content-Type", "application/octet-stream")
 				.addHeader("Sync-Mode", "sync")
 				.connectTimeout(TIMEOUT)
@@ -119,7 +122,7 @@ public class HttpStorageClient implements Storage {
 
 	@Override
 	public Future<byte[]> get(byte[] key) {
-		Request req = Request.Get(this.randomServer() + bytesToLongAsString(key))
+		Request req = Request.Get(this.randomUrl() + bytesToLongAsString(key))
 				.addHeader("Content-Type", "application/octet-stream")
 				.addHeader("Sync-Mode", "sync")
 				.connectTimeout(TIMEOUT);
@@ -137,7 +140,7 @@ public class HttpStorageClient implements Storage {
 			System.out.println("main host blockLarge blockSmall");
 			return;
 		}
-		Storage st = new HttpStorageClient(args[0]);
+		Storage st = new HttpStorageClient(args[0].split(","));
 		long keyStart = 0;
 		int n = 100;
 		byte[] dataLarge = new byte[Integer.parseInt(args[1])];
@@ -147,7 +150,8 @@ public class HttpStorageClient implements Storage {
 		System.out.print("Sequential put " + n + " times, blocks of " + dataLarge.length + " ... ");
 		for (int i = 0; i < n; i++) {
 			long start = System.currentTimeMillis();
-			st.put(UUIDUtils.longToBytes(keyStart++), dataLarge).get();
+			st.put(UUIDUtils.longToBytes(keyStart), dataLarge).get();
+			//keyStart++;
 			latencySum += System.currentTimeMillis() - start;
 		}
 		System.out.println(latencySum / n);
@@ -158,7 +162,8 @@ public class HttpStorageClient implements Storage {
 			long start = System.currentTimeMillis();
 			List<Future<Boolean>> putFutures = new ArrayList<>(proportion);
 			for (int j = 0; j < proportion; j++) {
-				putFutures.add(st.put(UUIDUtils.longToBytes(keyStart++), dataSmall));
+				putFutures.add(st.put(UUIDUtils.longToBytes(keyStart), dataSmall));
+				//keyStart++;
 			}
 			for (Future<Boolean> f: putFutures) {
 				f.get(); // wait for the operations to finish
@@ -173,7 +178,8 @@ public class HttpStorageClient implements Storage {
 		System.out.print("Sequential get, blocks of " + dataLarge.length + " ... ");
 		for (int i = 0; i < n; i++) {
 			long start = System.currentTimeMillis();
-			st.get(UUIDUtils.longToBytes(keyStart++)).get();
+			st.get(UUIDUtils.longToBytes(keyStart)).get();
+			//keyStart++;
 			latencySum += System.currentTimeMillis() - start;
 		}
 		System.out.println(latencySum / n);
@@ -184,7 +190,8 @@ public class HttpStorageClient implements Storage {
 			long start = System.currentTimeMillis();
 			List<Future<byte[]>> getFutures = new ArrayList<>(proportion);
 			for (int j = 0; j < proportion; j++) {
-				getFutures.add(st.get(UUIDUtils.longToBytes(keyStart++)));
+				getFutures.add(st.get(UUIDUtils.longToBytes(keyStart)));
+				//keyStart++;
 			}
 			for (Future<byte[]> f : getFutures) {
 				f.get(); // wait for operations to finish
