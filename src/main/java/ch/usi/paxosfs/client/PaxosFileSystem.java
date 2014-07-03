@@ -119,7 +119,7 @@ public class PaxosFileSystem implements Filesystem3 {
 		this.storages = new HashMap<>();
 		// TODO: figure out a better (more generic) way to configure the system. Right now its pretty static
 		for (byte part=1; part<=numberOfPartitions; part++) {
-			if (storageCfgPrefix.equals("fake")) {
+			if (storageCfgPrefix.equals("http://fake")) {
 				System.out.println("STORAGE: FAKE " + storageCfgPrefix);
 				storages.put(Byte.valueOf(part), new FakeStorage());
 			} else if (storageCfgPrefix.equals("http://")) { // FIXME: simple hack so that i can test with a single storage without config files
