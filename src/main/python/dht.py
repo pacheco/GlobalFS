@@ -22,14 +22,13 @@ def get(key):
     except KeyError:
         return flask.make_response("", 404)
     
-
 @app.route('/<string:key>', methods = ['PUT'])
 def put(key):
     val = flask.request.get_data()
     sleep(0.001 * len(val))
     if key in storage:
         return flask.make_response("", 409)
-    storage[key] = val
+    storage[key] = "      " + val # ralucas DHT returns 6 extra bytes
     return ""# "Put for key %s\n" % (key)
     
 @app.route('/<string:key>', methods = ['DELETE'])

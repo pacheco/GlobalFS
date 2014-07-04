@@ -121,7 +121,7 @@ public class PaxosFileSystem implements Filesystem3 {
 			if (storageCfgPrefix.equals("http://fake")) {
 				System.out.println("STORAGE: FAKE " + storageCfgPrefix);
 				storages.put(Byte.valueOf(part), new FakeStorage());
-			} else if (storageCfgPrefix.equals("http://")) { // FIXME: simple hack so that i can test with a single storage without config files
+			} else if (storageCfgPrefix.startsWith("http://")) { // FIXME: simple hack so that i can test with a single storage without config files
 				System.out.println("STORAGE: " + storageCfgPrefix);
 				Storage storage = StorageFactory.storageFromUrls(storageCfgPrefix);
 				storages.put(Byte.valueOf(part), storage);
