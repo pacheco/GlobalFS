@@ -3,7 +3,6 @@ package ch.usi.paxosfs.client;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.file.FileSystems;
@@ -574,16 +573,9 @@ public class PaxosFileSystem implements Filesystem3 {
 		// small sanity check to avoid problems later (fuse hangs on exceptions
 		// sometimes)
 		if (args.length < 4) {
-			System.err.println("usage: PaxosFileSystem <n_partitions> <zoohost> <storagehost> <replica_id> <MOUNT PARAMETERS>\n"
-					+ "\treplica_id -> in each partition, connect to the replica with this id");
-			return;
-		}
-		try {
-			new URL(args[2]);
-		} catch (MalformedURLException e) {
-			System.err.println("usage: PaxosFileSystem <n_partitions> <zoohost> <storage_cfg_prefix> <replica_id> <MOUNT PARAMETERS>\n"
+			System.err.println("usage: PaxosFileSystem <n_partitions> <zoohost> <storage> <replica_id> <MOUNT PARAMETERS>\n"
 					+ "\treplica_id -> in each partition, connect to the replica with this id\n"
-					+ "\tstoragehost -> this has to be an http url: http://host:port");
+					+ "\tstorage -> cfg prefix path | http://host:port | http://fake");
 			return;
 		}
 
