@@ -57,8 +57,7 @@ public class HttpStorageClient implements Storage {
 				in.close();
 				return value;
 			} catch (IOException e) {
-				e.printStackTrace();
-				return null;
+				throw new ExecutionException(e);
 			}
 		}
 		@Override
