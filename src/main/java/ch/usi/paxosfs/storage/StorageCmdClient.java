@@ -12,7 +12,7 @@ import ch.usi.paxosfs.util.UUIDUtils;
 public class StorageCmdClient {
 	static List<Storage> storages;
 	
-	public static void main(String[] args) throws FileNotFoundException, InterruptedException, ExecutionException {
+	public static void main(String[] args) throws FileNotFoundException, InterruptedException {
 		storages = new LinkedList<>();
 		for (String storagePath: args) {
 			if (storagePath.equals("http://fake")) {
@@ -32,15 +32,24 @@ public class StorageCmdClient {
 			switch (cmd) {
 			case "get": {
 				Long key = s.nextLong();
-				String value = new String(storages.get(0).get(UUIDUtils.longToBytes(key)).get());
-				System.out.println(value);
+				String value;
+				try {
+					value = new String(storages.get(0).get(UUIDUtils.longToBytes(key)).get());
+					System.out.println(value);
+				} catch (ExecutionException e) {
+					e.printStackTrace();
+				}
 				break;
 			}
 			case "put": {
 				Long key = s.nextLong();
 				String value = s.next();
 				for (Storage storage: storages) {
-					System.out.println(storage.put(UUIDUtils.longToBytes(key), value.getBytes()).get());
+					try {
+						System.out.println(storage.put(UUIDUtils.longToBytes(key), value.getBytes()).get());
+					} catch (ExecutionException e) {
+						e.printStackTrace();
+					}
 				}
 				break;
 			}
