@@ -306,7 +306,7 @@ public class PaxosFileSystem implements Filesystem3 {
 	}
 
 	public int link(String from, String to) throws FuseException {
-		throw new FuseException("Hardlinks not supported").initErrno(FuseException.ENOTSUPP);
+		throw new FuseException("Hardlinks not supported").initErrno(FuseException.EOPNOTSUPP);
 	}
 
 	public int chmod(String path, int mode) throws FuseException {

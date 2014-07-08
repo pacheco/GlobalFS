@@ -112,13 +112,13 @@ public class FuseOpsHandler implements FuseOps.Iface {
 
 	@Override
 	public void symlink(String target, String path, int uid, int gid) throws FSError, TException {
-		throw new FSError(FuseException.ENOTSUPP, "symlinks not supported.");
+		throw new FSError(FuseException.EOPNOTSUPP, "symlinks not supported.");
 	}
 	
 	@Override
 	public String readlink(String path) throws FSError, TException {
 		// TODO Auto-generated method stub
-		throw new FSError(FuseException.ENOTSUPP, "symlinks not supported.");
+		throw new FSError(FuseException.EOPNOTSUPP, "symlinks not supported.");
 	}
 
 	@Override
