@@ -51,6 +51,7 @@ import ch.usi.paxosfs.util.UnixConstants;
 
 import com.google.common.collect.Sets;
 
+import fuse.Errno;
 import fuse.FuseException;
 import fuse.FuseFtypeConstants;
 
@@ -618,7 +619,7 @@ public class FileSystemReplica implements Runnable {
 			default:
 				log.error(new StrBuilder().append("Invalid command").toString());
 				res.setSuccess(false);
-				res.setError(new FSError(-1, "Invalid command"));
+				res.setError(new FSError(Errno.EOPNOTSUPP, "Invalid command"));
 				break;
 			}
 		} catch (FSError e) {
@@ -723,19 +724,19 @@ public class FileSystemReplica implements Runnable {
 		// submit the command
 		comm.amcast(c);
 
-		// Wait for the command to be applied and result
+		// Wait for the command to be applied and for the result
 		boolean timeout = false;
 		try {
 			timeout = !res.await(5, TimeUnit.SECONDS);
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
-			throw new FSError(-1, "Error waiting for command result");
+			throw new FSError(Errno.EINTR, "Error waiting for command result");
 		}
 
 		// throw exception if the command was not successful
 		if (timeout) {
 			pendingCommands.remove(Long.valueOf(c.getReqId()));
-			throw new FSError(-1, "Command timeout");
+			throw new FSError(Errno.ETIMEDOUT, "Command timeout");
 		}
 		if (!res.isSuccess()) {
 			throw res.getError();

@@ -22,6 +22,7 @@ import ch.usi.paxosfs.replica.commands.CommandType;
 import ch.usi.paxosfs.replica.commands.RenameCmd;
 import ch.usi.paxosfs.replica.commands.Signal;
 import ch.usi.paxosfs.rpc.FSError;
+import fuse.Errno;
 
 /**
  * Implements a higher level of abstraction to the communication done between
@@ -192,7 +193,7 @@ public class CommunicationService {
 			p.propose(serializer.serialize(command));
 		} catch (TException e) {
 			e.printStackTrace();
-			throw new FSError(-1, "Error serializing message");
+			throw new FSError(Errno.EREMOTEIO, "Error serializing message");
 		}
 	}
 

@@ -48,6 +48,7 @@ import ch.usi.paxosfs.storage.Storage;
 import ch.usi.paxosfs.storage.StorageFactory;
 import ch.usi.paxosfs.util.UUIDUtils;
 import ch.usi.paxosfs.util.Utils;
+import fuse.Errno;
 import fuse.Filesystem3;
 import fuse.FuseContext;
 import fuse.FuseDirFiller;
@@ -433,7 +434,7 @@ public class PaxosFileSystem implements Filesystem3 {
 					values.add(f.get());
 				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
-					throw new FSError(-1, "Error fetching data block!");
+					throw new FSError(Errno.EREMOTEIO, "Error fetching data block!");
 				}
 			}
 			
@@ -448,7 +449,7 @@ public class PaxosFileSystem implements Filesystem3 {
 					// block fetched from the storage
 					byte[] data = valuesIter.next();
 					if (data == null) {
-						throw new FSError(-1, "Error fetching data block!");
+						throw new FSError(Errno.EREMOTEIO, "Error fetching data block!");
 					}
 					buf.put(data, b.getStartOffset(), b.getEndOffset() - b.getStartOffset());
 				}
@@ -502,11 +503,11 @@ public class PaxosFileSystem implements Filesystem3 {
 			for (Future<Boolean> put : putFutures) {
 				try {
 					if (!put.get()) {
-						throw new FSError(-1, "Error storing data block!");
+						throw new FSError(Errno.EREMOTEIO, "Error storing data block!");
 					}
 				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
-					throw new FSError(-1, "Error storing data block!");
+					throw new FSError(Errno.EREMOTEIO, "Error storing data block!");
 				}
 			}
 			client.writeBlocks(path, handle, offset, blocks);
