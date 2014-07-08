@@ -439,7 +439,7 @@ public class FileSystemReplica implements Runnable {
 				if (f == null) {
 					throw new FSError(FuseException.ENOENT, "File not found");
 				}
-				((FileNode) f).getAttributes().setMode(chmod.getMode());
+				f.getAttributes().setMode(chmod.getMode());
 				f.getAttributes().setCtime(c.getReqTime());
 
 				if (c.getInvolvedPartitions().size() > 1) {
