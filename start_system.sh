@@ -1,10 +1,10 @@
 #!/bin/bash
 
-ZKDIR=${HOME}/usr/zookeeper-3.4.5/
+ZKDIR=${HOME}/usr/zookeeper-3.4.6/
 ZOOHOST=localhost:2181
-UPAXOSDIR=${HOME}/programming/doutorado/URingPaxos/
+UPAXOSDIR=${HOME}/workspace/URingPaxos/
 #UPAXOSDIR=${HOME}/programming/doutorado/eduardo_uringpaxos/
-PAXOSFSDIR=${HOME}/Documents/workspace/paxosfs-fuse/
+PAXOSFSDIR=${HOME}/workspace/sinergiafs/
 
 PARTITIONS=$1
 
@@ -17,9 +17,13 @@ fi
 $ZKDIR/bin/zkServer.sh stop
 rm -r /tmp/zookeeper
 $ZKDIR/bin/zkServer.sh start
-xterm -e "cd $UPAXOSDIR; target/Paxos-trunk/ringpaxos.sh '0,0:A;1,0:A;2,0:A;3,0:A;4,0:A;5,0:A;6,0:A;7,0:A;8,0:A'"
+pushd $UPAXOSDIR;
+target/Paxos-trunk/ringpaxos.sh '0,0:A;1,0:A;2,0:A;3,0:A;4,0:A;5,0:A;6,0:A;7,0:A;8,0:A' &
+popd
 
-sleep 2
+sleep 8
+killall -INT ringpaxos.sh
+
 
 # write configs
 echo "
@@ -47,12 +51,10 @@ set /ringpaxos/ring7/config/tcp_nodelay 1
 # start replicas
 X=200
 for p in `seq 1 $PARTITIONS`; do
-    #if [[ $p -ne 1 ]]; then
-        xterm -geometry 120x10+0+$X -e "cd $PAXOSFSDIR; ./runreplica.sh $PARTITIONS $p 1 $[31000 + 2*p] $ZOOHOST" &
-    #fi
+    xterm -geometry 120x10+0+$X -e "cd $PAXOSFSDIR; ./runreplica.sh $PARTITIONS $p 0 $[20000+X] $ZOOHOST" &
     X=$[X+100]
     sleep 0.5
-    xterm -geometry 120x10+0+$X -e "cd $PAXOSFSDIR; ./runreplica.sh $PARTITIONS $p 2 $[31000 + 2*p+1] $ZOOHOST" &
+    xterm -geometry 120x10+0+$X -e "cd $PAXOSFSDIR; ./runreplica.sh $PARTITIONS $p 1 $[20000+X] $ZOOHOST" &
     X=$[X+100]
     sleep 0.5
 done
@@ -64,7 +66,11 @@ xterm -geometry 120x20+0+100 -e "cd $UPAXOSDIR; target/Paxos-trunk/ringpaxos.sh 
 sleep 2
 
 # start dht
-xterm -geometry 120x20+900+0 -e "cd $PAXOSFSDIR; ./src/main/python/dht.py" &
+DHT_PORT=5000
+for p in `seq 1 $PARTITIONS`; do
+    xterm -geometry 120x20+900+0 -e "cd $PAXOSFSDIR; ./src/main/python/dht.py $DHT_PORT" &
+    DHT_PORT=$[DHT_PORT + 1]
+done
 sleep 0.2
 
 # start a terminal

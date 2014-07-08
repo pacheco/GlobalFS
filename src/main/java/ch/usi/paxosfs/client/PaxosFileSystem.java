@@ -475,8 +475,8 @@ public class PaxosFileSystem implements Filesystem3 {
 			List<DBlock> blocks = new LinkedList<>();
 			List<Future<Boolean>> putFutures = new LinkedList<>();
 
-			byte[] data = new byte[MAXBLOCKSIZE];
 			while (buf.remaining() >= MAXBLOCKSIZE) {
+				byte[] data = new byte[MAXBLOCKSIZE];
 				buf.get(data);
 				DBlock b = new DBlock(null, 0, MAXBLOCKSIZE, storageIds);
 				b.setId(UUIDUtils.longToBytes(rand.nextLong()));
@@ -493,7 +493,7 @@ public class PaxosFileSystem implements Filesystem3 {
 				b.setId(UUIDUtils.longToBytes(rand.nextLong()));
 				// store the blocks in all partitions
 				for (Byte id: storageIds) {
-					putFutures.add(storages.get(id).put(b.getId(), data));
+					putFutures.add(storages.get(id).put(b.getId(), remainingData));
 				}
 				blocks.add(b);
 			}
