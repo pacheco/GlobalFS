@@ -74,6 +74,6 @@ done
 sleep 0.2
 
 # start a terminal
-xterm -geometry 120X20+900+600
+xterm -geometry 120X20+900+600 -e "cd $PAXOSFSDIR; ./mount.sh 2 localhost:2181 /home/pacheco/workspace/sinergiafs/dht 0 /tmp/fs0 -f -o direct_io" &
 
 wait

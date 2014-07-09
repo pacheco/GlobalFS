@@ -68,12 +68,12 @@ public class MemFile extends MemNode implements FileNode {
 		if (currOffset > offset + bytes) {
 			// put adjusted ending block
 			int endingBlockOffset = b.getEndOffset() - (int) (currOffset - (offset + bytes));
-			if (iter.previousIndex() == startingBlockIdx) {
-				readBlocks.get(startingBlockIdx).setEndOffset(endingBlockOffset);
+			if (iter.previousIndex() == startingBlockIdx) { // only one block - the one we created before
+				readBlocks.get(0).setEndOffset(endingBlockOffset);
 			} else {
 				DBlock endingBlock = new DBlock(null, b.getStartOffset(), endingBlockOffset, b.getStorage());
 				endingBlock.setId(b.getId());
-				readBlocks.set(iter.previousIndex(), endingBlock);
+				readBlocks.set(readBlocks.size()-1, endingBlock);
 			}
 		}
 		ReadResult rr = new ReadResult(readBlocks);

@@ -218,13 +218,14 @@ public class FileNodeTest {
 	@Test
 	public void testGetBlocks() {
 		FileNode f = new MemFile(0, 0, 0, 0);
-
+		List<DBlock> ret;
 		ArrayList<DBlock> blocks = new ArrayList<>();
+
 		blocks.add(newDBlock(1, 0, 1024));
 		blocks.add(newDBlock(2, 0, 1024));
-		blocks.add(newDBlock(3, 0, 1024));
-
-		f.appendData(blocks);
+		blocks.add(newDBlock(3, 0, 512));
+		blocks.add(newDBlock(4, 0, 512));
+		f.setData(blocks);
 
 		// read out of bounds
 		Assert.assertNull(f.getBlocks(1024 * 3, 10));
@@ -233,27 +234,29 @@ public class FileNodeTest {
 		// read invalid offset
 		Assert.assertNull(f.getBlocks(-1, 10));
 		
-		List<DBlock> ret;
-		
 		// read from byte 0, exactly how much is available -> return everything
 		ret = f.getBlocks(0, 1024 * 3).getBlocks();
-		Assert.assertEquals(3, ret.size());
+		Assert.assertEquals(4, ret.size());
 		Assert.assertEquals(0, ret.get(0).getStartOffset());
 		Assert.assertEquals(1024, ret.get(0).getEndOffset());
 		Assert.assertEquals(0, ret.get(1).getStartOffset());
 		Assert.assertEquals(1024, ret.get(1).getEndOffset());
 		Assert.assertEquals(0, ret.get(2).getStartOffset());
-		Assert.assertEquals(1024, ret.get(2).getEndOffset());
+		Assert.assertEquals(512, ret.get(2).getEndOffset());
+		Assert.assertEquals(0, ret.get(3).getStartOffset());
+		Assert.assertEquals(512, ret.get(3).getEndOffset());
 
 		// read from byte 1, more bytes than available -> return from 1 up to what is available
 		ret = f.getBlocks(1, 1024 * 4).getBlocks();
-		Assert.assertEquals(3, ret.size());
+		Assert.assertEquals(4, ret.size());
 		Assert.assertEquals(1, ret.get(0).getStartOffset());
 		Assert.assertEquals(1024, ret.get(0).getEndOffset());
 		Assert.assertEquals(0, ret.get(1).getStartOffset());
 		Assert.assertEquals(1024, ret.get(1).getEndOffset());
 		Assert.assertEquals(0, ret.get(2).getStartOffset());
-		Assert.assertEquals(1024, ret.get(2).getEndOffset());
+		Assert.assertEquals(512, ret.get(2).getEndOffset());
+		Assert.assertEquals(0, ret.get(3).getStartOffset());
+		Assert.assertEquals(512, ret.get(3).getEndOffset());
 		
 		// read the exact block size
 		ret = f.getBlocks(0, 1024).getBlocks();
@@ -262,20 +265,18 @@ public class FileNodeTest {
 		Assert.assertEquals(1024, ret.get(0).getEndOffset());
 		
 		// read less than available -> return what was asked for
-		ret = f.getBlocks(1023, 1024).getBlocks(); // from 1023, read 1024 bytes
+		ret = f.getBlocks(1020, 500).getBlocks(); 
 		Assert.assertEquals(2, ret.size());
-		Assert.assertEquals(1023, ret.get(0).getStartOffset());
+		Assert.assertEquals(1020, ret.get(0).getStartOffset());
 		Assert.assertEquals(1024, ret.get(0).getEndOffset());
 		Assert.assertEquals(0, ret.get(1).getStartOffset());
-		Assert.assertEquals(1023, ret.get(1).getEndOffset());
+		Assert.assertEquals(496, ret.get(1).getEndOffset());
 		
-		ret = f.getBlocks(1023, 2047).getBlocks(); // from 1023, read 2047 bytes
-		Assert.assertEquals(3, ret.size());
-		Assert.assertEquals(1023, ret.get(0).getStartOffset());
+		ret = f.getBlocks(1026, 1024).getBlocks(); // from 1020, read 2048 bytes
+		Assert.assertEquals(2, ret.size());
+		Assert.assertEquals(2, ret.get(0).getStartOffset());
 		Assert.assertEquals(1024, ret.get(0).getEndOffset());
 		Assert.assertEquals(0, ret.get(1).getStartOffset());
-		Assert.assertEquals(1024, ret.get(1).getEndOffset());
-		Assert.assertEquals(0, ret.get(2).getStartOffset());
-		Assert.assertEquals(1022, ret.get(2).getEndOffset());
+		Assert.assertEquals(2, ret.get(1).getEndOffset());
 	}
 }
