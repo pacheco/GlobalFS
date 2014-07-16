@@ -120,7 +120,13 @@ public class FileSystemReplica implements Runnable {
 
 		// start the replica
 		fs = new MemFileSystem((int) (System.currentTimeMillis() / 1000), 0, 0);
-		this.manager = new ReplicaManager(this.zoohost, this.localPartition.byteValue(), this.id, this.host + ":" + Integer.toString(this.port));
+		
+		// FIXME: EC2 HACK
+		String public_ip = System.getenv("EC2");
+		if(public_ip == null) {
+			public_ip = this.host;
+		} 
+		this.manager = new ReplicaManager(this.zoohost, this.localPartition.byteValue(), this.id, public_ip + ":" + Integer.toString(this.port));
 		try {
 			this.manager.start();
 		} catch (IOException e) {
