@@ -16,7 +16,7 @@ public class StorageFactory {
 		List<String> hosts = new LinkedList<>();
 		Scanner sc = new Scanner(new FileInputStream(configFile.toFile()));
 		while (sc.hasNext()) {
-			if (sc.hasNext("#.*")) {
+			if (sc.hasNext("#.*") || sc.hasNext("replication")) {
 				sc.nextLine();
 				continue;
 			}
