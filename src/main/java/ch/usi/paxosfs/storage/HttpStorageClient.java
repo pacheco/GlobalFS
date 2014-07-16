@@ -52,7 +52,6 @@ public class HttpStorageClient implements Storage {
 			try {
 				Content c = f.get();
 				InputStream in = c.asStream();
-				in.skip(6);
 				byte[] value = IOUtils.toByteArray(in);
 				in.close();
 				return value;

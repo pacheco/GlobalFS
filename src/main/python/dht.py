@@ -28,7 +28,7 @@ def put(key):
     #sleep(0.001 * len(val))
     if key in storage:
         return flask.make_response("", 409)
-    storage[key] = "      " + val # ralucas DHT returns 6 extra bytes
+    storage[key] = val
     return flask.make_response("", 200)# "Put for key %s\n" % (key)
     
 @app.route('/<string:key>', methods = ['DELETE'])
