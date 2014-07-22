@@ -28,22 +28,23 @@ killall -INT ringpaxos.sh
 # write configs
 echo "
 set /ringpaxos/config/multi_ring_start_time `date +%s`000
-set /ringpaxos/config/multi_ring_lambda 900
-set /ringpaxos/ring0/config/stable_storage ch.usi.da.paxos.storage.InMemory
+set /ringpaxos/config/multi_ring_lambda 20000
+set /ringpaxos/config/multi_ring_delta_t 10
+set /ringpaxos/ring0/config/stable_storage ch.usi.da.paxos.storage.CyclicArray
 set /ringpaxos/ring0/config/tcp_nodelay 1
-set /ringpaxos/ring1/config/stable_storage ch.usi.da.paxos.storage.InMemory
+set /ringpaxos/ring1/config/stable_storage ch.usi.da.paxos.storage.CyclicArray
 set /ringpaxos/ring1/config/tcp_nodelay 1
-set /ringpaxos/ring2/config/stable_storage ch.usi.da.paxos.storage.InMemory
+set /ringpaxos/ring2/config/stable_storage ch.usi.da.paxos.storage.CyclicArray
 set /ringpaxos/ring2/config/tcp_nodelay 1
-set /ringpaxos/ring3/config/stable_storage ch.usi.da.paxos.storage.InMemory
+set /ringpaxos/ring3/config/stable_storage ch.usi.da.paxos.storage.CyclicArray
 set /ringpaxos/ring3/config/tcp_nodelay 1
-set /ringpaxos/ring4/config/stable_storage ch.usi.da.paxos.storage.InMemory
+set /ringpaxos/ring4/config/stable_storage ch.usi.da.paxos.storage.CyclicArray
 set /ringpaxos/ring4/config/tcp_nodelay 1
-set /ringpaxos/ring5/config/stable_storage ch.usi.da.paxos.storage.InMemory
+set /ringpaxos/ring5/config/stable_storage ch.usi.da.paxos.storage.CyclicArray
 set /ringpaxos/ring5/config/tcp_nodelay 1
-set /ringpaxos/ring6/config/stable_storage ch.usi.da.paxos.storage.InMemory
+set /ringpaxos/ring6/config/stable_storage ch.usi.da.paxos.storage.CyclicArray
 set /ringpaxos/ring6/config/tcp_nodelay 1
-set /ringpaxos/ring7/config/stable_storage ch.usi.da.paxos.storage.InMemory
+set /ringpaxos/ring7/config/stable_storage ch.usi.da.paxos.storage.CyclicArray
 set /ringpaxos/ring7/config/tcp_nodelay 1
 " | $ZKDIR/bin/zkCli.sh -server $ZOOHOST
 
@@ -51,10 +52,10 @@ set /ringpaxos/ring7/config/tcp_nodelay 1
 # start replicas
 X=200
 for p in `seq 1 $PARTITIONS`; do
-    xterm -geometry 120x10+0+$X -e "cd $PAXOSFSDIR; ./runreplica.sh $PARTITIONS $p 0 $[20000+X] $ZOOHOST" &
+    xterm -geometry 120x10+0+$X -e "cd $PAXOSFSDIR; ./runreplica.sh $PARTITIONS $p 0 $[20000+X] $ZOOHOST" >/dev/null &
     X=$[X+100]
     sleep 0.5
-    xterm -geometry 120x10+0+$X -e "cd $PAXOSFSDIR; ./runreplica.sh $PARTITIONS $p 1 $[20000+X] $ZOOHOST" &
+    xterm -geometry 120x10+0+$X -e "cd $PAXOSFSDIR; ./runreplica.sh $PARTITIONS $p 1 $[20000+X] $ZOOHOST" >/dev/null &
     X=$[X+100]
     sleep 0.5
 done
@@ -74,6 +75,7 @@ done
 sleep 0.2
 
 # start a terminal
-xterm -geometry 120X20+900+600 -e "cd $PAXOSFSDIR; ./mount.sh 2 localhost:2181 /home/pacheco/workspace/sinergiafs/dht 0 /tmp/fs0 -f -o direct_io" &
+xterm -geometry 120X20+900+600 -e "cd $PAXOSFSDIR; ./mount.sh 2 localhost:2181 http://fake 0 /tmp/fs0 -f -o direct_io -o entry_timeout=0.0s -o negative_timeout=0.0s -o attr_timeout=0.0s -o big_writes -o max_background=512 -o max_write=1048576" &
+#xterm -geometry 120X20+900+600 -e "cd $PAXOSFSDIR; ./mount.sh 2 localhost:2181 /home/pacheco/workspace/sinergiafs/dht 0 /tmp/fs0 -f -o direct_io" &
 
 wait
