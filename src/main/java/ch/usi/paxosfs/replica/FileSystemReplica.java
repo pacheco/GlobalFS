@@ -730,14 +730,20 @@ public class FileSystemReplica implements Runnable {
 		// submit the command
 		comm.amcast(c);
 
-		// Wait for the command to be applied
+		// Wait for the command to be applied and for the result
+		boolean timeout = false;
 		try {
-			res.await();
+			timeout = !res.await(10, TimeUnit.SECONDS);
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 			throw new FSError(Errno.EINTR, "Error waiting for command result");
 		}
 
+		// throw exception if the command was not successful
+		if (timeout) {
+			pendingCommands.remove(Long.valueOf(c.getReqId()));
+			throw new FSError(Errno.ETIMEDOUT, "Command timeout");
+		}
 		if (!res.isSuccess()) {
 			throw res.getError();
 		}
