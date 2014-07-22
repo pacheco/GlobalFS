@@ -66,7 +66,7 @@ public class FSMain {
 	private static void startReplica(int nPartitions, int id, byte partition, String host, int port, CommunicationService comm, String zoohost) throws TTransportException {
 		// start replica thread
 		FileSystemReplica learner = new FileSystemReplica(nPartitions, id, partition, comm, host, port, zoohost);
-		replica = new Thread(learner);
+		replica = new Thread(learner, "FS Replica");
 		replica.start();
 	}
 	
