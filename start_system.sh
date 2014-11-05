@@ -75,7 +75,7 @@ done
 sleep 0.2
 
 # start a terminal
-xterm -geometry 120X20+900+600 -e "cd $PAXOSFSDIR; ./mount.sh 2 localhost:2181 http://fake 0 /tmp/fs0 -f -o direct_io -o entry_timeout=0.0s -o negative_timeout=0.0s -o attr_timeout=0.0s -o big_writes -o max_background=512 -o max_write=1048576" &
+xterm -geometry 120X20+900+600 -e "cd $PAXOSFSDIR; ./mount.sh $PARTITIONS localhost:2181 http://fake 0 /tmp/fs0 -f -o direct_io -o entry_timeout=0.0s -o negative_timeout=0.0s -o attr_timeout=0.0s -o big_writes -o max_background=512 -o max_write=1048576" &
 #xterm -geometry 120X20+900+600 -e "cd $PAXOSFSDIR; ./mount.sh 2 localhost:2181 /home/pacheco/workspace/sinergiafs/dht 0 /tmp/fs0 -f -o direct_io" &
 
 wait

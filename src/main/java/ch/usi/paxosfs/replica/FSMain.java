@@ -11,8 +11,8 @@ import org.apache.log4j.Logger;
 import org.apache.thrift.transport.TTransportException;
 import org.apache.zookeeper.KeeperException;
 
+import ch.usi.da.paxos.Util;
 import ch.usi.da.paxos.api.PaxosRole;
-import ch.usi.da.paxos.examples.Util;
 import ch.usi.da.paxos.ring.Node;
 import ch.usi.da.paxos.ring.RingDescription;
 

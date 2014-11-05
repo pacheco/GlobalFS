@@ -494,6 +494,7 @@ public class FileSystemReplica implements Runnable {
 			}
 			/* -------------------------------- */
 			case UTIME:
+				// TODO: not implemented
 				log.debug(new StrBuilder().append("utime ").append(c.getUtime().getPath()).toString());
 				res.setSuccess(true);
 				res.setResponse(null);
