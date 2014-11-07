@@ -4,8 +4,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -17,14 +15,10 @@ import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
-import ch.usi.paxosfs.rpc.DBlock;
 import ch.usi.paxosfs.rpc.FSError;
-import ch.usi.paxosfs.rpc.FileHandle;
 import ch.usi.paxosfs.rpc.FuseOps;
-import ch.usi.paxosfs.util.UUIDUtils;
-import ch.usi.paxosfs.util.UnixConstants;
 
-public class ReplicaRampBench {
+public class ReplicaRampBenchWrite {
 	// bench parameters
 	private static String replicaAddr;
 	private static long durationMillis;
@@ -39,14 +33,12 @@ public class ReplicaRampBench {
 		private int id;
 		private BufferedWriter out;
 		private long workerDuration;
-		private String localPath;
-		private String globalPath;
+		private String path;
 		
 		public Worker(int id, long durationMillis, String path) throws IOException {
 			this.id = id;
 			this.workerDuration = durationMillis;
-			this.localPath = path + "/f" + Integer.toString(id);
-			this.globalPath = "/f" + Integer.toString(id);
+			this.path = path;
 			
 			String replicaHost = replicaAddr.split(":")[0];
 			int replicaPort = Integer.parseInt(replicaAddr.split(":")[1]);
@@ -67,55 +59,20 @@ public class ReplicaRampBench {
 		
 		private String outputLine(long start, long now, boolean global){
 			return start + "\t" + now + "\t" + (now - start) + "\t" + (global?1:0);
-		}	
-
-		/**
-		 * create files that should exist before starting the benchmark
-		 */
-		private void setupFiles() {
-			try {
-				c.mknod(localPath, 0, 0, 0, 0);
-			} catch (TException e) {
-				e.printStackTrace();
-			}
-			try {
-				c.mknod(globalPath, 0, 0, 0, 0);
-			} catch (TException e) {
-				e.printStackTrace();
-			}
-		}
+		}		
 		
 		@Override
 		public void run() {
-			/*
-			 * Setup
-			 */
-			setupFiles();
-			FileHandle globalFh;
-			FileHandle localFh;
-			try {
-				globalFh = c.open(globalPath, UnixConstants.O_RDWR.getValue());
-				localFh = c.open(localPath, UnixConstants.O_RDWR.getValue());
-			} catch (TException e){
-				throw new RuntimeException(e);
-			}
-			
-			/*
-			 * Actual benchmark
-			 */
 			long benchStart = System.currentTimeMillis();
 			long benchNow = System.currentTimeMillis();
 			while ((benchNow - benchStart) < workerDuration) {
 				boolean global = doGlobal(); // should we submit a global command?
 				long start = System.currentTimeMillis();
 				try {
-					List<DBlock> blocks = new ArrayList<>();
-					blocks.add(new DBlock(null, 0, 1024, new HashSet<Byte>()));
-					blocks.get(0).setId(UUIDUtils.longToBytes(r.nextLong()));
 					if (global) {
-						c.writeBlocks(globalPath, globalFh, 0, blocks);
+						c.getdir("/");
 					} else {
-						c.writeBlocks(localPath, localFh, 0, blocks);
+						c.getdir(path);
 					}
 					long end = System.currentTimeMillis();
 					benchNow = end;
@@ -131,12 +88,6 @@ public class ReplicaRampBench {
 					System.err.println("# Error (connection closed?)");
 				}
 			}
-			
-			try {
-				c.release(globalPath, globalFh, 0);
-				c.release(localPath, localFh, 0);
-			} catch (TException e) {}
-			
 			try {
 				out.flush();
 				out.close();

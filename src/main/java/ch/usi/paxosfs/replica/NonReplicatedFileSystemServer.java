@@ -111,17 +111,17 @@ public class NonReplicatedFileSystemServer implements FuseOps.Iface, Runnable {
 	}	
 
 	@Override
-	public Attr getattr(String path) throws FSError, TException {
+	public synchronized Attr getattr(String path) throws FSError, TException {
 		return fs.get(path).getAttributes();
 	}
 
 	@Override
-	public String readlink(String path) throws FSError, TException {
+	public synchronized String readlink(String path) throws FSError, TException {
 		throw new FSError(FuseException.EOPNOTSUPP, "symlinks not supported.");
 	}
 
 	@Override
-	public List<DirEntry> getdir(String path) throws FSError, TException {
+	public synchronized List<DirEntry> getdir(String path) throws FSError, TException {
 		List<DirEntry> result = new LinkedList<DirEntry>();
 		DirNode dir = fs.getDir(path);
 		for (String child : dir.getChildren()) {
@@ -131,51 +131,51 @@ public class NonReplicatedFileSystemServer implements FuseOps.Iface, Runnable {
 	}
 
 	@Override
-	public void mknod(String path, int mode, int rdev, int uid, int gid)
+	public synchronized void mknod(String path, int mode, int rdev, int uid, int gid)
 			throws FSError, TException {
 		fs.createFile(path, mode, (int) System.currentTimeMillis() / 1000, uid,
 				gid);
 	}
 
 	@Override
-	public void mkdir(String path, int mode, int uid, int gid) throws FSError,
+	public synchronized void mkdir(String path, int mode, int uid, int gid) throws FSError,
 			TException {
 		fs.createDir(path, mode, (int) System.currentTimeMillis() / 1000, uid,
 				gid);
 	}
 
 	@Override
-	public void unlink(String path) throws FSError, TException {
+	public synchronized void unlink(String path) throws FSError, TException {
 		fs.removeFileOrLink(path);
 	}
 
 	@Override
-	public void rmdir(String path) throws FSError, TException {
+	public synchronized void rmdir(String path) throws FSError, TException {
 		fs.removeDir(path);
 	}
 
 	@Override
-	public void symlink(String target, String path, int uid, int gid)
+	public synchronized void symlink(String target, String path, int uid, int gid)
 			throws FSError, TException {
 		throw new FSError(FuseException.EOPNOTSUPP, "symlinks not supported.");
 	}
 
 	@Override
-	public void rename(String fromPath, String toPath) throws FSError,
+	public synchronized void rename(String fromPath, String toPath) throws FSError,
 			TException {
 		Node n = fs.rename(fromPath, toPath);
 		n.getAttributes().setCtime((int) System.currentTimeMillis() / 1000);
 	}
 
 	@Override
-	public void chmod(String path, int mode) throws FSError, TException {
+	public synchronized void chmod(String path, int mode) throws FSError, TException {
 		Node n = fs.get(path);
 		n.getAttributes().setMode(mode);
 		n.getAttributes().setCtime((int) System.currentTimeMillis() / 1000);
 	}
 
 	@Override
-	public void chown(String path, int uid, int gid) throws FSError, TException {
+	public synchronized void chown(String path, int uid, int gid) throws FSError, TException {
 		Node n = fs.get(path);
 		n.getAttributes().setUid(uid);
 		n.getAttributes().setGid(gid);
@@ -183,25 +183,25 @@ public class NonReplicatedFileSystemServer implements FuseOps.Iface, Runnable {
 	}
 
 	@Override
-	public void truncate(String path, long size) throws FSError, TException {
+	public synchronized void truncate(String path, long size) throws FSError, TException {
 		fs.get(path).getAttributes()
 				.setCtime((int) System.currentTimeMillis() / 1000);
 	}
 
 	@Override
-	public void utime(String path, long atime, long mtime) throws FSError,
+	public synchronized void utime(String path, long atime, long mtime) throws FSError,
 			TException {
 		fs.get(path).getAttributes().setAtime((int) atime);
 		fs.get(path).getAttributes().setMtime((int) mtime);
 	}
 
 	@Override
-	public FileSystemStats statfs() throws FSError, TException {
+	public synchronized FileSystemStats statfs() throws FSError, TException {
 		return new FileSystemStats(0, 0, 0, 0, 0, 0, 1024);
 	}
 
 	@Override
-	public FileHandle open(String path, int flags) throws FSError, TException {
+	public synchronized FileHandle open(String path, int flags) throws FSError, TException {
 		Node n = fs.get(path);
 		if (n.isDir()) {
 			throw new FSError(FuseException.EISDIR, "Is a directory");
@@ -214,7 +214,7 @@ public class NonReplicatedFileSystemServer implements FuseOps.Iface, Runnable {
 	}
 
 	@Override
-	public ReadResult readBlocks(String path, FileHandle fh, long offset,
+	public synchronized ReadResult readBlocks(String path, FileHandle fh, long offset,
 			long bytes) throws FSError, TException {
 		FileNode f = openFiles.get(fh.getId());
 		if (f == null) {
@@ -228,7 +228,7 @@ public class NonReplicatedFileSystemServer implements FuseOps.Iface, Runnable {
 	}
 
 	@Override
-	public void writeBlocks(String path, FileHandle fh, long offset,
+	public synchronized void writeBlocks(String path, FileHandle fh, long offset,
 			List<DBlock> blocks) throws FSError, TException {
 		FileNode f = openFiles.get(fh.getId());
 		if (f == null) {
@@ -251,7 +251,7 @@ public class NonReplicatedFileSystemServer implements FuseOps.Iface, Runnable {
 	}
 
 	@Override
-	public void release(String path, FileHandle fh, int flags) throws FSError,
+	public synchronized void release(String path, FileHandle fh, int flags) throws FSError,
 			TException {
 		FileNode f = openFiles.remove(Long.valueOf(fh.getId()));
 		if (f == null) {

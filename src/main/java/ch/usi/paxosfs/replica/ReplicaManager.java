@@ -85,6 +85,7 @@ public class ReplicaManager implements Watcher {
 		}
 	}
 
+	// FIXME: this is probably not the correct way of using ZK (use watchers?)
 	public String getRandomReplicaAddress(byte partition) throws KeeperException, InterruptedException {
 		String path = BASEPATH + "/" + Byte.toString(partition);
 		List<String> replicas = this.zk.getChildren(path, false);
@@ -98,6 +99,7 @@ public class ReplicaManager implements Watcher {
 		}
 	}
 
+	// FIXME: this is probably not the correct way of using ZK (use watchers?)
 	public String getReplicaAddress(byte partition, int replicaId) throws KeeperException, InterruptedException {
 		String path = BASEPATH + "/" + Byte.toString(partition) + "/" + Integer.toString(replicaId);
 		byte[] data = zk.getData(path, false, null);

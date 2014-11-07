@@ -8,13 +8,13 @@ import java.nio.CharBuffer;
 import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -116,7 +116,7 @@ public class PaxosFileSystem implements Filesystem3 {
 	public PaxosFileSystem(int numberOfPartitions, String zoohost, String storageCfgPrefix, int replicaId) throws FileNotFoundException {
 		this.numberOfPartitions = numberOfPartitions;
 		this.zoohost = zoohost;
-		this.storages = new HashMap<>();
+		this.storages = new ConcurrentHashMap<>();
 		// TODO: figure out a better (more generic) way to configure the system. Right now its pretty static
 		for (byte part=1; part<=numberOfPartitions; part++) {
 			if (storageCfgPrefix.equals("http://fake")) {
