@@ -81,7 +81,6 @@ public class MemFile extends MemNode implements FileNode {
 		return rr;
 	}
 
-	@Override
 	public void setData(Iterable<DBlock> blocks) {
 		this.blocks = Lists.newLinkedList(blocks);
 		int size = 0;
@@ -91,7 +90,6 @@ public class MemFile extends MemNode implements FileNode {
 		this.getAttributes().setSize(size);
 	}
 
-	@Override
 	public void appendData(Iterable<DBlock> blocks) {
 		int appendSize = 0;
 		for (DBlock b : blocks) {
@@ -101,7 +99,6 @@ public class MemFile extends MemNode implements FileNode {
 		this.getAttributes().setSize(this.getAttributes().getSize() + appendSize);
 	}
 
-	@Override
 	public void updateData(Iterable<DBlock> blocks, long offset) {
 		// handle some special cases
 		if (offset < 0) {
@@ -184,7 +181,6 @@ public class MemFile extends MemNode implements FileNode {
 		}
 	}
 
-	@Override
 	public void truncate(long size) {
 		long sizeDiff = size - this.getAttributes().getSize();
 		if (sizeDiff > 0L) {

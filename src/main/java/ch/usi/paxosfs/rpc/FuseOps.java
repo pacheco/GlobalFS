@@ -36,81 +36,81 @@ public class FuseOps {
 
   public interface Iface {
 
-    public Attr getattr(String path) throws FSError, org.apache.thrift.TException;
+    public Response getattr(String path, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException;
 
-    public String readlink(String path) throws FSError, org.apache.thrift.TException;
+    public Response readlink(String path, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException;
 
-    public List<DirEntry> getdir(String path) throws FSError, org.apache.thrift.TException;
+    public Response getdir(String path, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException;
 
-    public void mknod(String path, int mode, int rdev, int uid, int gid) throws FSError, org.apache.thrift.TException;
+    public Response mknod(String path, int mode, int rdev, int uid, int gid, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException;
 
-    public void mkdir(String path, int mode, int uid, int gid) throws FSError, org.apache.thrift.TException;
+    public Response mkdir(String path, int mode, int uid, int gid, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException;
 
-    public void unlink(String path) throws FSError, org.apache.thrift.TException;
+    public Response unlink(String path, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException;
 
-    public void rmdir(String path) throws FSError, org.apache.thrift.TException;
+    public Response rmdir(String path, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException;
 
-    public void symlink(String target, String path, int uid, int gid) throws FSError, org.apache.thrift.TException;
+    public Response symlink(String target, String path, int uid, int gid, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException;
 
-    public void rename(String fromPath, String toPath) throws FSError, org.apache.thrift.TException;
+    public Response rename(String fromPath, String toPath, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException;
 
-    public void chmod(String path, int mode) throws FSError, org.apache.thrift.TException;
+    public Response chmod(String path, int mode, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException;
 
-    public void chown(String path, int uid, int gid) throws FSError, org.apache.thrift.TException;
+    public Response chown(String path, int uid, int gid, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException;
 
-    public void truncate(String path, long size) throws FSError, org.apache.thrift.TException;
+    public Response truncate(String path, long size, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException;
 
-    public void utime(String path, long atime, long mtime) throws FSError, org.apache.thrift.TException;
+    public Response utime(String path, long atime, long mtime, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException;
 
-    public FileSystemStats statfs() throws FSError, org.apache.thrift.TException;
+    public Response statfs(Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException;
 
-    public FileHandle open(String path, int flags) throws FSError, org.apache.thrift.TException;
+    public Response open(String path, int flags, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException;
 
-    public ReadResult readBlocks(String path, FileHandle fh, long offset, long bytes) throws FSError, org.apache.thrift.TException;
+    public Response readBlocks(String path, FileHandle fh, long offset, long bytes, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException;
 
-    public void writeBlocks(String path, FileHandle fh, long offset, List<DBlock> blocks) throws FSError, org.apache.thrift.TException;
+    public Response writeBlocks(String path, FileHandle fh, long offset, List<DBlock> blocks, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException;
 
-    public void release(String path, FileHandle fh, int flags) throws FSError, org.apache.thrift.TException;
+    public Response release(String path, FileHandle fh, int flags, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException;
 
   }
 
   public interface AsyncIface {
 
-    public void getattr(String path, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void getattr(String path, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void readlink(String path, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void readlink(String path, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void getdir(String path, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void getdir(String path, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void mknod(String path, int mode, int rdev, int uid, int gid, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void mknod(String path, int mode, int rdev, int uid, int gid, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void mkdir(String path, int mode, int uid, int gid, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void mkdir(String path, int mode, int uid, int gid, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void unlink(String path, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void unlink(String path, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void rmdir(String path, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void rmdir(String path, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void symlink(String target, String path, int uid, int gid, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void symlink(String target, String path, int uid, int gid, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void rename(String fromPath, String toPath, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void rename(String fromPath, String toPath, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void chmod(String path, int mode, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void chmod(String path, int mode, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void chown(String path, int uid, int gid, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void chown(String path, int uid, int gid, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void truncate(String path, long size, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void truncate(String path, long size, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void utime(String path, long atime, long mtime, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void utime(String path, long atime, long mtime, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void statfs(org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void statfs(Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void open(String path, int flags, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void open(String path, int flags, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void readBlocks(String path, FileHandle fh, long offset, long bytes, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void readBlocks(String path, FileHandle fh, long offset, long bytes, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void writeBlocks(String path, FileHandle fh, long offset, List<DBlock> blocks, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void writeBlocks(String path, FileHandle fh, long offset, List<DBlock> blocks, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void release(String path, FileHandle fh, int flags, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void release(String path, FileHandle fh, int flags, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -134,20 +134,21 @@ public class FuseOps {
       super(iprot, oprot);
     }
 
-    public Attr getattr(String path) throws FSError, org.apache.thrift.TException
+    public Response getattr(String path, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException
     {
-      send_getattr(path);
+      send_getattr(path, instanceMap);
       return recv_getattr();
     }
 
-    public void send_getattr(String path) throws org.apache.thrift.TException
+    public void send_getattr(String path, Map<Byte,Long> instanceMap) throws org.apache.thrift.TException
     {
       getattr_args args = new getattr_args();
       args.setPath(path);
+      args.setInstanceMap(instanceMap);
       sendBase("getattr", args);
     }
 
-    public Attr recv_getattr() throws FSError, org.apache.thrift.TException
+    public Response recv_getattr() throws FSError, org.apache.thrift.TException
     {
       getattr_result result = new getattr_result();
       receiveBase(result, "getattr");
@@ -160,20 +161,21 @@ public class FuseOps {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getattr failed: unknown result");
     }
 
-    public String readlink(String path) throws FSError, org.apache.thrift.TException
+    public Response readlink(String path, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException
     {
-      send_readlink(path);
+      send_readlink(path, instanceMap);
       return recv_readlink();
     }
 
-    public void send_readlink(String path) throws org.apache.thrift.TException
+    public void send_readlink(String path, Map<Byte,Long> instanceMap) throws org.apache.thrift.TException
     {
       readlink_args args = new readlink_args();
       args.setPath(path);
+      args.setInstanceMap(instanceMap);
       sendBase("readlink", args);
     }
 
-    public String recv_readlink() throws FSError, org.apache.thrift.TException
+    public Response recv_readlink() throws FSError, org.apache.thrift.TException
     {
       readlink_result result = new readlink_result();
       receiveBase(result, "readlink");
@@ -186,20 +188,21 @@ public class FuseOps {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "readlink failed: unknown result");
     }
 
-    public List<DirEntry> getdir(String path) throws FSError, org.apache.thrift.TException
+    public Response getdir(String path, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException
     {
-      send_getdir(path);
+      send_getdir(path, instanceMap);
       return recv_getdir();
     }
 
-    public void send_getdir(String path) throws org.apache.thrift.TException
+    public void send_getdir(String path, Map<Byte,Long> instanceMap) throws org.apache.thrift.TException
     {
       getdir_args args = new getdir_args();
       args.setPath(path);
+      args.setInstanceMap(instanceMap);
       sendBase("getdir", args);
     }
 
-    public List<DirEntry> recv_getdir() throws FSError, org.apache.thrift.TException
+    public Response recv_getdir() throws FSError, org.apache.thrift.TException
     {
       getdir_result result = new getdir_result();
       receiveBase(result, "getdir");
@@ -212,13 +215,13 @@ public class FuseOps {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getdir failed: unknown result");
     }
 
-    public void mknod(String path, int mode, int rdev, int uid, int gid) throws FSError, org.apache.thrift.TException
+    public Response mknod(String path, int mode, int rdev, int uid, int gid, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException
     {
-      send_mknod(path, mode, rdev, uid, gid);
-      recv_mknod();
+      send_mknod(path, mode, rdev, uid, gid, instanceMap);
+      return recv_mknod();
     }
 
-    public void send_mknod(String path, int mode, int rdev, int uid, int gid) throws org.apache.thrift.TException
+    public void send_mknod(String path, int mode, int rdev, int uid, int gid, Map<Byte,Long> instanceMap) throws org.apache.thrift.TException
     {
       mknod_args args = new mknod_args();
       args.setPath(path);
@@ -226,252 +229,293 @@ public class FuseOps {
       args.setRdev(rdev);
       args.setUid(uid);
       args.setGid(gid);
+      args.setInstanceMap(instanceMap);
       sendBase("mknod", args);
     }
 
-    public void recv_mknod() throws FSError, org.apache.thrift.TException
+    public Response recv_mknod() throws FSError, org.apache.thrift.TException
     {
       mknod_result result = new mknod_result();
       receiveBase(result, "mknod");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
       if (result.e != null) {
         throw result.e;
       }
-      return;
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "mknod failed: unknown result");
     }
 
-    public void mkdir(String path, int mode, int uid, int gid) throws FSError, org.apache.thrift.TException
+    public Response mkdir(String path, int mode, int uid, int gid, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException
     {
-      send_mkdir(path, mode, uid, gid);
-      recv_mkdir();
+      send_mkdir(path, mode, uid, gid, instanceMap);
+      return recv_mkdir();
     }
 
-    public void send_mkdir(String path, int mode, int uid, int gid) throws org.apache.thrift.TException
+    public void send_mkdir(String path, int mode, int uid, int gid, Map<Byte,Long> instanceMap) throws org.apache.thrift.TException
     {
       mkdir_args args = new mkdir_args();
       args.setPath(path);
       args.setMode(mode);
       args.setUid(uid);
       args.setGid(gid);
+      args.setInstanceMap(instanceMap);
       sendBase("mkdir", args);
     }
 
-    public void recv_mkdir() throws FSError, org.apache.thrift.TException
+    public Response recv_mkdir() throws FSError, org.apache.thrift.TException
     {
       mkdir_result result = new mkdir_result();
       receiveBase(result, "mkdir");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
       if (result.e != null) {
         throw result.e;
       }
-      return;
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "mkdir failed: unknown result");
     }
 
-    public void unlink(String path) throws FSError, org.apache.thrift.TException
+    public Response unlink(String path, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException
     {
-      send_unlink(path);
-      recv_unlink();
+      send_unlink(path, instanceMap);
+      return recv_unlink();
     }
 
-    public void send_unlink(String path) throws org.apache.thrift.TException
+    public void send_unlink(String path, Map<Byte,Long> instanceMap) throws org.apache.thrift.TException
     {
       unlink_args args = new unlink_args();
       args.setPath(path);
+      args.setInstanceMap(instanceMap);
       sendBase("unlink", args);
     }
 
-    public void recv_unlink() throws FSError, org.apache.thrift.TException
+    public Response recv_unlink() throws FSError, org.apache.thrift.TException
     {
       unlink_result result = new unlink_result();
       receiveBase(result, "unlink");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
       if (result.e != null) {
         throw result.e;
       }
-      return;
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "unlink failed: unknown result");
     }
 
-    public void rmdir(String path) throws FSError, org.apache.thrift.TException
+    public Response rmdir(String path, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException
     {
-      send_rmdir(path);
-      recv_rmdir();
+      send_rmdir(path, instanceMap);
+      return recv_rmdir();
     }
 
-    public void send_rmdir(String path) throws org.apache.thrift.TException
+    public void send_rmdir(String path, Map<Byte,Long> instanceMap) throws org.apache.thrift.TException
     {
       rmdir_args args = new rmdir_args();
       args.setPath(path);
+      args.setInstanceMap(instanceMap);
       sendBase("rmdir", args);
     }
 
-    public void recv_rmdir() throws FSError, org.apache.thrift.TException
+    public Response recv_rmdir() throws FSError, org.apache.thrift.TException
     {
       rmdir_result result = new rmdir_result();
       receiveBase(result, "rmdir");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
       if (result.e != null) {
         throw result.e;
       }
-      return;
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "rmdir failed: unknown result");
     }
 
-    public void symlink(String target, String path, int uid, int gid) throws FSError, org.apache.thrift.TException
+    public Response symlink(String target, String path, int uid, int gid, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException
     {
-      send_symlink(target, path, uid, gid);
-      recv_symlink();
+      send_symlink(target, path, uid, gid, instanceMap);
+      return recv_symlink();
     }
 
-    public void send_symlink(String target, String path, int uid, int gid) throws org.apache.thrift.TException
+    public void send_symlink(String target, String path, int uid, int gid, Map<Byte,Long> instanceMap) throws org.apache.thrift.TException
     {
       symlink_args args = new symlink_args();
       args.setTarget(target);
       args.setPath(path);
       args.setUid(uid);
       args.setGid(gid);
+      args.setInstanceMap(instanceMap);
       sendBase("symlink", args);
     }
 
-    public void recv_symlink() throws FSError, org.apache.thrift.TException
+    public Response recv_symlink() throws FSError, org.apache.thrift.TException
     {
       symlink_result result = new symlink_result();
       receiveBase(result, "symlink");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
       if (result.e != null) {
         throw result.e;
       }
-      return;
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "symlink failed: unknown result");
     }
 
-    public void rename(String fromPath, String toPath) throws FSError, org.apache.thrift.TException
+    public Response rename(String fromPath, String toPath, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException
     {
-      send_rename(fromPath, toPath);
-      recv_rename();
+      send_rename(fromPath, toPath, instanceMap);
+      return recv_rename();
     }
 
-    public void send_rename(String fromPath, String toPath) throws org.apache.thrift.TException
+    public void send_rename(String fromPath, String toPath, Map<Byte,Long> instanceMap) throws org.apache.thrift.TException
     {
       rename_args args = new rename_args();
       args.setFromPath(fromPath);
       args.setToPath(toPath);
+      args.setInstanceMap(instanceMap);
       sendBase("rename", args);
     }
 
-    public void recv_rename() throws FSError, org.apache.thrift.TException
+    public Response recv_rename() throws FSError, org.apache.thrift.TException
     {
       rename_result result = new rename_result();
       receiveBase(result, "rename");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
       if (result.e != null) {
         throw result.e;
       }
-      return;
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "rename failed: unknown result");
     }
 
-    public void chmod(String path, int mode) throws FSError, org.apache.thrift.TException
+    public Response chmod(String path, int mode, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException
     {
-      send_chmod(path, mode);
-      recv_chmod();
+      send_chmod(path, mode, instanceMap);
+      return recv_chmod();
     }
 
-    public void send_chmod(String path, int mode) throws org.apache.thrift.TException
+    public void send_chmod(String path, int mode, Map<Byte,Long> instanceMap) throws org.apache.thrift.TException
     {
       chmod_args args = new chmod_args();
       args.setPath(path);
       args.setMode(mode);
+      args.setInstanceMap(instanceMap);
       sendBase("chmod", args);
     }
 
-    public void recv_chmod() throws FSError, org.apache.thrift.TException
+    public Response recv_chmod() throws FSError, org.apache.thrift.TException
     {
       chmod_result result = new chmod_result();
       receiveBase(result, "chmod");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
       if (result.e != null) {
         throw result.e;
       }
-      return;
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "chmod failed: unknown result");
     }
 
-    public void chown(String path, int uid, int gid) throws FSError, org.apache.thrift.TException
+    public Response chown(String path, int uid, int gid, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException
     {
-      send_chown(path, uid, gid);
-      recv_chown();
+      send_chown(path, uid, gid, instanceMap);
+      return recv_chown();
     }
 
-    public void send_chown(String path, int uid, int gid) throws org.apache.thrift.TException
+    public void send_chown(String path, int uid, int gid, Map<Byte,Long> instanceMap) throws org.apache.thrift.TException
     {
       chown_args args = new chown_args();
       args.setPath(path);
       args.setUid(uid);
       args.setGid(gid);
+      args.setInstanceMap(instanceMap);
       sendBase("chown", args);
     }
 
-    public void recv_chown() throws FSError, org.apache.thrift.TException
+    public Response recv_chown() throws FSError, org.apache.thrift.TException
     {
       chown_result result = new chown_result();
       receiveBase(result, "chown");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
       if (result.e != null) {
         throw result.e;
       }
-      return;
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "chown failed: unknown result");
     }
 
-    public void truncate(String path, long size) throws FSError, org.apache.thrift.TException
+    public Response truncate(String path, long size, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException
     {
-      send_truncate(path, size);
-      recv_truncate();
+      send_truncate(path, size, instanceMap);
+      return recv_truncate();
     }
 
-    public void send_truncate(String path, long size) throws org.apache.thrift.TException
+    public void send_truncate(String path, long size, Map<Byte,Long> instanceMap) throws org.apache.thrift.TException
     {
       truncate_args args = new truncate_args();
       args.setPath(path);
       args.setSize(size);
+      args.setInstanceMap(instanceMap);
       sendBase("truncate", args);
     }
 
-    public void recv_truncate() throws FSError, org.apache.thrift.TException
+    public Response recv_truncate() throws FSError, org.apache.thrift.TException
     {
       truncate_result result = new truncate_result();
       receiveBase(result, "truncate");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
       if (result.e != null) {
         throw result.e;
       }
-      return;
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "truncate failed: unknown result");
     }
 
-    public void utime(String path, long atime, long mtime) throws FSError, org.apache.thrift.TException
+    public Response utime(String path, long atime, long mtime, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException
     {
-      send_utime(path, atime, mtime);
-      recv_utime();
+      send_utime(path, atime, mtime, instanceMap);
+      return recv_utime();
     }
 
-    public void send_utime(String path, long atime, long mtime) throws org.apache.thrift.TException
+    public void send_utime(String path, long atime, long mtime, Map<Byte,Long> instanceMap) throws org.apache.thrift.TException
     {
       utime_args args = new utime_args();
       args.setPath(path);
       args.setAtime(atime);
       args.setMtime(mtime);
+      args.setInstanceMap(instanceMap);
       sendBase("utime", args);
     }
 
-    public void recv_utime() throws FSError, org.apache.thrift.TException
+    public Response recv_utime() throws FSError, org.apache.thrift.TException
     {
       utime_result result = new utime_result();
       receiveBase(result, "utime");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
       if (result.e != null) {
         throw result.e;
       }
-      return;
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "utime failed: unknown result");
     }
 
-    public FileSystemStats statfs() throws FSError, org.apache.thrift.TException
+    public Response statfs(Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException
     {
-      send_statfs();
+      send_statfs(instanceMap);
       return recv_statfs();
     }
 
-    public void send_statfs() throws org.apache.thrift.TException
+    public void send_statfs(Map<Byte,Long> instanceMap) throws org.apache.thrift.TException
     {
       statfs_args args = new statfs_args();
+      args.setInstanceMap(instanceMap);
       sendBase("statfs", args);
     }
 
-    public FileSystemStats recv_statfs() throws FSError, org.apache.thrift.TException
+    public Response recv_statfs() throws FSError, org.apache.thrift.TException
     {
       statfs_result result = new statfs_result();
       receiveBase(result, "statfs");
@@ -484,21 +528,22 @@ public class FuseOps {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "statfs failed: unknown result");
     }
 
-    public FileHandle open(String path, int flags) throws FSError, org.apache.thrift.TException
+    public Response open(String path, int flags, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException
     {
-      send_open(path, flags);
+      send_open(path, flags, instanceMap);
       return recv_open();
     }
 
-    public void send_open(String path, int flags) throws org.apache.thrift.TException
+    public void send_open(String path, int flags, Map<Byte,Long> instanceMap) throws org.apache.thrift.TException
     {
       open_args args = new open_args();
       args.setPath(path);
       args.setFlags(flags);
+      args.setInstanceMap(instanceMap);
       sendBase("open", args);
     }
 
-    public FileHandle recv_open() throws FSError, org.apache.thrift.TException
+    public Response recv_open() throws FSError, org.apache.thrift.TException
     {
       open_result result = new open_result();
       receiveBase(result, "open");
@@ -511,23 +556,24 @@ public class FuseOps {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "open failed: unknown result");
     }
 
-    public ReadResult readBlocks(String path, FileHandle fh, long offset, long bytes) throws FSError, org.apache.thrift.TException
+    public Response readBlocks(String path, FileHandle fh, long offset, long bytes, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException
     {
-      send_readBlocks(path, fh, offset, bytes);
+      send_readBlocks(path, fh, offset, bytes, instanceMap);
       return recv_readBlocks();
     }
 
-    public void send_readBlocks(String path, FileHandle fh, long offset, long bytes) throws org.apache.thrift.TException
+    public void send_readBlocks(String path, FileHandle fh, long offset, long bytes, Map<Byte,Long> instanceMap) throws org.apache.thrift.TException
     {
       readBlocks_args args = new readBlocks_args();
       args.setPath(path);
       args.setFh(fh);
       args.setOffset(offset);
       args.setBytes(bytes);
+      args.setInstanceMap(instanceMap);
       sendBase("readBlocks", args);
     }
 
-    public ReadResult recv_readBlocks() throws FSError, org.apache.thrift.TException
+    public Response recv_readBlocks() throws FSError, org.apache.thrift.TException
     {
       readBlocks_result result = new readBlocks_result();
       receiveBase(result, "readBlocks");
@@ -540,55 +586,63 @@ public class FuseOps {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "readBlocks failed: unknown result");
     }
 
-    public void writeBlocks(String path, FileHandle fh, long offset, List<DBlock> blocks) throws FSError, org.apache.thrift.TException
+    public Response writeBlocks(String path, FileHandle fh, long offset, List<DBlock> blocks, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException
     {
-      send_writeBlocks(path, fh, offset, blocks);
-      recv_writeBlocks();
+      send_writeBlocks(path, fh, offset, blocks, instanceMap);
+      return recv_writeBlocks();
     }
 
-    public void send_writeBlocks(String path, FileHandle fh, long offset, List<DBlock> blocks) throws org.apache.thrift.TException
+    public void send_writeBlocks(String path, FileHandle fh, long offset, List<DBlock> blocks, Map<Byte,Long> instanceMap) throws org.apache.thrift.TException
     {
       writeBlocks_args args = new writeBlocks_args();
       args.setPath(path);
       args.setFh(fh);
       args.setOffset(offset);
       args.setBlocks(blocks);
+      args.setInstanceMap(instanceMap);
       sendBase("writeBlocks", args);
     }
 
-    public void recv_writeBlocks() throws FSError, org.apache.thrift.TException
+    public Response recv_writeBlocks() throws FSError, org.apache.thrift.TException
     {
       writeBlocks_result result = new writeBlocks_result();
       receiveBase(result, "writeBlocks");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
       if (result.e != null) {
         throw result.e;
       }
-      return;
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "writeBlocks failed: unknown result");
     }
 
-    public void release(String path, FileHandle fh, int flags) throws FSError, org.apache.thrift.TException
+    public Response release(String path, FileHandle fh, int flags, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException
     {
-      send_release(path, fh, flags);
-      recv_release();
+      send_release(path, fh, flags, instanceMap);
+      return recv_release();
     }
 
-    public void send_release(String path, FileHandle fh, int flags) throws org.apache.thrift.TException
+    public void send_release(String path, FileHandle fh, int flags, Map<Byte,Long> instanceMap) throws org.apache.thrift.TException
     {
       release_args args = new release_args();
       args.setPath(path);
       args.setFh(fh);
       args.setFlags(flags);
+      args.setInstanceMap(instanceMap);
       sendBase("release", args);
     }
 
-    public void recv_release() throws FSError, org.apache.thrift.TException
+    public Response recv_release() throws FSError, org.apache.thrift.TException
     {
       release_result result = new release_result();
       receiveBase(result, "release");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
       if (result.e != null) {
         throw result.e;
       }
-      return;
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "release failed: unknown result");
     }
 
   }
@@ -609,29 +663,32 @@ public class FuseOps {
       super(protocolFactory, clientManager, transport);
     }
 
-    public void getattr(String path, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void getattr(String path, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      getattr_call method_call = new getattr_call(path, resultHandler, this, ___protocolFactory, ___transport);
+      getattr_call method_call = new getattr_call(path, instanceMap, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class getattr_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String path;
-      public getattr_call(String path, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private Map<Byte,Long> instanceMap;
+      public getattr_call(String path, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.path = path;
+        this.instanceMap = instanceMap;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getattr", org.apache.thrift.protocol.TMessageType.CALL, 0));
         getattr_args args = new getattr_args();
         args.setPath(path);
+        args.setInstanceMap(instanceMap);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public Attr getResult() throws FSError, org.apache.thrift.TException {
+      public Response getResult() throws FSError, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -641,29 +698,32 @@ public class FuseOps {
       }
     }
 
-    public void readlink(String path, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void readlink(String path, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      readlink_call method_call = new readlink_call(path, resultHandler, this, ___protocolFactory, ___transport);
+      readlink_call method_call = new readlink_call(path, instanceMap, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class readlink_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String path;
-      public readlink_call(String path, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private Map<Byte,Long> instanceMap;
+      public readlink_call(String path, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.path = path;
+        this.instanceMap = instanceMap;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("readlink", org.apache.thrift.protocol.TMessageType.CALL, 0));
         readlink_args args = new readlink_args();
         args.setPath(path);
+        args.setInstanceMap(instanceMap);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public String getResult() throws FSError, org.apache.thrift.TException {
+      public Response getResult() throws FSError, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -673,29 +733,32 @@ public class FuseOps {
       }
     }
 
-    public void getdir(String path, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void getdir(String path, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      getdir_call method_call = new getdir_call(path, resultHandler, this, ___protocolFactory, ___transport);
+      getdir_call method_call = new getdir_call(path, instanceMap, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class getdir_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String path;
-      public getdir_call(String path, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private Map<Byte,Long> instanceMap;
+      public getdir_call(String path, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.path = path;
+        this.instanceMap = instanceMap;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getdir", org.apache.thrift.protocol.TMessageType.CALL, 0));
         getdir_args args = new getdir_args();
         args.setPath(path);
+        args.setInstanceMap(instanceMap);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public List<DirEntry> getResult() throws FSError, org.apache.thrift.TException {
+      public Response getResult() throws FSError, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -705,9 +768,9 @@ public class FuseOps {
       }
     }
 
-    public void mknod(String path, int mode, int rdev, int uid, int gid, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void mknod(String path, int mode, int rdev, int uid, int gid, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      mknod_call method_call = new mknod_call(path, mode, rdev, uid, gid, resultHandler, this, ___protocolFactory, ___transport);
+      mknod_call method_call = new mknod_call(path, mode, rdev, uid, gid, instanceMap, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -718,13 +781,15 @@ public class FuseOps {
       private int rdev;
       private int uid;
       private int gid;
-      public mknod_call(String path, int mode, int rdev, int uid, int gid, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private Map<Byte,Long> instanceMap;
+      public mknod_call(String path, int mode, int rdev, int uid, int gid, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.path = path;
         this.mode = mode;
         this.rdev = rdev;
         this.uid = uid;
         this.gid = gid;
+        this.instanceMap = instanceMap;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
@@ -735,23 +800,24 @@ public class FuseOps {
         args.setRdev(rdev);
         args.setUid(uid);
         args.setGid(gid);
+        args.setInstanceMap(instanceMap);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws FSError, org.apache.thrift.TException {
+      public Response getResult() throws FSError, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        (new Client(prot)).recv_mknod();
+        return (new Client(prot)).recv_mknod();
       }
     }
 
-    public void mkdir(String path, int mode, int uid, int gid, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void mkdir(String path, int mode, int uid, int gid, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      mkdir_call method_call = new mkdir_call(path, mode, uid, gid, resultHandler, this, ___protocolFactory, ___transport);
+      mkdir_call method_call = new mkdir_call(path, mode, uid, gid, instanceMap, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -761,12 +827,14 @@ public class FuseOps {
       private int mode;
       private int uid;
       private int gid;
-      public mkdir_call(String path, int mode, int uid, int gid, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private Map<Byte,Long> instanceMap;
+      public mkdir_call(String path, int mode, int uid, int gid, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.path = path;
         this.mode = mode;
         this.uid = uid;
         this.gid = gid;
+        this.instanceMap = instanceMap;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
@@ -776,87 +844,94 @@ public class FuseOps {
         args.setMode(mode);
         args.setUid(uid);
         args.setGid(gid);
+        args.setInstanceMap(instanceMap);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws FSError, org.apache.thrift.TException {
+      public Response getResult() throws FSError, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        (new Client(prot)).recv_mkdir();
+        return (new Client(prot)).recv_mkdir();
       }
     }
 
-    public void unlink(String path, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void unlink(String path, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      unlink_call method_call = new unlink_call(path, resultHandler, this, ___protocolFactory, ___transport);
+      unlink_call method_call = new unlink_call(path, instanceMap, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class unlink_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String path;
-      public unlink_call(String path, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private Map<Byte,Long> instanceMap;
+      public unlink_call(String path, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.path = path;
+        this.instanceMap = instanceMap;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("unlink", org.apache.thrift.protocol.TMessageType.CALL, 0));
         unlink_args args = new unlink_args();
         args.setPath(path);
+        args.setInstanceMap(instanceMap);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws FSError, org.apache.thrift.TException {
+      public Response getResult() throws FSError, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        (new Client(prot)).recv_unlink();
+        return (new Client(prot)).recv_unlink();
       }
     }
 
-    public void rmdir(String path, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void rmdir(String path, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      rmdir_call method_call = new rmdir_call(path, resultHandler, this, ___protocolFactory, ___transport);
+      rmdir_call method_call = new rmdir_call(path, instanceMap, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class rmdir_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String path;
-      public rmdir_call(String path, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private Map<Byte,Long> instanceMap;
+      public rmdir_call(String path, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.path = path;
+        this.instanceMap = instanceMap;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("rmdir", org.apache.thrift.protocol.TMessageType.CALL, 0));
         rmdir_args args = new rmdir_args();
         args.setPath(path);
+        args.setInstanceMap(instanceMap);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws FSError, org.apache.thrift.TException {
+      public Response getResult() throws FSError, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        (new Client(prot)).recv_rmdir();
+        return (new Client(prot)).recv_rmdir();
       }
     }
 
-    public void symlink(String target, String path, int uid, int gid, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void symlink(String target, String path, int uid, int gid, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      symlink_call method_call = new symlink_call(target, path, uid, gid, resultHandler, this, ___protocolFactory, ___transport);
+      symlink_call method_call = new symlink_call(target, path, uid, gid, instanceMap, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -866,12 +941,14 @@ public class FuseOps {
       private String path;
       private int uid;
       private int gid;
-      public symlink_call(String target, String path, int uid, int gid, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private Map<Byte,Long> instanceMap;
+      public symlink_call(String target, String path, int uid, int gid, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.target = target;
         this.path = path;
         this.uid = uid;
         this.gid = gid;
+        this.instanceMap = instanceMap;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
@@ -881,23 +958,24 @@ public class FuseOps {
         args.setPath(path);
         args.setUid(uid);
         args.setGid(gid);
+        args.setInstanceMap(instanceMap);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws FSError, org.apache.thrift.TException {
+      public Response getResult() throws FSError, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        (new Client(prot)).recv_symlink();
+        return (new Client(prot)).recv_symlink();
       }
     }
 
-    public void rename(String fromPath, String toPath, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void rename(String fromPath, String toPath, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      rename_call method_call = new rename_call(fromPath, toPath, resultHandler, this, ___protocolFactory, ___transport);
+      rename_call method_call = new rename_call(fromPath, toPath, instanceMap, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -905,10 +983,12 @@ public class FuseOps {
     public static class rename_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String fromPath;
       private String toPath;
-      public rename_call(String fromPath, String toPath, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private Map<Byte,Long> instanceMap;
+      public rename_call(String fromPath, String toPath, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.fromPath = fromPath;
         this.toPath = toPath;
+        this.instanceMap = instanceMap;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
@@ -916,23 +996,24 @@ public class FuseOps {
         rename_args args = new rename_args();
         args.setFromPath(fromPath);
         args.setToPath(toPath);
+        args.setInstanceMap(instanceMap);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws FSError, org.apache.thrift.TException {
+      public Response getResult() throws FSError, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        (new Client(prot)).recv_rename();
+        return (new Client(prot)).recv_rename();
       }
     }
 
-    public void chmod(String path, int mode, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void chmod(String path, int mode, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      chmod_call method_call = new chmod_call(path, mode, resultHandler, this, ___protocolFactory, ___transport);
+      chmod_call method_call = new chmod_call(path, mode, instanceMap, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -940,10 +1021,12 @@ public class FuseOps {
     public static class chmod_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String path;
       private int mode;
-      public chmod_call(String path, int mode, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private Map<Byte,Long> instanceMap;
+      public chmod_call(String path, int mode, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.path = path;
         this.mode = mode;
+        this.instanceMap = instanceMap;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
@@ -951,23 +1034,24 @@ public class FuseOps {
         chmod_args args = new chmod_args();
         args.setPath(path);
         args.setMode(mode);
+        args.setInstanceMap(instanceMap);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws FSError, org.apache.thrift.TException {
+      public Response getResult() throws FSError, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        (new Client(prot)).recv_chmod();
+        return (new Client(prot)).recv_chmod();
       }
     }
 
-    public void chown(String path, int uid, int gid, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void chown(String path, int uid, int gid, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      chown_call method_call = new chown_call(path, uid, gid, resultHandler, this, ___protocolFactory, ___transport);
+      chown_call method_call = new chown_call(path, uid, gid, instanceMap, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -976,11 +1060,13 @@ public class FuseOps {
       private String path;
       private int uid;
       private int gid;
-      public chown_call(String path, int uid, int gid, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private Map<Byte,Long> instanceMap;
+      public chown_call(String path, int uid, int gid, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.path = path;
         this.uid = uid;
         this.gid = gid;
+        this.instanceMap = instanceMap;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
@@ -989,23 +1075,24 @@ public class FuseOps {
         args.setPath(path);
         args.setUid(uid);
         args.setGid(gid);
+        args.setInstanceMap(instanceMap);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws FSError, org.apache.thrift.TException {
+      public Response getResult() throws FSError, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        (new Client(prot)).recv_chown();
+        return (new Client(prot)).recv_chown();
       }
     }
 
-    public void truncate(String path, long size, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void truncate(String path, long size, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      truncate_call method_call = new truncate_call(path, size, resultHandler, this, ___protocolFactory, ___transport);
+      truncate_call method_call = new truncate_call(path, size, instanceMap, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -1013,10 +1100,12 @@ public class FuseOps {
     public static class truncate_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String path;
       private long size;
-      public truncate_call(String path, long size, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private Map<Byte,Long> instanceMap;
+      public truncate_call(String path, long size, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.path = path;
         this.size = size;
+        this.instanceMap = instanceMap;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
@@ -1024,23 +1113,24 @@ public class FuseOps {
         truncate_args args = new truncate_args();
         args.setPath(path);
         args.setSize(size);
+        args.setInstanceMap(instanceMap);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws FSError, org.apache.thrift.TException {
+      public Response getResult() throws FSError, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        (new Client(prot)).recv_truncate();
+        return (new Client(prot)).recv_truncate();
       }
     }
 
-    public void utime(String path, long atime, long mtime, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void utime(String path, long atime, long mtime, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      utime_call method_call = new utime_call(path, atime, mtime, resultHandler, this, ___protocolFactory, ___transport);
+      utime_call method_call = new utime_call(path, atime, mtime, instanceMap, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -1049,11 +1139,13 @@ public class FuseOps {
       private String path;
       private long atime;
       private long mtime;
-      public utime_call(String path, long atime, long mtime, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private Map<Byte,Long> instanceMap;
+      public utime_call(String path, long atime, long mtime, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.path = path;
         this.atime = atime;
         this.mtime = mtime;
+        this.instanceMap = instanceMap;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
@@ -1062,40 +1154,44 @@ public class FuseOps {
         args.setPath(path);
         args.setAtime(atime);
         args.setMtime(mtime);
+        args.setInstanceMap(instanceMap);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws FSError, org.apache.thrift.TException {
+      public Response getResult() throws FSError, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        (new Client(prot)).recv_utime();
+        return (new Client(prot)).recv_utime();
       }
     }
 
-    public void statfs(org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void statfs(Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      statfs_call method_call = new statfs_call(resultHandler, this, ___protocolFactory, ___transport);
+      statfs_call method_call = new statfs_call(instanceMap, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class statfs_call extends org.apache.thrift.async.TAsyncMethodCall {
-      public statfs_call(org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private Map<Byte,Long> instanceMap;
+      public statfs_call(Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
+        this.instanceMap = instanceMap;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("statfs", org.apache.thrift.protocol.TMessageType.CALL, 0));
         statfs_args args = new statfs_args();
+        args.setInstanceMap(instanceMap);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public FileSystemStats getResult() throws FSError, org.apache.thrift.TException {
+      public Response getResult() throws FSError, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1105,9 +1201,9 @@ public class FuseOps {
       }
     }
 
-    public void open(String path, int flags, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void open(String path, int flags, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      open_call method_call = new open_call(path, flags, resultHandler, this, ___protocolFactory, ___transport);
+      open_call method_call = new open_call(path, flags, instanceMap, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -1115,10 +1211,12 @@ public class FuseOps {
     public static class open_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String path;
       private int flags;
-      public open_call(String path, int flags, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private Map<Byte,Long> instanceMap;
+      public open_call(String path, int flags, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.path = path;
         this.flags = flags;
+        this.instanceMap = instanceMap;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
@@ -1126,11 +1224,12 @@ public class FuseOps {
         open_args args = new open_args();
         args.setPath(path);
         args.setFlags(flags);
+        args.setInstanceMap(instanceMap);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public FileHandle getResult() throws FSError, org.apache.thrift.TException {
+      public Response getResult() throws FSError, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1140,9 +1239,9 @@ public class FuseOps {
       }
     }
 
-    public void readBlocks(String path, FileHandle fh, long offset, long bytes, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void readBlocks(String path, FileHandle fh, long offset, long bytes, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      readBlocks_call method_call = new readBlocks_call(path, fh, offset, bytes, resultHandler, this, ___protocolFactory, ___transport);
+      readBlocks_call method_call = new readBlocks_call(path, fh, offset, bytes, instanceMap, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -1152,12 +1251,14 @@ public class FuseOps {
       private FileHandle fh;
       private long offset;
       private long bytes;
-      public readBlocks_call(String path, FileHandle fh, long offset, long bytes, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private Map<Byte,Long> instanceMap;
+      public readBlocks_call(String path, FileHandle fh, long offset, long bytes, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.path = path;
         this.fh = fh;
         this.offset = offset;
         this.bytes = bytes;
+        this.instanceMap = instanceMap;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
@@ -1167,11 +1268,12 @@ public class FuseOps {
         args.setFh(fh);
         args.setOffset(offset);
         args.setBytes(bytes);
+        args.setInstanceMap(instanceMap);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public ReadResult getResult() throws FSError, org.apache.thrift.TException {
+      public Response getResult() throws FSError, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1181,9 +1283,9 @@ public class FuseOps {
       }
     }
 
-    public void writeBlocks(String path, FileHandle fh, long offset, List<DBlock> blocks, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void writeBlocks(String path, FileHandle fh, long offset, List<DBlock> blocks, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      writeBlocks_call method_call = new writeBlocks_call(path, fh, offset, blocks, resultHandler, this, ___protocolFactory, ___transport);
+      writeBlocks_call method_call = new writeBlocks_call(path, fh, offset, blocks, instanceMap, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -1193,12 +1295,14 @@ public class FuseOps {
       private FileHandle fh;
       private long offset;
       private List<DBlock> blocks;
-      public writeBlocks_call(String path, FileHandle fh, long offset, List<DBlock> blocks, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private Map<Byte,Long> instanceMap;
+      public writeBlocks_call(String path, FileHandle fh, long offset, List<DBlock> blocks, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.path = path;
         this.fh = fh;
         this.offset = offset;
         this.blocks = blocks;
+        this.instanceMap = instanceMap;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
@@ -1208,23 +1312,24 @@ public class FuseOps {
         args.setFh(fh);
         args.setOffset(offset);
         args.setBlocks(blocks);
+        args.setInstanceMap(instanceMap);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws FSError, org.apache.thrift.TException {
+      public Response getResult() throws FSError, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        (new Client(prot)).recv_writeBlocks();
+        return (new Client(prot)).recv_writeBlocks();
       }
     }
 
-    public void release(String path, FileHandle fh, int flags, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void release(String path, FileHandle fh, int flags, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      release_call method_call = new release_call(path, fh, flags, resultHandler, this, ___protocolFactory, ___transport);
+      release_call method_call = new release_call(path, fh, flags, instanceMap, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -1233,11 +1338,13 @@ public class FuseOps {
       private String path;
       private FileHandle fh;
       private int flags;
-      public release_call(String path, FileHandle fh, int flags, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private Map<Byte,Long> instanceMap;
+      public release_call(String path, FileHandle fh, int flags, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.path = path;
         this.fh = fh;
         this.flags = flags;
+        this.instanceMap = instanceMap;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
@@ -1246,17 +1353,18 @@ public class FuseOps {
         args.setPath(path);
         args.setFh(fh);
         args.setFlags(flags);
+        args.setInstanceMap(instanceMap);
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws FSError, org.apache.thrift.TException {
+      public Response getResult() throws FSError, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        (new Client(prot)).recv_release();
+        return (new Client(prot)).recv_release();
       }
     }
 
@@ -1310,7 +1418,7 @@ public class FuseOps {
       public getattr_result getResult(I iface, getattr_args args) throws org.apache.thrift.TException {
         getattr_result result = new getattr_result();
         try {
-          result.success = iface.getattr(args.path);
+          result.success = iface.getattr(args.path, args.instanceMap);
         } catch (FSError e) {
           result.e = e;
         }
@@ -1334,7 +1442,7 @@ public class FuseOps {
       public readlink_result getResult(I iface, readlink_args args) throws org.apache.thrift.TException {
         readlink_result result = new readlink_result();
         try {
-          result.success = iface.readlink(args.path);
+          result.success = iface.readlink(args.path, args.instanceMap);
         } catch (FSError e) {
           result.e = e;
         }
@@ -1358,7 +1466,7 @@ public class FuseOps {
       public getdir_result getResult(I iface, getdir_args args) throws org.apache.thrift.TException {
         getdir_result result = new getdir_result();
         try {
-          result.success = iface.getdir(args.path);
+          result.success = iface.getdir(args.path, args.instanceMap);
         } catch (FSError e) {
           result.e = e;
         }
@@ -1382,7 +1490,7 @@ public class FuseOps {
       public mknod_result getResult(I iface, mknod_args args) throws org.apache.thrift.TException {
         mknod_result result = new mknod_result();
         try {
-          iface.mknod(args.path, args.mode, args.rdev, args.uid, args.gid);
+          result.success = iface.mknod(args.path, args.mode, args.rdev, args.uid, args.gid, args.instanceMap);
         } catch (FSError e) {
           result.e = e;
         }
@@ -1406,7 +1514,7 @@ public class FuseOps {
       public mkdir_result getResult(I iface, mkdir_args args) throws org.apache.thrift.TException {
         mkdir_result result = new mkdir_result();
         try {
-          iface.mkdir(args.path, args.mode, args.uid, args.gid);
+          result.success = iface.mkdir(args.path, args.mode, args.uid, args.gid, args.instanceMap);
         } catch (FSError e) {
           result.e = e;
         }
@@ -1430,7 +1538,7 @@ public class FuseOps {
       public unlink_result getResult(I iface, unlink_args args) throws org.apache.thrift.TException {
         unlink_result result = new unlink_result();
         try {
-          iface.unlink(args.path);
+          result.success = iface.unlink(args.path, args.instanceMap);
         } catch (FSError e) {
           result.e = e;
         }
@@ -1454,7 +1562,7 @@ public class FuseOps {
       public rmdir_result getResult(I iface, rmdir_args args) throws org.apache.thrift.TException {
         rmdir_result result = new rmdir_result();
         try {
-          iface.rmdir(args.path);
+          result.success = iface.rmdir(args.path, args.instanceMap);
         } catch (FSError e) {
           result.e = e;
         }
@@ -1478,7 +1586,7 @@ public class FuseOps {
       public symlink_result getResult(I iface, symlink_args args) throws org.apache.thrift.TException {
         symlink_result result = new symlink_result();
         try {
-          iface.symlink(args.target, args.path, args.uid, args.gid);
+          result.success = iface.symlink(args.target, args.path, args.uid, args.gid, args.instanceMap);
         } catch (FSError e) {
           result.e = e;
         }
@@ -1502,7 +1610,7 @@ public class FuseOps {
       public rename_result getResult(I iface, rename_args args) throws org.apache.thrift.TException {
         rename_result result = new rename_result();
         try {
-          iface.rename(args.fromPath, args.toPath);
+          result.success = iface.rename(args.fromPath, args.toPath, args.instanceMap);
         } catch (FSError e) {
           result.e = e;
         }
@@ -1526,7 +1634,7 @@ public class FuseOps {
       public chmod_result getResult(I iface, chmod_args args) throws org.apache.thrift.TException {
         chmod_result result = new chmod_result();
         try {
-          iface.chmod(args.path, args.mode);
+          result.success = iface.chmod(args.path, args.mode, args.instanceMap);
         } catch (FSError e) {
           result.e = e;
         }
@@ -1550,7 +1658,7 @@ public class FuseOps {
       public chown_result getResult(I iface, chown_args args) throws org.apache.thrift.TException {
         chown_result result = new chown_result();
         try {
-          iface.chown(args.path, args.uid, args.gid);
+          result.success = iface.chown(args.path, args.uid, args.gid, args.instanceMap);
         } catch (FSError e) {
           result.e = e;
         }
@@ -1574,7 +1682,7 @@ public class FuseOps {
       public truncate_result getResult(I iface, truncate_args args) throws org.apache.thrift.TException {
         truncate_result result = new truncate_result();
         try {
-          iface.truncate(args.path, args.size);
+          result.success = iface.truncate(args.path, args.size, args.instanceMap);
         } catch (FSError e) {
           result.e = e;
         }
@@ -1598,7 +1706,7 @@ public class FuseOps {
       public utime_result getResult(I iface, utime_args args) throws org.apache.thrift.TException {
         utime_result result = new utime_result();
         try {
-          iface.utime(args.path, args.atime, args.mtime);
+          result.success = iface.utime(args.path, args.atime, args.mtime, args.instanceMap);
         } catch (FSError e) {
           result.e = e;
         }
@@ -1622,7 +1730,7 @@ public class FuseOps {
       public statfs_result getResult(I iface, statfs_args args) throws org.apache.thrift.TException {
         statfs_result result = new statfs_result();
         try {
-          result.success = iface.statfs();
+          result.success = iface.statfs(args.instanceMap);
         } catch (FSError e) {
           result.e = e;
         }
@@ -1646,7 +1754,7 @@ public class FuseOps {
       public open_result getResult(I iface, open_args args) throws org.apache.thrift.TException {
         open_result result = new open_result();
         try {
-          result.success = iface.open(args.path, args.flags);
+          result.success = iface.open(args.path, args.flags, args.instanceMap);
         } catch (FSError e) {
           result.e = e;
         }
@@ -1670,7 +1778,7 @@ public class FuseOps {
       public readBlocks_result getResult(I iface, readBlocks_args args) throws org.apache.thrift.TException {
         readBlocks_result result = new readBlocks_result();
         try {
-          result.success = iface.readBlocks(args.path, args.fh, args.offset, args.bytes);
+          result.success = iface.readBlocks(args.path, args.fh, args.offset, args.bytes, args.instanceMap);
         } catch (FSError e) {
           result.e = e;
         }
@@ -1694,7 +1802,7 @@ public class FuseOps {
       public writeBlocks_result getResult(I iface, writeBlocks_args args) throws org.apache.thrift.TException {
         writeBlocks_result result = new writeBlocks_result();
         try {
-          iface.writeBlocks(args.path, args.fh, args.offset, args.blocks);
+          result.success = iface.writeBlocks(args.path, args.fh, args.offset, args.blocks, args.instanceMap);
         } catch (FSError e) {
           result.e = e;
         }
@@ -1718,7 +1826,7 @@ public class FuseOps {
       public release_result getResult(I iface, release_args args) throws org.apache.thrift.TException {
         release_result result = new release_result();
         try {
-          iface.release(args.path, args.fh, args.flags);
+          result.success = iface.release(args.path, args.fh, args.flags, args.instanceMap);
         } catch (FSError e) {
           result.e = e;
         }
@@ -1760,7 +1868,7 @@ public class FuseOps {
       return processMap;
     }
 
-    public static class getattr<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getattr_args, Attr> {
+    public static class getattr<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getattr_args, Response> {
       public getattr() {
         super("getattr");
       }
@@ -1769,10 +1877,10 @@ public class FuseOps {
         return new getattr_args();
       }
 
-      public AsyncMethodCallback<Attr> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<Response> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<Attr>() { 
-          public void onComplete(Attr o) {
+        return new AsyncMethodCallback<Response>() { 
+          public void onComplete(Response o) {
             getattr_result result = new getattr_result();
             result.success = o;
             try {
@@ -1812,12 +1920,12 @@ public class FuseOps {
         return false;
       }
 
-      public void start(I iface, getattr_args args, org.apache.thrift.async.AsyncMethodCallback<Attr> resultHandler) throws TException {
-        iface.getattr(args.path,resultHandler);
+      public void start(I iface, getattr_args args, org.apache.thrift.async.AsyncMethodCallback<Response> resultHandler) throws TException {
+        iface.getattr(args.path, args.instanceMap,resultHandler);
       }
     }
 
-    public static class readlink<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, readlink_args, String> {
+    public static class readlink<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, readlink_args, Response> {
       public readlink() {
         super("readlink");
       }
@@ -1826,10 +1934,10 @@ public class FuseOps {
         return new readlink_args();
       }
 
-      public AsyncMethodCallback<String> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<Response> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<String>() { 
-          public void onComplete(String o) {
+        return new AsyncMethodCallback<Response>() { 
+          public void onComplete(Response o) {
             readlink_result result = new readlink_result();
             result.success = o;
             try {
@@ -1869,12 +1977,12 @@ public class FuseOps {
         return false;
       }
 
-      public void start(I iface, readlink_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
-        iface.readlink(args.path,resultHandler);
+      public void start(I iface, readlink_args args, org.apache.thrift.async.AsyncMethodCallback<Response> resultHandler) throws TException {
+        iface.readlink(args.path, args.instanceMap,resultHandler);
       }
     }
 
-    public static class getdir<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getdir_args, List<DirEntry>> {
+    public static class getdir<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getdir_args, Response> {
       public getdir() {
         super("getdir");
       }
@@ -1883,10 +1991,10 @@ public class FuseOps {
         return new getdir_args();
       }
 
-      public AsyncMethodCallback<List<DirEntry>> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<Response> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<List<DirEntry>>() { 
-          public void onComplete(List<DirEntry> o) {
+        return new AsyncMethodCallback<Response>() { 
+          public void onComplete(Response o) {
             getdir_result result = new getdir_result();
             result.success = o;
             try {
@@ -1926,12 +2034,12 @@ public class FuseOps {
         return false;
       }
 
-      public void start(I iface, getdir_args args, org.apache.thrift.async.AsyncMethodCallback<List<DirEntry>> resultHandler) throws TException {
-        iface.getdir(args.path,resultHandler);
+      public void start(I iface, getdir_args args, org.apache.thrift.async.AsyncMethodCallback<Response> resultHandler) throws TException {
+        iface.getdir(args.path, args.instanceMap,resultHandler);
       }
     }
 
-    public static class mknod<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, mknod_args, Void> {
+    public static class mknod<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, mknod_args, Response> {
       public mknod() {
         super("mknod");
       }
@@ -1940,11 +2048,12 @@ public class FuseOps {
         return new mknod_args();
       }
 
-      public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<Response> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<Void>() { 
-          public void onComplete(Void o) {
+        return new AsyncMethodCallback<Response>() { 
+          public void onComplete(Response o) {
             mknod_result result = new mknod_result();
+            result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
               return;
@@ -1982,12 +2091,12 @@ public class FuseOps {
         return false;
       }
 
-      public void start(I iface, mknod_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
-        iface.mknod(args.path, args.mode, args.rdev, args.uid, args.gid,resultHandler);
+      public void start(I iface, mknod_args args, org.apache.thrift.async.AsyncMethodCallback<Response> resultHandler) throws TException {
+        iface.mknod(args.path, args.mode, args.rdev, args.uid, args.gid, args.instanceMap,resultHandler);
       }
     }
 
-    public static class mkdir<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, mkdir_args, Void> {
+    public static class mkdir<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, mkdir_args, Response> {
       public mkdir() {
         super("mkdir");
       }
@@ -1996,11 +2105,12 @@ public class FuseOps {
         return new mkdir_args();
       }
 
-      public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<Response> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<Void>() { 
-          public void onComplete(Void o) {
+        return new AsyncMethodCallback<Response>() { 
+          public void onComplete(Response o) {
             mkdir_result result = new mkdir_result();
+            result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
               return;
@@ -2038,12 +2148,12 @@ public class FuseOps {
         return false;
       }
 
-      public void start(I iface, mkdir_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
-        iface.mkdir(args.path, args.mode, args.uid, args.gid,resultHandler);
+      public void start(I iface, mkdir_args args, org.apache.thrift.async.AsyncMethodCallback<Response> resultHandler) throws TException {
+        iface.mkdir(args.path, args.mode, args.uid, args.gid, args.instanceMap,resultHandler);
       }
     }
 
-    public static class unlink<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, unlink_args, Void> {
+    public static class unlink<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, unlink_args, Response> {
       public unlink() {
         super("unlink");
       }
@@ -2052,11 +2162,12 @@ public class FuseOps {
         return new unlink_args();
       }
 
-      public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<Response> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<Void>() { 
-          public void onComplete(Void o) {
+        return new AsyncMethodCallback<Response>() { 
+          public void onComplete(Response o) {
             unlink_result result = new unlink_result();
+            result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
               return;
@@ -2094,12 +2205,12 @@ public class FuseOps {
         return false;
       }
 
-      public void start(I iface, unlink_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
-        iface.unlink(args.path,resultHandler);
+      public void start(I iface, unlink_args args, org.apache.thrift.async.AsyncMethodCallback<Response> resultHandler) throws TException {
+        iface.unlink(args.path, args.instanceMap,resultHandler);
       }
     }
 
-    public static class rmdir<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, rmdir_args, Void> {
+    public static class rmdir<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, rmdir_args, Response> {
       public rmdir() {
         super("rmdir");
       }
@@ -2108,11 +2219,12 @@ public class FuseOps {
         return new rmdir_args();
       }
 
-      public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<Response> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<Void>() { 
-          public void onComplete(Void o) {
+        return new AsyncMethodCallback<Response>() { 
+          public void onComplete(Response o) {
             rmdir_result result = new rmdir_result();
+            result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
               return;
@@ -2150,12 +2262,12 @@ public class FuseOps {
         return false;
       }
 
-      public void start(I iface, rmdir_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
-        iface.rmdir(args.path,resultHandler);
+      public void start(I iface, rmdir_args args, org.apache.thrift.async.AsyncMethodCallback<Response> resultHandler) throws TException {
+        iface.rmdir(args.path, args.instanceMap,resultHandler);
       }
     }
 
-    public static class symlink<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, symlink_args, Void> {
+    public static class symlink<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, symlink_args, Response> {
       public symlink() {
         super("symlink");
       }
@@ -2164,11 +2276,12 @@ public class FuseOps {
         return new symlink_args();
       }
 
-      public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<Response> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<Void>() { 
-          public void onComplete(Void o) {
+        return new AsyncMethodCallback<Response>() { 
+          public void onComplete(Response o) {
             symlink_result result = new symlink_result();
+            result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
               return;
@@ -2206,12 +2319,12 @@ public class FuseOps {
         return false;
       }
 
-      public void start(I iface, symlink_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
-        iface.symlink(args.target, args.path, args.uid, args.gid,resultHandler);
+      public void start(I iface, symlink_args args, org.apache.thrift.async.AsyncMethodCallback<Response> resultHandler) throws TException {
+        iface.symlink(args.target, args.path, args.uid, args.gid, args.instanceMap,resultHandler);
       }
     }
 
-    public static class rename<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, rename_args, Void> {
+    public static class rename<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, rename_args, Response> {
       public rename() {
         super("rename");
       }
@@ -2220,11 +2333,12 @@ public class FuseOps {
         return new rename_args();
       }
 
-      public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<Response> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<Void>() { 
-          public void onComplete(Void o) {
+        return new AsyncMethodCallback<Response>() { 
+          public void onComplete(Response o) {
             rename_result result = new rename_result();
+            result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
               return;
@@ -2262,12 +2376,12 @@ public class FuseOps {
         return false;
       }
 
-      public void start(I iface, rename_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
-        iface.rename(args.fromPath, args.toPath,resultHandler);
+      public void start(I iface, rename_args args, org.apache.thrift.async.AsyncMethodCallback<Response> resultHandler) throws TException {
+        iface.rename(args.fromPath, args.toPath, args.instanceMap,resultHandler);
       }
     }
 
-    public static class chmod<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, chmod_args, Void> {
+    public static class chmod<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, chmod_args, Response> {
       public chmod() {
         super("chmod");
       }
@@ -2276,11 +2390,12 @@ public class FuseOps {
         return new chmod_args();
       }
 
-      public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<Response> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<Void>() { 
-          public void onComplete(Void o) {
+        return new AsyncMethodCallback<Response>() { 
+          public void onComplete(Response o) {
             chmod_result result = new chmod_result();
+            result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
               return;
@@ -2318,12 +2433,12 @@ public class FuseOps {
         return false;
       }
 
-      public void start(I iface, chmod_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
-        iface.chmod(args.path, args.mode,resultHandler);
+      public void start(I iface, chmod_args args, org.apache.thrift.async.AsyncMethodCallback<Response> resultHandler) throws TException {
+        iface.chmod(args.path, args.mode, args.instanceMap,resultHandler);
       }
     }
 
-    public static class chown<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, chown_args, Void> {
+    public static class chown<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, chown_args, Response> {
       public chown() {
         super("chown");
       }
@@ -2332,11 +2447,12 @@ public class FuseOps {
         return new chown_args();
       }
 
-      public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<Response> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<Void>() { 
-          public void onComplete(Void o) {
+        return new AsyncMethodCallback<Response>() { 
+          public void onComplete(Response o) {
             chown_result result = new chown_result();
+            result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
               return;
@@ -2374,12 +2490,12 @@ public class FuseOps {
         return false;
       }
 
-      public void start(I iface, chown_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
-        iface.chown(args.path, args.uid, args.gid,resultHandler);
+      public void start(I iface, chown_args args, org.apache.thrift.async.AsyncMethodCallback<Response> resultHandler) throws TException {
+        iface.chown(args.path, args.uid, args.gid, args.instanceMap,resultHandler);
       }
     }
 
-    public static class truncate<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, truncate_args, Void> {
+    public static class truncate<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, truncate_args, Response> {
       public truncate() {
         super("truncate");
       }
@@ -2388,11 +2504,12 @@ public class FuseOps {
         return new truncate_args();
       }
 
-      public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<Response> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<Void>() { 
-          public void onComplete(Void o) {
+        return new AsyncMethodCallback<Response>() { 
+          public void onComplete(Response o) {
             truncate_result result = new truncate_result();
+            result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
               return;
@@ -2430,12 +2547,12 @@ public class FuseOps {
         return false;
       }
 
-      public void start(I iface, truncate_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
-        iface.truncate(args.path, args.size,resultHandler);
+      public void start(I iface, truncate_args args, org.apache.thrift.async.AsyncMethodCallback<Response> resultHandler) throws TException {
+        iface.truncate(args.path, args.size, args.instanceMap,resultHandler);
       }
     }
 
-    public static class utime<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, utime_args, Void> {
+    public static class utime<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, utime_args, Response> {
       public utime() {
         super("utime");
       }
@@ -2444,11 +2561,12 @@ public class FuseOps {
         return new utime_args();
       }
 
-      public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<Response> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<Void>() { 
-          public void onComplete(Void o) {
+        return new AsyncMethodCallback<Response>() { 
+          public void onComplete(Response o) {
             utime_result result = new utime_result();
+            result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
               return;
@@ -2486,12 +2604,12 @@ public class FuseOps {
         return false;
       }
 
-      public void start(I iface, utime_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
-        iface.utime(args.path, args.atime, args.mtime,resultHandler);
+      public void start(I iface, utime_args args, org.apache.thrift.async.AsyncMethodCallback<Response> resultHandler) throws TException {
+        iface.utime(args.path, args.atime, args.mtime, args.instanceMap,resultHandler);
       }
     }
 
-    public static class statfs<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, statfs_args, FileSystemStats> {
+    public static class statfs<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, statfs_args, Response> {
       public statfs() {
         super("statfs");
       }
@@ -2500,10 +2618,10 @@ public class FuseOps {
         return new statfs_args();
       }
 
-      public AsyncMethodCallback<FileSystemStats> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<Response> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<FileSystemStats>() { 
-          public void onComplete(FileSystemStats o) {
+        return new AsyncMethodCallback<Response>() { 
+          public void onComplete(Response o) {
             statfs_result result = new statfs_result();
             result.success = o;
             try {
@@ -2543,12 +2661,12 @@ public class FuseOps {
         return false;
       }
 
-      public void start(I iface, statfs_args args, org.apache.thrift.async.AsyncMethodCallback<FileSystemStats> resultHandler) throws TException {
-        iface.statfs(resultHandler);
+      public void start(I iface, statfs_args args, org.apache.thrift.async.AsyncMethodCallback<Response> resultHandler) throws TException {
+        iface.statfs(args.instanceMap,resultHandler);
       }
     }
 
-    public static class open<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, open_args, FileHandle> {
+    public static class open<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, open_args, Response> {
       public open() {
         super("open");
       }
@@ -2557,10 +2675,10 @@ public class FuseOps {
         return new open_args();
       }
 
-      public AsyncMethodCallback<FileHandle> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<Response> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<FileHandle>() { 
-          public void onComplete(FileHandle o) {
+        return new AsyncMethodCallback<Response>() { 
+          public void onComplete(Response o) {
             open_result result = new open_result();
             result.success = o;
             try {
@@ -2600,12 +2718,12 @@ public class FuseOps {
         return false;
       }
 
-      public void start(I iface, open_args args, org.apache.thrift.async.AsyncMethodCallback<FileHandle> resultHandler) throws TException {
-        iface.open(args.path, args.flags,resultHandler);
+      public void start(I iface, open_args args, org.apache.thrift.async.AsyncMethodCallback<Response> resultHandler) throws TException {
+        iface.open(args.path, args.flags, args.instanceMap,resultHandler);
       }
     }
 
-    public static class readBlocks<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, readBlocks_args, ReadResult> {
+    public static class readBlocks<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, readBlocks_args, Response> {
       public readBlocks() {
         super("readBlocks");
       }
@@ -2614,10 +2732,10 @@ public class FuseOps {
         return new readBlocks_args();
       }
 
-      public AsyncMethodCallback<ReadResult> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<Response> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<ReadResult>() { 
-          public void onComplete(ReadResult o) {
+        return new AsyncMethodCallback<Response>() { 
+          public void onComplete(Response o) {
             readBlocks_result result = new readBlocks_result();
             result.success = o;
             try {
@@ -2657,12 +2775,12 @@ public class FuseOps {
         return false;
       }
 
-      public void start(I iface, readBlocks_args args, org.apache.thrift.async.AsyncMethodCallback<ReadResult> resultHandler) throws TException {
-        iface.readBlocks(args.path, args.fh, args.offset, args.bytes,resultHandler);
+      public void start(I iface, readBlocks_args args, org.apache.thrift.async.AsyncMethodCallback<Response> resultHandler) throws TException {
+        iface.readBlocks(args.path, args.fh, args.offset, args.bytes, args.instanceMap,resultHandler);
       }
     }
 
-    public static class writeBlocks<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, writeBlocks_args, Void> {
+    public static class writeBlocks<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, writeBlocks_args, Response> {
       public writeBlocks() {
         super("writeBlocks");
       }
@@ -2671,11 +2789,12 @@ public class FuseOps {
         return new writeBlocks_args();
       }
 
-      public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<Response> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<Void>() { 
-          public void onComplete(Void o) {
+        return new AsyncMethodCallback<Response>() { 
+          public void onComplete(Response o) {
             writeBlocks_result result = new writeBlocks_result();
+            result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
               return;
@@ -2713,12 +2832,12 @@ public class FuseOps {
         return false;
       }
 
-      public void start(I iface, writeBlocks_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
-        iface.writeBlocks(args.path, args.fh, args.offset, args.blocks,resultHandler);
+      public void start(I iface, writeBlocks_args args, org.apache.thrift.async.AsyncMethodCallback<Response> resultHandler) throws TException {
+        iface.writeBlocks(args.path, args.fh, args.offset, args.blocks, args.instanceMap,resultHandler);
       }
     }
 
-    public static class release<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, release_args, Void> {
+    public static class release<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, release_args, Response> {
       public release() {
         super("release");
       }
@@ -2727,11 +2846,12 @@ public class FuseOps {
         return new release_args();
       }
 
-      public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<Response> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<Void>() { 
-          public void onComplete(Void o) {
+        return new AsyncMethodCallback<Response>() { 
+          public void onComplete(Response o) {
             release_result result = new release_result();
+            result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
               return;
@@ -2769,8 +2889,8 @@ public class FuseOps {
         return false;
       }
 
-      public void start(I iface, release_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
-        iface.release(args.path, args.fh, args.flags,resultHandler);
+      public void start(I iface, release_args args, org.apache.thrift.async.AsyncMethodCallback<Response> resultHandler) throws TException {
+        iface.release(args.path, args.fh, args.flags, args.instanceMap,resultHandler);
       }
     }
 
@@ -2780,6 +2900,7 @@ public class FuseOps {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getattr_args");
 
     private static final org.apache.thrift.protocol.TField PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("path", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField INSTANCE_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("instanceMap", org.apache.thrift.protocol.TType.MAP, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -2788,10 +2909,12 @@ public class FuseOps {
     }
 
     public String path; // required
+    public Map<Byte,Long> instanceMap; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      PATH((short)1, "path");
+      PATH((short)1, "path"),
+      INSTANCE_MAP((short)2, "instanceMap");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -2808,6 +2931,8 @@ public class FuseOps {
         switch(fieldId) {
           case 1: // PATH
             return PATH;
+          case 2: // INSTANCE_MAP
+            return INSTANCE_MAP;
           default:
             return null;
         }
@@ -2853,6 +2978,10 @@ public class FuseOps {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.PATH, new org.apache.thrift.meta_data.FieldMetaData("path", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.INSTANCE_MAP, new org.apache.thrift.meta_data.FieldMetaData("instanceMap", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE), 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64))));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getattr_args.class, metaDataMap);
     }
@@ -2861,10 +2990,12 @@ public class FuseOps {
     }
 
     public getattr_args(
-      String path)
+      String path,
+      Map<Byte,Long> instanceMap)
     {
       this();
       this.path = path;
+      this.instanceMap = instanceMap;
     }
 
     /**
@@ -2873,6 +3004,10 @@ public class FuseOps {
     public getattr_args(getattr_args other) {
       if (other.isSetPath()) {
         this.path = other.path;
+      }
+      if (other.isSetInstanceMap()) {
+        Map<Byte,Long> __this__instanceMap = new HashMap<Byte,Long>(other.instanceMap);
+        this.instanceMap = __this__instanceMap;
       }
     }
 
@@ -2883,6 +3018,7 @@ public class FuseOps {
     @Override
     public void clear() {
       this.path = null;
+      this.instanceMap = null;
     }
 
     public String getPath() {
@@ -2909,6 +3045,41 @@ public class FuseOps {
       }
     }
 
+    public int getInstanceMapSize() {
+      return (this.instanceMap == null) ? 0 : this.instanceMap.size();
+    }
+
+    public void putToInstanceMap(byte key, long val) {
+      if (this.instanceMap == null) {
+        this.instanceMap = new HashMap<Byte,Long>();
+      }
+      this.instanceMap.put(key, val);
+    }
+
+    public Map<Byte,Long> getInstanceMap() {
+      return this.instanceMap;
+    }
+
+    public getattr_args setInstanceMap(Map<Byte,Long> instanceMap) {
+      this.instanceMap = instanceMap;
+      return this;
+    }
+
+    public void unsetInstanceMap() {
+      this.instanceMap = null;
+    }
+
+    /** Returns true if field instanceMap is set (has been assigned a value) and false otherwise */
+    public boolean isSetInstanceMap() {
+      return this.instanceMap != null;
+    }
+
+    public void setInstanceMapIsSet(boolean value) {
+      if (!value) {
+        this.instanceMap = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case PATH:
@@ -2919,6 +3090,14 @@ public class FuseOps {
         }
         break;
 
+      case INSTANCE_MAP:
+        if (value == null) {
+          unsetInstanceMap();
+        } else {
+          setInstanceMap((Map<Byte,Long>)value);
+        }
+        break;
+
       }
     }
 
@@ -2926,6 +3105,9 @@ public class FuseOps {
       switch (field) {
       case PATH:
         return getPath();
+
+      case INSTANCE_MAP:
+        return getInstanceMap();
 
       }
       throw new IllegalStateException();
@@ -2940,6 +3122,8 @@ public class FuseOps {
       switch (field) {
       case PATH:
         return isSetPath();
+      case INSTANCE_MAP:
+        return isSetInstanceMap();
       }
       throw new IllegalStateException();
     }
@@ -2963,6 +3147,15 @@ public class FuseOps {
         if (!(this_present_path && that_present_path))
           return false;
         if (!this.path.equals(that.path))
+          return false;
+      }
+
+      boolean this_present_instanceMap = true && this.isSetInstanceMap();
+      boolean that_present_instanceMap = true && that.isSetInstanceMap();
+      if (this_present_instanceMap || that_present_instanceMap) {
+        if (!(this_present_instanceMap && that_present_instanceMap))
+          return false;
+        if (!this.instanceMap.equals(that.instanceMap))
           return false;
       }
 
@@ -2992,6 +3185,16 @@ public class FuseOps {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetInstanceMap()).compareTo(other.isSetInstanceMap());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetInstanceMap()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.instanceMap, other.instanceMap);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -3017,6 +3220,14 @@ public class FuseOps {
         sb.append("null");
       } else {
         sb.append(this.path);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("instanceMap:");
+      if (this.instanceMap == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.instanceMap);
       }
       first = false;
       sb.append(")");
@@ -3070,6 +3281,26 @@ public class FuseOps {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 2: // INSTANCE_MAP
+              if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
+                {
+                  org.apache.thrift.protocol.TMap _map34 = iprot.readMapBegin();
+                  struct.instanceMap = new HashMap<Byte,Long>(2*_map34.size);
+                  for (int _i35 = 0; _i35 < _map34.size; ++_i35)
+                  {
+                    byte _key36;
+                    long _val37;
+                    _key36 = iprot.readByte();
+                    _val37 = iprot.readI64();
+                    struct.instanceMap.put(_key36, _val37);
+                  }
+                  iprot.readMapEnd();
+                }
+                struct.setInstanceMapIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -3088,6 +3319,19 @@ public class FuseOps {
         if (struct.path != null) {
           oprot.writeFieldBegin(PATH_FIELD_DESC);
           oprot.writeString(struct.path);
+          oprot.writeFieldEnd();
+        }
+        if (struct.instanceMap != null) {
+          oprot.writeFieldBegin(INSTANCE_MAP_FIELD_DESC);
+          {
+            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, struct.instanceMap.size()));
+            for (Map.Entry<Byte, Long> _iter38 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter38.getKey());
+              oprot.writeI64(_iter38.getValue());
+            }
+            oprot.writeMapEnd();
+          }
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -3111,19 +3355,47 @@ public class FuseOps {
         if (struct.isSetPath()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetInstanceMap()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
         if (struct.isSetPath()) {
           oprot.writeString(struct.path);
+        }
+        if (struct.isSetInstanceMap()) {
+          {
+            oprot.writeI32(struct.instanceMap.size());
+            for (Map.Entry<Byte, Long> _iter39 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter39.getKey());
+              oprot.writeI64(_iter39.getValue());
+            }
+          }
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, getattr_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           struct.path = iprot.readString();
           struct.setPathIsSet(true);
+        }
+        if (incoming.get(1)) {
+          {
+            org.apache.thrift.protocol.TMap _map40 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, iprot.readI32());
+            struct.instanceMap = new HashMap<Byte,Long>(2*_map40.size);
+            for (int _i41 = 0; _i41 < _map40.size; ++_i41)
+            {
+              byte _key42;
+              long _val43;
+              _key42 = iprot.readByte();
+              _val43 = iprot.readI64();
+              struct.instanceMap.put(_key42, _val43);
+            }
+          }
+          struct.setInstanceMapIsSet(true);
         }
       }
     }
@@ -3142,7 +3414,7 @@ public class FuseOps {
       schemes.put(TupleScheme.class, new getattr_resultTupleSchemeFactory());
     }
 
-    public Attr success; // required
+    public Response success; // required
     public FSError e; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -3211,7 +3483,7 @@ public class FuseOps {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Attr.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Response.class)));
       tmpMap.put(_Fields.E, new org.apache.thrift.meta_data.FieldMetaData("e", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -3222,7 +3494,7 @@ public class FuseOps {
     }
 
     public getattr_result(
-      Attr success,
+      Response success,
       FSError e)
     {
       this();
@@ -3235,7 +3507,7 @@ public class FuseOps {
      */
     public getattr_result(getattr_result other) {
       if (other.isSetSuccess()) {
-        this.success = new Attr(other.success);
+        this.success = new Response(other.success);
       }
       if (other.isSetE()) {
         this.e = new FSError(other.e);
@@ -3252,11 +3524,11 @@ public class FuseOps {
       this.e = null;
     }
 
-    public Attr getSuccess() {
+    public Response getSuccess() {
       return this.success;
     }
 
-    public getattr_result setSuccess(Attr success) {
+    public getattr_result setSuccess(Response success) {
       this.success = success;
       return this;
     }
@@ -3306,7 +3578,7 @@ public class FuseOps {
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((Attr)value);
+          setSuccess((Response)value);
         }
         break;
 
@@ -3498,7 +3770,7 @@ public class FuseOps {
           switch (schemeField.id) {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.success = new Attr();
+                struct.success = new Response();
                 struct.success.read(iprot);
                 struct.setSuccessIsSet(true);
               } else { 
@@ -3577,7 +3849,7 @@ public class FuseOps {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
-          struct.success = new Attr();
+          struct.success = new Response();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
@@ -3595,6 +3867,7 @@ public class FuseOps {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("readlink_args");
 
     private static final org.apache.thrift.protocol.TField PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("path", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField INSTANCE_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("instanceMap", org.apache.thrift.protocol.TType.MAP, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -3603,10 +3876,12 @@ public class FuseOps {
     }
 
     public String path; // required
+    public Map<Byte,Long> instanceMap; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      PATH((short)1, "path");
+      PATH((short)1, "path"),
+      INSTANCE_MAP((short)2, "instanceMap");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -3623,6 +3898,8 @@ public class FuseOps {
         switch(fieldId) {
           case 1: // PATH
             return PATH;
+          case 2: // INSTANCE_MAP
+            return INSTANCE_MAP;
           default:
             return null;
         }
@@ -3668,6 +3945,10 @@ public class FuseOps {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.PATH, new org.apache.thrift.meta_data.FieldMetaData("path", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.INSTANCE_MAP, new org.apache.thrift.meta_data.FieldMetaData("instanceMap", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE), 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64))));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(readlink_args.class, metaDataMap);
     }
@@ -3676,10 +3957,12 @@ public class FuseOps {
     }
 
     public readlink_args(
-      String path)
+      String path,
+      Map<Byte,Long> instanceMap)
     {
       this();
       this.path = path;
+      this.instanceMap = instanceMap;
     }
 
     /**
@@ -3688,6 +3971,10 @@ public class FuseOps {
     public readlink_args(readlink_args other) {
       if (other.isSetPath()) {
         this.path = other.path;
+      }
+      if (other.isSetInstanceMap()) {
+        Map<Byte,Long> __this__instanceMap = new HashMap<Byte,Long>(other.instanceMap);
+        this.instanceMap = __this__instanceMap;
       }
     }
 
@@ -3698,6 +3985,7 @@ public class FuseOps {
     @Override
     public void clear() {
       this.path = null;
+      this.instanceMap = null;
     }
 
     public String getPath() {
@@ -3724,6 +4012,41 @@ public class FuseOps {
       }
     }
 
+    public int getInstanceMapSize() {
+      return (this.instanceMap == null) ? 0 : this.instanceMap.size();
+    }
+
+    public void putToInstanceMap(byte key, long val) {
+      if (this.instanceMap == null) {
+        this.instanceMap = new HashMap<Byte,Long>();
+      }
+      this.instanceMap.put(key, val);
+    }
+
+    public Map<Byte,Long> getInstanceMap() {
+      return this.instanceMap;
+    }
+
+    public readlink_args setInstanceMap(Map<Byte,Long> instanceMap) {
+      this.instanceMap = instanceMap;
+      return this;
+    }
+
+    public void unsetInstanceMap() {
+      this.instanceMap = null;
+    }
+
+    /** Returns true if field instanceMap is set (has been assigned a value) and false otherwise */
+    public boolean isSetInstanceMap() {
+      return this.instanceMap != null;
+    }
+
+    public void setInstanceMapIsSet(boolean value) {
+      if (!value) {
+        this.instanceMap = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case PATH:
@@ -3734,6 +4057,14 @@ public class FuseOps {
         }
         break;
 
+      case INSTANCE_MAP:
+        if (value == null) {
+          unsetInstanceMap();
+        } else {
+          setInstanceMap((Map<Byte,Long>)value);
+        }
+        break;
+
       }
     }
 
@@ -3741,6 +4072,9 @@ public class FuseOps {
       switch (field) {
       case PATH:
         return getPath();
+
+      case INSTANCE_MAP:
+        return getInstanceMap();
 
       }
       throw new IllegalStateException();
@@ -3755,6 +4089,8 @@ public class FuseOps {
       switch (field) {
       case PATH:
         return isSetPath();
+      case INSTANCE_MAP:
+        return isSetInstanceMap();
       }
       throw new IllegalStateException();
     }
@@ -3778,6 +4114,15 @@ public class FuseOps {
         if (!(this_present_path && that_present_path))
           return false;
         if (!this.path.equals(that.path))
+          return false;
+      }
+
+      boolean this_present_instanceMap = true && this.isSetInstanceMap();
+      boolean that_present_instanceMap = true && that.isSetInstanceMap();
+      if (this_present_instanceMap || that_present_instanceMap) {
+        if (!(this_present_instanceMap && that_present_instanceMap))
+          return false;
+        if (!this.instanceMap.equals(that.instanceMap))
           return false;
       }
 
@@ -3807,6 +4152,16 @@ public class FuseOps {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetInstanceMap()).compareTo(other.isSetInstanceMap());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetInstanceMap()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.instanceMap, other.instanceMap);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -3832,6 +4187,14 @@ public class FuseOps {
         sb.append("null");
       } else {
         sb.append(this.path);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("instanceMap:");
+      if (this.instanceMap == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.instanceMap);
       }
       first = false;
       sb.append(")");
@@ -3885,6 +4248,26 @@ public class FuseOps {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 2: // INSTANCE_MAP
+              if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
+                {
+                  org.apache.thrift.protocol.TMap _map44 = iprot.readMapBegin();
+                  struct.instanceMap = new HashMap<Byte,Long>(2*_map44.size);
+                  for (int _i45 = 0; _i45 < _map44.size; ++_i45)
+                  {
+                    byte _key46;
+                    long _val47;
+                    _key46 = iprot.readByte();
+                    _val47 = iprot.readI64();
+                    struct.instanceMap.put(_key46, _val47);
+                  }
+                  iprot.readMapEnd();
+                }
+                struct.setInstanceMapIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -3903,6 +4286,19 @@ public class FuseOps {
         if (struct.path != null) {
           oprot.writeFieldBegin(PATH_FIELD_DESC);
           oprot.writeString(struct.path);
+          oprot.writeFieldEnd();
+        }
+        if (struct.instanceMap != null) {
+          oprot.writeFieldBegin(INSTANCE_MAP_FIELD_DESC);
+          {
+            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, struct.instanceMap.size()));
+            for (Map.Entry<Byte, Long> _iter48 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter48.getKey());
+              oprot.writeI64(_iter48.getValue());
+            }
+            oprot.writeMapEnd();
+          }
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -3926,19 +4322,47 @@ public class FuseOps {
         if (struct.isSetPath()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetInstanceMap()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
         if (struct.isSetPath()) {
           oprot.writeString(struct.path);
+        }
+        if (struct.isSetInstanceMap()) {
+          {
+            oprot.writeI32(struct.instanceMap.size());
+            for (Map.Entry<Byte, Long> _iter49 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter49.getKey());
+              oprot.writeI64(_iter49.getValue());
+            }
+          }
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, readlink_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           struct.path = iprot.readString();
           struct.setPathIsSet(true);
+        }
+        if (incoming.get(1)) {
+          {
+            org.apache.thrift.protocol.TMap _map50 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, iprot.readI32());
+            struct.instanceMap = new HashMap<Byte,Long>(2*_map50.size);
+            for (int _i51 = 0; _i51 < _map50.size; ++_i51)
+            {
+              byte _key52;
+              long _val53;
+              _key52 = iprot.readByte();
+              _val53 = iprot.readI64();
+              struct.instanceMap.put(_key52, _val53);
+            }
+          }
+          struct.setInstanceMapIsSet(true);
         }
       }
     }
@@ -3948,7 +4372,7 @@ public class FuseOps {
   public static class readlink_result implements org.apache.thrift.TBase<readlink_result, readlink_result._Fields>, java.io.Serializable, Cloneable, Comparable<readlink_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("readlink_result");
 
-    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
     private static final org.apache.thrift.protocol.TField E_FIELD_DESC = new org.apache.thrift.protocol.TField("e", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -3957,7 +4381,7 @@ public class FuseOps {
       schemes.put(TupleScheme.class, new readlink_resultTupleSchemeFactory());
     }
 
-    public String success; // required
+    public Response success; // required
     public FSError e; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -4026,7 +4450,7 @@ public class FuseOps {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Response.class)));
       tmpMap.put(_Fields.E, new org.apache.thrift.meta_data.FieldMetaData("e", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -4037,7 +4461,7 @@ public class FuseOps {
     }
 
     public readlink_result(
-      String success,
+      Response success,
       FSError e)
     {
       this();
@@ -4050,7 +4474,7 @@ public class FuseOps {
      */
     public readlink_result(readlink_result other) {
       if (other.isSetSuccess()) {
-        this.success = other.success;
+        this.success = new Response(other.success);
       }
       if (other.isSetE()) {
         this.e = new FSError(other.e);
@@ -4067,11 +4491,11 @@ public class FuseOps {
       this.e = null;
     }
 
-    public String getSuccess() {
+    public Response getSuccess() {
       return this.success;
     }
 
-    public readlink_result setSuccess(String success) {
+    public readlink_result setSuccess(Response success) {
       this.success = success;
       return this;
     }
@@ -4121,7 +4545,7 @@ public class FuseOps {
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((String)value);
+          setSuccess((Response)value);
         }
         break;
 
@@ -4272,6 +4696,9 @@ public class FuseOps {
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
       // check for sub-struct validity
+      if (success != null) {
+        success.validate();
+      }
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -4309,8 +4736,9 @@ public class FuseOps {
           }
           switch (schemeField.id) {
             case 0: // SUCCESS
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.success = iprot.readString();
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new Response();
+                struct.success.read(iprot);
                 struct.setSuccessIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -4342,7 +4770,7 @@ public class FuseOps {
         oprot.writeStructBegin(STRUCT_DESC);
         if (struct.success != null) {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
-          oprot.writeString(struct.success);
+          struct.success.write(oprot);
           oprot.writeFieldEnd();
         }
         if (struct.e != null) {
@@ -4376,7 +4804,7 @@ public class FuseOps {
         }
         oprot.writeBitSet(optionals, 2);
         if (struct.isSetSuccess()) {
-          oprot.writeString(struct.success);
+          struct.success.write(oprot);
         }
         if (struct.isSetE()) {
           struct.e.write(oprot);
@@ -4388,7 +4816,8 @@ public class FuseOps {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
-          struct.success = iprot.readString();
+          struct.success = new Response();
+          struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
@@ -4405,6 +4834,7 @@ public class FuseOps {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getdir_args");
 
     private static final org.apache.thrift.protocol.TField PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("path", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField INSTANCE_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("instanceMap", org.apache.thrift.protocol.TType.MAP, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -4413,10 +4843,12 @@ public class FuseOps {
     }
 
     public String path; // required
+    public Map<Byte,Long> instanceMap; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      PATH((short)1, "path");
+      PATH((short)1, "path"),
+      INSTANCE_MAP((short)2, "instanceMap");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -4433,6 +4865,8 @@ public class FuseOps {
         switch(fieldId) {
           case 1: // PATH
             return PATH;
+          case 2: // INSTANCE_MAP
+            return INSTANCE_MAP;
           default:
             return null;
         }
@@ -4478,6 +4912,10 @@ public class FuseOps {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.PATH, new org.apache.thrift.meta_data.FieldMetaData("path", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.INSTANCE_MAP, new org.apache.thrift.meta_data.FieldMetaData("instanceMap", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE), 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64))));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getdir_args.class, metaDataMap);
     }
@@ -4486,10 +4924,12 @@ public class FuseOps {
     }
 
     public getdir_args(
-      String path)
+      String path,
+      Map<Byte,Long> instanceMap)
     {
       this();
       this.path = path;
+      this.instanceMap = instanceMap;
     }
 
     /**
@@ -4498,6 +4938,10 @@ public class FuseOps {
     public getdir_args(getdir_args other) {
       if (other.isSetPath()) {
         this.path = other.path;
+      }
+      if (other.isSetInstanceMap()) {
+        Map<Byte,Long> __this__instanceMap = new HashMap<Byte,Long>(other.instanceMap);
+        this.instanceMap = __this__instanceMap;
       }
     }
 
@@ -4508,6 +4952,7 @@ public class FuseOps {
     @Override
     public void clear() {
       this.path = null;
+      this.instanceMap = null;
     }
 
     public String getPath() {
@@ -4534,6 +4979,41 @@ public class FuseOps {
       }
     }
 
+    public int getInstanceMapSize() {
+      return (this.instanceMap == null) ? 0 : this.instanceMap.size();
+    }
+
+    public void putToInstanceMap(byte key, long val) {
+      if (this.instanceMap == null) {
+        this.instanceMap = new HashMap<Byte,Long>();
+      }
+      this.instanceMap.put(key, val);
+    }
+
+    public Map<Byte,Long> getInstanceMap() {
+      return this.instanceMap;
+    }
+
+    public getdir_args setInstanceMap(Map<Byte,Long> instanceMap) {
+      this.instanceMap = instanceMap;
+      return this;
+    }
+
+    public void unsetInstanceMap() {
+      this.instanceMap = null;
+    }
+
+    /** Returns true if field instanceMap is set (has been assigned a value) and false otherwise */
+    public boolean isSetInstanceMap() {
+      return this.instanceMap != null;
+    }
+
+    public void setInstanceMapIsSet(boolean value) {
+      if (!value) {
+        this.instanceMap = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case PATH:
@@ -4544,6 +5024,14 @@ public class FuseOps {
         }
         break;
 
+      case INSTANCE_MAP:
+        if (value == null) {
+          unsetInstanceMap();
+        } else {
+          setInstanceMap((Map<Byte,Long>)value);
+        }
+        break;
+
       }
     }
 
@@ -4551,6 +5039,9 @@ public class FuseOps {
       switch (field) {
       case PATH:
         return getPath();
+
+      case INSTANCE_MAP:
+        return getInstanceMap();
 
       }
       throw new IllegalStateException();
@@ -4565,6 +5056,8 @@ public class FuseOps {
       switch (field) {
       case PATH:
         return isSetPath();
+      case INSTANCE_MAP:
+        return isSetInstanceMap();
       }
       throw new IllegalStateException();
     }
@@ -4588,6 +5081,15 @@ public class FuseOps {
         if (!(this_present_path && that_present_path))
           return false;
         if (!this.path.equals(that.path))
+          return false;
+      }
+
+      boolean this_present_instanceMap = true && this.isSetInstanceMap();
+      boolean that_present_instanceMap = true && that.isSetInstanceMap();
+      if (this_present_instanceMap || that_present_instanceMap) {
+        if (!(this_present_instanceMap && that_present_instanceMap))
+          return false;
+        if (!this.instanceMap.equals(that.instanceMap))
           return false;
       }
 
@@ -4617,6 +5119,16 @@ public class FuseOps {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetInstanceMap()).compareTo(other.isSetInstanceMap());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetInstanceMap()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.instanceMap, other.instanceMap);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -4642,6 +5154,14 @@ public class FuseOps {
         sb.append("null");
       } else {
         sb.append(this.path);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("instanceMap:");
+      if (this.instanceMap == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.instanceMap);
       }
       first = false;
       sb.append(")");
@@ -4695,6 +5215,26 @@ public class FuseOps {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 2: // INSTANCE_MAP
+              if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
+                {
+                  org.apache.thrift.protocol.TMap _map54 = iprot.readMapBegin();
+                  struct.instanceMap = new HashMap<Byte,Long>(2*_map54.size);
+                  for (int _i55 = 0; _i55 < _map54.size; ++_i55)
+                  {
+                    byte _key56;
+                    long _val57;
+                    _key56 = iprot.readByte();
+                    _val57 = iprot.readI64();
+                    struct.instanceMap.put(_key56, _val57);
+                  }
+                  iprot.readMapEnd();
+                }
+                struct.setInstanceMapIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -4713,6 +5253,19 @@ public class FuseOps {
         if (struct.path != null) {
           oprot.writeFieldBegin(PATH_FIELD_DESC);
           oprot.writeString(struct.path);
+          oprot.writeFieldEnd();
+        }
+        if (struct.instanceMap != null) {
+          oprot.writeFieldBegin(INSTANCE_MAP_FIELD_DESC);
+          {
+            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, struct.instanceMap.size()));
+            for (Map.Entry<Byte, Long> _iter58 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter58.getKey());
+              oprot.writeI64(_iter58.getValue());
+            }
+            oprot.writeMapEnd();
+          }
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -4736,19 +5289,47 @@ public class FuseOps {
         if (struct.isSetPath()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetInstanceMap()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
         if (struct.isSetPath()) {
           oprot.writeString(struct.path);
+        }
+        if (struct.isSetInstanceMap()) {
+          {
+            oprot.writeI32(struct.instanceMap.size());
+            for (Map.Entry<Byte, Long> _iter59 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter59.getKey());
+              oprot.writeI64(_iter59.getValue());
+            }
+          }
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, getdir_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           struct.path = iprot.readString();
           struct.setPathIsSet(true);
+        }
+        if (incoming.get(1)) {
+          {
+            org.apache.thrift.protocol.TMap _map60 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, iprot.readI32());
+            struct.instanceMap = new HashMap<Byte,Long>(2*_map60.size);
+            for (int _i61 = 0; _i61 < _map60.size; ++_i61)
+            {
+              byte _key62;
+              long _val63;
+              _key62 = iprot.readByte();
+              _val63 = iprot.readI64();
+              struct.instanceMap.put(_key62, _val63);
+            }
+          }
+          struct.setInstanceMapIsSet(true);
         }
       }
     }
@@ -4758,7 +5339,7 @@ public class FuseOps {
   public static class getdir_result implements org.apache.thrift.TBase<getdir_result, getdir_result._Fields>, java.io.Serializable, Cloneable, Comparable<getdir_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getdir_result");
 
-    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.LIST, (short)0);
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
     private static final org.apache.thrift.protocol.TField E_FIELD_DESC = new org.apache.thrift.protocol.TField("e", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -4767,7 +5348,7 @@ public class FuseOps {
       schemes.put(TupleScheme.class, new getdir_resultTupleSchemeFactory());
     }
 
-    public List<DirEntry> success; // required
+    public Response success; // required
     public FSError e; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -4836,8 +5417,7 @@ public class FuseOps {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-              new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, DirEntry.class))));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Response.class)));
       tmpMap.put(_Fields.E, new org.apache.thrift.meta_data.FieldMetaData("e", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -4848,7 +5428,7 @@ public class FuseOps {
     }
 
     public getdir_result(
-      List<DirEntry> success,
+      Response success,
       FSError e)
     {
       this();
@@ -4861,11 +5441,7 @@ public class FuseOps {
      */
     public getdir_result(getdir_result other) {
       if (other.isSetSuccess()) {
-        List<DirEntry> __this__success = new ArrayList<DirEntry>(other.success.size());
-        for (DirEntry other_element : other.success) {
-          __this__success.add(new DirEntry(other_element));
-        }
-        this.success = __this__success;
+        this.success = new Response(other.success);
       }
       if (other.isSetE()) {
         this.e = new FSError(other.e);
@@ -4882,26 +5458,11 @@ public class FuseOps {
       this.e = null;
     }
 
-    public int getSuccessSize() {
-      return (this.success == null) ? 0 : this.success.size();
-    }
-
-    public java.util.Iterator<DirEntry> getSuccessIterator() {
-      return (this.success == null) ? null : this.success.iterator();
-    }
-
-    public void addToSuccess(DirEntry elem) {
-      if (this.success == null) {
-        this.success = new ArrayList<DirEntry>();
-      }
-      this.success.add(elem);
-    }
-
-    public List<DirEntry> getSuccess() {
+    public Response getSuccess() {
       return this.success;
     }
 
-    public getdir_result setSuccess(List<DirEntry> success) {
+    public getdir_result setSuccess(Response success) {
       this.success = success;
       return this;
     }
@@ -4951,7 +5512,7 @@ public class FuseOps {
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((List<DirEntry>)value);
+          setSuccess((Response)value);
         }
         break;
 
@@ -5102,6 +5663,9 @@ public class FuseOps {
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
       // check for sub-struct validity
+      if (success != null) {
+        success.validate();
+      }
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -5139,19 +5703,9 @@ public class FuseOps {
           }
           switch (schemeField.id) {
             case 0: // SUCCESS
-              if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
-                {
-                  org.apache.thrift.protocol.TList _list16 = iprot.readListBegin();
-                  struct.success = new ArrayList<DirEntry>(_list16.size);
-                  for (int _i17 = 0; _i17 < _list16.size; ++_i17)
-                  {
-                    DirEntry _elem18;
-                    _elem18 = new DirEntry();
-                    _elem18.read(iprot);
-                    struct.success.add(_elem18);
-                  }
-                  iprot.readListEnd();
-                }
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new Response();
+                struct.success.read(iprot);
                 struct.setSuccessIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -5183,14 +5737,7 @@ public class FuseOps {
         oprot.writeStructBegin(STRUCT_DESC);
         if (struct.success != null) {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
-          {
-            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (DirEntry _iter19 : struct.success)
-            {
-              _iter19.write(oprot);
-            }
-            oprot.writeListEnd();
-          }
+          struct.success.write(oprot);
           oprot.writeFieldEnd();
         }
         if (struct.e != null) {
@@ -5224,13 +5771,7 @@ public class FuseOps {
         }
         oprot.writeBitSet(optionals, 2);
         if (struct.isSetSuccess()) {
-          {
-            oprot.writeI32(struct.success.size());
-            for (DirEntry _iter20 : struct.success)
-            {
-              _iter20.write(oprot);
-            }
-          }
+          struct.success.write(oprot);
         }
         if (struct.isSetE()) {
           struct.e.write(oprot);
@@ -5242,17 +5783,8 @@ public class FuseOps {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
-          {
-            org.apache.thrift.protocol.TList _list21 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<DirEntry>(_list21.size);
-            for (int _i22 = 0; _i22 < _list21.size; ++_i22)
-            {
-              DirEntry _elem23;
-              _elem23 = new DirEntry();
-              _elem23.read(iprot);
-              struct.success.add(_elem23);
-            }
-          }
+          struct.success = new Response();
+          struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
@@ -5273,6 +5805,7 @@ public class FuseOps {
     private static final org.apache.thrift.protocol.TField RDEV_FIELD_DESC = new org.apache.thrift.protocol.TField("rdev", org.apache.thrift.protocol.TType.I32, (short)3);
     private static final org.apache.thrift.protocol.TField UID_FIELD_DESC = new org.apache.thrift.protocol.TField("uid", org.apache.thrift.protocol.TType.I32, (short)4);
     private static final org.apache.thrift.protocol.TField GID_FIELD_DESC = new org.apache.thrift.protocol.TField("gid", org.apache.thrift.protocol.TType.I32, (short)5);
+    private static final org.apache.thrift.protocol.TField INSTANCE_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("instanceMap", org.apache.thrift.protocol.TType.MAP, (short)6);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -5285,6 +5818,7 @@ public class FuseOps {
     public int rdev; // required
     public int uid; // required
     public int gid; // required
+    public Map<Byte,Long> instanceMap; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -5292,7 +5826,8 @@ public class FuseOps {
       MODE((short)2, "mode"),
       RDEV((short)3, "rdev"),
       UID((short)4, "uid"),
-      GID((short)5, "gid");
+      GID((short)5, "gid"),
+      INSTANCE_MAP((short)6, "instanceMap");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -5317,6 +5852,8 @@ public class FuseOps {
             return UID;
           case 5: // GID
             return GID;
+          case 6: // INSTANCE_MAP
+            return INSTANCE_MAP;
           default:
             return null;
         }
@@ -5375,6 +5912,10 @@ public class FuseOps {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
       tmpMap.put(_Fields.GID, new org.apache.thrift.meta_data.FieldMetaData("gid", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+      tmpMap.put(_Fields.INSTANCE_MAP, new org.apache.thrift.meta_data.FieldMetaData("instanceMap", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE), 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64))));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(mknod_args.class, metaDataMap);
     }
@@ -5387,7 +5928,8 @@ public class FuseOps {
       int mode,
       int rdev,
       int uid,
-      int gid)
+      int gid,
+      Map<Byte,Long> instanceMap)
     {
       this();
       this.path = path;
@@ -5399,6 +5941,7 @@ public class FuseOps {
       setUidIsSet(true);
       this.gid = gid;
       setGidIsSet(true);
+      this.instanceMap = instanceMap;
     }
 
     /**
@@ -5413,6 +5956,10 @@ public class FuseOps {
       this.rdev = other.rdev;
       this.uid = other.uid;
       this.gid = other.gid;
+      if (other.isSetInstanceMap()) {
+        Map<Byte,Long> __this__instanceMap = new HashMap<Byte,Long>(other.instanceMap);
+        this.instanceMap = __this__instanceMap;
+      }
     }
 
     public mknod_args deepCopy() {
@@ -5430,6 +5977,7 @@ public class FuseOps {
       this.uid = 0;
       setGidIsSet(false);
       this.gid = 0;
+      this.instanceMap = null;
     }
 
     public String getPath() {
@@ -5548,6 +6096,41 @@ public class FuseOps {
       __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __GID_ISSET_ID, value);
     }
 
+    public int getInstanceMapSize() {
+      return (this.instanceMap == null) ? 0 : this.instanceMap.size();
+    }
+
+    public void putToInstanceMap(byte key, long val) {
+      if (this.instanceMap == null) {
+        this.instanceMap = new HashMap<Byte,Long>();
+      }
+      this.instanceMap.put(key, val);
+    }
+
+    public Map<Byte,Long> getInstanceMap() {
+      return this.instanceMap;
+    }
+
+    public mknod_args setInstanceMap(Map<Byte,Long> instanceMap) {
+      this.instanceMap = instanceMap;
+      return this;
+    }
+
+    public void unsetInstanceMap() {
+      this.instanceMap = null;
+    }
+
+    /** Returns true if field instanceMap is set (has been assigned a value) and false otherwise */
+    public boolean isSetInstanceMap() {
+      return this.instanceMap != null;
+    }
+
+    public void setInstanceMapIsSet(boolean value) {
+      if (!value) {
+        this.instanceMap = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case PATH:
@@ -5590,6 +6173,14 @@ public class FuseOps {
         }
         break;
 
+      case INSTANCE_MAP:
+        if (value == null) {
+          unsetInstanceMap();
+        } else {
+          setInstanceMap((Map<Byte,Long>)value);
+        }
+        break;
+
       }
     }
 
@@ -5609,6 +6200,9 @@ public class FuseOps {
 
       case GID:
         return Integer.valueOf(getGid());
+
+      case INSTANCE_MAP:
+        return getInstanceMap();
 
       }
       throw new IllegalStateException();
@@ -5631,6 +6225,8 @@ public class FuseOps {
         return isSetUid();
       case GID:
         return isSetGid();
+      case INSTANCE_MAP:
+        return isSetInstanceMap();
       }
       throw new IllegalStateException();
     }
@@ -5690,6 +6286,15 @@ public class FuseOps {
         if (!(this_present_gid && that_present_gid))
           return false;
         if (this.gid != that.gid)
+          return false;
+      }
+
+      boolean this_present_instanceMap = true && this.isSetInstanceMap();
+      boolean that_present_instanceMap = true && that.isSetInstanceMap();
+      if (this_present_instanceMap || that_present_instanceMap) {
+        if (!(this_present_instanceMap && that_present_instanceMap))
+          return false;
+        if (!this.instanceMap.equals(that.instanceMap))
           return false;
       }
 
@@ -5759,6 +6364,16 @@ public class FuseOps {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetInstanceMap()).compareTo(other.isSetInstanceMap());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetInstanceMap()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.instanceMap, other.instanceMap);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -5801,6 +6416,14 @@ public class FuseOps {
       if (!first) sb.append(", ");
       sb.append("gid:");
       sb.append(this.gid);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("instanceMap:");
+      if (this.instanceMap == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.instanceMap);
+      }
       first = false;
       sb.append(")");
       return sb.toString();
@@ -5887,6 +6510,26 @@ public class FuseOps {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 6: // INSTANCE_MAP
+              if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
+                {
+                  org.apache.thrift.protocol.TMap _map64 = iprot.readMapBegin();
+                  struct.instanceMap = new HashMap<Byte,Long>(2*_map64.size);
+                  for (int _i65 = 0; _i65 < _map64.size; ++_i65)
+                  {
+                    byte _key66;
+                    long _val67;
+                    _key66 = iprot.readByte();
+                    _val67 = iprot.readI64();
+                    struct.instanceMap.put(_key66, _val67);
+                  }
+                  iprot.readMapEnd();
+                }
+                struct.setInstanceMapIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -5919,6 +6562,19 @@ public class FuseOps {
         oprot.writeFieldBegin(GID_FIELD_DESC);
         oprot.writeI32(struct.gid);
         oprot.writeFieldEnd();
+        if (struct.instanceMap != null) {
+          oprot.writeFieldBegin(INSTANCE_MAP_FIELD_DESC);
+          {
+            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, struct.instanceMap.size()));
+            for (Map.Entry<Byte, Long> _iter68 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter68.getKey());
+              oprot.writeI64(_iter68.getValue());
+            }
+            oprot.writeMapEnd();
+          }
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -5952,7 +6608,10 @@ public class FuseOps {
         if (struct.isSetGid()) {
           optionals.set(4);
         }
-        oprot.writeBitSet(optionals, 5);
+        if (struct.isSetInstanceMap()) {
+          optionals.set(5);
+        }
+        oprot.writeBitSet(optionals, 6);
         if (struct.isSetPath()) {
           oprot.writeString(struct.path);
         }
@@ -5968,12 +6627,22 @@ public class FuseOps {
         if (struct.isSetGid()) {
           oprot.writeI32(struct.gid);
         }
+        if (struct.isSetInstanceMap()) {
+          {
+            oprot.writeI32(struct.instanceMap.size());
+            for (Map.Entry<Byte, Long> _iter69 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter69.getKey());
+              oprot.writeI64(_iter69.getValue());
+            }
+          }
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, mknod_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(5);
+        BitSet incoming = iprot.readBitSet(6);
         if (incoming.get(0)) {
           struct.path = iprot.readString();
           struct.setPathIsSet(true);
@@ -5994,6 +6663,21 @@ public class FuseOps {
           struct.gid = iprot.readI32();
           struct.setGidIsSet(true);
         }
+        if (incoming.get(5)) {
+          {
+            org.apache.thrift.protocol.TMap _map70 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, iprot.readI32());
+            struct.instanceMap = new HashMap<Byte,Long>(2*_map70.size);
+            for (int _i71 = 0; _i71 < _map70.size; ++_i71)
+            {
+              byte _key72;
+              long _val73;
+              _key72 = iprot.readByte();
+              _val73 = iprot.readI64();
+              struct.instanceMap.put(_key72, _val73);
+            }
+          }
+          struct.setInstanceMapIsSet(true);
+        }
       }
     }
 
@@ -6002,6 +6686,7 @@ public class FuseOps {
   public static class mknod_result implements org.apache.thrift.TBase<mknod_result, mknod_result._Fields>, java.io.Serializable, Cloneable, Comparable<mknod_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("mknod_result");
 
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
     private static final org.apache.thrift.protocol.TField E_FIELD_DESC = new org.apache.thrift.protocol.TField("e", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -6010,10 +6695,12 @@ public class FuseOps {
       schemes.put(TupleScheme.class, new mknod_resultTupleSchemeFactory());
     }
 
+    public Response success; // required
     public FSError e; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
       E((short)1, "e");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
@@ -6029,6 +6716,8 @@ public class FuseOps {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
           case 1: // E
             return E;
           default:
@@ -6074,6 +6763,8 @@ public class FuseOps {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Response.class)));
       tmpMap.put(_Fields.E, new org.apache.thrift.meta_data.FieldMetaData("e", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -6084,9 +6775,11 @@ public class FuseOps {
     }
 
     public mknod_result(
+      Response success,
       FSError e)
     {
       this();
+      this.success = success;
       this.e = e;
     }
 
@@ -6094,6 +6787,9 @@ public class FuseOps {
      * Performs a deep copy on <i>other</i>.
      */
     public mknod_result(mknod_result other) {
+      if (other.isSetSuccess()) {
+        this.success = new Response(other.success);
+      }
       if (other.isSetE()) {
         this.e = new FSError(other.e);
       }
@@ -6105,7 +6801,32 @@ public class FuseOps {
 
     @Override
     public void clear() {
+      this.success = null;
       this.e = null;
+    }
+
+    public Response getSuccess() {
+      return this.success;
+    }
+
+    public mknod_result setSuccess(Response success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
     }
 
     public FSError getE() {
@@ -6134,6 +6855,14 @@ public class FuseOps {
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((Response)value);
+        }
+        break;
+
       case E:
         if (value == null) {
           unsetE();
@@ -6147,6 +6876,9 @@ public class FuseOps {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
       case E:
         return getE();
 
@@ -6161,6 +6893,8 @@ public class FuseOps {
       }
 
       switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
       case E:
         return isSetE();
       }
@@ -6179,6 +6913,15 @@ public class FuseOps {
     public boolean equals(mknod_result that) {
       if (that == null)
         return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
 
       boolean this_present_e = true && this.isSetE();
       boolean that_present_e = true && that.isSetE();
@@ -6205,6 +6948,16 @@ public class FuseOps {
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetE()).compareTo(other.isSetE());
       if (lastComparison != 0) {
         return lastComparison;
@@ -6235,6 +6988,14 @@ public class FuseOps {
       StringBuilder sb = new StringBuilder("mknod_result(");
       boolean first = true;
 
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("e:");
       if (this.e == null) {
         sb.append("null");
@@ -6249,6 +7010,9 @@ public class FuseOps {
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
       // check for sub-struct validity
+      if (success != null) {
+        success.validate();
+      }
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -6285,6 +7049,15 @@ public class FuseOps {
             break;
           }
           switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new Response();
+                struct.success.read(iprot);
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             case 1: // E
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
                 struct.e = new FSError();
@@ -6309,6 +7082,11 @@ public class FuseOps {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
         if (struct.e != null) {
           oprot.writeFieldBegin(E_FIELD_DESC);
           struct.e.write(oprot);
@@ -6332,10 +7110,16 @@ public class FuseOps {
       public void write(org.apache.thrift.protocol.TProtocol prot, mknod_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetE()) {
+        if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetE()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetSuccess()) {
+          struct.success.write(oprot);
+        }
         if (struct.isSetE()) {
           struct.e.write(oprot);
         }
@@ -6344,8 +7128,13 @@ public class FuseOps {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, mknod_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
+          struct.success = new Response();
+          struct.success.read(iprot);
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
           struct.e = new FSError();
           struct.e.read(iprot);
           struct.setEIsSet(true);
@@ -6362,6 +7151,7 @@ public class FuseOps {
     private static final org.apache.thrift.protocol.TField MODE_FIELD_DESC = new org.apache.thrift.protocol.TField("mode", org.apache.thrift.protocol.TType.I32, (short)2);
     private static final org.apache.thrift.protocol.TField UID_FIELD_DESC = new org.apache.thrift.protocol.TField("uid", org.apache.thrift.protocol.TType.I32, (short)3);
     private static final org.apache.thrift.protocol.TField GID_FIELD_DESC = new org.apache.thrift.protocol.TField("gid", org.apache.thrift.protocol.TType.I32, (short)4);
+    private static final org.apache.thrift.protocol.TField INSTANCE_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("instanceMap", org.apache.thrift.protocol.TType.MAP, (short)5);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -6373,13 +7163,15 @@ public class FuseOps {
     public int mode; // required
     public int uid; // required
     public int gid; // required
+    public Map<Byte,Long> instanceMap; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       PATH((short)1, "path"),
       MODE((short)2, "mode"),
       UID((short)3, "uid"),
-      GID((short)4, "gid");
+      GID((short)4, "gid"),
+      INSTANCE_MAP((short)5, "instanceMap");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -6402,6 +7194,8 @@ public class FuseOps {
             return UID;
           case 4: // GID
             return GID;
+          case 5: // INSTANCE_MAP
+            return INSTANCE_MAP;
           default:
             return null;
         }
@@ -6457,6 +7251,10 @@ public class FuseOps {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
       tmpMap.put(_Fields.GID, new org.apache.thrift.meta_data.FieldMetaData("gid", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+      tmpMap.put(_Fields.INSTANCE_MAP, new org.apache.thrift.meta_data.FieldMetaData("instanceMap", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE), 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64))));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(mkdir_args.class, metaDataMap);
     }
@@ -6468,7 +7266,8 @@ public class FuseOps {
       String path,
       int mode,
       int uid,
-      int gid)
+      int gid,
+      Map<Byte,Long> instanceMap)
     {
       this();
       this.path = path;
@@ -6478,6 +7277,7 @@ public class FuseOps {
       setUidIsSet(true);
       this.gid = gid;
       setGidIsSet(true);
+      this.instanceMap = instanceMap;
     }
 
     /**
@@ -6491,6 +7291,10 @@ public class FuseOps {
       this.mode = other.mode;
       this.uid = other.uid;
       this.gid = other.gid;
+      if (other.isSetInstanceMap()) {
+        Map<Byte,Long> __this__instanceMap = new HashMap<Byte,Long>(other.instanceMap);
+        this.instanceMap = __this__instanceMap;
+      }
     }
 
     public mkdir_args deepCopy() {
@@ -6506,6 +7310,7 @@ public class FuseOps {
       this.uid = 0;
       setGidIsSet(false);
       this.gid = 0;
+      this.instanceMap = null;
     }
 
     public String getPath() {
@@ -6601,6 +7406,41 @@ public class FuseOps {
       __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __GID_ISSET_ID, value);
     }
 
+    public int getInstanceMapSize() {
+      return (this.instanceMap == null) ? 0 : this.instanceMap.size();
+    }
+
+    public void putToInstanceMap(byte key, long val) {
+      if (this.instanceMap == null) {
+        this.instanceMap = new HashMap<Byte,Long>();
+      }
+      this.instanceMap.put(key, val);
+    }
+
+    public Map<Byte,Long> getInstanceMap() {
+      return this.instanceMap;
+    }
+
+    public mkdir_args setInstanceMap(Map<Byte,Long> instanceMap) {
+      this.instanceMap = instanceMap;
+      return this;
+    }
+
+    public void unsetInstanceMap() {
+      this.instanceMap = null;
+    }
+
+    /** Returns true if field instanceMap is set (has been assigned a value) and false otherwise */
+    public boolean isSetInstanceMap() {
+      return this.instanceMap != null;
+    }
+
+    public void setInstanceMapIsSet(boolean value) {
+      if (!value) {
+        this.instanceMap = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case PATH:
@@ -6635,6 +7475,14 @@ public class FuseOps {
         }
         break;
 
+      case INSTANCE_MAP:
+        if (value == null) {
+          unsetInstanceMap();
+        } else {
+          setInstanceMap((Map<Byte,Long>)value);
+        }
+        break;
+
       }
     }
 
@@ -6651,6 +7499,9 @@ public class FuseOps {
 
       case GID:
         return Integer.valueOf(getGid());
+
+      case INSTANCE_MAP:
+        return getInstanceMap();
 
       }
       throw new IllegalStateException();
@@ -6671,6 +7522,8 @@ public class FuseOps {
         return isSetUid();
       case GID:
         return isSetGid();
+      case INSTANCE_MAP:
+        return isSetInstanceMap();
       }
       throw new IllegalStateException();
     }
@@ -6721,6 +7574,15 @@ public class FuseOps {
         if (!(this_present_gid && that_present_gid))
           return false;
         if (this.gid != that.gid)
+          return false;
+      }
+
+      boolean this_present_instanceMap = true && this.isSetInstanceMap();
+      boolean that_present_instanceMap = true && that.isSetInstanceMap();
+      if (this_present_instanceMap || that_present_instanceMap) {
+        if (!(this_present_instanceMap && that_present_instanceMap))
+          return false;
+        if (!this.instanceMap.equals(that.instanceMap))
           return false;
       }
 
@@ -6780,6 +7642,16 @@ public class FuseOps {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetInstanceMap()).compareTo(other.isSetInstanceMap());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetInstanceMap()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.instanceMap, other.instanceMap);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -6818,6 +7690,14 @@ public class FuseOps {
       if (!first) sb.append(", ");
       sb.append("gid:");
       sb.append(this.gid);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("instanceMap:");
+      if (this.instanceMap == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.instanceMap);
+      }
       first = false;
       sb.append(")");
       return sb.toString();
@@ -6896,6 +7776,26 @@ public class FuseOps {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 5: // INSTANCE_MAP
+              if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
+                {
+                  org.apache.thrift.protocol.TMap _map74 = iprot.readMapBegin();
+                  struct.instanceMap = new HashMap<Byte,Long>(2*_map74.size);
+                  for (int _i75 = 0; _i75 < _map74.size; ++_i75)
+                  {
+                    byte _key76;
+                    long _val77;
+                    _key76 = iprot.readByte();
+                    _val77 = iprot.readI64();
+                    struct.instanceMap.put(_key76, _val77);
+                  }
+                  iprot.readMapEnd();
+                }
+                struct.setInstanceMapIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -6925,6 +7825,19 @@ public class FuseOps {
         oprot.writeFieldBegin(GID_FIELD_DESC);
         oprot.writeI32(struct.gid);
         oprot.writeFieldEnd();
+        if (struct.instanceMap != null) {
+          oprot.writeFieldBegin(INSTANCE_MAP_FIELD_DESC);
+          {
+            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, struct.instanceMap.size()));
+            for (Map.Entry<Byte, Long> _iter78 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter78.getKey());
+              oprot.writeI64(_iter78.getValue());
+            }
+            oprot.writeMapEnd();
+          }
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -6955,7 +7868,10 @@ public class FuseOps {
         if (struct.isSetGid()) {
           optionals.set(3);
         }
-        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetInstanceMap()) {
+          optionals.set(4);
+        }
+        oprot.writeBitSet(optionals, 5);
         if (struct.isSetPath()) {
           oprot.writeString(struct.path);
         }
@@ -6968,12 +7884,22 @@ public class FuseOps {
         if (struct.isSetGid()) {
           oprot.writeI32(struct.gid);
         }
+        if (struct.isSetInstanceMap()) {
+          {
+            oprot.writeI32(struct.instanceMap.size());
+            for (Map.Entry<Byte, Long> _iter79 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter79.getKey());
+              oprot.writeI64(_iter79.getValue());
+            }
+          }
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, mkdir_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(4);
+        BitSet incoming = iprot.readBitSet(5);
         if (incoming.get(0)) {
           struct.path = iprot.readString();
           struct.setPathIsSet(true);
@@ -6990,6 +7916,21 @@ public class FuseOps {
           struct.gid = iprot.readI32();
           struct.setGidIsSet(true);
         }
+        if (incoming.get(4)) {
+          {
+            org.apache.thrift.protocol.TMap _map80 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, iprot.readI32());
+            struct.instanceMap = new HashMap<Byte,Long>(2*_map80.size);
+            for (int _i81 = 0; _i81 < _map80.size; ++_i81)
+            {
+              byte _key82;
+              long _val83;
+              _key82 = iprot.readByte();
+              _val83 = iprot.readI64();
+              struct.instanceMap.put(_key82, _val83);
+            }
+          }
+          struct.setInstanceMapIsSet(true);
+        }
       }
     }
 
@@ -6998,6 +7939,7 @@ public class FuseOps {
   public static class mkdir_result implements org.apache.thrift.TBase<mkdir_result, mkdir_result._Fields>, java.io.Serializable, Cloneable, Comparable<mkdir_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("mkdir_result");
 
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
     private static final org.apache.thrift.protocol.TField E_FIELD_DESC = new org.apache.thrift.protocol.TField("e", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -7006,10 +7948,12 @@ public class FuseOps {
       schemes.put(TupleScheme.class, new mkdir_resultTupleSchemeFactory());
     }
 
+    public Response success; // required
     public FSError e; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
       E((short)1, "e");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
@@ -7025,6 +7969,8 @@ public class FuseOps {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
           case 1: // E
             return E;
           default:
@@ -7070,6 +8016,8 @@ public class FuseOps {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Response.class)));
       tmpMap.put(_Fields.E, new org.apache.thrift.meta_data.FieldMetaData("e", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -7080,9 +8028,11 @@ public class FuseOps {
     }
 
     public mkdir_result(
+      Response success,
       FSError e)
     {
       this();
+      this.success = success;
       this.e = e;
     }
 
@@ -7090,6 +8040,9 @@ public class FuseOps {
      * Performs a deep copy on <i>other</i>.
      */
     public mkdir_result(mkdir_result other) {
+      if (other.isSetSuccess()) {
+        this.success = new Response(other.success);
+      }
       if (other.isSetE()) {
         this.e = new FSError(other.e);
       }
@@ -7101,7 +8054,32 @@ public class FuseOps {
 
     @Override
     public void clear() {
+      this.success = null;
       this.e = null;
+    }
+
+    public Response getSuccess() {
+      return this.success;
+    }
+
+    public mkdir_result setSuccess(Response success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
     }
 
     public FSError getE() {
@@ -7130,6 +8108,14 @@ public class FuseOps {
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((Response)value);
+        }
+        break;
+
       case E:
         if (value == null) {
           unsetE();
@@ -7143,6 +8129,9 @@ public class FuseOps {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
       case E:
         return getE();
 
@@ -7157,6 +8146,8 @@ public class FuseOps {
       }
 
       switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
       case E:
         return isSetE();
       }
@@ -7175,6 +8166,15 @@ public class FuseOps {
     public boolean equals(mkdir_result that) {
       if (that == null)
         return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
 
       boolean this_present_e = true && this.isSetE();
       boolean that_present_e = true && that.isSetE();
@@ -7201,6 +8201,16 @@ public class FuseOps {
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetE()).compareTo(other.isSetE());
       if (lastComparison != 0) {
         return lastComparison;
@@ -7231,6 +8241,14 @@ public class FuseOps {
       StringBuilder sb = new StringBuilder("mkdir_result(");
       boolean first = true;
 
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("e:");
       if (this.e == null) {
         sb.append("null");
@@ -7245,6 +8263,9 @@ public class FuseOps {
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
       // check for sub-struct validity
+      if (success != null) {
+        success.validate();
+      }
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -7281,6 +8302,15 @@ public class FuseOps {
             break;
           }
           switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new Response();
+                struct.success.read(iprot);
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             case 1: // E
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
                 struct.e = new FSError();
@@ -7305,6 +8335,11 @@ public class FuseOps {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
         if (struct.e != null) {
           oprot.writeFieldBegin(E_FIELD_DESC);
           struct.e.write(oprot);
@@ -7328,10 +8363,16 @@ public class FuseOps {
       public void write(org.apache.thrift.protocol.TProtocol prot, mkdir_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetE()) {
+        if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetE()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetSuccess()) {
+          struct.success.write(oprot);
+        }
         if (struct.isSetE()) {
           struct.e.write(oprot);
         }
@@ -7340,8 +8381,13 @@ public class FuseOps {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, mkdir_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
+          struct.success = new Response();
+          struct.success.read(iprot);
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
           struct.e = new FSError();
           struct.e.read(iprot);
           struct.setEIsSet(true);
@@ -7355,6 +8401,7 @@ public class FuseOps {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("unlink_args");
 
     private static final org.apache.thrift.protocol.TField PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("path", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField INSTANCE_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("instanceMap", org.apache.thrift.protocol.TType.MAP, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -7363,10 +8410,12 @@ public class FuseOps {
     }
 
     public String path; // required
+    public Map<Byte,Long> instanceMap; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      PATH((short)1, "path");
+      PATH((short)1, "path"),
+      INSTANCE_MAP((short)2, "instanceMap");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -7383,6 +8432,8 @@ public class FuseOps {
         switch(fieldId) {
           case 1: // PATH
             return PATH;
+          case 2: // INSTANCE_MAP
+            return INSTANCE_MAP;
           default:
             return null;
         }
@@ -7428,6 +8479,10 @@ public class FuseOps {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.PATH, new org.apache.thrift.meta_data.FieldMetaData("path", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.INSTANCE_MAP, new org.apache.thrift.meta_data.FieldMetaData("instanceMap", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE), 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64))));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(unlink_args.class, metaDataMap);
     }
@@ -7436,10 +8491,12 @@ public class FuseOps {
     }
 
     public unlink_args(
-      String path)
+      String path,
+      Map<Byte,Long> instanceMap)
     {
       this();
       this.path = path;
+      this.instanceMap = instanceMap;
     }
 
     /**
@@ -7448,6 +8505,10 @@ public class FuseOps {
     public unlink_args(unlink_args other) {
       if (other.isSetPath()) {
         this.path = other.path;
+      }
+      if (other.isSetInstanceMap()) {
+        Map<Byte,Long> __this__instanceMap = new HashMap<Byte,Long>(other.instanceMap);
+        this.instanceMap = __this__instanceMap;
       }
     }
 
@@ -7458,6 +8519,7 @@ public class FuseOps {
     @Override
     public void clear() {
       this.path = null;
+      this.instanceMap = null;
     }
 
     public String getPath() {
@@ -7484,6 +8546,41 @@ public class FuseOps {
       }
     }
 
+    public int getInstanceMapSize() {
+      return (this.instanceMap == null) ? 0 : this.instanceMap.size();
+    }
+
+    public void putToInstanceMap(byte key, long val) {
+      if (this.instanceMap == null) {
+        this.instanceMap = new HashMap<Byte,Long>();
+      }
+      this.instanceMap.put(key, val);
+    }
+
+    public Map<Byte,Long> getInstanceMap() {
+      return this.instanceMap;
+    }
+
+    public unlink_args setInstanceMap(Map<Byte,Long> instanceMap) {
+      this.instanceMap = instanceMap;
+      return this;
+    }
+
+    public void unsetInstanceMap() {
+      this.instanceMap = null;
+    }
+
+    /** Returns true if field instanceMap is set (has been assigned a value) and false otherwise */
+    public boolean isSetInstanceMap() {
+      return this.instanceMap != null;
+    }
+
+    public void setInstanceMapIsSet(boolean value) {
+      if (!value) {
+        this.instanceMap = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case PATH:
@@ -7494,6 +8591,14 @@ public class FuseOps {
         }
         break;
 
+      case INSTANCE_MAP:
+        if (value == null) {
+          unsetInstanceMap();
+        } else {
+          setInstanceMap((Map<Byte,Long>)value);
+        }
+        break;
+
       }
     }
 
@@ -7501,6 +8606,9 @@ public class FuseOps {
       switch (field) {
       case PATH:
         return getPath();
+
+      case INSTANCE_MAP:
+        return getInstanceMap();
 
       }
       throw new IllegalStateException();
@@ -7515,6 +8623,8 @@ public class FuseOps {
       switch (field) {
       case PATH:
         return isSetPath();
+      case INSTANCE_MAP:
+        return isSetInstanceMap();
       }
       throw new IllegalStateException();
     }
@@ -7538,6 +8648,15 @@ public class FuseOps {
         if (!(this_present_path && that_present_path))
           return false;
         if (!this.path.equals(that.path))
+          return false;
+      }
+
+      boolean this_present_instanceMap = true && this.isSetInstanceMap();
+      boolean that_present_instanceMap = true && that.isSetInstanceMap();
+      if (this_present_instanceMap || that_present_instanceMap) {
+        if (!(this_present_instanceMap && that_present_instanceMap))
+          return false;
+        if (!this.instanceMap.equals(that.instanceMap))
           return false;
       }
 
@@ -7567,6 +8686,16 @@ public class FuseOps {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetInstanceMap()).compareTo(other.isSetInstanceMap());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetInstanceMap()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.instanceMap, other.instanceMap);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -7592,6 +8721,14 @@ public class FuseOps {
         sb.append("null");
       } else {
         sb.append(this.path);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("instanceMap:");
+      if (this.instanceMap == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.instanceMap);
       }
       first = false;
       sb.append(")");
@@ -7645,6 +8782,26 @@ public class FuseOps {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 2: // INSTANCE_MAP
+              if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
+                {
+                  org.apache.thrift.protocol.TMap _map84 = iprot.readMapBegin();
+                  struct.instanceMap = new HashMap<Byte,Long>(2*_map84.size);
+                  for (int _i85 = 0; _i85 < _map84.size; ++_i85)
+                  {
+                    byte _key86;
+                    long _val87;
+                    _key86 = iprot.readByte();
+                    _val87 = iprot.readI64();
+                    struct.instanceMap.put(_key86, _val87);
+                  }
+                  iprot.readMapEnd();
+                }
+                struct.setInstanceMapIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -7663,6 +8820,19 @@ public class FuseOps {
         if (struct.path != null) {
           oprot.writeFieldBegin(PATH_FIELD_DESC);
           oprot.writeString(struct.path);
+          oprot.writeFieldEnd();
+        }
+        if (struct.instanceMap != null) {
+          oprot.writeFieldBegin(INSTANCE_MAP_FIELD_DESC);
+          {
+            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, struct.instanceMap.size()));
+            for (Map.Entry<Byte, Long> _iter88 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter88.getKey());
+              oprot.writeI64(_iter88.getValue());
+            }
+            oprot.writeMapEnd();
+          }
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -7686,19 +8856,47 @@ public class FuseOps {
         if (struct.isSetPath()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetInstanceMap()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
         if (struct.isSetPath()) {
           oprot.writeString(struct.path);
+        }
+        if (struct.isSetInstanceMap()) {
+          {
+            oprot.writeI32(struct.instanceMap.size());
+            for (Map.Entry<Byte, Long> _iter89 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter89.getKey());
+              oprot.writeI64(_iter89.getValue());
+            }
+          }
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, unlink_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           struct.path = iprot.readString();
           struct.setPathIsSet(true);
+        }
+        if (incoming.get(1)) {
+          {
+            org.apache.thrift.protocol.TMap _map90 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, iprot.readI32());
+            struct.instanceMap = new HashMap<Byte,Long>(2*_map90.size);
+            for (int _i91 = 0; _i91 < _map90.size; ++_i91)
+            {
+              byte _key92;
+              long _val93;
+              _key92 = iprot.readByte();
+              _val93 = iprot.readI64();
+              struct.instanceMap.put(_key92, _val93);
+            }
+          }
+          struct.setInstanceMapIsSet(true);
         }
       }
     }
@@ -7708,6 +8906,7 @@ public class FuseOps {
   public static class unlink_result implements org.apache.thrift.TBase<unlink_result, unlink_result._Fields>, java.io.Serializable, Cloneable, Comparable<unlink_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("unlink_result");
 
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
     private static final org.apache.thrift.protocol.TField E_FIELD_DESC = new org.apache.thrift.protocol.TField("e", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -7716,10 +8915,12 @@ public class FuseOps {
       schemes.put(TupleScheme.class, new unlink_resultTupleSchemeFactory());
     }
 
+    public Response success; // required
     public FSError e; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
       E((short)1, "e");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
@@ -7735,6 +8936,8 @@ public class FuseOps {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
           case 1: // E
             return E;
           default:
@@ -7780,6 +8983,8 @@ public class FuseOps {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Response.class)));
       tmpMap.put(_Fields.E, new org.apache.thrift.meta_data.FieldMetaData("e", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -7790,9 +8995,11 @@ public class FuseOps {
     }
 
     public unlink_result(
+      Response success,
       FSError e)
     {
       this();
+      this.success = success;
       this.e = e;
     }
 
@@ -7800,6 +9007,9 @@ public class FuseOps {
      * Performs a deep copy on <i>other</i>.
      */
     public unlink_result(unlink_result other) {
+      if (other.isSetSuccess()) {
+        this.success = new Response(other.success);
+      }
       if (other.isSetE()) {
         this.e = new FSError(other.e);
       }
@@ -7811,7 +9021,32 @@ public class FuseOps {
 
     @Override
     public void clear() {
+      this.success = null;
       this.e = null;
+    }
+
+    public Response getSuccess() {
+      return this.success;
+    }
+
+    public unlink_result setSuccess(Response success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
     }
 
     public FSError getE() {
@@ -7840,6 +9075,14 @@ public class FuseOps {
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((Response)value);
+        }
+        break;
+
       case E:
         if (value == null) {
           unsetE();
@@ -7853,6 +9096,9 @@ public class FuseOps {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
       case E:
         return getE();
 
@@ -7867,6 +9113,8 @@ public class FuseOps {
       }
 
       switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
       case E:
         return isSetE();
       }
@@ -7885,6 +9133,15 @@ public class FuseOps {
     public boolean equals(unlink_result that) {
       if (that == null)
         return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
 
       boolean this_present_e = true && this.isSetE();
       boolean that_present_e = true && that.isSetE();
@@ -7911,6 +9168,16 @@ public class FuseOps {
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetE()).compareTo(other.isSetE());
       if (lastComparison != 0) {
         return lastComparison;
@@ -7941,6 +9208,14 @@ public class FuseOps {
       StringBuilder sb = new StringBuilder("unlink_result(");
       boolean first = true;
 
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("e:");
       if (this.e == null) {
         sb.append("null");
@@ -7955,6 +9230,9 @@ public class FuseOps {
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
       // check for sub-struct validity
+      if (success != null) {
+        success.validate();
+      }
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -7991,6 +9269,15 @@ public class FuseOps {
             break;
           }
           switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new Response();
+                struct.success.read(iprot);
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             case 1: // E
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
                 struct.e = new FSError();
@@ -8015,6 +9302,11 @@ public class FuseOps {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
         if (struct.e != null) {
           oprot.writeFieldBegin(E_FIELD_DESC);
           struct.e.write(oprot);
@@ -8038,10 +9330,16 @@ public class FuseOps {
       public void write(org.apache.thrift.protocol.TProtocol prot, unlink_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetE()) {
+        if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetE()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetSuccess()) {
+          struct.success.write(oprot);
+        }
         if (struct.isSetE()) {
           struct.e.write(oprot);
         }
@@ -8050,8 +9348,13 @@ public class FuseOps {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, unlink_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
+          struct.success = new Response();
+          struct.success.read(iprot);
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
           struct.e = new FSError();
           struct.e.read(iprot);
           struct.setEIsSet(true);
@@ -8065,6 +9368,7 @@ public class FuseOps {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("rmdir_args");
 
     private static final org.apache.thrift.protocol.TField PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("path", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField INSTANCE_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("instanceMap", org.apache.thrift.protocol.TType.MAP, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -8073,10 +9377,12 @@ public class FuseOps {
     }
 
     public String path; // required
+    public Map<Byte,Long> instanceMap; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      PATH((short)1, "path");
+      PATH((short)1, "path"),
+      INSTANCE_MAP((short)2, "instanceMap");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -8093,6 +9399,8 @@ public class FuseOps {
         switch(fieldId) {
           case 1: // PATH
             return PATH;
+          case 2: // INSTANCE_MAP
+            return INSTANCE_MAP;
           default:
             return null;
         }
@@ -8138,6 +9446,10 @@ public class FuseOps {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.PATH, new org.apache.thrift.meta_data.FieldMetaData("path", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.INSTANCE_MAP, new org.apache.thrift.meta_data.FieldMetaData("instanceMap", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE), 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64))));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(rmdir_args.class, metaDataMap);
     }
@@ -8146,10 +9458,12 @@ public class FuseOps {
     }
 
     public rmdir_args(
-      String path)
+      String path,
+      Map<Byte,Long> instanceMap)
     {
       this();
       this.path = path;
+      this.instanceMap = instanceMap;
     }
 
     /**
@@ -8158,6 +9472,10 @@ public class FuseOps {
     public rmdir_args(rmdir_args other) {
       if (other.isSetPath()) {
         this.path = other.path;
+      }
+      if (other.isSetInstanceMap()) {
+        Map<Byte,Long> __this__instanceMap = new HashMap<Byte,Long>(other.instanceMap);
+        this.instanceMap = __this__instanceMap;
       }
     }
 
@@ -8168,6 +9486,7 @@ public class FuseOps {
     @Override
     public void clear() {
       this.path = null;
+      this.instanceMap = null;
     }
 
     public String getPath() {
@@ -8194,6 +9513,41 @@ public class FuseOps {
       }
     }
 
+    public int getInstanceMapSize() {
+      return (this.instanceMap == null) ? 0 : this.instanceMap.size();
+    }
+
+    public void putToInstanceMap(byte key, long val) {
+      if (this.instanceMap == null) {
+        this.instanceMap = new HashMap<Byte,Long>();
+      }
+      this.instanceMap.put(key, val);
+    }
+
+    public Map<Byte,Long> getInstanceMap() {
+      return this.instanceMap;
+    }
+
+    public rmdir_args setInstanceMap(Map<Byte,Long> instanceMap) {
+      this.instanceMap = instanceMap;
+      return this;
+    }
+
+    public void unsetInstanceMap() {
+      this.instanceMap = null;
+    }
+
+    /** Returns true if field instanceMap is set (has been assigned a value) and false otherwise */
+    public boolean isSetInstanceMap() {
+      return this.instanceMap != null;
+    }
+
+    public void setInstanceMapIsSet(boolean value) {
+      if (!value) {
+        this.instanceMap = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case PATH:
@@ -8204,6 +9558,14 @@ public class FuseOps {
         }
         break;
 
+      case INSTANCE_MAP:
+        if (value == null) {
+          unsetInstanceMap();
+        } else {
+          setInstanceMap((Map<Byte,Long>)value);
+        }
+        break;
+
       }
     }
 
@@ -8211,6 +9573,9 @@ public class FuseOps {
       switch (field) {
       case PATH:
         return getPath();
+
+      case INSTANCE_MAP:
+        return getInstanceMap();
 
       }
       throw new IllegalStateException();
@@ -8225,6 +9590,8 @@ public class FuseOps {
       switch (field) {
       case PATH:
         return isSetPath();
+      case INSTANCE_MAP:
+        return isSetInstanceMap();
       }
       throw new IllegalStateException();
     }
@@ -8248,6 +9615,15 @@ public class FuseOps {
         if (!(this_present_path && that_present_path))
           return false;
         if (!this.path.equals(that.path))
+          return false;
+      }
+
+      boolean this_present_instanceMap = true && this.isSetInstanceMap();
+      boolean that_present_instanceMap = true && that.isSetInstanceMap();
+      if (this_present_instanceMap || that_present_instanceMap) {
+        if (!(this_present_instanceMap && that_present_instanceMap))
+          return false;
+        if (!this.instanceMap.equals(that.instanceMap))
           return false;
       }
 
@@ -8277,6 +9653,16 @@ public class FuseOps {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetInstanceMap()).compareTo(other.isSetInstanceMap());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetInstanceMap()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.instanceMap, other.instanceMap);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -8302,6 +9688,14 @@ public class FuseOps {
         sb.append("null");
       } else {
         sb.append(this.path);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("instanceMap:");
+      if (this.instanceMap == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.instanceMap);
       }
       first = false;
       sb.append(")");
@@ -8355,6 +9749,26 @@ public class FuseOps {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 2: // INSTANCE_MAP
+              if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
+                {
+                  org.apache.thrift.protocol.TMap _map94 = iprot.readMapBegin();
+                  struct.instanceMap = new HashMap<Byte,Long>(2*_map94.size);
+                  for (int _i95 = 0; _i95 < _map94.size; ++_i95)
+                  {
+                    byte _key96;
+                    long _val97;
+                    _key96 = iprot.readByte();
+                    _val97 = iprot.readI64();
+                    struct.instanceMap.put(_key96, _val97);
+                  }
+                  iprot.readMapEnd();
+                }
+                struct.setInstanceMapIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -8373,6 +9787,19 @@ public class FuseOps {
         if (struct.path != null) {
           oprot.writeFieldBegin(PATH_FIELD_DESC);
           oprot.writeString(struct.path);
+          oprot.writeFieldEnd();
+        }
+        if (struct.instanceMap != null) {
+          oprot.writeFieldBegin(INSTANCE_MAP_FIELD_DESC);
+          {
+            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, struct.instanceMap.size()));
+            for (Map.Entry<Byte, Long> _iter98 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter98.getKey());
+              oprot.writeI64(_iter98.getValue());
+            }
+            oprot.writeMapEnd();
+          }
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -8396,19 +9823,47 @@ public class FuseOps {
         if (struct.isSetPath()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetInstanceMap()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
         if (struct.isSetPath()) {
           oprot.writeString(struct.path);
+        }
+        if (struct.isSetInstanceMap()) {
+          {
+            oprot.writeI32(struct.instanceMap.size());
+            for (Map.Entry<Byte, Long> _iter99 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter99.getKey());
+              oprot.writeI64(_iter99.getValue());
+            }
+          }
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, rmdir_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           struct.path = iprot.readString();
           struct.setPathIsSet(true);
+        }
+        if (incoming.get(1)) {
+          {
+            org.apache.thrift.protocol.TMap _map100 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, iprot.readI32());
+            struct.instanceMap = new HashMap<Byte,Long>(2*_map100.size);
+            for (int _i101 = 0; _i101 < _map100.size; ++_i101)
+            {
+              byte _key102;
+              long _val103;
+              _key102 = iprot.readByte();
+              _val103 = iprot.readI64();
+              struct.instanceMap.put(_key102, _val103);
+            }
+          }
+          struct.setInstanceMapIsSet(true);
         }
       }
     }
@@ -8418,6 +9873,7 @@ public class FuseOps {
   public static class rmdir_result implements org.apache.thrift.TBase<rmdir_result, rmdir_result._Fields>, java.io.Serializable, Cloneable, Comparable<rmdir_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("rmdir_result");
 
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
     private static final org.apache.thrift.protocol.TField E_FIELD_DESC = new org.apache.thrift.protocol.TField("e", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -8426,10 +9882,12 @@ public class FuseOps {
       schemes.put(TupleScheme.class, new rmdir_resultTupleSchemeFactory());
     }
 
+    public Response success; // required
     public FSError e; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
       E((short)1, "e");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
@@ -8445,6 +9903,8 @@ public class FuseOps {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
           case 1: // E
             return E;
           default:
@@ -8490,6 +9950,8 @@ public class FuseOps {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Response.class)));
       tmpMap.put(_Fields.E, new org.apache.thrift.meta_data.FieldMetaData("e", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -8500,9 +9962,11 @@ public class FuseOps {
     }
 
     public rmdir_result(
+      Response success,
       FSError e)
     {
       this();
+      this.success = success;
       this.e = e;
     }
 
@@ -8510,6 +9974,9 @@ public class FuseOps {
      * Performs a deep copy on <i>other</i>.
      */
     public rmdir_result(rmdir_result other) {
+      if (other.isSetSuccess()) {
+        this.success = new Response(other.success);
+      }
       if (other.isSetE()) {
         this.e = new FSError(other.e);
       }
@@ -8521,7 +9988,32 @@ public class FuseOps {
 
     @Override
     public void clear() {
+      this.success = null;
       this.e = null;
+    }
+
+    public Response getSuccess() {
+      return this.success;
+    }
+
+    public rmdir_result setSuccess(Response success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
     }
 
     public FSError getE() {
@@ -8550,6 +10042,14 @@ public class FuseOps {
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((Response)value);
+        }
+        break;
+
       case E:
         if (value == null) {
           unsetE();
@@ -8563,6 +10063,9 @@ public class FuseOps {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
       case E:
         return getE();
 
@@ -8577,6 +10080,8 @@ public class FuseOps {
       }
 
       switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
       case E:
         return isSetE();
       }
@@ -8595,6 +10100,15 @@ public class FuseOps {
     public boolean equals(rmdir_result that) {
       if (that == null)
         return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
 
       boolean this_present_e = true && this.isSetE();
       boolean that_present_e = true && that.isSetE();
@@ -8621,6 +10135,16 @@ public class FuseOps {
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetE()).compareTo(other.isSetE());
       if (lastComparison != 0) {
         return lastComparison;
@@ -8651,6 +10175,14 @@ public class FuseOps {
       StringBuilder sb = new StringBuilder("rmdir_result(");
       boolean first = true;
 
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("e:");
       if (this.e == null) {
         sb.append("null");
@@ -8665,6 +10197,9 @@ public class FuseOps {
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
       // check for sub-struct validity
+      if (success != null) {
+        success.validate();
+      }
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -8701,6 +10236,15 @@ public class FuseOps {
             break;
           }
           switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new Response();
+                struct.success.read(iprot);
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             case 1: // E
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
                 struct.e = new FSError();
@@ -8725,6 +10269,11 @@ public class FuseOps {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
         if (struct.e != null) {
           oprot.writeFieldBegin(E_FIELD_DESC);
           struct.e.write(oprot);
@@ -8748,10 +10297,16 @@ public class FuseOps {
       public void write(org.apache.thrift.protocol.TProtocol prot, rmdir_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetE()) {
+        if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetE()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetSuccess()) {
+          struct.success.write(oprot);
+        }
         if (struct.isSetE()) {
           struct.e.write(oprot);
         }
@@ -8760,8 +10315,13 @@ public class FuseOps {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, rmdir_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
+          struct.success = new Response();
+          struct.success.read(iprot);
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
           struct.e = new FSError();
           struct.e.read(iprot);
           struct.setEIsSet(true);
@@ -8778,6 +10338,7 @@ public class FuseOps {
     private static final org.apache.thrift.protocol.TField PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("path", org.apache.thrift.protocol.TType.STRING, (short)2);
     private static final org.apache.thrift.protocol.TField UID_FIELD_DESC = new org.apache.thrift.protocol.TField("uid", org.apache.thrift.protocol.TType.I32, (short)3);
     private static final org.apache.thrift.protocol.TField GID_FIELD_DESC = new org.apache.thrift.protocol.TField("gid", org.apache.thrift.protocol.TType.I32, (short)4);
+    private static final org.apache.thrift.protocol.TField INSTANCE_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("instanceMap", org.apache.thrift.protocol.TType.MAP, (short)5);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -8789,13 +10350,15 @@ public class FuseOps {
     public String path; // required
     public int uid; // required
     public int gid; // required
+    public Map<Byte,Long> instanceMap; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       TARGET((short)1, "target"),
       PATH((short)2, "path"),
       UID((short)3, "uid"),
-      GID((short)4, "gid");
+      GID((short)4, "gid"),
+      INSTANCE_MAP((short)5, "instanceMap");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -8818,6 +10381,8 @@ public class FuseOps {
             return UID;
           case 4: // GID
             return GID;
+          case 5: // INSTANCE_MAP
+            return INSTANCE_MAP;
           default:
             return null;
         }
@@ -8872,6 +10437,10 @@ public class FuseOps {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
       tmpMap.put(_Fields.GID, new org.apache.thrift.meta_data.FieldMetaData("gid", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+      tmpMap.put(_Fields.INSTANCE_MAP, new org.apache.thrift.meta_data.FieldMetaData("instanceMap", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE), 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64))));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(symlink_args.class, metaDataMap);
     }
@@ -8883,7 +10452,8 @@ public class FuseOps {
       String target,
       String path,
       int uid,
-      int gid)
+      int gid,
+      Map<Byte,Long> instanceMap)
     {
       this();
       this.target = target;
@@ -8892,6 +10462,7 @@ public class FuseOps {
       setUidIsSet(true);
       this.gid = gid;
       setGidIsSet(true);
+      this.instanceMap = instanceMap;
     }
 
     /**
@@ -8907,6 +10478,10 @@ public class FuseOps {
       }
       this.uid = other.uid;
       this.gid = other.gid;
+      if (other.isSetInstanceMap()) {
+        Map<Byte,Long> __this__instanceMap = new HashMap<Byte,Long>(other.instanceMap);
+        this.instanceMap = __this__instanceMap;
+      }
     }
 
     public symlink_args deepCopy() {
@@ -8921,6 +10496,7 @@ public class FuseOps {
       this.uid = 0;
       setGidIsSet(false);
       this.gid = 0;
+      this.instanceMap = null;
     }
 
     public String getTarget() {
@@ -9017,6 +10593,41 @@ public class FuseOps {
       __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __GID_ISSET_ID, value);
     }
 
+    public int getInstanceMapSize() {
+      return (this.instanceMap == null) ? 0 : this.instanceMap.size();
+    }
+
+    public void putToInstanceMap(byte key, long val) {
+      if (this.instanceMap == null) {
+        this.instanceMap = new HashMap<Byte,Long>();
+      }
+      this.instanceMap.put(key, val);
+    }
+
+    public Map<Byte,Long> getInstanceMap() {
+      return this.instanceMap;
+    }
+
+    public symlink_args setInstanceMap(Map<Byte,Long> instanceMap) {
+      this.instanceMap = instanceMap;
+      return this;
+    }
+
+    public void unsetInstanceMap() {
+      this.instanceMap = null;
+    }
+
+    /** Returns true if field instanceMap is set (has been assigned a value) and false otherwise */
+    public boolean isSetInstanceMap() {
+      return this.instanceMap != null;
+    }
+
+    public void setInstanceMapIsSet(boolean value) {
+      if (!value) {
+        this.instanceMap = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case TARGET:
@@ -9051,6 +10662,14 @@ public class FuseOps {
         }
         break;
 
+      case INSTANCE_MAP:
+        if (value == null) {
+          unsetInstanceMap();
+        } else {
+          setInstanceMap((Map<Byte,Long>)value);
+        }
+        break;
+
       }
     }
 
@@ -9067,6 +10686,9 @@ public class FuseOps {
 
       case GID:
         return Integer.valueOf(getGid());
+
+      case INSTANCE_MAP:
+        return getInstanceMap();
 
       }
       throw new IllegalStateException();
@@ -9087,6 +10709,8 @@ public class FuseOps {
         return isSetUid();
       case GID:
         return isSetGid();
+      case INSTANCE_MAP:
+        return isSetInstanceMap();
       }
       throw new IllegalStateException();
     }
@@ -9137,6 +10761,15 @@ public class FuseOps {
         if (!(this_present_gid && that_present_gid))
           return false;
         if (this.gid != that.gid)
+          return false;
+      }
+
+      boolean this_present_instanceMap = true && this.isSetInstanceMap();
+      boolean that_present_instanceMap = true && that.isSetInstanceMap();
+      if (this_present_instanceMap || that_present_instanceMap) {
+        if (!(this_present_instanceMap && that_present_instanceMap))
+          return false;
+        if (!this.instanceMap.equals(that.instanceMap))
           return false;
       }
 
@@ -9196,6 +10829,16 @@ public class FuseOps {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetInstanceMap()).compareTo(other.isSetInstanceMap());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetInstanceMap()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.instanceMap, other.instanceMap);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -9238,6 +10881,14 @@ public class FuseOps {
       if (!first) sb.append(", ");
       sb.append("gid:");
       sb.append(this.gid);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("instanceMap:");
+      if (this.instanceMap == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.instanceMap);
+      }
       first = false;
       sb.append(")");
       return sb.toString();
@@ -9316,6 +10967,26 @@ public class FuseOps {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 5: // INSTANCE_MAP
+              if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
+                {
+                  org.apache.thrift.protocol.TMap _map104 = iprot.readMapBegin();
+                  struct.instanceMap = new HashMap<Byte,Long>(2*_map104.size);
+                  for (int _i105 = 0; _i105 < _map104.size; ++_i105)
+                  {
+                    byte _key106;
+                    long _val107;
+                    _key106 = iprot.readByte();
+                    _val107 = iprot.readI64();
+                    struct.instanceMap.put(_key106, _val107);
+                  }
+                  iprot.readMapEnd();
+                }
+                struct.setInstanceMapIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -9347,6 +11018,19 @@ public class FuseOps {
         oprot.writeFieldBegin(GID_FIELD_DESC);
         oprot.writeI32(struct.gid);
         oprot.writeFieldEnd();
+        if (struct.instanceMap != null) {
+          oprot.writeFieldBegin(INSTANCE_MAP_FIELD_DESC);
+          {
+            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, struct.instanceMap.size()));
+            for (Map.Entry<Byte, Long> _iter108 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter108.getKey());
+              oprot.writeI64(_iter108.getValue());
+            }
+            oprot.writeMapEnd();
+          }
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -9377,7 +11061,10 @@ public class FuseOps {
         if (struct.isSetGid()) {
           optionals.set(3);
         }
-        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetInstanceMap()) {
+          optionals.set(4);
+        }
+        oprot.writeBitSet(optionals, 5);
         if (struct.isSetTarget()) {
           oprot.writeString(struct.target);
         }
@@ -9390,12 +11077,22 @@ public class FuseOps {
         if (struct.isSetGid()) {
           oprot.writeI32(struct.gid);
         }
+        if (struct.isSetInstanceMap()) {
+          {
+            oprot.writeI32(struct.instanceMap.size());
+            for (Map.Entry<Byte, Long> _iter109 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter109.getKey());
+              oprot.writeI64(_iter109.getValue());
+            }
+          }
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, symlink_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(4);
+        BitSet incoming = iprot.readBitSet(5);
         if (incoming.get(0)) {
           struct.target = iprot.readString();
           struct.setTargetIsSet(true);
@@ -9412,6 +11109,21 @@ public class FuseOps {
           struct.gid = iprot.readI32();
           struct.setGidIsSet(true);
         }
+        if (incoming.get(4)) {
+          {
+            org.apache.thrift.protocol.TMap _map110 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, iprot.readI32());
+            struct.instanceMap = new HashMap<Byte,Long>(2*_map110.size);
+            for (int _i111 = 0; _i111 < _map110.size; ++_i111)
+            {
+              byte _key112;
+              long _val113;
+              _key112 = iprot.readByte();
+              _val113 = iprot.readI64();
+              struct.instanceMap.put(_key112, _val113);
+            }
+          }
+          struct.setInstanceMapIsSet(true);
+        }
       }
     }
 
@@ -9420,6 +11132,7 @@ public class FuseOps {
   public static class symlink_result implements org.apache.thrift.TBase<symlink_result, symlink_result._Fields>, java.io.Serializable, Cloneable, Comparable<symlink_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("symlink_result");
 
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
     private static final org.apache.thrift.protocol.TField E_FIELD_DESC = new org.apache.thrift.protocol.TField("e", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -9428,10 +11141,12 @@ public class FuseOps {
       schemes.put(TupleScheme.class, new symlink_resultTupleSchemeFactory());
     }
 
+    public Response success; // required
     public FSError e; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
       E((short)1, "e");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
@@ -9447,6 +11162,8 @@ public class FuseOps {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
           case 1: // E
             return E;
           default:
@@ -9492,6 +11209,8 @@ public class FuseOps {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Response.class)));
       tmpMap.put(_Fields.E, new org.apache.thrift.meta_data.FieldMetaData("e", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -9502,9 +11221,11 @@ public class FuseOps {
     }
 
     public symlink_result(
+      Response success,
       FSError e)
     {
       this();
+      this.success = success;
       this.e = e;
     }
 
@@ -9512,6 +11233,9 @@ public class FuseOps {
      * Performs a deep copy on <i>other</i>.
      */
     public symlink_result(symlink_result other) {
+      if (other.isSetSuccess()) {
+        this.success = new Response(other.success);
+      }
       if (other.isSetE()) {
         this.e = new FSError(other.e);
       }
@@ -9523,7 +11247,32 @@ public class FuseOps {
 
     @Override
     public void clear() {
+      this.success = null;
       this.e = null;
+    }
+
+    public Response getSuccess() {
+      return this.success;
+    }
+
+    public symlink_result setSuccess(Response success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
     }
 
     public FSError getE() {
@@ -9552,6 +11301,14 @@ public class FuseOps {
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((Response)value);
+        }
+        break;
+
       case E:
         if (value == null) {
           unsetE();
@@ -9565,6 +11322,9 @@ public class FuseOps {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
       case E:
         return getE();
 
@@ -9579,6 +11339,8 @@ public class FuseOps {
       }
 
       switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
       case E:
         return isSetE();
       }
@@ -9597,6 +11359,15 @@ public class FuseOps {
     public boolean equals(symlink_result that) {
       if (that == null)
         return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
 
       boolean this_present_e = true && this.isSetE();
       boolean that_present_e = true && that.isSetE();
@@ -9623,6 +11394,16 @@ public class FuseOps {
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetE()).compareTo(other.isSetE());
       if (lastComparison != 0) {
         return lastComparison;
@@ -9653,6 +11434,14 @@ public class FuseOps {
       StringBuilder sb = new StringBuilder("symlink_result(");
       boolean first = true;
 
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("e:");
       if (this.e == null) {
         sb.append("null");
@@ -9667,6 +11456,9 @@ public class FuseOps {
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
       // check for sub-struct validity
+      if (success != null) {
+        success.validate();
+      }
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -9703,6 +11495,15 @@ public class FuseOps {
             break;
           }
           switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new Response();
+                struct.success.read(iprot);
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             case 1: // E
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
                 struct.e = new FSError();
@@ -9727,6 +11528,11 @@ public class FuseOps {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
         if (struct.e != null) {
           oprot.writeFieldBegin(E_FIELD_DESC);
           struct.e.write(oprot);
@@ -9750,10 +11556,16 @@ public class FuseOps {
       public void write(org.apache.thrift.protocol.TProtocol prot, symlink_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetE()) {
+        if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetE()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetSuccess()) {
+          struct.success.write(oprot);
+        }
         if (struct.isSetE()) {
           struct.e.write(oprot);
         }
@@ -9762,8 +11574,13 @@ public class FuseOps {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, symlink_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
+          struct.success = new Response();
+          struct.success.read(iprot);
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
           struct.e = new FSError();
           struct.e.read(iprot);
           struct.setEIsSet(true);
@@ -9778,6 +11595,7 @@ public class FuseOps {
 
     private static final org.apache.thrift.protocol.TField FROM_PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("fromPath", org.apache.thrift.protocol.TType.STRING, (short)1);
     private static final org.apache.thrift.protocol.TField TO_PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("toPath", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField INSTANCE_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("instanceMap", org.apache.thrift.protocol.TType.MAP, (short)3);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -9787,11 +11605,13 @@ public class FuseOps {
 
     public String fromPath; // required
     public String toPath; // required
+    public Map<Byte,Long> instanceMap; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       FROM_PATH((short)1, "fromPath"),
-      TO_PATH((short)2, "toPath");
+      TO_PATH((short)2, "toPath"),
+      INSTANCE_MAP((short)3, "instanceMap");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -9810,6 +11630,8 @@ public class FuseOps {
             return FROM_PATH;
           case 2: // TO_PATH
             return TO_PATH;
+          case 3: // INSTANCE_MAP
+            return INSTANCE_MAP;
           default:
             return null;
         }
@@ -9857,6 +11679,10 @@ public class FuseOps {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.TO_PATH, new org.apache.thrift.meta_data.FieldMetaData("toPath", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.INSTANCE_MAP, new org.apache.thrift.meta_data.FieldMetaData("instanceMap", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE), 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64))));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(rename_args.class, metaDataMap);
     }
@@ -9866,11 +11692,13 @@ public class FuseOps {
 
     public rename_args(
       String fromPath,
-      String toPath)
+      String toPath,
+      Map<Byte,Long> instanceMap)
     {
       this();
       this.fromPath = fromPath;
       this.toPath = toPath;
+      this.instanceMap = instanceMap;
     }
 
     /**
@@ -9883,6 +11711,10 @@ public class FuseOps {
       if (other.isSetToPath()) {
         this.toPath = other.toPath;
       }
+      if (other.isSetInstanceMap()) {
+        Map<Byte,Long> __this__instanceMap = new HashMap<Byte,Long>(other.instanceMap);
+        this.instanceMap = __this__instanceMap;
+      }
     }
 
     public rename_args deepCopy() {
@@ -9893,6 +11725,7 @@ public class FuseOps {
     public void clear() {
       this.fromPath = null;
       this.toPath = null;
+      this.instanceMap = null;
     }
 
     public String getFromPath() {
@@ -9943,6 +11776,41 @@ public class FuseOps {
       }
     }
 
+    public int getInstanceMapSize() {
+      return (this.instanceMap == null) ? 0 : this.instanceMap.size();
+    }
+
+    public void putToInstanceMap(byte key, long val) {
+      if (this.instanceMap == null) {
+        this.instanceMap = new HashMap<Byte,Long>();
+      }
+      this.instanceMap.put(key, val);
+    }
+
+    public Map<Byte,Long> getInstanceMap() {
+      return this.instanceMap;
+    }
+
+    public rename_args setInstanceMap(Map<Byte,Long> instanceMap) {
+      this.instanceMap = instanceMap;
+      return this;
+    }
+
+    public void unsetInstanceMap() {
+      this.instanceMap = null;
+    }
+
+    /** Returns true if field instanceMap is set (has been assigned a value) and false otherwise */
+    public boolean isSetInstanceMap() {
+      return this.instanceMap != null;
+    }
+
+    public void setInstanceMapIsSet(boolean value) {
+      if (!value) {
+        this.instanceMap = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case FROM_PATH:
@@ -9961,6 +11829,14 @@ public class FuseOps {
         }
         break;
 
+      case INSTANCE_MAP:
+        if (value == null) {
+          unsetInstanceMap();
+        } else {
+          setInstanceMap((Map<Byte,Long>)value);
+        }
+        break;
+
       }
     }
 
@@ -9971,6 +11847,9 @@ public class FuseOps {
 
       case TO_PATH:
         return getToPath();
+
+      case INSTANCE_MAP:
+        return getInstanceMap();
 
       }
       throw new IllegalStateException();
@@ -9987,6 +11866,8 @@ public class FuseOps {
         return isSetFromPath();
       case TO_PATH:
         return isSetToPath();
+      case INSTANCE_MAP:
+        return isSetInstanceMap();
       }
       throw new IllegalStateException();
     }
@@ -10019,6 +11900,15 @@ public class FuseOps {
         if (!(this_present_toPath && that_present_toPath))
           return false;
         if (!this.toPath.equals(that.toPath))
+          return false;
+      }
+
+      boolean this_present_instanceMap = true && this.isSetInstanceMap();
+      boolean that_present_instanceMap = true && that.isSetInstanceMap();
+      if (this_present_instanceMap || that_present_instanceMap) {
+        if (!(this_present_instanceMap && that_present_instanceMap))
+          return false;
+        if (!this.instanceMap.equals(that.instanceMap))
           return false;
       }
 
@@ -10058,6 +11948,16 @@ public class FuseOps {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetInstanceMap()).compareTo(other.isSetInstanceMap());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetInstanceMap()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.instanceMap, other.instanceMap);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -10091,6 +11991,14 @@ public class FuseOps {
         sb.append("null");
       } else {
         sb.append(this.toPath);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("instanceMap:");
+      if (this.instanceMap == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.instanceMap);
       }
       first = false;
       sb.append(")");
@@ -10152,6 +12060,26 @@ public class FuseOps {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 3: // INSTANCE_MAP
+              if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
+                {
+                  org.apache.thrift.protocol.TMap _map114 = iprot.readMapBegin();
+                  struct.instanceMap = new HashMap<Byte,Long>(2*_map114.size);
+                  for (int _i115 = 0; _i115 < _map114.size; ++_i115)
+                  {
+                    byte _key116;
+                    long _val117;
+                    _key116 = iprot.readByte();
+                    _val117 = iprot.readI64();
+                    struct.instanceMap.put(_key116, _val117);
+                  }
+                  iprot.readMapEnd();
+                }
+                struct.setInstanceMapIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -10175,6 +12103,19 @@ public class FuseOps {
         if (struct.toPath != null) {
           oprot.writeFieldBegin(TO_PATH_FIELD_DESC);
           oprot.writeString(struct.toPath);
+          oprot.writeFieldEnd();
+        }
+        if (struct.instanceMap != null) {
+          oprot.writeFieldBegin(INSTANCE_MAP_FIELD_DESC);
+          {
+            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, struct.instanceMap.size()));
+            for (Map.Entry<Byte, Long> _iter118 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter118.getKey());
+              oprot.writeI64(_iter118.getValue());
+            }
+            oprot.writeMapEnd();
+          }
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -10201,19 +12142,32 @@ public class FuseOps {
         if (struct.isSetToPath()) {
           optionals.set(1);
         }
-        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetInstanceMap()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetFromPath()) {
           oprot.writeString(struct.fromPath);
         }
         if (struct.isSetToPath()) {
           oprot.writeString(struct.toPath);
         }
+        if (struct.isSetInstanceMap()) {
+          {
+            oprot.writeI32(struct.instanceMap.size());
+            for (Map.Entry<Byte, Long> _iter119 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter119.getKey());
+              oprot.writeI64(_iter119.getValue());
+            }
+          }
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, rename_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(2);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.fromPath = iprot.readString();
           struct.setFromPathIsSet(true);
@@ -10221,6 +12175,21 @@ public class FuseOps {
         if (incoming.get(1)) {
           struct.toPath = iprot.readString();
           struct.setToPathIsSet(true);
+        }
+        if (incoming.get(2)) {
+          {
+            org.apache.thrift.protocol.TMap _map120 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, iprot.readI32());
+            struct.instanceMap = new HashMap<Byte,Long>(2*_map120.size);
+            for (int _i121 = 0; _i121 < _map120.size; ++_i121)
+            {
+              byte _key122;
+              long _val123;
+              _key122 = iprot.readByte();
+              _val123 = iprot.readI64();
+              struct.instanceMap.put(_key122, _val123);
+            }
+          }
+          struct.setInstanceMapIsSet(true);
         }
       }
     }
@@ -10230,6 +12199,7 @@ public class FuseOps {
   public static class rename_result implements org.apache.thrift.TBase<rename_result, rename_result._Fields>, java.io.Serializable, Cloneable, Comparable<rename_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("rename_result");
 
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
     private static final org.apache.thrift.protocol.TField E_FIELD_DESC = new org.apache.thrift.protocol.TField("e", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -10238,10 +12208,12 @@ public class FuseOps {
       schemes.put(TupleScheme.class, new rename_resultTupleSchemeFactory());
     }
 
+    public Response success; // required
     public FSError e; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
       E((short)1, "e");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
@@ -10257,6 +12229,8 @@ public class FuseOps {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
           case 1: // E
             return E;
           default:
@@ -10302,6 +12276,8 @@ public class FuseOps {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Response.class)));
       tmpMap.put(_Fields.E, new org.apache.thrift.meta_data.FieldMetaData("e", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -10312,9 +12288,11 @@ public class FuseOps {
     }
 
     public rename_result(
+      Response success,
       FSError e)
     {
       this();
+      this.success = success;
       this.e = e;
     }
 
@@ -10322,6 +12300,9 @@ public class FuseOps {
      * Performs a deep copy on <i>other</i>.
      */
     public rename_result(rename_result other) {
+      if (other.isSetSuccess()) {
+        this.success = new Response(other.success);
+      }
       if (other.isSetE()) {
         this.e = new FSError(other.e);
       }
@@ -10333,7 +12314,32 @@ public class FuseOps {
 
     @Override
     public void clear() {
+      this.success = null;
       this.e = null;
+    }
+
+    public Response getSuccess() {
+      return this.success;
+    }
+
+    public rename_result setSuccess(Response success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
     }
 
     public FSError getE() {
@@ -10362,6 +12368,14 @@ public class FuseOps {
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((Response)value);
+        }
+        break;
+
       case E:
         if (value == null) {
           unsetE();
@@ -10375,6 +12389,9 @@ public class FuseOps {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
       case E:
         return getE();
 
@@ -10389,6 +12406,8 @@ public class FuseOps {
       }
 
       switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
       case E:
         return isSetE();
       }
@@ -10407,6 +12426,15 @@ public class FuseOps {
     public boolean equals(rename_result that) {
       if (that == null)
         return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
 
       boolean this_present_e = true && this.isSetE();
       boolean that_present_e = true && that.isSetE();
@@ -10433,6 +12461,16 @@ public class FuseOps {
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetE()).compareTo(other.isSetE());
       if (lastComparison != 0) {
         return lastComparison;
@@ -10463,6 +12501,14 @@ public class FuseOps {
       StringBuilder sb = new StringBuilder("rename_result(");
       boolean first = true;
 
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("e:");
       if (this.e == null) {
         sb.append("null");
@@ -10477,6 +12523,9 @@ public class FuseOps {
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
       // check for sub-struct validity
+      if (success != null) {
+        success.validate();
+      }
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -10513,6 +12562,15 @@ public class FuseOps {
             break;
           }
           switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new Response();
+                struct.success.read(iprot);
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             case 1: // E
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
                 struct.e = new FSError();
@@ -10537,6 +12595,11 @@ public class FuseOps {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
         if (struct.e != null) {
           oprot.writeFieldBegin(E_FIELD_DESC);
           struct.e.write(oprot);
@@ -10560,10 +12623,16 @@ public class FuseOps {
       public void write(org.apache.thrift.protocol.TProtocol prot, rename_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetE()) {
+        if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetE()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetSuccess()) {
+          struct.success.write(oprot);
+        }
         if (struct.isSetE()) {
           struct.e.write(oprot);
         }
@@ -10572,8 +12641,13 @@ public class FuseOps {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, rename_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
+          struct.success = new Response();
+          struct.success.read(iprot);
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
           struct.e = new FSError();
           struct.e.read(iprot);
           struct.setEIsSet(true);
@@ -10588,6 +12662,7 @@ public class FuseOps {
 
     private static final org.apache.thrift.protocol.TField PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("path", org.apache.thrift.protocol.TType.STRING, (short)1);
     private static final org.apache.thrift.protocol.TField MODE_FIELD_DESC = new org.apache.thrift.protocol.TField("mode", org.apache.thrift.protocol.TType.I32, (short)2);
+    private static final org.apache.thrift.protocol.TField INSTANCE_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("instanceMap", org.apache.thrift.protocol.TType.MAP, (short)3);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -10597,11 +12672,13 @@ public class FuseOps {
 
     public String path; // required
     public int mode; // required
+    public Map<Byte,Long> instanceMap; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       PATH((short)1, "path"),
-      MODE((short)2, "mode");
+      MODE((short)2, "mode"),
+      INSTANCE_MAP((short)3, "instanceMap");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -10620,6 +12697,8 @@ public class FuseOps {
             return PATH;
           case 2: // MODE
             return MODE;
+          case 3: // INSTANCE_MAP
+            return INSTANCE_MAP;
           default:
             return null;
         }
@@ -10669,6 +12748,10 @@ public class FuseOps {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.MODE, new org.apache.thrift.meta_data.FieldMetaData("mode", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+      tmpMap.put(_Fields.INSTANCE_MAP, new org.apache.thrift.meta_data.FieldMetaData("instanceMap", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE), 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64))));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(chmod_args.class, metaDataMap);
     }
@@ -10678,12 +12761,14 @@ public class FuseOps {
 
     public chmod_args(
       String path,
-      int mode)
+      int mode,
+      Map<Byte,Long> instanceMap)
     {
       this();
       this.path = path;
       this.mode = mode;
       setModeIsSet(true);
+      this.instanceMap = instanceMap;
     }
 
     /**
@@ -10695,6 +12780,10 @@ public class FuseOps {
         this.path = other.path;
       }
       this.mode = other.mode;
+      if (other.isSetInstanceMap()) {
+        Map<Byte,Long> __this__instanceMap = new HashMap<Byte,Long>(other.instanceMap);
+        this.instanceMap = __this__instanceMap;
+      }
     }
 
     public chmod_args deepCopy() {
@@ -10706,6 +12795,7 @@ public class FuseOps {
       this.path = null;
       setModeIsSet(false);
       this.mode = 0;
+      this.instanceMap = null;
     }
 
     public String getPath() {
@@ -10755,6 +12845,41 @@ public class FuseOps {
       __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __MODE_ISSET_ID, value);
     }
 
+    public int getInstanceMapSize() {
+      return (this.instanceMap == null) ? 0 : this.instanceMap.size();
+    }
+
+    public void putToInstanceMap(byte key, long val) {
+      if (this.instanceMap == null) {
+        this.instanceMap = new HashMap<Byte,Long>();
+      }
+      this.instanceMap.put(key, val);
+    }
+
+    public Map<Byte,Long> getInstanceMap() {
+      return this.instanceMap;
+    }
+
+    public chmod_args setInstanceMap(Map<Byte,Long> instanceMap) {
+      this.instanceMap = instanceMap;
+      return this;
+    }
+
+    public void unsetInstanceMap() {
+      this.instanceMap = null;
+    }
+
+    /** Returns true if field instanceMap is set (has been assigned a value) and false otherwise */
+    public boolean isSetInstanceMap() {
+      return this.instanceMap != null;
+    }
+
+    public void setInstanceMapIsSet(boolean value) {
+      if (!value) {
+        this.instanceMap = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case PATH:
@@ -10773,6 +12898,14 @@ public class FuseOps {
         }
         break;
 
+      case INSTANCE_MAP:
+        if (value == null) {
+          unsetInstanceMap();
+        } else {
+          setInstanceMap((Map<Byte,Long>)value);
+        }
+        break;
+
       }
     }
 
@@ -10783,6 +12916,9 @@ public class FuseOps {
 
       case MODE:
         return Integer.valueOf(getMode());
+
+      case INSTANCE_MAP:
+        return getInstanceMap();
 
       }
       throw new IllegalStateException();
@@ -10799,6 +12935,8 @@ public class FuseOps {
         return isSetPath();
       case MODE:
         return isSetMode();
+      case INSTANCE_MAP:
+        return isSetInstanceMap();
       }
       throw new IllegalStateException();
     }
@@ -10831,6 +12969,15 @@ public class FuseOps {
         if (!(this_present_mode && that_present_mode))
           return false;
         if (this.mode != that.mode)
+          return false;
+      }
+
+      boolean this_present_instanceMap = true && this.isSetInstanceMap();
+      boolean that_present_instanceMap = true && that.isSetInstanceMap();
+      if (this_present_instanceMap || that_present_instanceMap) {
+        if (!(this_present_instanceMap && that_present_instanceMap))
+          return false;
+        if (!this.instanceMap.equals(that.instanceMap))
           return false;
       }
 
@@ -10870,6 +13017,16 @@ public class FuseOps {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetInstanceMap()).compareTo(other.isSetInstanceMap());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetInstanceMap()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.instanceMap, other.instanceMap);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -10900,6 +13057,14 @@ public class FuseOps {
       if (!first) sb.append(", ");
       sb.append("mode:");
       sb.append(this.mode);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("instanceMap:");
+      if (this.instanceMap == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.instanceMap);
+      }
       first = false;
       sb.append(")");
       return sb.toString();
@@ -10962,6 +13127,26 @@ public class FuseOps {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 3: // INSTANCE_MAP
+              if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
+                {
+                  org.apache.thrift.protocol.TMap _map124 = iprot.readMapBegin();
+                  struct.instanceMap = new HashMap<Byte,Long>(2*_map124.size);
+                  for (int _i125 = 0; _i125 < _map124.size; ++_i125)
+                  {
+                    byte _key126;
+                    long _val127;
+                    _key126 = iprot.readByte();
+                    _val127 = iprot.readI64();
+                    struct.instanceMap.put(_key126, _val127);
+                  }
+                  iprot.readMapEnd();
+                }
+                struct.setInstanceMapIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -10985,6 +13170,19 @@ public class FuseOps {
         oprot.writeFieldBegin(MODE_FIELD_DESC);
         oprot.writeI32(struct.mode);
         oprot.writeFieldEnd();
+        if (struct.instanceMap != null) {
+          oprot.writeFieldBegin(INSTANCE_MAP_FIELD_DESC);
+          {
+            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, struct.instanceMap.size()));
+            for (Map.Entry<Byte, Long> _iter128 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter128.getKey());
+              oprot.writeI64(_iter128.getValue());
+            }
+            oprot.writeMapEnd();
+          }
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -11009,19 +13207,32 @@ public class FuseOps {
         if (struct.isSetMode()) {
           optionals.set(1);
         }
-        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetInstanceMap()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetPath()) {
           oprot.writeString(struct.path);
         }
         if (struct.isSetMode()) {
           oprot.writeI32(struct.mode);
         }
+        if (struct.isSetInstanceMap()) {
+          {
+            oprot.writeI32(struct.instanceMap.size());
+            for (Map.Entry<Byte, Long> _iter129 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter129.getKey());
+              oprot.writeI64(_iter129.getValue());
+            }
+          }
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, chmod_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(2);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.path = iprot.readString();
           struct.setPathIsSet(true);
@@ -11029,6 +13240,21 @@ public class FuseOps {
         if (incoming.get(1)) {
           struct.mode = iprot.readI32();
           struct.setModeIsSet(true);
+        }
+        if (incoming.get(2)) {
+          {
+            org.apache.thrift.protocol.TMap _map130 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, iprot.readI32());
+            struct.instanceMap = new HashMap<Byte,Long>(2*_map130.size);
+            for (int _i131 = 0; _i131 < _map130.size; ++_i131)
+            {
+              byte _key132;
+              long _val133;
+              _key132 = iprot.readByte();
+              _val133 = iprot.readI64();
+              struct.instanceMap.put(_key132, _val133);
+            }
+          }
+          struct.setInstanceMapIsSet(true);
         }
       }
     }
@@ -11038,6 +13264,7 @@ public class FuseOps {
   public static class chmod_result implements org.apache.thrift.TBase<chmod_result, chmod_result._Fields>, java.io.Serializable, Cloneable, Comparable<chmod_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("chmod_result");
 
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
     private static final org.apache.thrift.protocol.TField E_FIELD_DESC = new org.apache.thrift.protocol.TField("e", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -11046,10 +13273,12 @@ public class FuseOps {
       schemes.put(TupleScheme.class, new chmod_resultTupleSchemeFactory());
     }
 
+    public Response success; // required
     public FSError e; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
       E((short)1, "e");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
@@ -11065,6 +13294,8 @@ public class FuseOps {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
           case 1: // E
             return E;
           default:
@@ -11110,6 +13341,8 @@ public class FuseOps {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Response.class)));
       tmpMap.put(_Fields.E, new org.apache.thrift.meta_data.FieldMetaData("e", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -11120,9 +13353,11 @@ public class FuseOps {
     }
 
     public chmod_result(
+      Response success,
       FSError e)
     {
       this();
+      this.success = success;
       this.e = e;
     }
 
@@ -11130,6 +13365,9 @@ public class FuseOps {
      * Performs a deep copy on <i>other</i>.
      */
     public chmod_result(chmod_result other) {
+      if (other.isSetSuccess()) {
+        this.success = new Response(other.success);
+      }
       if (other.isSetE()) {
         this.e = new FSError(other.e);
       }
@@ -11141,7 +13379,32 @@ public class FuseOps {
 
     @Override
     public void clear() {
+      this.success = null;
       this.e = null;
+    }
+
+    public Response getSuccess() {
+      return this.success;
+    }
+
+    public chmod_result setSuccess(Response success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
     }
 
     public FSError getE() {
@@ -11170,6 +13433,14 @@ public class FuseOps {
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((Response)value);
+        }
+        break;
+
       case E:
         if (value == null) {
           unsetE();
@@ -11183,6 +13454,9 @@ public class FuseOps {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
       case E:
         return getE();
 
@@ -11197,6 +13471,8 @@ public class FuseOps {
       }
 
       switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
       case E:
         return isSetE();
       }
@@ -11215,6 +13491,15 @@ public class FuseOps {
     public boolean equals(chmod_result that) {
       if (that == null)
         return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
 
       boolean this_present_e = true && this.isSetE();
       boolean that_present_e = true && that.isSetE();
@@ -11241,6 +13526,16 @@ public class FuseOps {
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetE()).compareTo(other.isSetE());
       if (lastComparison != 0) {
         return lastComparison;
@@ -11271,6 +13566,14 @@ public class FuseOps {
       StringBuilder sb = new StringBuilder("chmod_result(");
       boolean first = true;
 
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("e:");
       if (this.e == null) {
         sb.append("null");
@@ -11285,6 +13588,9 @@ public class FuseOps {
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
       // check for sub-struct validity
+      if (success != null) {
+        success.validate();
+      }
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -11321,6 +13627,15 @@ public class FuseOps {
             break;
           }
           switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new Response();
+                struct.success.read(iprot);
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             case 1: // E
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
                 struct.e = new FSError();
@@ -11345,6 +13660,11 @@ public class FuseOps {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
         if (struct.e != null) {
           oprot.writeFieldBegin(E_FIELD_DESC);
           struct.e.write(oprot);
@@ -11368,10 +13688,16 @@ public class FuseOps {
       public void write(org.apache.thrift.protocol.TProtocol prot, chmod_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetE()) {
+        if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetE()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetSuccess()) {
+          struct.success.write(oprot);
+        }
         if (struct.isSetE()) {
           struct.e.write(oprot);
         }
@@ -11380,8 +13706,13 @@ public class FuseOps {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, chmod_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
+          struct.success = new Response();
+          struct.success.read(iprot);
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
           struct.e = new FSError();
           struct.e.read(iprot);
           struct.setEIsSet(true);
@@ -11397,6 +13728,7 @@ public class FuseOps {
     private static final org.apache.thrift.protocol.TField PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("path", org.apache.thrift.protocol.TType.STRING, (short)1);
     private static final org.apache.thrift.protocol.TField UID_FIELD_DESC = new org.apache.thrift.protocol.TField("uid", org.apache.thrift.protocol.TType.I32, (short)2);
     private static final org.apache.thrift.protocol.TField GID_FIELD_DESC = new org.apache.thrift.protocol.TField("gid", org.apache.thrift.protocol.TType.I32, (short)3);
+    private static final org.apache.thrift.protocol.TField INSTANCE_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("instanceMap", org.apache.thrift.protocol.TType.MAP, (short)4);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -11407,12 +13739,14 @@ public class FuseOps {
     public String path; // required
     public int uid; // required
     public int gid; // required
+    public Map<Byte,Long> instanceMap; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       PATH((short)1, "path"),
       UID((short)2, "uid"),
-      GID((short)3, "gid");
+      GID((short)3, "gid"),
+      INSTANCE_MAP((short)4, "instanceMap");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -11433,6 +13767,8 @@ public class FuseOps {
             return UID;
           case 3: // GID
             return GID;
+          case 4: // INSTANCE_MAP
+            return INSTANCE_MAP;
           default:
             return null;
         }
@@ -11485,6 +13821,10 @@ public class FuseOps {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
       tmpMap.put(_Fields.GID, new org.apache.thrift.meta_data.FieldMetaData("gid", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+      tmpMap.put(_Fields.INSTANCE_MAP, new org.apache.thrift.meta_data.FieldMetaData("instanceMap", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE), 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64))));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(chown_args.class, metaDataMap);
     }
@@ -11495,7 +13835,8 @@ public class FuseOps {
     public chown_args(
       String path,
       int uid,
-      int gid)
+      int gid,
+      Map<Byte,Long> instanceMap)
     {
       this();
       this.path = path;
@@ -11503,6 +13844,7 @@ public class FuseOps {
       setUidIsSet(true);
       this.gid = gid;
       setGidIsSet(true);
+      this.instanceMap = instanceMap;
     }
 
     /**
@@ -11515,6 +13857,10 @@ public class FuseOps {
       }
       this.uid = other.uid;
       this.gid = other.gid;
+      if (other.isSetInstanceMap()) {
+        Map<Byte,Long> __this__instanceMap = new HashMap<Byte,Long>(other.instanceMap);
+        this.instanceMap = __this__instanceMap;
+      }
     }
 
     public chown_args deepCopy() {
@@ -11528,6 +13874,7 @@ public class FuseOps {
       this.uid = 0;
       setGidIsSet(false);
       this.gid = 0;
+      this.instanceMap = null;
     }
 
     public String getPath() {
@@ -11600,6 +13947,41 @@ public class FuseOps {
       __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __GID_ISSET_ID, value);
     }
 
+    public int getInstanceMapSize() {
+      return (this.instanceMap == null) ? 0 : this.instanceMap.size();
+    }
+
+    public void putToInstanceMap(byte key, long val) {
+      if (this.instanceMap == null) {
+        this.instanceMap = new HashMap<Byte,Long>();
+      }
+      this.instanceMap.put(key, val);
+    }
+
+    public Map<Byte,Long> getInstanceMap() {
+      return this.instanceMap;
+    }
+
+    public chown_args setInstanceMap(Map<Byte,Long> instanceMap) {
+      this.instanceMap = instanceMap;
+      return this;
+    }
+
+    public void unsetInstanceMap() {
+      this.instanceMap = null;
+    }
+
+    /** Returns true if field instanceMap is set (has been assigned a value) and false otherwise */
+    public boolean isSetInstanceMap() {
+      return this.instanceMap != null;
+    }
+
+    public void setInstanceMapIsSet(boolean value) {
+      if (!value) {
+        this.instanceMap = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case PATH:
@@ -11626,6 +14008,14 @@ public class FuseOps {
         }
         break;
 
+      case INSTANCE_MAP:
+        if (value == null) {
+          unsetInstanceMap();
+        } else {
+          setInstanceMap((Map<Byte,Long>)value);
+        }
+        break;
+
       }
     }
 
@@ -11639,6 +14029,9 @@ public class FuseOps {
 
       case GID:
         return Integer.valueOf(getGid());
+
+      case INSTANCE_MAP:
+        return getInstanceMap();
 
       }
       throw new IllegalStateException();
@@ -11657,6 +14050,8 @@ public class FuseOps {
         return isSetUid();
       case GID:
         return isSetGid();
+      case INSTANCE_MAP:
+        return isSetInstanceMap();
       }
       throw new IllegalStateException();
     }
@@ -11698,6 +14093,15 @@ public class FuseOps {
         if (!(this_present_gid && that_present_gid))
           return false;
         if (this.gid != that.gid)
+          return false;
+      }
+
+      boolean this_present_instanceMap = true && this.isSetInstanceMap();
+      boolean that_present_instanceMap = true && that.isSetInstanceMap();
+      if (this_present_instanceMap || that_present_instanceMap) {
+        if (!(this_present_instanceMap && that_present_instanceMap))
+          return false;
+        if (!this.instanceMap.equals(that.instanceMap))
           return false;
       }
 
@@ -11747,6 +14151,16 @@ public class FuseOps {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetInstanceMap()).compareTo(other.isSetInstanceMap());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetInstanceMap()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.instanceMap, other.instanceMap);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -11781,6 +14195,14 @@ public class FuseOps {
       if (!first) sb.append(", ");
       sb.append("gid:");
       sb.append(this.gid);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("instanceMap:");
+      if (this.instanceMap == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.instanceMap);
+      }
       first = false;
       sb.append(")");
       return sb.toString();
@@ -11851,6 +14273,26 @@ public class FuseOps {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 4: // INSTANCE_MAP
+              if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
+                {
+                  org.apache.thrift.protocol.TMap _map134 = iprot.readMapBegin();
+                  struct.instanceMap = new HashMap<Byte,Long>(2*_map134.size);
+                  for (int _i135 = 0; _i135 < _map134.size; ++_i135)
+                  {
+                    byte _key136;
+                    long _val137;
+                    _key136 = iprot.readByte();
+                    _val137 = iprot.readI64();
+                    struct.instanceMap.put(_key136, _val137);
+                  }
+                  iprot.readMapEnd();
+                }
+                struct.setInstanceMapIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -11877,6 +14319,19 @@ public class FuseOps {
         oprot.writeFieldBegin(GID_FIELD_DESC);
         oprot.writeI32(struct.gid);
         oprot.writeFieldEnd();
+        if (struct.instanceMap != null) {
+          oprot.writeFieldBegin(INSTANCE_MAP_FIELD_DESC);
+          {
+            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, struct.instanceMap.size()));
+            for (Map.Entry<Byte, Long> _iter138 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter138.getKey());
+              oprot.writeI64(_iter138.getValue());
+            }
+            oprot.writeMapEnd();
+          }
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -11904,7 +14359,10 @@ public class FuseOps {
         if (struct.isSetGid()) {
           optionals.set(2);
         }
-        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetInstanceMap()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
         if (struct.isSetPath()) {
           oprot.writeString(struct.path);
         }
@@ -11914,12 +14372,22 @@ public class FuseOps {
         if (struct.isSetGid()) {
           oprot.writeI32(struct.gid);
         }
+        if (struct.isSetInstanceMap()) {
+          {
+            oprot.writeI32(struct.instanceMap.size());
+            for (Map.Entry<Byte, Long> _iter139 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter139.getKey());
+              oprot.writeI64(_iter139.getValue());
+            }
+          }
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, chown_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(3);
+        BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
           struct.path = iprot.readString();
           struct.setPathIsSet(true);
@@ -11932,6 +14400,21 @@ public class FuseOps {
           struct.gid = iprot.readI32();
           struct.setGidIsSet(true);
         }
+        if (incoming.get(3)) {
+          {
+            org.apache.thrift.protocol.TMap _map140 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, iprot.readI32());
+            struct.instanceMap = new HashMap<Byte,Long>(2*_map140.size);
+            for (int _i141 = 0; _i141 < _map140.size; ++_i141)
+            {
+              byte _key142;
+              long _val143;
+              _key142 = iprot.readByte();
+              _val143 = iprot.readI64();
+              struct.instanceMap.put(_key142, _val143);
+            }
+          }
+          struct.setInstanceMapIsSet(true);
+        }
       }
     }
 
@@ -11940,6 +14423,7 @@ public class FuseOps {
   public static class chown_result implements org.apache.thrift.TBase<chown_result, chown_result._Fields>, java.io.Serializable, Cloneable, Comparable<chown_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("chown_result");
 
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
     private static final org.apache.thrift.protocol.TField E_FIELD_DESC = new org.apache.thrift.protocol.TField("e", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -11948,10 +14432,12 @@ public class FuseOps {
       schemes.put(TupleScheme.class, new chown_resultTupleSchemeFactory());
     }
 
+    public Response success; // required
     public FSError e; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
       E((short)1, "e");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
@@ -11967,6 +14453,8 @@ public class FuseOps {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
           case 1: // E
             return E;
           default:
@@ -12012,6 +14500,8 @@ public class FuseOps {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Response.class)));
       tmpMap.put(_Fields.E, new org.apache.thrift.meta_data.FieldMetaData("e", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -12022,9 +14512,11 @@ public class FuseOps {
     }
 
     public chown_result(
+      Response success,
       FSError e)
     {
       this();
+      this.success = success;
       this.e = e;
     }
 
@@ -12032,6 +14524,9 @@ public class FuseOps {
      * Performs a deep copy on <i>other</i>.
      */
     public chown_result(chown_result other) {
+      if (other.isSetSuccess()) {
+        this.success = new Response(other.success);
+      }
       if (other.isSetE()) {
         this.e = new FSError(other.e);
       }
@@ -12043,7 +14538,32 @@ public class FuseOps {
 
     @Override
     public void clear() {
+      this.success = null;
       this.e = null;
+    }
+
+    public Response getSuccess() {
+      return this.success;
+    }
+
+    public chown_result setSuccess(Response success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
     }
 
     public FSError getE() {
@@ -12072,6 +14592,14 @@ public class FuseOps {
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((Response)value);
+        }
+        break;
+
       case E:
         if (value == null) {
           unsetE();
@@ -12085,6 +14613,9 @@ public class FuseOps {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
       case E:
         return getE();
 
@@ -12099,6 +14630,8 @@ public class FuseOps {
       }
 
       switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
       case E:
         return isSetE();
       }
@@ -12117,6 +14650,15 @@ public class FuseOps {
     public boolean equals(chown_result that) {
       if (that == null)
         return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
 
       boolean this_present_e = true && this.isSetE();
       boolean that_present_e = true && that.isSetE();
@@ -12143,6 +14685,16 @@ public class FuseOps {
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetE()).compareTo(other.isSetE());
       if (lastComparison != 0) {
         return lastComparison;
@@ -12173,6 +14725,14 @@ public class FuseOps {
       StringBuilder sb = new StringBuilder("chown_result(");
       boolean first = true;
 
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("e:");
       if (this.e == null) {
         sb.append("null");
@@ -12187,6 +14747,9 @@ public class FuseOps {
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
       // check for sub-struct validity
+      if (success != null) {
+        success.validate();
+      }
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -12223,6 +14786,15 @@ public class FuseOps {
             break;
           }
           switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new Response();
+                struct.success.read(iprot);
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             case 1: // E
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
                 struct.e = new FSError();
@@ -12247,6 +14819,11 @@ public class FuseOps {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
         if (struct.e != null) {
           oprot.writeFieldBegin(E_FIELD_DESC);
           struct.e.write(oprot);
@@ -12270,10 +14847,16 @@ public class FuseOps {
       public void write(org.apache.thrift.protocol.TProtocol prot, chown_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetE()) {
+        if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetE()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetSuccess()) {
+          struct.success.write(oprot);
+        }
         if (struct.isSetE()) {
           struct.e.write(oprot);
         }
@@ -12282,8 +14865,13 @@ public class FuseOps {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, chown_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
+          struct.success = new Response();
+          struct.success.read(iprot);
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
           struct.e = new FSError();
           struct.e.read(iprot);
           struct.setEIsSet(true);
@@ -12298,6 +14886,7 @@ public class FuseOps {
 
     private static final org.apache.thrift.protocol.TField PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("path", org.apache.thrift.protocol.TType.STRING, (short)1);
     private static final org.apache.thrift.protocol.TField SIZE_FIELD_DESC = new org.apache.thrift.protocol.TField("size", org.apache.thrift.protocol.TType.I64, (short)2);
+    private static final org.apache.thrift.protocol.TField INSTANCE_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("instanceMap", org.apache.thrift.protocol.TType.MAP, (short)3);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -12307,11 +14896,13 @@ public class FuseOps {
 
     public String path; // required
     public long size; // required
+    public Map<Byte,Long> instanceMap; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       PATH((short)1, "path"),
-      SIZE((short)2, "size");
+      SIZE((short)2, "size"),
+      INSTANCE_MAP((short)3, "instanceMap");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -12330,6 +14921,8 @@ public class FuseOps {
             return PATH;
           case 2: // SIZE
             return SIZE;
+          case 3: // INSTANCE_MAP
+            return INSTANCE_MAP;
           default:
             return null;
         }
@@ -12379,6 +14972,10 @@ public class FuseOps {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.SIZE, new org.apache.thrift.meta_data.FieldMetaData("size", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
+      tmpMap.put(_Fields.INSTANCE_MAP, new org.apache.thrift.meta_data.FieldMetaData("instanceMap", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE), 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64))));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(truncate_args.class, metaDataMap);
     }
@@ -12388,12 +14985,14 @@ public class FuseOps {
 
     public truncate_args(
       String path,
-      long size)
+      long size,
+      Map<Byte,Long> instanceMap)
     {
       this();
       this.path = path;
       this.size = size;
       setSizeIsSet(true);
+      this.instanceMap = instanceMap;
     }
 
     /**
@@ -12405,6 +15004,10 @@ public class FuseOps {
         this.path = other.path;
       }
       this.size = other.size;
+      if (other.isSetInstanceMap()) {
+        Map<Byte,Long> __this__instanceMap = new HashMap<Byte,Long>(other.instanceMap);
+        this.instanceMap = __this__instanceMap;
+      }
     }
 
     public truncate_args deepCopy() {
@@ -12416,6 +15019,7 @@ public class FuseOps {
       this.path = null;
       setSizeIsSet(false);
       this.size = 0;
+      this.instanceMap = null;
     }
 
     public String getPath() {
@@ -12465,6 +15069,41 @@ public class FuseOps {
       __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SIZE_ISSET_ID, value);
     }
 
+    public int getInstanceMapSize() {
+      return (this.instanceMap == null) ? 0 : this.instanceMap.size();
+    }
+
+    public void putToInstanceMap(byte key, long val) {
+      if (this.instanceMap == null) {
+        this.instanceMap = new HashMap<Byte,Long>();
+      }
+      this.instanceMap.put(key, val);
+    }
+
+    public Map<Byte,Long> getInstanceMap() {
+      return this.instanceMap;
+    }
+
+    public truncate_args setInstanceMap(Map<Byte,Long> instanceMap) {
+      this.instanceMap = instanceMap;
+      return this;
+    }
+
+    public void unsetInstanceMap() {
+      this.instanceMap = null;
+    }
+
+    /** Returns true if field instanceMap is set (has been assigned a value) and false otherwise */
+    public boolean isSetInstanceMap() {
+      return this.instanceMap != null;
+    }
+
+    public void setInstanceMapIsSet(boolean value) {
+      if (!value) {
+        this.instanceMap = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case PATH:
@@ -12483,6 +15122,14 @@ public class FuseOps {
         }
         break;
 
+      case INSTANCE_MAP:
+        if (value == null) {
+          unsetInstanceMap();
+        } else {
+          setInstanceMap((Map<Byte,Long>)value);
+        }
+        break;
+
       }
     }
 
@@ -12493,6 +15140,9 @@ public class FuseOps {
 
       case SIZE:
         return Long.valueOf(getSize());
+
+      case INSTANCE_MAP:
+        return getInstanceMap();
 
       }
       throw new IllegalStateException();
@@ -12509,6 +15159,8 @@ public class FuseOps {
         return isSetPath();
       case SIZE:
         return isSetSize();
+      case INSTANCE_MAP:
+        return isSetInstanceMap();
       }
       throw new IllegalStateException();
     }
@@ -12541,6 +15193,15 @@ public class FuseOps {
         if (!(this_present_size && that_present_size))
           return false;
         if (this.size != that.size)
+          return false;
+      }
+
+      boolean this_present_instanceMap = true && this.isSetInstanceMap();
+      boolean that_present_instanceMap = true && that.isSetInstanceMap();
+      if (this_present_instanceMap || that_present_instanceMap) {
+        if (!(this_present_instanceMap && that_present_instanceMap))
+          return false;
+        if (!this.instanceMap.equals(that.instanceMap))
           return false;
       }
 
@@ -12580,6 +15241,16 @@ public class FuseOps {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetInstanceMap()).compareTo(other.isSetInstanceMap());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetInstanceMap()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.instanceMap, other.instanceMap);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -12610,6 +15281,14 @@ public class FuseOps {
       if (!first) sb.append(", ");
       sb.append("size:");
       sb.append(this.size);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("instanceMap:");
+      if (this.instanceMap == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.instanceMap);
+      }
       first = false;
       sb.append(")");
       return sb.toString();
@@ -12672,6 +15351,26 @@ public class FuseOps {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 3: // INSTANCE_MAP
+              if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
+                {
+                  org.apache.thrift.protocol.TMap _map144 = iprot.readMapBegin();
+                  struct.instanceMap = new HashMap<Byte,Long>(2*_map144.size);
+                  for (int _i145 = 0; _i145 < _map144.size; ++_i145)
+                  {
+                    byte _key146;
+                    long _val147;
+                    _key146 = iprot.readByte();
+                    _val147 = iprot.readI64();
+                    struct.instanceMap.put(_key146, _val147);
+                  }
+                  iprot.readMapEnd();
+                }
+                struct.setInstanceMapIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -12695,6 +15394,19 @@ public class FuseOps {
         oprot.writeFieldBegin(SIZE_FIELD_DESC);
         oprot.writeI64(struct.size);
         oprot.writeFieldEnd();
+        if (struct.instanceMap != null) {
+          oprot.writeFieldBegin(INSTANCE_MAP_FIELD_DESC);
+          {
+            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, struct.instanceMap.size()));
+            for (Map.Entry<Byte, Long> _iter148 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter148.getKey());
+              oprot.writeI64(_iter148.getValue());
+            }
+            oprot.writeMapEnd();
+          }
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -12719,19 +15431,32 @@ public class FuseOps {
         if (struct.isSetSize()) {
           optionals.set(1);
         }
-        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetInstanceMap()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetPath()) {
           oprot.writeString(struct.path);
         }
         if (struct.isSetSize()) {
           oprot.writeI64(struct.size);
         }
+        if (struct.isSetInstanceMap()) {
+          {
+            oprot.writeI32(struct.instanceMap.size());
+            for (Map.Entry<Byte, Long> _iter149 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter149.getKey());
+              oprot.writeI64(_iter149.getValue());
+            }
+          }
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, truncate_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(2);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.path = iprot.readString();
           struct.setPathIsSet(true);
@@ -12739,6 +15464,21 @@ public class FuseOps {
         if (incoming.get(1)) {
           struct.size = iprot.readI64();
           struct.setSizeIsSet(true);
+        }
+        if (incoming.get(2)) {
+          {
+            org.apache.thrift.protocol.TMap _map150 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, iprot.readI32());
+            struct.instanceMap = new HashMap<Byte,Long>(2*_map150.size);
+            for (int _i151 = 0; _i151 < _map150.size; ++_i151)
+            {
+              byte _key152;
+              long _val153;
+              _key152 = iprot.readByte();
+              _val153 = iprot.readI64();
+              struct.instanceMap.put(_key152, _val153);
+            }
+          }
+          struct.setInstanceMapIsSet(true);
         }
       }
     }
@@ -12748,6 +15488,7 @@ public class FuseOps {
   public static class truncate_result implements org.apache.thrift.TBase<truncate_result, truncate_result._Fields>, java.io.Serializable, Cloneable, Comparable<truncate_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("truncate_result");
 
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
     private static final org.apache.thrift.protocol.TField E_FIELD_DESC = new org.apache.thrift.protocol.TField("e", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -12756,10 +15497,12 @@ public class FuseOps {
       schemes.put(TupleScheme.class, new truncate_resultTupleSchemeFactory());
     }
 
+    public Response success; // required
     public FSError e; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
       E((short)1, "e");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
@@ -12775,6 +15518,8 @@ public class FuseOps {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
           case 1: // E
             return E;
           default:
@@ -12820,6 +15565,8 @@ public class FuseOps {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Response.class)));
       tmpMap.put(_Fields.E, new org.apache.thrift.meta_data.FieldMetaData("e", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -12830,9 +15577,11 @@ public class FuseOps {
     }
 
     public truncate_result(
+      Response success,
       FSError e)
     {
       this();
+      this.success = success;
       this.e = e;
     }
 
@@ -12840,6 +15589,9 @@ public class FuseOps {
      * Performs a deep copy on <i>other</i>.
      */
     public truncate_result(truncate_result other) {
+      if (other.isSetSuccess()) {
+        this.success = new Response(other.success);
+      }
       if (other.isSetE()) {
         this.e = new FSError(other.e);
       }
@@ -12851,7 +15603,32 @@ public class FuseOps {
 
     @Override
     public void clear() {
+      this.success = null;
       this.e = null;
+    }
+
+    public Response getSuccess() {
+      return this.success;
+    }
+
+    public truncate_result setSuccess(Response success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
     }
 
     public FSError getE() {
@@ -12880,6 +15657,14 @@ public class FuseOps {
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((Response)value);
+        }
+        break;
+
       case E:
         if (value == null) {
           unsetE();
@@ -12893,6 +15678,9 @@ public class FuseOps {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
       case E:
         return getE();
 
@@ -12907,6 +15695,8 @@ public class FuseOps {
       }
 
       switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
       case E:
         return isSetE();
       }
@@ -12925,6 +15715,15 @@ public class FuseOps {
     public boolean equals(truncate_result that) {
       if (that == null)
         return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
 
       boolean this_present_e = true && this.isSetE();
       boolean that_present_e = true && that.isSetE();
@@ -12951,6 +15750,16 @@ public class FuseOps {
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetE()).compareTo(other.isSetE());
       if (lastComparison != 0) {
         return lastComparison;
@@ -12981,6 +15790,14 @@ public class FuseOps {
       StringBuilder sb = new StringBuilder("truncate_result(");
       boolean first = true;
 
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("e:");
       if (this.e == null) {
         sb.append("null");
@@ -12995,6 +15812,9 @@ public class FuseOps {
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
       // check for sub-struct validity
+      if (success != null) {
+        success.validate();
+      }
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -13031,6 +15851,15 @@ public class FuseOps {
             break;
           }
           switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new Response();
+                struct.success.read(iprot);
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             case 1: // E
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
                 struct.e = new FSError();
@@ -13055,6 +15884,11 @@ public class FuseOps {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
         if (struct.e != null) {
           oprot.writeFieldBegin(E_FIELD_DESC);
           struct.e.write(oprot);
@@ -13078,10 +15912,16 @@ public class FuseOps {
       public void write(org.apache.thrift.protocol.TProtocol prot, truncate_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetE()) {
+        if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetE()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetSuccess()) {
+          struct.success.write(oprot);
+        }
         if (struct.isSetE()) {
           struct.e.write(oprot);
         }
@@ -13090,8 +15930,13 @@ public class FuseOps {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, truncate_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
+          struct.success = new Response();
+          struct.success.read(iprot);
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
           struct.e = new FSError();
           struct.e.read(iprot);
           struct.setEIsSet(true);
@@ -13107,6 +15952,7 @@ public class FuseOps {
     private static final org.apache.thrift.protocol.TField PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("path", org.apache.thrift.protocol.TType.STRING, (short)1);
     private static final org.apache.thrift.protocol.TField ATIME_FIELD_DESC = new org.apache.thrift.protocol.TField("atime", org.apache.thrift.protocol.TType.I64, (short)2);
     private static final org.apache.thrift.protocol.TField MTIME_FIELD_DESC = new org.apache.thrift.protocol.TField("mtime", org.apache.thrift.protocol.TType.I64, (short)3);
+    private static final org.apache.thrift.protocol.TField INSTANCE_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("instanceMap", org.apache.thrift.protocol.TType.MAP, (short)4);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -13117,12 +15963,14 @@ public class FuseOps {
     public String path; // required
     public long atime; // required
     public long mtime; // required
+    public Map<Byte,Long> instanceMap; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       PATH((short)1, "path"),
       ATIME((short)2, "atime"),
-      MTIME((short)3, "mtime");
+      MTIME((short)3, "mtime"),
+      INSTANCE_MAP((short)4, "instanceMap");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -13143,6 +15991,8 @@ public class FuseOps {
             return ATIME;
           case 3: // MTIME
             return MTIME;
+          case 4: // INSTANCE_MAP
+            return INSTANCE_MAP;
           default:
             return null;
         }
@@ -13195,6 +16045,10 @@ public class FuseOps {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
       tmpMap.put(_Fields.MTIME, new org.apache.thrift.meta_data.FieldMetaData("mtime", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
+      tmpMap.put(_Fields.INSTANCE_MAP, new org.apache.thrift.meta_data.FieldMetaData("instanceMap", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE), 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64))));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(utime_args.class, metaDataMap);
     }
@@ -13205,7 +16059,8 @@ public class FuseOps {
     public utime_args(
       String path,
       long atime,
-      long mtime)
+      long mtime,
+      Map<Byte,Long> instanceMap)
     {
       this();
       this.path = path;
@@ -13213,6 +16068,7 @@ public class FuseOps {
       setAtimeIsSet(true);
       this.mtime = mtime;
       setMtimeIsSet(true);
+      this.instanceMap = instanceMap;
     }
 
     /**
@@ -13225,6 +16081,10 @@ public class FuseOps {
       }
       this.atime = other.atime;
       this.mtime = other.mtime;
+      if (other.isSetInstanceMap()) {
+        Map<Byte,Long> __this__instanceMap = new HashMap<Byte,Long>(other.instanceMap);
+        this.instanceMap = __this__instanceMap;
+      }
     }
 
     public utime_args deepCopy() {
@@ -13238,6 +16098,7 @@ public class FuseOps {
       this.atime = 0;
       setMtimeIsSet(false);
       this.mtime = 0;
+      this.instanceMap = null;
     }
 
     public String getPath() {
@@ -13310,6 +16171,41 @@ public class FuseOps {
       __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __MTIME_ISSET_ID, value);
     }
 
+    public int getInstanceMapSize() {
+      return (this.instanceMap == null) ? 0 : this.instanceMap.size();
+    }
+
+    public void putToInstanceMap(byte key, long val) {
+      if (this.instanceMap == null) {
+        this.instanceMap = new HashMap<Byte,Long>();
+      }
+      this.instanceMap.put(key, val);
+    }
+
+    public Map<Byte,Long> getInstanceMap() {
+      return this.instanceMap;
+    }
+
+    public utime_args setInstanceMap(Map<Byte,Long> instanceMap) {
+      this.instanceMap = instanceMap;
+      return this;
+    }
+
+    public void unsetInstanceMap() {
+      this.instanceMap = null;
+    }
+
+    /** Returns true if field instanceMap is set (has been assigned a value) and false otherwise */
+    public boolean isSetInstanceMap() {
+      return this.instanceMap != null;
+    }
+
+    public void setInstanceMapIsSet(boolean value) {
+      if (!value) {
+        this.instanceMap = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case PATH:
@@ -13336,6 +16232,14 @@ public class FuseOps {
         }
         break;
 
+      case INSTANCE_MAP:
+        if (value == null) {
+          unsetInstanceMap();
+        } else {
+          setInstanceMap((Map<Byte,Long>)value);
+        }
+        break;
+
       }
     }
 
@@ -13349,6 +16253,9 @@ public class FuseOps {
 
       case MTIME:
         return Long.valueOf(getMtime());
+
+      case INSTANCE_MAP:
+        return getInstanceMap();
 
       }
       throw new IllegalStateException();
@@ -13367,6 +16274,8 @@ public class FuseOps {
         return isSetAtime();
       case MTIME:
         return isSetMtime();
+      case INSTANCE_MAP:
+        return isSetInstanceMap();
       }
       throw new IllegalStateException();
     }
@@ -13408,6 +16317,15 @@ public class FuseOps {
         if (!(this_present_mtime && that_present_mtime))
           return false;
         if (this.mtime != that.mtime)
+          return false;
+      }
+
+      boolean this_present_instanceMap = true && this.isSetInstanceMap();
+      boolean that_present_instanceMap = true && that.isSetInstanceMap();
+      if (this_present_instanceMap || that_present_instanceMap) {
+        if (!(this_present_instanceMap && that_present_instanceMap))
+          return false;
+        if (!this.instanceMap.equals(that.instanceMap))
           return false;
       }
 
@@ -13457,6 +16375,16 @@ public class FuseOps {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetInstanceMap()).compareTo(other.isSetInstanceMap());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetInstanceMap()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.instanceMap, other.instanceMap);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -13491,6 +16419,14 @@ public class FuseOps {
       if (!first) sb.append(", ");
       sb.append("mtime:");
       sb.append(this.mtime);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("instanceMap:");
+      if (this.instanceMap == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.instanceMap);
+      }
       first = false;
       sb.append(")");
       return sb.toString();
@@ -13561,6 +16497,26 @@ public class FuseOps {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 4: // INSTANCE_MAP
+              if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
+                {
+                  org.apache.thrift.protocol.TMap _map154 = iprot.readMapBegin();
+                  struct.instanceMap = new HashMap<Byte,Long>(2*_map154.size);
+                  for (int _i155 = 0; _i155 < _map154.size; ++_i155)
+                  {
+                    byte _key156;
+                    long _val157;
+                    _key156 = iprot.readByte();
+                    _val157 = iprot.readI64();
+                    struct.instanceMap.put(_key156, _val157);
+                  }
+                  iprot.readMapEnd();
+                }
+                struct.setInstanceMapIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -13587,6 +16543,19 @@ public class FuseOps {
         oprot.writeFieldBegin(MTIME_FIELD_DESC);
         oprot.writeI64(struct.mtime);
         oprot.writeFieldEnd();
+        if (struct.instanceMap != null) {
+          oprot.writeFieldBegin(INSTANCE_MAP_FIELD_DESC);
+          {
+            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, struct.instanceMap.size()));
+            for (Map.Entry<Byte, Long> _iter158 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter158.getKey());
+              oprot.writeI64(_iter158.getValue());
+            }
+            oprot.writeMapEnd();
+          }
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -13614,7 +16583,10 @@ public class FuseOps {
         if (struct.isSetMtime()) {
           optionals.set(2);
         }
-        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetInstanceMap()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
         if (struct.isSetPath()) {
           oprot.writeString(struct.path);
         }
@@ -13624,12 +16596,22 @@ public class FuseOps {
         if (struct.isSetMtime()) {
           oprot.writeI64(struct.mtime);
         }
+        if (struct.isSetInstanceMap()) {
+          {
+            oprot.writeI32(struct.instanceMap.size());
+            for (Map.Entry<Byte, Long> _iter159 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter159.getKey());
+              oprot.writeI64(_iter159.getValue());
+            }
+          }
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, utime_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(3);
+        BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
           struct.path = iprot.readString();
           struct.setPathIsSet(true);
@@ -13642,6 +16624,21 @@ public class FuseOps {
           struct.mtime = iprot.readI64();
           struct.setMtimeIsSet(true);
         }
+        if (incoming.get(3)) {
+          {
+            org.apache.thrift.protocol.TMap _map160 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, iprot.readI32());
+            struct.instanceMap = new HashMap<Byte,Long>(2*_map160.size);
+            for (int _i161 = 0; _i161 < _map160.size; ++_i161)
+            {
+              byte _key162;
+              long _val163;
+              _key162 = iprot.readByte();
+              _val163 = iprot.readI64();
+              struct.instanceMap.put(_key162, _val163);
+            }
+          }
+          struct.setInstanceMapIsSet(true);
+        }
       }
     }
 
@@ -13650,6 +16647,7 @@ public class FuseOps {
   public static class utime_result implements org.apache.thrift.TBase<utime_result, utime_result._Fields>, java.io.Serializable, Cloneable, Comparable<utime_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("utime_result");
 
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
     private static final org.apache.thrift.protocol.TField E_FIELD_DESC = new org.apache.thrift.protocol.TField("e", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -13658,610 +16656,7 @@ public class FuseOps {
       schemes.put(TupleScheme.class, new utime_resultTupleSchemeFactory());
     }
 
-    public FSError e; // required
-
-    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
-    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      E((short)1, "e");
-
-      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
-
-      static {
-        for (_Fields field : EnumSet.allOf(_Fields.class)) {
-          byName.put(field.getFieldName(), field);
-        }
-      }
-
-      /**
-       * Find the _Fields constant that matches fieldId, or null if its not found.
-       */
-      public static _Fields findByThriftId(int fieldId) {
-        switch(fieldId) {
-          case 1: // E
-            return E;
-          default:
-            return null;
-        }
-      }
-
-      /**
-       * Find the _Fields constant that matches fieldId, throwing an exception
-       * if it is not found.
-       */
-      public static _Fields findByThriftIdOrThrow(int fieldId) {
-        _Fields fields = findByThriftId(fieldId);
-        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
-        return fields;
-      }
-
-      /**
-       * Find the _Fields constant that matches name, or null if its not found.
-       */
-      public static _Fields findByName(String name) {
-        return byName.get(name);
-      }
-
-      private final short _thriftId;
-      private final String _fieldName;
-
-      _Fields(short thriftId, String fieldName) {
-        _thriftId = thriftId;
-        _fieldName = fieldName;
-      }
-
-      public short getThriftFieldId() {
-        return _thriftId;
-      }
-
-      public String getFieldName() {
-        return _fieldName;
-      }
-    }
-
-    // isset id assignments
-    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
-    static {
-      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.E, new org.apache.thrift.meta_data.FieldMetaData("e", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
-      metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(utime_result.class, metaDataMap);
-    }
-
-    public utime_result() {
-    }
-
-    public utime_result(
-      FSError e)
-    {
-      this();
-      this.e = e;
-    }
-
-    /**
-     * Performs a deep copy on <i>other</i>.
-     */
-    public utime_result(utime_result other) {
-      if (other.isSetE()) {
-        this.e = new FSError(other.e);
-      }
-    }
-
-    public utime_result deepCopy() {
-      return new utime_result(this);
-    }
-
-    @Override
-    public void clear() {
-      this.e = null;
-    }
-
-    public FSError getE() {
-      return this.e;
-    }
-
-    public utime_result setE(FSError e) {
-      this.e = e;
-      return this;
-    }
-
-    public void unsetE() {
-      this.e = null;
-    }
-
-    /** Returns true if field e is set (has been assigned a value) and false otherwise */
-    public boolean isSetE() {
-      return this.e != null;
-    }
-
-    public void setEIsSet(boolean value) {
-      if (!value) {
-        this.e = null;
-      }
-    }
-
-    public void setFieldValue(_Fields field, Object value) {
-      switch (field) {
-      case E:
-        if (value == null) {
-          unsetE();
-        } else {
-          setE((FSError)value);
-        }
-        break;
-
-      }
-    }
-
-    public Object getFieldValue(_Fields field) {
-      switch (field) {
-      case E:
-        return getE();
-
-      }
-      throw new IllegalStateException();
-    }
-
-    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
-    public boolean isSet(_Fields field) {
-      if (field == null) {
-        throw new IllegalArgumentException();
-      }
-
-      switch (field) {
-      case E:
-        return isSetE();
-      }
-      throw new IllegalStateException();
-    }
-
-    @Override
-    public boolean equals(Object that) {
-      if (that == null)
-        return false;
-      if (that instanceof utime_result)
-        return this.equals((utime_result)that);
-      return false;
-    }
-
-    public boolean equals(utime_result that) {
-      if (that == null)
-        return false;
-
-      boolean this_present_e = true && this.isSetE();
-      boolean that_present_e = true && that.isSetE();
-      if (this_present_e || that_present_e) {
-        if (!(this_present_e && that_present_e))
-          return false;
-        if (!this.e.equals(that.e))
-          return false;
-      }
-
-      return true;
-    }
-
-    @Override
-    public int hashCode() {
-      return 0;
-    }
-
-    @Override
-    public int compareTo(utime_result other) {
-      if (!getClass().equals(other.getClass())) {
-        return getClass().getName().compareTo(other.getClass().getName());
-      }
-
-      int lastComparison = 0;
-
-      lastComparison = Boolean.valueOf(isSetE()).compareTo(other.isSetE());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetE()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.e, other.e);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
-      return 0;
-    }
-
-    public _Fields fieldForId(int fieldId) {
-      return _Fields.findByThriftId(fieldId);
-    }
-
-    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
-      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
-    }
-
-    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
-      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
-      }
-
-    @Override
-    public String toString() {
-      StringBuilder sb = new StringBuilder("utime_result(");
-      boolean first = true;
-
-      sb.append("e:");
-      if (this.e == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.e);
-      }
-      first = false;
-      sb.append(")");
-      return sb.toString();
-    }
-
-    public void validate() throws org.apache.thrift.TException {
-      // check for required fields
-      // check for sub-struct validity
-    }
-
-    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
-      try {
-        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
-      } catch (org.apache.thrift.TException te) {
-        throw new java.io.IOException(te);
-      }
-    }
-
-    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
-      try {
-        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
-      } catch (org.apache.thrift.TException te) {
-        throw new java.io.IOException(te);
-      }
-    }
-
-    private static class utime_resultStandardSchemeFactory implements SchemeFactory {
-      public utime_resultStandardScheme getScheme() {
-        return new utime_resultStandardScheme();
-      }
-    }
-
-    private static class utime_resultStandardScheme extends StandardScheme<utime_result> {
-
-      public void read(org.apache.thrift.protocol.TProtocol iprot, utime_result struct) throws org.apache.thrift.TException {
-        org.apache.thrift.protocol.TField schemeField;
-        iprot.readStructBegin();
-        while (true)
-        {
-          schemeField = iprot.readFieldBegin();
-          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
-            break;
-          }
-          switch (schemeField.id) {
-            case 1: // E
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.e = new FSError();
-                struct.e.read(iprot);
-                struct.setEIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            default:
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-          }
-          iprot.readFieldEnd();
-        }
-        iprot.readStructEnd();
-
-        // check for required fields of primitive type, which can't be checked in the validate method
-        struct.validate();
-      }
-
-      public void write(org.apache.thrift.protocol.TProtocol oprot, utime_result struct) throws org.apache.thrift.TException {
-        struct.validate();
-
-        oprot.writeStructBegin(STRUCT_DESC);
-        if (struct.e != null) {
-          oprot.writeFieldBegin(E_FIELD_DESC);
-          struct.e.write(oprot);
-          oprot.writeFieldEnd();
-        }
-        oprot.writeFieldStop();
-        oprot.writeStructEnd();
-      }
-
-    }
-
-    private static class utime_resultTupleSchemeFactory implements SchemeFactory {
-      public utime_resultTupleScheme getScheme() {
-        return new utime_resultTupleScheme();
-      }
-    }
-
-    private static class utime_resultTupleScheme extends TupleScheme<utime_result> {
-
-      @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, utime_result struct) throws org.apache.thrift.TException {
-        TTupleProtocol oprot = (TTupleProtocol) prot;
-        BitSet optionals = new BitSet();
-        if (struct.isSetE()) {
-          optionals.set(0);
-        }
-        oprot.writeBitSet(optionals, 1);
-        if (struct.isSetE()) {
-          struct.e.write(oprot);
-        }
-      }
-
-      @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, utime_result struct) throws org.apache.thrift.TException {
-        TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
-        if (incoming.get(0)) {
-          struct.e = new FSError();
-          struct.e.read(iprot);
-          struct.setEIsSet(true);
-        }
-      }
-    }
-
-  }
-
-  public static class statfs_args implements org.apache.thrift.TBase<statfs_args, statfs_args._Fields>, java.io.Serializable, Cloneable, Comparable<statfs_args>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("statfs_args");
-
-
-    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
-    static {
-      schemes.put(StandardScheme.class, new statfs_argsStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new statfs_argsTupleSchemeFactory());
-    }
-
-
-    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
-    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-;
-
-      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
-
-      static {
-        for (_Fields field : EnumSet.allOf(_Fields.class)) {
-          byName.put(field.getFieldName(), field);
-        }
-      }
-
-      /**
-       * Find the _Fields constant that matches fieldId, or null if its not found.
-       */
-      public static _Fields findByThriftId(int fieldId) {
-        switch(fieldId) {
-          default:
-            return null;
-        }
-      }
-
-      /**
-       * Find the _Fields constant that matches fieldId, throwing an exception
-       * if it is not found.
-       */
-      public static _Fields findByThriftIdOrThrow(int fieldId) {
-        _Fields fields = findByThriftId(fieldId);
-        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
-        return fields;
-      }
-
-      /**
-       * Find the _Fields constant that matches name, or null if its not found.
-       */
-      public static _Fields findByName(String name) {
-        return byName.get(name);
-      }
-
-      private final short _thriftId;
-      private final String _fieldName;
-
-      _Fields(short thriftId, String fieldName) {
-        _thriftId = thriftId;
-        _fieldName = fieldName;
-      }
-
-      public short getThriftFieldId() {
-        return _thriftId;
-      }
-
-      public String getFieldName() {
-        return _fieldName;
-      }
-    }
-    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
-    static {
-      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(statfs_args.class, metaDataMap);
-    }
-
-    public statfs_args() {
-    }
-
-    /**
-     * Performs a deep copy on <i>other</i>.
-     */
-    public statfs_args(statfs_args other) {
-    }
-
-    public statfs_args deepCopy() {
-      return new statfs_args(this);
-    }
-
-    @Override
-    public void clear() {
-    }
-
-    public void setFieldValue(_Fields field, Object value) {
-      switch (field) {
-      }
-    }
-
-    public Object getFieldValue(_Fields field) {
-      switch (field) {
-      }
-      throw new IllegalStateException();
-    }
-
-    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
-    public boolean isSet(_Fields field) {
-      if (field == null) {
-        throw new IllegalArgumentException();
-      }
-
-      switch (field) {
-      }
-      throw new IllegalStateException();
-    }
-
-    @Override
-    public boolean equals(Object that) {
-      if (that == null)
-        return false;
-      if (that instanceof statfs_args)
-        return this.equals((statfs_args)that);
-      return false;
-    }
-
-    public boolean equals(statfs_args that) {
-      if (that == null)
-        return false;
-
-      return true;
-    }
-
-    @Override
-    public int hashCode() {
-      return 0;
-    }
-
-    @Override
-    public int compareTo(statfs_args other) {
-      if (!getClass().equals(other.getClass())) {
-        return getClass().getName().compareTo(other.getClass().getName());
-      }
-
-      int lastComparison = 0;
-
-      return 0;
-    }
-
-    public _Fields fieldForId(int fieldId) {
-      return _Fields.findByThriftId(fieldId);
-    }
-
-    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
-      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
-    }
-
-    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
-      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
-    }
-
-    @Override
-    public String toString() {
-      StringBuilder sb = new StringBuilder("statfs_args(");
-      boolean first = true;
-
-      sb.append(")");
-      return sb.toString();
-    }
-
-    public void validate() throws org.apache.thrift.TException {
-      // check for required fields
-      // check for sub-struct validity
-    }
-
-    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
-      try {
-        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
-      } catch (org.apache.thrift.TException te) {
-        throw new java.io.IOException(te);
-      }
-    }
-
-    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
-      try {
-        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
-      } catch (org.apache.thrift.TException te) {
-        throw new java.io.IOException(te);
-      }
-    }
-
-    private static class statfs_argsStandardSchemeFactory implements SchemeFactory {
-      public statfs_argsStandardScheme getScheme() {
-        return new statfs_argsStandardScheme();
-      }
-    }
-
-    private static class statfs_argsStandardScheme extends StandardScheme<statfs_args> {
-
-      public void read(org.apache.thrift.protocol.TProtocol iprot, statfs_args struct) throws org.apache.thrift.TException {
-        org.apache.thrift.protocol.TField schemeField;
-        iprot.readStructBegin();
-        while (true)
-        {
-          schemeField = iprot.readFieldBegin();
-          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
-            break;
-          }
-          switch (schemeField.id) {
-            default:
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-          }
-          iprot.readFieldEnd();
-        }
-        iprot.readStructEnd();
-
-        // check for required fields of primitive type, which can't be checked in the validate method
-        struct.validate();
-      }
-
-      public void write(org.apache.thrift.protocol.TProtocol oprot, statfs_args struct) throws org.apache.thrift.TException {
-        struct.validate();
-
-        oprot.writeStructBegin(STRUCT_DESC);
-        oprot.writeFieldStop();
-        oprot.writeStructEnd();
-      }
-
-    }
-
-    private static class statfs_argsTupleSchemeFactory implements SchemeFactory {
-      public statfs_argsTupleScheme getScheme() {
-        return new statfs_argsTupleScheme();
-      }
-    }
-
-    private static class statfs_argsTupleScheme extends TupleScheme<statfs_args> {
-
-      @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, statfs_args struct) throws org.apache.thrift.TException {
-        TTupleProtocol oprot = (TTupleProtocol) prot;
-      }
-
-      @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, statfs_args struct) throws org.apache.thrift.TException {
-        TTupleProtocol iprot = (TTupleProtocol) prot;
-      }
-    }
-
-  }
-
-  public static class statfs_result implements org.apache.thrift.TBase<statfs_result, statfs_result._Fields>, java.io.Serializable, Cloneable, Comparable<statfs_result>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("statfs_result");
-
-    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
-    private static final org.apache.thrift.protocol.TField E_FIELD_DESC = new org.apache.thrift.protocol.TField("e", org.apache.thrift.protocol.TType.STRUCT, (short)1);
-
-    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
-    static {
-      schemes.put(StandardScheme.class, new statfs_resultStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new statfs_resultTupleSchemeFactory());
-    }
-
-    public FileSystemStats success; // required
+    public Response success; // required
     public FSError e; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -14330,7 +16725,874 @@ public class FuseOps {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, FileSystemStats.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Response.class)));
+      tmpMap.put(_Fields.E, new org.apache.thrift.meta_data.FieldMetaData("e", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(utime_result.class, metaDataMap);
+    }
+
+    public utime_result() {
+    }
+
+    public utime_result(
+      Response success,
+      FSError e)
+    {
+      this();
+      this.success = success;
+      this.e = e;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public utime_result(utime_result other) {
+      if (other.isSetSuccess()) {
+        this.success = new Response(other.success);
+      }
+      if (other.isSetE()) {
+        this.e = new FSError(other.e);
+      }
+    }
+
+    public utime_result deepCopy() {
+      return new utime_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+      this.e = null;
+    }
+
+    public Response getSuccess() {
+      return this.success;
+    }
+
+    public utime_result setSuccess(Response success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public FSError getE() {
+      return this.e;
+    }
+
+    public utime_result setE(FSError e) {
+      this.e = e;
+      return this;
+    }
+
+    public void unsetE() {
+      this.e = null;
+    }
+
+    /** Returns true if field e is set (has been assigned a value) and false otherwise */
+    public boolean isSetE() {
+      return this.e != null;
+    }
+
+    public void setEIsSet(boolean value) {
+      if (!value) {
+        this.e = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((Response)value);
+        }
+        break;
+
+      case E:
+        if (value == null) {
+          unsetE();
+        } else {
+          setE((FSError)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      case E:
+        return getE();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case E:
+        return isSetE();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof utime_result)
+        return this.equals((utime_result)that);
+      return false;
+    }
+
+    public boolean equals(utime_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_e = true && this.isSetE();
+      boolean that_present_e = true && that.isSetE();
+      if (this_present_e || that_present_e) {
+        if (!(this_present_e && that_present_e))
+          return false;
+        if (!this.e.equals(that.e))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(utime_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetE()).compareTo(other.isSetE());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetE()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.e, other.e);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("utime_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("e:");
+      if (this.e == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.e);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+      if (success != null) {
+        success.validate();
+      }
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class utime_resultStandardSchemeFactory implements SchemeFactory {
+      public utime_resultStandardScheme getScheme() {
+        return new utime_resultStandardScheme();
+      }
+    }
+
+    private static class utime_resultStandardScheme extends StandardScheme<utime_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, utime_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new Response();
+                struct.success.read(iprot);
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // E
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.e = new FSError();
+                struct.e.read(iprot);
+                struct.setEIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, utime_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.e != null) {
+          oprot.writeFieldBegin(E_FIELD_DESC);
+          struct.e.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class utime_resultTupleSchemeFactory implements SchemeFactory {
+      public utime_resultTupleScheme getScheme() {
+        return new utime_resultTupleScheme();
+      }
+    }
+
+    private static class utime_resultTupleScheme extends TupleScheme<utime_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, utime_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetE()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetSuccess()) {
+          struct.success.write(oprot);
+        }
+        if (struct.isSetE()) {
+          struct.e.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, utime_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(2);
+        if (incoming.get(0)) {
+          struct.success = new Response();
+          struct.success.read(iprot);
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.e = new FSError();
+          struct.e.read(iprot);
+          struct.setEIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class statfs_args implements org.apache.thrift.TBase<statfs_args, statfs_args._Fields>, java.io.Serializable, Cloneable, Comparable<statfs_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("statfs_args");
+
+    private static final org.apache.thrift.protocol.TField INSTANCE_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("instanceMap", org.apache.thrift.protocol.TType.MAP, (short)1);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new statfs_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new statfs_argsTupleSchemeFactory());
+    }
+
+    public Map<Byte,Long> instanceMap; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      INSTANCE_MAP((short)1, "instanceMap");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // INSTANCE_MAP
+            return INSTANCE_MAP;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.INSTANCE_MAP, new org.apache.thrift.meta_data.FieldMetaData("instanceMap", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE), 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64))));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(statfs_args.class, metaDataMap);
+    }
+
+    public statfs_args() {
+    }
+
+    public statfs_args(
+      Map<Byte,Long> instanceMap)
+    {
+      this();
+      this.instanceMap = instanceMap;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public statfs_args(statfs_args other) {
+      if (other.isSetInstanceMap()) {
+        Map<Byte,Long> __this__instanceMap = new HashMap<Byte,Long>(other.instanceMap);
+        this.instanceMap = __this__instanceMap;
+      }
+    }
+
+    public statfs_args deepCopy() {
+      return new statfs_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.instanceMap = null;
+    }
+
+    public int getInstanceMapSize() {
+      return (this.instanceMap == null) ? 0 : this.instanceMap.size();
+    }
+
+    public void putToInstanceMap(byte key, long val) {
+      if (this.instanceMap == null) {
+        this.instanceMap = new HashMap<Byte,Long>();
+      }
+      this.instanceMap.put(key, val);
+    }
+
+    public Map<Byte,Long> getInstanceMap() {
+      return this.instanceMap;
+    }
+
+    public statfs_args setInstanceMap(Map<Byte,Long> instanceMap) {
+      this.instanceMap = instanceMap;
+      return this;
+    }
+
+    public void unsetInstanceMap() {
+      this.instanceMap = null;
+    }
+
+    /** Returns true if field instanceMap is set (has been assigned a value) and false otherwise */
+    public boolean isSetInstanceMap() {
+      return this.instanceMap != null;
+    }
+
+    public void setInstanceMapIsSet(boolean value) {
+      if (!value) {
+        this.instanceMap = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case INSTANCE_MAP:
+        if (value == null) {
+          unsetInstanceMap();
+        } else {
+          setInstanceMap((Map<Byte,Long>)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case INSTANCE_MAP:
+        return getInstanceMap();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case INSTANCE_MAP:
+        return isSetInstanceMap();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof statfs_args)
+        return this.equals((statfs_args)that);
+      return false;
+    }
+
+    public boolean equals(statfs_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_instanceMap = true && this.isSetInstanceMap();
+      boolean that_present_instanceMap = true && that.isSetInstanceMap();
+      if (this_present_instanceMap || that_present_instanceMap) {
+        if (!(this_present_instanceMap && that_present_instanceMap))
+          return false;
+        if (!this.instanceMap.equals(that.instanceMap))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(statfs_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetInstanceMap()).compareTo(other.isSetInstanceMap());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetInstanceMap()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.instanceMap, other.instanceMap);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("statfs_args(");
+      boolean first = true;
+
+      sb.append("instanceMap:");
+      if (this.instanceMap == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.instanceMap);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class statfs_argsStandardSchemeFactory implements SchemeFactory {
+      public statfs_argsStandardScheme getScheme() {
+        return new statfs_argsStandardScheme();
+      }
+    }
+
+    private static class statfs_argsStandardScheme extends StandardScheme<statfs_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, statfs_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // INSTANCE_MAP
+              if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
+                {
+                  org.apache.thrift.protocol.TMap _map164 = iprot.readMapBegin();
+                  struct.instanceMap = new HashMap<Byte,Long>(2*_map164.size);
+                  for (int _i165 = 0; _i165 < _map164.size; ++_i165)
+                  {
+                    byte _key166;
+                    long _val167;
+                    _key166 = iprot.readByte();
+                    _val167 = iprot.readI64();
+                    struct.instanceMap.put(_key166, _val167);
+                  }
+                  iprot.readMapEnd();
+                }
+                struct.setInstanceMapIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, statfs_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.instanceMap != null) {
+          oprot.writeFieldBegin(INSTANCE_MAP_FIELD_DESC);
+          {
+            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, struct.instanceMap.size()));
+            for (Map.Entry<Byte, Long> _iter168 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter168.getKey());
+              oprot.writeI64(_iter168.getValue());
+            }
+            oprot.writeMapEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class statfs_argsTupleSchemeFactory implements SchemeFactory {
+      public statfs_argsTupleScheme getScheme() {
+        return new statfs_argsTupleScheme();
+      }
+    }
+
+    private static class statfs_argsTupleScheme extends TupleScheme<statfs_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, statfs_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetInstanceMap()) {
+          optionals.set(0);
+        }
+        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetInstanceMap()) {
+          {
+            oprot.writeI32(struct.instanceMap.size());
+            for (Map.Entry<Byte, Long> _iter169 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter169.getKey());
+              oprot.writeI64(_iter169.getValue());
+            }
+          }
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, statfs_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(1);
+        if (incoming.get(0)) {
+          {
+            org.apache.thrift.protocol.TMap _map170 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, iprot.readI32());
+            struct.instanceMap = new HashMap<Byte,Long>(2*_map170.size);
+            for (int _i171 = 0; _i171 < _map170.size; ++_i171)
+            {
+              byte _key172;
+              long _val173;
+              _key172 = iprot.readByte();
+              _val173 = iprot.readI64();
+              struct.instanceMap.put(_key172, _val173);
+            }
+          }
+          struct.setInstanceMapIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class statfs_result implements org.apache.thrift.TBase<statfs_result, statfs_result._Fields>, java.io.Serializable, Cloneable, Comparable<statfs_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("statfs_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
+    private static final org.apache.thrift.protocol.TField E_FIELD_DESC = new org.apache.thrift.protocol.TField("e", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new statfs_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new statfs_resultTupleSchemeFactory());
+    }
+
+    public Response success; // required
+    public FSError e; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      E((short)1, "e");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // E
+            return E;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Response.class)));
       tmpMap.put(_Fields.E, new org.apache.thrift.meta_data.FieldMetaData("e", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -14341,7 +17603,7 @@ public class FuseOps {
     }
 
     public statfs_result(
-      FileSystemStats success,
+      Response success,
       FSError e)
     {
       this();
@@ -14354,7 +17616,7 @@ public class FuseOps {
      */
     public statfs_result(statfs_result other) {
       if (other.isSetSuccess()) {
-        this.success = new FileSystemStats(other.success);
+        this.success = new Response(other.success);
       }
       if (other.isSetE()) {
         this.e = new FSError(other.e);
@@ -14371,11 +17633,11 @@ public class FuseOps {
       this.e = null;
     }
 
-    public FileSystemStats getSuccess() {
+    public Response getSuccess() {
       return this.success;
     }
 
-    public statfs_result setSuccess(FileSystemStats success) {
+    public statfs_result setSuccess(Response success) {
       this.success = success;
       return this;
     }
@@ -14425,7 +17687,7 @@ public class FuseOps {
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((FileSystemStats)value);
+          setSuccess((Response)value);
         }
         break;
 
@@ -14617,7 +17879,7 @@ public class FuseOps {
           switch (schemeField.id) {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.success = new FileSystemStats();
+                struct.success = new Response();
                 struct.success.read(iprot);
                 struct.setSuccessIsSet(true);
               } else { 
@@ -14696,7 +17958,7 @@ public class FuseOps {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
-          struct.success = new FileSystemStats();
+          struct.success = new Response();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
@@ -14715,6 +17977,7 @@ public class FuseOps {
 
     private static final org.apache.thrift.protocol.TField PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("path", org.apache.thrift.protocol.TType.STRING, (short)1);
     private static final org.apache.thrift.protocol.TField FLAGS_FIELD_DESC = new org.apache.thrift.protocol.TField("flags", org.apache.thrift.protocol.TType.I32, (short)2);
+    private static final org.apache.thrift.protocol.TField INSTANCE_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("instanceMap", org.apache.thrift.protocol.TType.MAP, (short)3);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -14724,11 +17987,13 @@ public class FuseOps {
 
     public String path; // required
     public int flags; // required
+    public Map<Byte,Long> instanceMap; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       PATH((short)1, "path"),
-      FLAGS((short)2, "flags");
+      FLAGS((short)2, "flags"),
+      INSTANCE_MAP((short)3, "instanceMap");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -14747,6 +18012,8 @@ public class FuseOps {
             return PATH;
           case 2: // FLAGS
             return FLAGS;
+          case 3: // INSTANCE_MAP
+            return INSTANCE_MAP;
           default:
             return null;
         }
@@ -14796,6 +18063,10 @@ public class FuseOps {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.FLAGS, new org.apache.thrift.meta_data.FieldMetaData("flags", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+      tmpMap.put(_Fields.INSTANCE_MAP, new org.apache.thrift.meta_data.FieldMetaData("instanceMap", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE), 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64))));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(open_args.class, metaDataMap);
     }
@@ -14805,12 +18076,14 @@ public class FuseOps {
 
     public open_args(
       String path,
-      int flags)
+      int flags,
+      Map<Byte,Long> instanceMap)
     {
       this();
       this.path = path;
       this.flags = flags;
       setFlagsIsSet(true);
+      this.instanceMap = instanceMap;
     }
 
     /**
@@ -14822,6 +18095,10 @@ public class FuseOps {
         this.path = other.path;
       }
       this.flags = other.flags;
+      if (other.isSetInstanceMap()) {
+        Map<Byte,Long> __this__instanceMap = new HashMap<Byte,Long>(other.instanceMap);
+        this.instanceMap = __this__instanceMap;
+      }
     }
 
     public open_args deepCopy() {
@@ -14833,6 +18110,7 @@ public class FuseOps {
       this.path = null;
       setFlagsIsSet(false);
       this.flags = 0;
+      this.instanceMap = null;
     }
 
     public String getPath() {
@@ -14882,6 +18160,41 @@ public class FuseOps {
       __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __FLAGS_ISSET_ID, value);
     }
 
+    public int getInstanceMapSize() {
+      return (this.instanceMap == null) ? 0 : this.instanceMap.size();
+    }
+
+    public void putToInstanceMap(byte key, long val) {
+      if (this.instanceMap == null) {
+        this.instanceMap = new HashMap<Byte,Long>();
+      }
+      this.instanceMap.put(key, val);
+    }
+
+    public Map<Byte,Long> getInstanceMap() {
+      return this.instanceMap;
+    }
+
+    public open_args setInstanceMap(Map<Byte,Long> instanceMap) {
+      this.instanceMap = instanceMap;
+      return this;
+    }
+
+    public void unsetInstanceMap() {
+      this.instanceMap = null;
+    }
+
+    /** Returns true if field instanceMap is set (has been assigned a value) and false otherwise */
+    public boolean isSetInstanceMap() {
+      return this.instanceMap != null;
+    }
+
+    public void setInstanceMapIsSet(boolean value) {
+      if (!value) {
+        this.instanceMap = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case PATH:
@@ -14900,6 +18213,14 @@ public class FuseOps {
         }
         break;
 
+      case INSTANCE_MAP:
+        if (value == null) {
+          unsetInstanceMap();
+        } else {
+          setInstanceMap((Map<Byte,Long>)value);
+        }
+        break;
+
       }
     }
 
@@ -14910,6 +18231,9 @@ public class FuseOps {
 
       case FLAGS:
         return Integer.valueOf(getFlags());
+
+      case INSTANCE_MAP:
+        return getInstanceMap();
 
       }
       throw new IllegalStateException();
@@ -14926,6 +18250,8 @@ public class FuseOps {
         return isSetPath();
       case FLAGS:
         return isSetFlags();
+      case INSTANCE_MAP:
+        return isSetInstanceMap();
       }
       throw new IllegalStateException();
     }
@@ -14958,6 +18284,15 @@ public class FuseOps {
         if (!(this_present_flags && that_present_flags))
           return false;
         if (this.flags != that.flags)
+          return false;
+      }
+
+      boolean this_present_instanceMap = true && this.isSetInstanceMap();
+      boolean that_present_instanceMap = true && that.isSetInstanceMap();
+      if (this_present_instanceMap || that_present_instanceMap) {
+        if (!(this_present_instanceMap && that_present_instanceMap))
+          return false;
+        if (!this.instanceMap.equals(that.instanceMap))
           return false;
       }
 
@@ -14997,6 +18332,16 @@ public class FuseOps {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetInstanceMap()).compareTo(other.isSetInstanceMap());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetInstanceMap()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.instanceMap, other.instanceMap);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -15027,6 +18372,14 @@ public class FuseOps {
       if (!first) sb.append(", ");
       sb.append("flags:");
       sb.append(this.flags);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("instanceMap:");
+      if (this.instanceMap == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.instanceMap);
+      }
       first = false;
       sb.append(")");
       return sb.toString();
@@ -15089,6 +18442,26 @@ public class FuseOps {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 3: // INSTANCE_MAP
+              if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
+                {
+                  org.apache.thrift.protocol.TMap _map174 = iprot.readMapBegin();
+                  struct.instanceMap = new HashMap<Byte,Long>(2*_map174.size);
+                  for (int _i175 = 0; _i175 < _map174.size; ++_i175)
+                  {
+                    byte _key176;
+                    long _val177;
+                    _key176 = iprot.readByte();
+                    _val177 = iprot.readI64();
+                    struct.instanceMap.put(_key176, _val177);
+                  }
+                  iprot.readMapEnd();
+                }
+                struct.setInstanceMapIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -15112,6 +18485,19 @@ public class FuseOps {
         oprot.writeFieldBegin(FLAGS_FIELD_DESC);
         oprot.writeI32(struct.flags);
         oprot.writeFieldEnd();
+        if (struct.instanceMap != null) {
+          oprot.writeFieldBegin(INSTANCE_MAP_FIELD_DESC);
+          {
+            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, struct.instanceMap.size()));
+            for (Map.Entry<Byte, Long> _iter178 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter178.getKey());
+              oprot.writeI64(_iter178.getValue());
+            }
+            oprot.writeMapEnd();
+          }
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -15136,19 +18522,32 @@ public class FuseOps {
         if (struct.isSetFlags()) {
           optionals.set(1);
         }
-        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetInstanceMap()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetPath()) {
           oprot.writeString(struct.path);
         }
         if (struct.isSetFlags()) {
           oprot.writeI32(struct.flags);
         }
+        if (struct.isSetInstanceMap()) {
+          {
+            oprot.writeI32(struct.instanceMap.size());
+            for (Map.Entry<Byte, Long> _iter179 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter179.getKey());
+              oprot.writeI64(_iter179.getValue());
+            }
+          }
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, open_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(2);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.path = iprot.readString();
           struct.setPathIsSet(true);
@@ -15156,6 +18555,21 @@ public class FuseOps {
         if (incoming.get(1)) {
           struct.flags = iprot.readI32();
           struct.setFlagsIsSet(true);
+        }
+        if (incoming.get(2)) {
+          {
+            org.apache.thrift.protocol.TMap _map180 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, iprot.readI32());
+            struct.instanceMap = new HashMap<Byte,Long>(2*_map180.size);
+            for (int _i181 = 0; _i181 < _map180.size; ++_i181)
+            {
+              byte _key182;
+              long _val183;
+              _key182 = iprot.readByte();
+              _val183 = iprot.readI64();
+              struct.instanceMap.put(_key182, _val183);
+            }
+          }
+          struct.setInstanceMapIsSet(true);
         }
       }
     }
@@ -15174,7 +18588,7 @@ public class FuseOps {
       schemes.put(TupleScheme.class, new open_resultTupleSchemeFactory());
     }
 
-    public FileHandle success; // required
+    public Response success; // required
     public FSError e; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -15243,7 +18657,7 @@ public class FuseOps {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, FileHandle.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Response.class)));
       tmpMap.put(_Fields.E, new org.apache.thrift.meta_data.FieldMetaData("e", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -15254,7 +18668,7 @@ public class FuseOps {
     }
 
     public open_result(
-      FileHandle success,
+      Response success,
       FSError e)
     {
       this();
@@ -15267,7 +18681,7 @@ public class FuseOps {
      */
     public open_result(open_result other) {
       if (other.isSetSuccess()) {
-        this.success = new FileHandle(other.success);
+        this.success = new Response(other.success);
       }
       if (other.isSetE()) {
         this.e = new FSError(other.e);
@@ -15284,11 +18698,11 @@ public class FuseOps {
       this.e = null;
     }
 
-    public FileHandle getSuccess() {
+    public Response getSuccess() {
       return this.success;
     }
 
-    public open_result setSuccess(FileHandle success) {
+    public open_result setSuccess(Response success) {
       this.success = success;
       return this;
     }
@@ -15338,7 +18752,7 @@ public class FuseOps {
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((FileHandle)value);
+          setSuccess((Response)value);
         }
         break;
 
@@ -15530,7 +18944,7 @@ public class FuseOps {
           switch (schemeField.id) {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.success = new FileHandle();
+                struct.success = new Response();
                 struct.success.read(iprot);
                 struct.setSuccessIsSet(true);
               } else { 
@@ -15609,7 +19023,7 @@ public class FuseOps {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
-          struct.success = new FileHandle();
+          struct.success = new Response();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
@@ -15630,6 +19044,7 @@ public class FuseOps {
     private static final org.apache.thrift.protocol.TField FH_FIELD_DESC = new org.apache.thrift.protocol.TField("fh", org.apache.thrift.protocol.TType.STRUCT, (short)2);
     private static final org.apache.thrift.protocol.TField OFFSET_FIELD_DESC = new org.apache.thrift.protocol.TField("offset", org.apache.thrift.protocol.TType.I64, (short)3);
     private static final org.apache.thrift.protocol.TField BYTES_FIELD_DESC = new org.apache.thrift.protocol.TField("bytes", org.apache.thrift.protocol.TType.I64, (short)4);
+    private static final org.apache.thrift.protocol.TField INSTANCE_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("instanceMap", org.apache.thrift.protocol.TType.MAP, (short)5);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -15641,13 +19056,15 @@ public class FuseOps {
     public FileHandle fh; // required
     public long offset; // required
     public long bytes; // required
+    public Map<Byte,Long> instanceMap; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       PATH((short)1, "path"),
       FH((short)2, "fh"),
       OFFSET((short)3, "offset"),
-      BYTES((short)4, "bytes");
+      BYTES((short)4, "bytes"),
+      INSTANCE_MAP((short)5, "instanceMap");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -15670,6 +19087,8 @@ public class FuseOps {
             return OFFSET;
           case 4: // BYTES
             return BYTES;
+          case 5: // INSTANCE_MAP
+            return INSTANCE_MAP;
           default:
             return null;
         }
@@ -15724,6 +19143,10 @@ public class FuseOps {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
       tmpMap.put(_Fields.BYTES, new org.apache.thrift.meta_data.FieldMetaData("bytes", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
+      tmpMap.put(_Fields.INSTANCE_MAP, new org.apache.thrift.meta_data.FieldMetaData("instanceMap", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE), 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64))));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(readBlocks_args.class, metaDataMap);
     }
@@ -15735,7 +19158,8 @@ public class FuseOps {
       String path,
       FileHandle fh,
       long offset,
-      long bytes)
+      long bytes,
+      Map<Byte,Long> instanceMap)
     {
       this();
       this.path = path;
@@ -15744,6 +19168,7 @@ public class FuseOps {
       setOffsetIsSet(true);
       this.bytes = bytes;
       setBytesIsSet(true);
+      this.instanceMap = instanceMap;
     }
 
     /**
@@ -15759,6 +19184,10 @@ public class FuseOps {
       }
       this.offset = other.offset;
       this.bytes = other.bytes;
+      if (other.isSetInstanceMap()) {
+        Map<Byte,Long> __this__instanceMap = new HashMap<Byte,Long>(other.instanceMap);
+        this.instanceMap = __this__instanceMap;
+      }
     }
 
     public readBlocks_args deepCopy() {
@@ -15773,6 +19202,7 @@ public class FuseOps {
       this.offset = 0;
       setBytesIsSet(false);
       this.bytes = 0;
+      this.instanceMap = null;
     }
 
     public String getPath() {
@@ -15869,6 +19299,41 @@ public class FuseOps {
       __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __BYTES_ISSET_ID, value);
     }
 
+    public int getInstanceMapSize() {
+      return (this.instanceMap == null) ? 0 : this.instanceMap.size();
+    }
+
+    public void putToInstanceMap(byte key, long val) {
+      if (this.instanceMap == null) {
+        this.instanceMap = new HashMap<Byte,Long>();
+      }
+      this.instanceMap.put(key, val);
+    }
+
+    public Map<Byte,Long> getInstanceMap() {
+      return this.instanceMap;
+    }
+
+    public readBlocks_args setInstanceMap(Map<Byte,Long> instanceMap) {
+      this.instanceMap = instanceMap;
+      return this;
+    }
+
+    public void unsetInstanceMap() {
+      this.instanceMap = null;
+    }
+
+    /** Returns true if field instanceMap is set (has been assigned a value) and false otherwise */
+    public boolean isSetInstanceMap() {
+      return this.instanceMap != null;
+    }
+
+    public void setInstanceMapIsSet(boolean value) {
+      if (!value) {
+        this.instanceMap = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case PATH:
@@ -15903,6 +19368,14 @@ public class FuseOps {
         }
         break;
 
+      case INSTANCE_MAP:
+        if (value == null) {
+          unsetInstanceMap();
+        } else {
+          setInstanceMap((Map<Byte,Long>)value);
+        }
+        break;
+
       }
     }
 
@@ -15919,6 +19392,9 @@ public class FuseOps {
 
       case BYTES:
         return Long.valueOf(getBytes());
+
+      case INSTANCE_MAP:
+        return getInstanceMap();
 
       }
       throw new IllegalStateException();
@@ -15939,6 +19415,8 @@ public class FuseOps {
         return isSetOffset();
       case BYTES:
         return isSetBytes();
+      case INSTANCE_MAP:
+        return isSetInstanceMap();
       }
       throw new IllegalStateException();
     }
@@ -15989,6 +19467,15 @@ public class FuseOps {
         if (!(this_present_bytes && that_present_bytes))
           return false;
         if (this.bytes != that.bytes)
+          return false;
+      }
+
+      boolean this_present_instanceMap = true && this.isSetInstanceMap();
+      boolean that_present_instanceMap = true && that.isSetInstanceMap();
+      if (this_present_instanceMap || that_present_instanceMap) {
+        if (!(this_present_instanceMap && that_present_instanceMap))
+          return false;
+        if (!this.instanceMap.equals(that.instanceMap))
           return false;
       }
 
@@ -16048,6 +19535,16 @@ public class FuseOps {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetInstanceMap()).compareTo(other.isSetInstanceMap());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetInstanceMap()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.instanceMap, other.instanceMap);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -16090,6 +19587,14 @@ public class FuseOps {
       if (!first) sb.append(", ");
       sb.append("bytes:");
       sb.append(this.bytes);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("instanceMap:");
+      if (this.instanceMap == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.instanceMap);
+      }
       first = false;
       sb.append(")");
       return sb.toString();
@@ -16172,6 +19677,26 @@ public class FuseOps {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 5: // INSTANCE_MAP
+              if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
+                {
+                  org.apache.thrift.protocol.TMap _map184 = iprot.readMapBegin();
+                  struct.instanceMap = new HashMap<Byte,Long>(2*_map184.size);
+                  for (int _i185 = 0; _i185 < _map184.size; ++_i185)
+                  {
+                    byte _key186;
+                    long _val187;
+                    _key186 = iprot.readByte();
+                    _val187 = iprot.readI64();
+                    struct.instanceMap.put(_key186, _val187);
+                  }
+                  iprot.readMapEnd();
+                }
+                struct.setInstanceMapIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -16203,6 +19728,19 @@ public class FuseOps {
         oprot.writeFieldBegin(BYTES_FIELD_DESC);
         oprot.writeI64(struct.bytes);
         oprot.writeFieldEnd();
+        if (struct.instanceMap != null) {
+          oprot.writeFieldBegin(INSTANCE_MAP_FIELD_DESC);
+          {
+            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, struct.instanceMap.size()));
+            for (Map.Entry<Byte, Long> _iter188 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter188.getKey());
+              oprot.writeI64(_iter188.getValue());
+            }
+            oprot.writeMapEnd();
+          }
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -16233,7 +19771,10 @@ public class FuseOps {
         if (struct.isSetBytes()) {
           optionals.set(3);
         }
-        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetInstanceMap()) {
+          optionals.set(4);
+        }
+        oprot.writeBitSet(optionals, 5);
         if (struct.isSetPath()) {
           oprot.writeString(struct.path);
         }
@@ -16246,12 +19787,22 @@ public class FuseOps {
         if (struct.isSetBytes()) {
           oprot.writeI64(struct.bytes);
         }
+        if (struct.isSetInstanceMap()) {
+          {
+            oprot.writeI32(struct.instanceMap.size());
+            for (Map.Entry<Byte, Long> _iter189 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter189.getKey());
+              oprot.writeI64(_iter189.getValue());
+            }
+          }
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, readBlocks_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(4);
+        BitSet incoming = iprot.readBitSet(5);
         if (incoming.get(0)) {
           struct.path = iprot.readString();
           struct.setPathIsSet(true);
@@ -16268,6 +19819,21 @@ public class FuseOps {
         if (incoming.get(3)) {
           struct.bytes = iprot.readI64();
           struct.setBytesIsSet(true);
+        }
+        if (incoming.get(4)) {
+          {
+            org.apache.thrift.protocol.TMap _map190 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, iprot.readI32());
+            struct.instanceMap = new HashMap<Byte,Long>(2*_map190.size);
+            for (int _i191 = 0; _i191 < _map190.size; ++_i191)
+            {
+              byte _key192;
+              long _val193;
+              _key192 = iprot.readByte();
+              _val193 = iprot.readI64();
+              struct.instanceMap.put(_key192, _val193);
+            }
+          }
+          struct.setInstanceMapIsSet(true);
         }
       }
     }
@@ -16286,7 +19852,7 @@ public class FuseOps {
       schemes.put(TupleScheme.class, new readBlocks_resultTupleSchemeFactory());
     }
 
-    public ReadResult success; // required
+    public Response success; // required
     public FSError e; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -16355,7 +19921,7 @@ public class FuseOps {
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ReadResult.class)));
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Response.class)));
       tmpMap.put(_Fields.E, new org.apache.thrift.meta_data.FieldMetaData("e", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -16366,7 +19932,7 @@ public class FuseOps {
     }
 
     public readBlocks_result(
-      ReadResult success,
+      Response success,
       FSError e)
     {
       this();
@@ -16379,7 +19945,7 @@ public class FuseOps {
      */
     public readBlocks_result(readBlocks_result other) {
       if (other.isSetSuccess()) {
-        this.success = new ReadResult(other.success);
+        this.success = new Response(other.success);
       }
       if (other.isSetE()) {
         this.e = new FSError(other.e);
@@ -16396,11 +19962,11 @@ public class FuseOps {
       this.e = null;
     }
 
-    public ReadResult getSuccess() {
+    public Response getSuccess() {
       return this.success;
     }
 
-    public readBlocks_result setSuccess(ReadResult success) {
+    public readBlocks_result setSuccess(Response success) {
       this.success = success;
       return this;
     }
@@ -16450,7 +20016,7 @@ public class FuseOps {
         if (value == null) {
           unsetSuccess();
         } else {
-          setSuccess((ReadResult)value);
+          setSuccess((Response)value);
         }
         break;
 
@@ -16642,7 +20208,7 @@ public class FuseOps {
           switch (schemeField.id) {
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.success = new ReadResult();
+                struct.success = new Response();
                 struct.success.read(iprot);
                 struct.setSuccessIsSet(true);
               } else { 
@@ -16721,7 +20287,7 @@ public class FuseOps {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
-          struct.success = new ReadResult();
+          struct.success = new Response();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
@@ -16742,6 +20308,7 @@ public class FuseOps {
     private static final org.apache.thrift.protocol.TField FH_FIELD_DESC = new org.apache.thrift.protocol.TField("fh", org.apache.thrift.protocol.TType.STRUCT, (short)2);
     private static final org.apache.thrift.protocol.TField OFFSET_FIELD_DESC = new org.apache.thrift.protocol.TField("offset", org.apache.thrift.protocol.TType.I64, (short)3);
     private static final org.apache.thrift.protocol.TField BLOCKS_FIELD_DESC = new org.apache.thrift.protocol.TField("blocks", org.apache.thrift.protocol.TType.LIST, (short)4);
+    private static final org.apache.thrift.protocol.TField INSTANCE_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("instanceMap", org.apache.thrift.protocol.TType.MAP, (short)5);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -16753,13 +20320,15 @@ public class FuseOps {
     public FileHandle fh; // required
     public long offset; // required
     public List<DBlock> blocks; // required
+    public Map<Byte,Long> instanceMap; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       PATH((short)1, "path"),
       FH((short)2, "fh"),
       OFFSET((short)3, "offset"),
-      BLOCKS((short)4, "blocks");
+      BLOCKS((short)4, "blocks"),
+      INSTANCE_MAP((short)5, "instanceMap");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -16782,6 +20351,8 @@ public class FuseOps {
             return OFFSET;
           case 4: // BLOCKS
             return BLOCKS;
+          case 5: // INSTANCE_MAP
+            return INSTANCE_MAP;
           default:
             return null;
         }
@@ -16836,6 +20407,10 @@ public class FuseOps {
       tmpMap.put(_Fields.BLOCKS, new org.apache.thrift.meta_data.FieldMetaData("blocks", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
               new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, DBlock.class))));
+      tmpMap.put(_Fields.INSTANCE_MAP, new org.apache.thrift.meta_data.FieldMetaData("instanceMap", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE), 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64))));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(writeBlocks_args.class, metaDataMap);
     }
@@ -16847,7 +20422,8 @@ public class FuseOps {
       String path,
       FileHandle fh,
       long offset,
-      List<DBlock> blocks)
+      List<DBlock> blocks,
+      Map<Byte,Long> instanceMap)
     {
       this();
       this.path = path;
@@ -16855,6 +20431,7 @@ public class FuseOps {
       this.offset = offset;
       setOffsetIsSet(true);
       this.blocks = blocks;
+      this.instanceMap = instanceMap;
     }
 
     /**
@@ -16876,6 +20453,10 @@ public class FuseOps {
         }
         this.blocks = __this__blocks;
       }
+      if (other.isSetInstanceMap()) {
+        Map<Byte,Long> __this__instanceMap = new HashMap<Byte,Long>(other.instanceMap);
+        this.instanceMap = __this__instanceMap;
+      }
     }
 
     public writeBlocks_args deepCopy() {
@@ -16889,6 +20470,7 @@ public class FuseOps {
       setOffsetIsSet(false);
       this.offset = 0;
       this.blocks = null;
+      this.instanceMap = null;
     }
 
     public String getPath() {
@@ -17001,6 +20583,41 @@ public class FuseOps {
       }
     }
 
+    public int getInstanceMapSize() {
+      return (this.instanceMap == null) ? 0 : this.instanceMap.size();
+    }
+
+    public void putToInstanceMap(byte key, long val) {
+      if (this.instanceMap == null) {
+        this.instanceMap = new HashMap<Byte,Long>();
+      }
+      this.instanceMap.put(key, val);
+    }
+
+    public Map<Byte,Long> getInstanceMap() {
+      return this.instanceMap;
+    }
+
+    public writeBlocks_args setInstanceMap(Map<Byte,Long> instanceMap) {
+      this.instanceMap = instanceMap;
+      return this;
+    }
+
+    public void unsetInstanceMap() {
+      this.instanceMap = null;
+    }
+
+    /** Returns true if field instanceMap is set (has been assigned a value) and false otherwise */
+    public boolean isSetInstanceMap() {
+      return this.instanceMap != null;
+    }
+
+    public void setInstanceMapIsSet(boolean value) {
+      if (!value) {
+        this.instanceMap = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case PATH:
@@ -17035,6 +20652,14 @@ public class FuseOps {
         }
         break;
 
+      case INSTANCE_MAP:
+        if (value == null) {
+          unsetInstanceMap();
+        } else {
+          setInstanceMap((Map<Byte,Long>)value);
+        }
+        break;
+
       }
     }
 
@@ -17051,6 +20676,9 @@ public class FuseOps {
 
       case BLOCKS:
         return getBlocks();
+
+      case INSTANCE_MAP:
+        return getInstanceMap();
 
       }
       throw new IllegalStateException();
@@ -17071,6 +20699,8 @@ public class FuseOps {
         return isSetOffset();
       case BLOCKS:
         return isSetBlocks();
+      case INSTANCE_MAP:
+        return isSetInstanceMap();
       }
       throw new IllegalStateException();
     }
@@ -17121,6 +20751,15 @@ public class FuseOps {
         if (!(this_present_blocks && that_present_blocks))
           return false;
         if (!this.blocks.equals(that.blocks))
+          return false;
+      }
+
+      boolean this_present_instanceMap = true && this.isSetInstanceMap();
+      boolean that_present_instanceMap = true && that.isSetInstanceMap();
+      if (this_present_instanceMap || that_present_instanceMap) {
+        if (!(this_present_instanceMap && that_present_instanceMap))
+          return false;
+        if (!this.instanceMap.equals(that.instanceMap))
           return false;
       }
 
@@ -17180,6 +20819,16 @@ public class FuseOps {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetInstanceMap()).compareTo(other.isSetInstanceMap());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetInstanceMap()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.instanceMap, other.instanceMap);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -17225,6 +20874,14 @@ public class FuseOps {
         sb.append("null");
       } else {
         sb.append(this.blocks);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("instanceMap:");
+      if (this.instanceMap == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.instanceMap);
       }
       first = false;
       sb.append(")");
@@ -17303,18 +20960,38 @@ public class FuseOps {
             case 4: // BLOCKS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list24 = iprot.readListBegin();
-                  struct.blocks = new ArrayList<DBlock>(_list24.size);
-                  for (int _i25 = 0; _i25 < _list24.size; ++_i25)
+                  org.apache.thrift.protocol.TList _list194 = iprot.readListBegin();
+                  struct.blocks = new ArrayList<DBlock>(_list194.size);
+                  for (int _i195 = 0; _i195 < _list194.size; ++_i195)
                   {
-                    DBlock _elem26;
-                    _elem26 = new DBlock();
-                    _elem26.read(iprot);
-                    struct.blocks.add(_elem26);
+                    DBlock _elem196;
+                    _elem196 = new DBlock();
+                    _elem196.read(iprot);
+                    struct.blocks.add(_elem196);
                   }
                   iprot.readListEnd();
                 }
                 struct.setBlocksIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 5: // INSTANCE_MAP
+              if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
+                {
+                  org.apache.thrift.protocol.TMap _map197 = iprot.readMapBegin();
+                  struct.instanceMap = new HashMap<Byte,Long>(2*_map197.size);
+                  for (int _i198 = 0; _i198 < _map197.size; ++_i198)
+                  {
+                    byte _key199;
+                    long _val200;
+                    _key199 = iprot.readByte();
+                    _val200 = iprot.readI64();
+                    struct.instanceMap.put(_key199, _val200);
+                  }
+                  iprot.readMapEnd();
+                }
+                struct.setInstanceMapIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -17351,11 +21028,24 @@ public class FuseOps {
           oprot.writeFieldBegin(BLOCKS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.blocks.size()));
-            for (DBlock _iter27 : struct.blocks)
+            for (DBlock _iter201 : struct.blocks)
             {
-              _iter27.write(oprot);
+              _iter201.write(oprot);
             }
             oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+        if (struct.instanceMap != null) {
+          oprot.writeFieldBegin(INSTANCE_MAP_FIELD_DESC);
+          {
+            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, struct.instanceMap.size()));
+            for (Map.Entry<Byte, Long> _iter202 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter202.getKey());
+              oprot.writeI64(_iter202.getValue());
+            }
+            oprot.writeMapEnd();
           }
           oprot.writeFieldEnd();
         }
@@ -17389,7 +21079,10 @@ public class FuseOps {
         if (struct.isSetBlocks()) {
           optionals.set(3);
         }
-        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetInstanceMap()) {
+          optionals.set(4);
+        }
+        oprot.writeBitSet(optionals, 5);
         if (struct.isSetPath()) {
           oprot.writeString(struct.path);
         }
@@ -17402,9 +21095,19 @@ public class FuseOps {
         if (struct.isSetBlocks()) {
           {
             oprot.writeI32(struct.blocks.size());
-            for (DBlock _iter28 : struct.blocks)
+            for (DBlock _iter203 : struct.blocks)
             {
-              _iter28.write(oprot);
+              _iter203.write(oprot);
+            }
+          }
+        }
+        if (struct.isSetInstanceMap()) {
+          {
+            oprot.writeI32(struct.instanceMap.size());
+            for (Map.Entry<Byte, Long> _iter204 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter204.getKey());
+              oprot.writeI64(_iter204.getValue());
             }
           }
         }
@@ -17413,7 +21116,7 @@ public class FuseOps {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, writeBlocks_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(4);
+        BitSet incoming = iprot.readBitSet(5);
         if (incoming.get(0)) {
           struct.path = iprot.readString();
           struct.setPathIsSet(true);
@@ -17429,17 +21132,32 @@ public class FuseOps {
         }
         if (incoming.get(3)) {
           {
-            org.apache.thrift.protocol.TList _list29 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.blocks = new ArrayList<DBlock>(_list29.size);
-            for (int _i30 = 0; _i30 < _list29.size; ++_i30)
+            org.apache.thrift.protocol.TList _list205 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.blocks = new ArrayList<DBlock>(_list205.size);
+            for (int _i206 = 0; _i206 < _list205.size; ++_i206)
             {
-              DBlock _elem31;
-              _elem31 = new DBlock();
-              _elem31.read(iprot);
-              struct.blocks.add(_elem31);
+              DBlock _elem207;
+              _elem207 = new DBlock();
+              _elem207.read(iprot);
+              struct.blocks.add(_elem207);
             }
           }
           struct.setBlocksIsSet(true);
+        }
+        if (incoming.get(4)) {
+          {
+            org.apache.thrift.protocol.TMap _map208 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, iprot.readI32());
+            struct.instanceMap = new HashMap<Byte,Long>(2*_map208.size);
+            for (int _i209 = 0; _i209 < _map208.size; ++_i209)
+            {
+              byte _key210;
+              long _val211;
+              _key210 = iprot.readByte();
+              _val211 = iprot.readI64();
+              struct.instanceMap.put(_key210, _val211);
+            }
+          }
+          struct.setInstanceMapIsSet(true);
         }
       }
     }
@@ -17449,6 +21167,7 @@ public class FuseOps {
   public static class writeBlocks_result implements org.apache.thrift.TBase<writeBlocks_result, writeBlocks_result._Fields>, java.io.Serializable, Cloneable, Comparable<writeBlocks_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("writeBlocks_result");
 
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
     private static final org.apache.thrift.protocol.TField E_FIELD_DESC = new org.apache.thrift.protocol.TField("e", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -17457,10 +21176,12 @@ public class FuseOps {
       schemes.put(TupleScheme.class, new writeBlocks_resultTupleSchemeFactory());
     }
 
+    public Response success; // required
     public FSError e; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
       E((short)1, "e");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
@@ -17476,6 +21197,8 @@ public class FuseOps {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
           case 1: // E
             return E;
           default:
@@ -17521,6 +21244,8 @@ public class FuseOps {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Response.class)));
       tmpMap.put(_Fields.E, new org.apache.thrift.meta_data.FieldMetaData("e", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -17531,9 +21256,11 @@ public class FuseOps {
     }
 
     public writeBlocks_result(
+      Response success,
       FSError e)
     {
       this();
+      this.success = success;
       this.e = e;
     }
 
@@ -17541,6 +21268,9 @@ public class FuseOps {
      * Performs a deep copy on <i>other</i>.
      */
     public writeBlocks_result(writeBlocks_result other) {
+      if (other.isSetSuccess()) {
+        this.success = new Response(other.success);
+      }
       if (other.isSetE()) {
         this.e = new FSError(other.e);
       }
@@ -17552,7 +21282,32 @@ public class FuseOps {
 
     @Override
     public void clear() {
+      this.success = null;
       this.e = null;
+    }
+
+    public Response getSuccess() {
+      return this.success;
+    }
+
+    public writeBlocks_result setSuccess(Response success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
     }
 
     public FSError getE() {
@@ -17581,6 +21336,14 @@ public class FuseOps {
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((Response)value);
+        }
+        break;
+
       case E:
         if (value == null) {
           unsetE();
@@ -17594,6 +21357,9 @@ public class FuseOps {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
       case E:
         return getE();
 
@@ -17608,6 +21374,8 @@ public class FuseOps {
       }
 
       switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
       case E:
         return isSetE();
       }
@@ -17626,6 +21394,15 @@ public class FuseOps {
     public boolean equals(writeBlocks_result that) {
       if (that == null)
         return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
 
       boolean this_present_e = true && this.isSetE();
       boolean that_present_e = true && that.isSetE();
@@ -17652,6 +21429,16 @@ public class FuseOps {
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetE()).compareTo(other.isSetE());
       if (lastComparison != 0) {
         return lastComparison;
@@ -17682,6 +21469,14 @@ public class FuseOps {
       StringBuilder sb = new StringBuilder("writeBlocks_result(");
       boolean first = true;
 
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("e:");
       if (this.e == null) {
         sb.append("null");
@@ -17696,6 +21491,9 @@ public class FuseOps {
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
       // check for sub-struct validity
+      if (success != null) {
+        success.validate();
+      }
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -17732,6 +21530,15 @@ public class FuseOps {
             break;
           }
           switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new Response();
+                struct.success.read(iprot);
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             case 1: // E
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
                 struct.e = new FSError();
@@ -17756,6 +21563,11 @@ public class FuseOps {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
         if (struct.e != null) {
           oprot.writeFieldBegin(E_FIELD_DESC);
           struct.e.write(oprot);
@@ -17779,10 +21591,16 @@ public class FuseOps {
       public void write(org.apache.thrift.protocol.TProtocol prot, writeBlocks_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetE()) {
+        if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetE()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetSuccess()) {
+          struct.success.write(oprot);
+        }
         if (struct.isSetE()) {
           struct.e.write(oprot);
         }
@@ -17791,8 +21609,13 @@ public class FuseOps {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, writeBlocks_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
+          struct.success = new Response();
+          struct.success.read(iprot);
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
           struct.e = new FSError();
           struct.e.read(iprot);
           struct.setEIsSet(true);
@@ -17808,6 +21631,7 @@ public class FuseOps {
     private static final org.apache.thrift.protocol.TField PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("path", org.apache.thrift.protocol.TType.STRING, (short)1);
     private static final org.apache.thrift.protocol.TField FH_FIELD_DESC = new org.apache.thrift.protocol.TField("fh", org.apache.thrift.protocol.TType.STRUCT, (short)2);
     private static final org.apache.thrift.protocol.TField FLAGS_FIELD_DESC = new org.apache.thrift.protocol.TField("flags", org.apache.thrift.protocol.TType.I32, (short)3);
+    private static final org.apache.thrift.protocol.TField INSTANCE_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("instanceMap", org.apache.thrift.protocol.TType.MAP, (short)4);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -17818,12 +21642,14 @@ public class FuseOps {
     public String path; // required
     public FileHandle fh; // required
     public int flags; // required
+    public Map<Byte,Long> instanceMap; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       PATH((short)1, "path"),
       FH((short)2, "fh"),
-      FLAGS((short)3, "flags");
+      FLAGS((short)3, "flags"),
+      INSTANCE_MAP((short)4, "instanceMap");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -17844,6 +21670,8 @@ public class FuseOps {
             return FH;
           case 3: // FLAGS
             return FLAGS;
+          case 4: // INSTANCE_MAP
+            return INSTANCE_MAP;
           default:
             return null;
         }
@@ -17895,6 +21723,10 @@ public class FuseOps {
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, FileHandle.class)));
       tmpMap.put(_Fields.FLAGS, new org.apache.thrift.meta_data.FieldMetaData("flags", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+      tmpMap.put(_Fields.INSTANCE_MAP, new org.apache.thrift.meta_data.FieldMetaData("instanceMap", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE), 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64))));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(release_args.class, metaDataMap);
     }
@@ -17905,13 +21737,15 @@ public class FuseOps {
     public release_args(
       String path,
       FileHandle fh,
-      int flags)
+      int flags,
+      Map<Byte,Long> instanceMap)
     {
       this();
       this.path = path;
       this.fh = fh;
       this.flags = flags;
       setFlagsIsSet(true);
+      this.instanceMap = instanceMap;
     }
 
     /**
@@ -17926,6 +21760,10 @@ public class FuseOps {
         this.fh = new FileHandle(other.fh);
       }
       this.flags = other.flags;
+      if (other.isSetInstanceMap()) {
+        Map<Byte,Long> __this__instanceMap = new HashMap<Byte,Long>(other.instanceMap);
+        this.instanceMap = __this__instanceMap;
+      }
     }
 
     public release_args deepCopy() {
@@ -17938,6 +21776,7 @@ public class FuseOps {
       this.fh = null;
       setFlagsIsSet(false);
       this.flags = 0;
+      this.instanceMap = null;
     }
 
     public String getPath() {
@@ -18011,6 +21850,41 @@ public class FuseOps {
       __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __FLAGS_ISSET_ID, value);
     }
 
+    public int getInstanceMapSize() {
+      return (this.instanceMap == null) ? 0 : this.instanceMap.size();
+    }
+
+    public void putToInstanceMap(byte key, long val) {
+      if (this.instanceMap == null) {
+        this.instanceMap = new HashMap<Byte,Long>();
+      }
+      this.instanceMap.put(key, val);
+    }
+
+    public Map<Byte,Long> getInstanceMap() {
+      return this.instanceMap;
+    }
+
+    public release_args setInstanceMap(Map<Byte,Long> instanceMap) {
+      this.instanceMap = instanceMap;
+      return this;
+    }
+
+    public void unsetInstanceMap() {
+      this.instanceMap = null;
+    }
+
+    /** Returns true if field instanceMap is set (has been assigned a value) and false otherwise */
+    public boolean isSetInstanceMap() {
+      return this.instanceMap != null;
+    }
+
+    public void setInstanceMapIsSet(boolean value) {
+      if (!value) {
+        this.instanceMap = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case PATH:
@@ -18037,6 +21911,14 @@ public class FuseOps {
         }
         break;
 
+      case INSTANCE_MAP:
+        if (value == null) {
+          unsetInstanceMap();
+        } else {
+          setInstanceMap((Map<Byte,Long>)value);
+        }
+        break;
+
       }
     }
 
@@ -18050,6 +21932,9 @@ public class FuseOps {
 
       case FLAGS:
         return Integer.valueOf(getFlags());
+
+      case INSTANCE_MAP:
+        return getInstanceMap();
 
       }
       throw new IllegalStateException();
@@ -18068,6 +21953,8 @@ public class FuseOps {
         return isSetFh();
       case FLAGS:
         return isSetFlags();
+      case INSTANCE_MAP:
+        return isSetInstanceMap();
       }
       throw new IllegalStateException();
     }
@@ -18109,6 +21996,15 @@ public class FuseOps {
         if (!(this_present_flags && that_present_flags))
           return false;
         if (this.flags != that.flags)
+          return false;
+      }
+
+      boolean this_present_instanceMap = true && this.isSetInstanceMap();
+      boolean that_present_instanceMap = true && that.isSetInstanceMap();
+      if (this_present_instanceMap || that_present_instanceMap) {
+        if (!(this_present_instanceMap && that_present_instanceMap))
+          return false;
+        if (!this.instanceMap.equals(that.instanceMap))
           return false;
       }
 
@@ -18158,6 +22054,16 @@ public class FuseOps {
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetInstanceMap()).compareTo(other.isSetInstanceMap());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetInstanceMap()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.instanceMap, other.instanceMap);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -18196,6 +22102,14 @@ public class FuseOps {
       if (!first) sb.append(", ");
       sb.append("flags:");
       sb.append(this.flags);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("instanceMap:");
+      if (this.instanceMap == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.instanceMap);
+      }
       first = false;
       sb.append(")");
       return sb.toString();
@@ -18270,6 +22184,26 @@ public class FuseOps {
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 4: // INSTANCE_MAP
+              if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
+                {
+                  org.apache.thrift.protocol.TMap _map212 = iprot.readMapBegin();
+                  struct.instanceMap = new HashMap<Byte,Long>(2*_map212.size);
+                  for (int _i213 = 0; _i213 < _map212.size; ++_i213)
+                  {
+                    byte _key214;
+                    long _val215;
+                    _key214 = iprot.readByte();
+                    _val215 = iprot.readI64();
+                    struct.instanceMap.put(_key214, _val215);
+                  }
+                  iprot.readMapEnd();
+                }
+                struct.setInstanceMapIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -18298,6 +22232,19 @@ public class FuseOps {
         oprot.writeFieldBegin(FLAGS_FIELD_DESC);
         oprot.writeI32(struct.flags);
         oprot.writeFieldEnd();
+        if (struct.instanceMap != null) {
+          oprot.writeFieldBegin(INSTANCE_MAP_FIELD_DESC);
+          {
+            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, struct.instanceMap.size()));
+            for (Map.Entry<Byte, Long> _iter216 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter216.getKey());
+              oprot.writeI64(_iter216.getValue());
+            }
+            oprot.writeMapEnd();
+          }
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -18325,7 +22272,10 @@ public class FuseOps {
         if (struct.isSetFlags()) {
           optionals.set(2);
         }
-        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetInstanceMap()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
         if (struct.isSetPath()) {
           oprot.writeString(struct.path);
         }
@@ -18335,12 +22285,22 @@ public class FuseOps {
         if (struct.isSetFlags()) {
           oprot.writeI32(struct.flags);
         }
+        if (struct.isSetInstanceMap()) {
+          {
+            oprot.writeI32(struct.instanceMap.size());
+            for (Map.Entry<Byte, Long> _iter217 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter217.getKey());
+              oprot.writeI64(_iter217.getValue());
+            }
+          }
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, release_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(3);
+        BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
           struct.path = iprot.readString();
           struct.setPathIsSet(true);
@@ -18354,6 +22314,21 @@ public class FuseOps {
           struct.flags = iprot.readI32();
           struct.setFlagsIsSet(true);
         }
+        if (incoming.get(3)) {
+          {
+            org.apache.thrift.protocol.TMap _map218 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, iprot.readI32());
+            struct.instanceMap = new HashMap<Byte,Long>(2*_map218.size);
+            for (int _i219 = 0; _i219 < _map218.size; ++_i219)
+            {
+              byte _key220;
+              long _val221;
+              _key220 = iprot.readByte();
+              _val221 = iprot.readI64();
+              struct.instanceMap.put(_key220, _val221);
+            }
+          }
+          struct.setInstanceMapIsSet(true);
+        }
       }
     }
 
@@ -18362,6 +22337,7 @@ public class FuseOps {
   public static class release_result implements org.apache.thrift.TBase<release_result, release_result._Fields>, java.io.Serializable, Cloneable, Comparable<release_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("release_result");
 
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
     private static final org.apache.thrift.protocol.TField E_FIELD_DESC = new org.apache.thrift.protocol.TField("e", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -18370,10 +22346,12 @@ public class FuseOps {
       schemes.put(TupleScheme.class, new release_resultTupleSchemeFactory());
     }
 
+    public Response success; // required
     public FSError e; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
       E((short)1, "e");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
@@ -18389,6 +22367,8 @@ public class FuseOps {
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
           case 1: // E
             return E;
           default:
@@ -18434,6 +22414,8 @@ public class FuseOps {
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Response.class)));
       tmpMap.put(_Fields.E, new org.apache.thrift.meta_data.FieldMetaData("e", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -18444,9 +22426,11 @@ public class FuseOps {
     }
 
     public release_result(
+      Response success,
       FSError e)
     {
       this();
+      this.success = success;
       this.e = e;
     }
 
@@ -18454,6 +22438,9 @@ public class FuseOps {
      * Performs a deep copy on <i>other</i>.
      */
     public release_result(release_result other) {
+      if (other.isSetSuccess()) {
+        this.success = new Response(other.success);
+      }
       if (other.isSetE()) {
         this.e = new FSError(other.e);
       }
@@ -18465,7 +22452,32 @@ public class FuseOps {
 
     @Override
     public void clear() {
+      this.success = null;
       this.e = null;
+    }
+
+    public Response getSuccess() {
+      return this.success;
+    }
+
+    public release_result setSuccess(Response success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
     }
 
     public FSError getE() {
@@ -18494,6 +22506,14 @@ public class FuseOps {
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((Response)value);
+        }
+        break;
+
       case E:
         if (value == null) {
           unsetE();
@@ -18507,6 +22527,9 @@ public class FuseOps {
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
       case E:
         return getE();
 
@@ -18521,6 +22544,8 @@ public class FuseOps {
       }
 
       switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
       case E:
         return isSetE();
       }
@@ -18539,6 +22564,15 @@ public class FuseOps {
     public boolean equals(release_result that) {
       if (that == null)
         return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
 
       boolean this_present_e = true && this.isSetE();
       boolean that_present_e = true && that.isSetE();
@@ -18565,6 +22599,16 @@ public class FuseOps {
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetE()).compareTo(other.isSetE());
       if (lastComparison != 0) {
         return lastComparison;
@@ -18595,6 +22639,14 @@ public class FuseOps {
       StringBuilder sb = new StringBuilder("release_result(");
       boolean first = true;
 
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("e:");
       if (this.e == null) {
         sb.append("null");
@@ -18609,6 +22661,9 @@ public class FuseOps {
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
       // check for sub-struct validity
+      if (success != null) {
+        success.validate();
+      }
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -18645,6 +22700,15 @@ public class FuseOps {
             break;
           }
           switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new Response();
+                struct.success.read(iprot);
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             case 1: // E
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
                 struct.e = new FSError();
@@ -18669,6 +22733,11 @@ public class FuseOps {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
         if (struct.e != null) {
           oprot.writeFieldBegin(E_FIELD_DESC);
           struct.e.write(oprot);
@@ -18692,10 +22761,16 @@ public class FuseOps {
       public void write(org.apache.thrift.protocol.TProtocol prot, release_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetE()) {
+        if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetE()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
+        if (struct.isSetSuccess()) {
+          struct.success.write(oprot);
+        }
         if (struct.isSetE()) {
           struct.e.write(oprot);
         }
@@ -18704,8 +22779,13 @@ public class FuseOps {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, release_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
+          struct.success = new Response();
+          struct.success.read(iprot);
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
           struct.e = new FSError();
           struct.e.read(iprot);
           struct.setEIsSet(true);

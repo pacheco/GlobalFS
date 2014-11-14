@@ -20,7 +20,6 @@ import ch.usi.paxosfs.filesystem.DirNode;
 import ch.usi.paxosfs.filesystem.FileNode;
 import ch.usi.paxosfs.filesystem.Node;
 import ch.usi.paxosfs.filesystem.memory.MemFileSystem;
-import ch.usi.paxosfs.rpc.Attr;
 import ch.usi.paxosfs.rpc.DBlock;
 import ch.usi.paxosfs.rpc.DirEntry;
 import ch.usi.paxosfs.rpc.FSError;
@@ -28,6 +27,7 @@ import ch.usi.paxosfs.rpc.FileHandle;
 import ch.usi.paxosfs.rpc.FileSystemStats;
 import ch.usi.paxosfs.rpc.FuseOps;
 import ch.usi.paxosfs.rpc.ReadResult;
+import ch.usi.paxosfs.rpc.Response;
 import ch.usi.paxosfs.util.UnixConstants;
 import fuse.FuseException;
 
@@ -48,6 +48,7 @@ public class NonReplicatedFileSystemServer implements FuseOps.Iface, Runnable {
 	private Long nextId;
 	private int port;
 	private String zkHost;
+	private Map<Byte, Long> instanceMap = new HashMap<>();
 
 	public NonReplicatedFileSystemServer(int port, String zkHost) {
 		this.fs = new MemFileSystem((int) (System.currentTimeMillis() / 1000), 0, 0);
@@ -111,97 +112,132 @@ public class NonReplicatedFileSystemServer implements FuseOps.Iface, Runnable {
 	}	
 
 	@Override
-	public synchronized Attr getattr(String path) throws FSError, TException {
-		return fs.get(path).getAttributes();
+	public synchronized Response getattr(String path, Map<Byte, Long> instanceMap) throws FSError, TException {
+		Response r = new Response();
+		r.setInstanceMap(this.instanceMap);
+		r.setGetattr(fs.get(path).getAttributes());
+		return r;
 	}
 
 	@Override
-	public synchronized String readlink(String path) throws FSError, TException {
+	public synchronized Response readlink(String path, Map<Byte, Long> instanceMap) throws FSError, TException {
 		throw new FSError(FuseException.EOPNOTSUPP, "symlinks not supported.");
 	}
 
 	@Override
-	public synchronized List<DirEntry> getdir(String path) throws FSError, TException {
+	public synchronized Response getdir(String path, Map<Byte, Long> instanceMap) throws FSError, TException {
 		List<DirEntry> result = new LinkedList<DirEntry>();
 		DirNode dir = fs.getDir(path);
 		for (String child : dir.getChildren()) {
 			result.add(new DirEntry(child, 0, dir.getChild(child).typeMode()));
 		}
-		return result;
+		Response r = new Response();
+		r.setGetdir(result);
+		return r;
 	}
 
 	@Override
-	public synchronized void mknod(String path, int mode, int rdev, int uid, int gid)
+	public synchronized Response mknod(String path, int mode, int rdev, int uid, int gid, Map<Byte, Long> instanceMap)
 			throws FSError, TException {
 		fs.createFile(path, mode, (int) System.currentTimeMillis() / 1000, uid,
 				gid);
+		Response r = new Response();
+		r.setInstanceMap(this.instanceMap);
+		return r;
 	}
 
 	@Override
-	public synchronized void mkdir(String path, int mode, int uid, int gid) throws FSError,
+	public synchronized Response mkdir(String path, int mode, int uid, int gid, Map<Byte, Long> instanceMap) throws FSError,
 			TException {
 		fs.createDir(path, mode, (int) System.currentTimeMillis() / 1000, uid,
 				gid);
+		Response r = new Response();
+		r.setInstanceMap(this.instanceMap);
+		return r;
 	}
 
 	@Override
-	public synchronized void unlink(String path) throws FSError, TException {
+	public synchronized Response unlink(String path, Map<Byte, Long> instanceMap) throws FSError, TException {
 		fs.removeFileOrLink(path);
+		Response r = new Response();
+		r.setInstanceMap(this.instanceMap);
+		return r;
 	}
 
 	@Override
-	public synchronized void rmdir(String path) throws FSError, TException {
+	public synchronized Response rmdir(String path, Map<Byte, Long> instanceMap) throws FSError, TException {
 		fs.removeDir(path);
+		Response r = new Response();
+		r.setInstanceMap(this.instanceMap);
+		return r;
 	}
 
 	@Override
-	public synchronized void symlink(String target, String path, int uid, int gid)
+	public synchronized Response symlink(String target, String path, int uid, int gid, Map<Byte, Long> instanceMap)
 			throws FSError, TException {
 		throw new FSError(FuseException.EOPNOTSUPP, "symlinks not supported.");
 	}
 
 	@Override
-	public synchronized void rename(String fromPath, String toPath) throws FSError,
+	public synchronized Response rename(String fromPath, String toPath, Map<Byte, Long> instanceMap) throws FSError,
 			TException {
 		Node n = fs.rename(fromPath, toPath);
 		n.getAttributes().setCtime((int) System.currentTimeMillis() / 1000);
+		Response r = new Response();
+		r.setInstanceMap(this.instanceMap);
+		return r;
 	}
 
 	@Override
-	public synchronized void chmod(String path, int mode) throws FSError, TException {
+	public synchronized Response chmod(String path, int mode, Map<Byte, Long> instanceMap) throws FSError, TException {
 		Node n = fs.get(path);
 		n.getAttributes().setMode(mode);
 		n.getAttributes().setCtime((int) System.currentTimeMillis() / 1000);
+		Response r = new Response();
+		r.setInstanceMap(this.instanceMap);
+		return r;
 	}
 
 	@Override
-	public synchronized void chown(String path, int uid, int gid) throws FSError, TException {
+	public synchronized Response chown(String path, int uid, int gid, Map<Byte, Long> instanceMap) throws FSError, TException {
 		Node n = fs.get(path);
 		n.getAttributes().setUid(uid);
 		n.getAttributes().setGid(gid);
 		n.getAttributes().setCtime((int) System.currentTimeMillis() / 1000);
+		Response r = new Response();
+		r.setInstanceMap(this.instanceMap);
+		return r;
 	}
 
 	@Override
-	public synchronized void truncate(String path, long size) throws FSError, TException {
+	public synchronized Response truncate(String path, long size, Map<Byte, Long> instanceMap) throws FSError, TException {
 		fs.get(path).getAttributes()
 				.setCtime((int) System.currentTimeMillis() / 1000);
+		Response r = new Response();
+		r.setInstanceMap(this.instanceMap);
+		return r;
 	}
 
 	@Override
-	public synchronized void utime(String path, long atime, long mtime) throws FSError,
+	public synchronized Response utime(String path, long atime, long mtime, Map<Byte, Long> instanceMap) throws FSError,
 			TException {
 		fs.get(path).getAttributes().setAtime((int) atime);
 		fs.get(path).getAttributes().setMtime((int) mtime);
+		Response r = new Response();
+		r.setInstanceMap(this.instanceMap);
+		return r;
 	}
 
 	@Override
-	public synchronized FileSystemStats statfs() throws FSError, TException {
-		return new FileSystemStats(0, 0, 0, 0, 0, 0, 1024);
+	public synchronized Response statfs(Map<Byte, Long> instanceMap) throws FSError, TException {
+		Response r = new Response();
+		r.setStatfs(new FileSystemStats(0, 0, 0, 0, 0, 0, 1024));
+		r.setInstanceMap(this.instanceMap);
+		return r;
 	}
 
 	@Override
-	public synchronized FileHandle open(String path, int flags) throws FSError, TException {
+	public synchronized Response open(String path, int flags, Map<Byte, Long> instanceMap) throws FSError, TException {
 		Node n = fs.get(path);
 		if (n.isDir()) {
 			throw new FSError(FuseException.EISDIR, "Is a directory");
@@ -210,26 +246,32 @@ public class NonReplicatedFileSystemServer implements FuseOps.Iface, Runnable {
 		Long id = nextId++;
 		FileHandle fh = new FileHandle(id, flags, (byte) 0);
 		openFiles.put(id, (FileNode) n);
-		return fh;
+		Response r = new Response();
+		r.setOpen(fh);
+		r.setInstanceMap(this.instanceMap);
+		return r;
 	}
 
 	@Override
-	public synchronized ReadResult readBlocks(String path, FileHandle fh, long offset,
-			long bytes) throws FSError, TException {
+	public synchronized Response readBlocks(String path, FileHandle fh, long offset,
+			long bytes, Map<Byte, Long> instanceMap) throws FSError, TException {
 		FileNode f = openFiles.get(fh.getId());
 		if (f == null) {
 			throw new FSError(FuseException.EBADF, "Bad file descriptor");
 		}
-		ReadResult rr = f.getBlocks(offset, bytes);
-		if (rr == null) {
-			rr = new ReadResult(new ArrayList<DBlock>());
+		ReadResult readResult = f.getBlocks(offset, bytes);
+		if (readResult == null) {
+			readResult = new ReadResult(new ArrayList<DBlock>());
 		}
-		return rr;
+		Response r = new Response();
+		r.setReadBlocks(readResult);
+		r.setInstanceMap(this.instanceMap);
+		return r;
 	}
 
 	@Override
-	public synchronized void writeBlocks(String path, FileHandle fh, long offset,
-			List<DBlock> blocks) throws FSError, TException {
+	public synchronized Response writeBlocks(String path, FileHandle fh, long offset,
+			List<DBlock> blocks, Map<Byte, Long> instanceMap) throws FSError, TException {
 		FileNode f = openFiles.get(fh.getId());
 		if (f == null) {
 			throw new FSError(FuseException.EBADF, "Bad file descriptor");
@@ -248,15 +290,21 @@ public class NonReplicatedFileSystemServer implements FuseOps.Iface, Runnable {
 		int time = (int) System.currentTimeMillis() / 1000;
 		f.getAttributes().setCtime(time);
 		f.getAttributes().setMtime(time);
+		Response r = new Response();
+		r.setInstanceMap(this.instanceMap);
+		return r;
 	}
 
 	@Override
-	public synchronized void release(String path, FileHandle fh, int flags) throws FSError,
+	public synchronized Response release(String path, FileHandle fh, int flags, Map<Byte, Long> instanceMap) throws FSError,
 			TException {
 		FileNode f = openFiles.remove(Long.valueOf(fh.getId()));
 		if (f == null) {
 			throw new FSError(FuseException.EBADF, "Bad file descriptor");
 		}
+		Response r = new Response();
+		r.setInstanceMap(this.instanceMap);
+		return r;
 	}
 	
 	public static void main(String[] args) {

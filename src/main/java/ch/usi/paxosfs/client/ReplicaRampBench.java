@@ -5,9 +5,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.apache.thrift.TException;
@@ -21,6 +23,7 @@ import ch.usi.paxosfs.rpc.DBlock;
 import ch.usi.paxosfs.rpc.FSError;
 import ch.usi.paxosfs.rpc.FileHandle;
 import ch.usi.paxosfs.rpc.FuseOps;
+import ch.usi.paxosfs.rpc.Response;
 import ch.usi.paxosfs.util.UUIDUtils;
 import ch.usi.paxosfs.util.UnixConstants;
 
@@ -41,6 +44,7 @@ public class ReplicaRampBench {
 		private long workerDuration;
 		private String localPath;
 		private String globalPath;
+		private Map<Byte, Long> instanceMap = new HashMap<>();
 		
 		public Worker(int id, long durationMillis, String path) throws IOException {
 			this.id = id;
@@ -74,12 +78,14 @@ public class ReplicaRampBench {
 		 */
 		private void setupFiles() {
 			try {
-				c.mknod(localPath, 0, 0, 0, 0);
+				Response r = c.mknod(localPath, 0, 0, 0, 0, instanceMap);
+				instanceMap.putAll(r.instanceMap);
 			} catch (TException e) {
 				e.printStackTrace();
 			}
 			try {
-				c.mknod(globalPath, 0, 0, 0, 0);
+				Response r = c.mknod(globalPath, 0, 0, 0, 0, instanceMap);
+				instanceMap.putAll(r.instanceMap);
 			} catch (TException e) {
 				e.printStackTrace();
 			}
@@ -94,8 +100,12 @@ public class ReplicaRampBench {
 			FileHandle globalFh;
 			FileHandle localFh;
 			try {
-				globalFh = c.open(globalPath, UnixConstants.O_RDWR.getValue());
-				localFh = c.open(localPath, UnixConstants.O_RDWR.getValue());
+				Response r = c.open(globalPath, UnixConstants.O_RDWR.getValue(), instanceMap); 
+				instanceMap.putAll(r.instanceMap);
+				globalFh = r.open;
+				r = c.open(localPath, UnixConstants.O_RDWR.getValue(), instanceMap); 
+				instanceMap.putAll(r.instanceMap);
+				localFh = r.open;
 			} catch (TException e){
 				throw new RuntimeException(e);
 			}
@@ -113,9 +123,11 @@ public class ReplicaRampBench {
 					blocks.add(new DBlock(null, 0, 1024, new HashSet<Byte>()));
 					blocks.get(0).setId(UUIDUtils.longToBytes(r.nextLong()));
 					if (global) {
-						c.writeBlocks(globalPath, globalFh, 0, blocks);
+						Response r = c.writeBlocks(globalPath, globalFh, 0, blocks, instanceMap);
+						instanceMap.putAll(r.instanceMap);
 					} else {
-						c.writeBlocks(localPath, localFh, 0, blocks);
+						Response r = c.writeBlocks(localPath, localFh, 0, blocks, instanceMap);
+						instanceMap.putAll(r.instanceMap);
 					}
 					long end = System.currentTimeMillis();
 					benchNow = end;
@@ -133,8 +145,10 @@ public class ReplicaRampBench {
 			}
 			
 			try {
-				c.release(globalPath, globalFh, 0);
-				c.release(localPath, localFh, 0);
+				Response r = c.release(globalPath, globalFh, 0, instanceMap);
+				instanceMap.putAll(r.instanceMap);
+				r = c.release(localPath, localFh, 0, instanceMap);
+				instanceMap.putAll(r.instanceMap);
 			} catch (TException e) {}
 			
 			try {
@@ -165,7 +179,7 @@ public class ReplicaRampBench {
 		TProtocol protocol = new TBinaryProtocol(transport);
 		FuseOps.Client c = new FuseOps.Client(protocol);
 		try {
-			c.mkdir(path, 0, 0, 0);
+			c.mkdir(path, 0, 0, 0, new HashMap<Byte, Long>());
 		} catch (TException e) {
 			e.printStackTrace();
 		}

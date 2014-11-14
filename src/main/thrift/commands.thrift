@@ -173,6 +173,7 @@ struct Signal {
     4: optional fuseops.FSError error
 }
 
+
 struct Command {
     1: i32 type
     2: i64 reqId
@@ -196,4 +197,5 @@ struct Command {
     21: optional StatFsCmd statfs
     22: optional Signal signal
     23: set<byte> involvedPartitions
+    24: optional map<byte, i64> instanceMap
 }

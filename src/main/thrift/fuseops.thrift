@@ -59,23 +59,34 @@ struct ReadResult {
 	1: list<DBlock> blocks,
 }
 
+// has the instanceMap seen by the command plus optional fields with the response if the method has any (field is named after the method called)
+struct Response {
+    1: map<byte, i64> instanceMap
+    2: optional Attr getattr
+    3: optional string readlink
+    4: optional list<DirEntry> getdir
+    5: optional FileSystemStats statfs
+    6: optional FileHandle open
+    7: optional ReadResult readBlocks
+}
+
 service FuseOps {
-	Attr getattr(1: string path) throws (1: FSError e),
-	string readlink(1: string path) throws (1: FSError e),
-	list<DirEntry> getdir(1: string path) throws (1: FSError e),
-	void mknod(1: string path, 2: i32 mode, 3: i32 rdev, 4: i32 uid, 5: i32 gid) throws (1: FSError e),	
-	void mkdir(1: string path, 2: i32 mode, 3: i32 uid, 4: i32 gid) throws (1: FSError e),
-	void unlink(1: string path) throws (1: FSError e),
-	void rmdir(1: string path) throws (1: FSError e),
-	void symlink(1: string target, 2: string path, 3: i32 uid, 4: i32 gid) throws (1: FSError e),
-	void rename(1: string fromPath, 2: string toPath) throws (1: FSError e),
-	void chmod(1: string path, 2: i32 mode) throws (1: FSError e),
-	void chown(1: string path, 2: i32 uid, 3: i32 gid) throws (1: FSError e),
-	void truncate(1: string path, 2: i64 size) throws (1: FSError e),
-	void utime(1: string path, 2: i64 atime, 3: i64 mtime) throws (1: FSError e),
-	FileSystemStats statfs() throws (1: FSError e),
-	FileHandle open(1: string path, 2: i32 flags) throws (1: FSError e),
-	ReadResult readBlocks(1: string path, 2: FileHandle fh, 3: i64 offset, 4: i64 bytes) throws (1: FSError e),
-	void writeBlocks(1: string path, 2: FileHandle fh, 3: i64 offset, 4: list<DBlock> blocks) throws (1: FSError e),
-	void release(1: string path, 2: FileHandle fh, 3: i32 flags) throws (1: FSError e),
+	Response getattr(1: string path, 2: map<byte, i64> instanceMap) throws (1: FSError e),
+	Response readlink(1: string path, 2: map<byte, i64> instanceMap) throws (1: FSError e),
+	Response getdir(1: string path, 2: map<byte, i64> instanceMap) throws (1: FSError e),
+	Response mknod(1: string path, 2: i32 mode, 3: i32 rdev, 4: i32 uid, 5: i32 gid, 6: map<byte, i64> instanceMap) throws (1: FSError e),	
+	Response mkdir(1: string path, 2: i32 mode, 3: i32 uid, 4: i32 gid, 5: map<byte, i64> instanceMap) throws (1: FSError e),
+	Response unlink(1: string path, 2: map<byte, i64> instanceMap) throws (1: FSError e),
+	Response rmdir(1: string path, 2: map<byte, i64> instanceMap) throws (1: FSError e),
+	Response symlink(1: string target, 2: string path, 3: i32 uid, 4: i32 gid, 5: map<byte, i64> instanceMap) throws (1: FSError e),
+	Response rename(1: string fromPath, 2: string toPath, 3: map<byte, i64> instanceMap) throws (1: FSError e),
+	Response chmod(1: string path, 2: i32 mode, 3: map<byte, i64> instanceMap) throws (1: FSError e),
+	Response chown(1: string path, 2: i32 uid, 3: i32 gid, 4: map<byte, i64> instanceMap) throws (1: FSError e),
+	Response truncate(1: string path, 2: i64 size, 3: map<byte, i64> instanceMap) throws (1: FSError e),
+	Response utime(1: string path, 2: i64 atime, 3: i64 mtime, 4: map<byte, i64> instanceMap) throws (1: FSError e),
+	Response statfs(1: map<byte, i64> instanceMap) throws (1: FSError e),
+	Response open(1: string path, 2: i32 flags, 3: map<byte, i64> instanceMap) throws (1: FSError e),
+	Response readBlocks(1: string path, 2: FileHandle fh, 3: i64 offset, 4: i64 bytes, 5: map<byte, i64> instanceMap) throws (1: FSError e),
+	Response writeBlocks(1: string path, 2: FileHandle fh, 3: i64 offset, 4: list<DBlock> blocks, 5: map<byte, i64> instanceMap) throws (1: FSError e),
+	Response release(1: string path, 2: FileHandle fh, 3: i32 flags, 4: map<byte, i64> instanceMap) throws (1: FSError e),
 }

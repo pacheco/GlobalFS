@@ -32,12 +32,28 @@ import fuse.Errno;
  * 
  */
 public class CommunicationService {
+	/**
+	 * Used to map commands to the instance/partition they were received from
+	 * @author pacheco
+	 *
+	 */
+	public static class CommandDecision {
+		public final Command command;
+		public final Byte partition;
+		public final Long instance;
+		public CommandDecision(Command command, Byte partition, Long instance) {
+			this.command = command;
+			this.partition = partition;
+			this.instance = instance;
+		}
+	}
+	
 	private static Logger log = Logger.getLogger(CommunicationService.class);
 	private final byte GLOBAL_RING = 0;
 	/**
 	 * Queue of commands received. Will be filled as commands arrive.
 	 */
-	public final BlockingQueue<Command> commands;
+	public final BlockingQueue<CommandDecision> commands;
 	/**
 	 * Queue of signals received. Will be filled as signals arrive.
 	 */
@@ -105,17 +121,17 @@ public class CommunicationService {
 								/* these would be the read-only */
 								case GETDIR:
 								case ATTR:
-								case OPEN:
-								case RELEASE:
 								case READ_BLOCKS:
 									/* these can be replicated */
+								case OPEN:
+								case RELEASE:
 								case CHMOD:
 								case CHOWN:
 								case TRUNCATE:
 								case WRITE_BLOCKS:
 								case UTIME:
 									if (c.getInvolvedPartitions().size() > 1) {
-										signal(c.getReqId(), new Signal(partition.byteValue(), true), c.getInvolvedPartitions());
+										//signal(c.getReqId(), new Signal(partition.byteValue(), true), c.getInvolvedPartitions());
 									}
 									break;
 								/* these might be multi-partition */
@@ -125,7 +141,7 @@ public class CommunicationService {
 								case SYMLINK:
 								case UNLINK:
 									if (c.getInvolvedPartitions().size() > 1) {
-										signal(c.getReqId(), new Signal(partition.byteValue(), true), c.getInvolvedPartitions());
+										//signal(c.getReqId(), new Signal(partition.byteValue(), true), c.getInvolvedPartitions());
 									}
 									break;
 								/* rename is a special case */
@@ -144,7 +160,7 @@ public class CommunicationService {
 									break;
 								}
 								// add command to queue
-								commands.add(c);
+								commands.add(new CommandDecision(c, d.getRing().byteValue(), d.getInstance().longValue()));
 
 							}
 						}
@@ -215,7 +231,7 @@ public class CommunicationService {
 		this.amcast(cmd);
 	}
 
-	public BlockingQueue<Command> getCommands() {
+	public BlockingQueue<CommandDecision> getCommands() {
 		return commands;
 	}
 

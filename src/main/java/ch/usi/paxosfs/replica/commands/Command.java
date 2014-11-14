@@ -57,6 +57,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
   private static final org.apache.thrift.protocol.TField STATFS_FIELD_DESC = new org.apache.thrift.protocol.TField("statfs", org.apache.thrift.protocol.TType.STRUCT, (short)21);
   private static final org.apache.thrift.protocol.TField SIGNAL_FIELD_DESC = new org.apache.thrift.protocol.TField("signal", org.apache.thrift.protocol.TType.STRUCT, (short)22);
   private static final org.apache.thrift.protocol.TField INVOLVED_PARTITIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("involvedPartitions", org.apache.thrift.protocol.TType.SET, (short)23);
+  private static final org.apache.thrift.protocol.TField INSTANCE_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("instanceMap", org.apache.thrift.protocol.TType.MAP, (short)24);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -86,6 +87,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
   public StatFsCmd statfs; // optional
   public Signal signal; // optional
   public Set<Byte> involvedPartitions; // required
+  public Map<Byte,Long> instanceMap; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -110,7 +112,8 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     RELEASE((short)20, "release"),
     STATFS((short)21, "statfs"),
     SIGNAL((short)22, "signal"),
-    INVOLVED_PARTITIONS((short)23, "involvedPartitions");
+    INVOLVED_PARTITIONS((short)23, "involvedPartitions"),
+    INSTANCE_MAP((short)24, "instanceMap");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -169,6 +172,8 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
           return SIGNAL;
         case 23: // INVOLVED_PARTITIONS
           return INVOLVED_PARTITIONS;
+        case 24: // INSTANCE_MAP
+          return INSTANCE_MAP;
         default:
           return null;
       }
@@ -213,7 +218,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
   private static final int __REQID_ISSET_ID = 1;
   private static final int __REQTIME_ISSET_ID = 2;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.GETDIR,_Fields.ATTR,_Fields.MKNOD,_Fields.MKDIR,_Fields.UNLINK,_Fields.RMDIR,_Fields.SYMLINK,_Fields.RENAME,_Fields.CHMOD,_Fields.CHOWN,_Fields.TRUNCATE,_Fields.UTIME,_Fields.OPEN,_Fields.READ,_Fields.WRITE,_Fields.RELEASE,_Fields.STATFS,_Fields.SIGNAL};
+  private _Fields optionals[] = {_Fields.GETDIR,_Fields.ATTR,_Fields.MKNOD,_Fields.MKDIR,_Fields.UNLINK,_Fields.RMDIR,_Fields.SYMLINK,_Fields.RENAME,_Fields.CHMOD,_Fields.CHOWN,_Fields.TRUNCATE,_Fields.UTIME,_Fields.OPEN,_Fields.READ,_Fields.WRITE,_Fields.RELEASE,_Fields.STATFS,_Fields.SIGNAL,_Fields.INSTANCE_MAP};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -262,6 +267,10 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     tmpMap.put(_Fields.INVOLVED_PARTITIONS, new org.apache.thrift.meta_data.FieldMetaData("involvedPartitions", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.SetMetaData(org.apache.thrift.protocol.TType.SET, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE))));
+    tmpMap.put(_Fields.INSTANCE_MAP, new org.apache.thrift.meta_data.FieldMetaData("instanceMap", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE), 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Command.class, metaDataMap);
   }
@@ -351,6 +360,10 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       Set<Byte> __this__involvedPartitions = new HashSet<Byte>(other.involvedPartitions);
       this.involvedPartitions = __this__involvedPartitions;
     }
+    if (other.isSetInstanceMap()) {
+      Map<Byte,Long> __this__instanceMap = new HashMap<Byte,Long>(other.instanceMap);
+      this.instanceMap = __this__instanceMap;
+    }
   }
 
   public Command deepCopy() {
@@ -384,6 +397,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     this.statfs = null;
     this.signal = null;
     this.involvedPartitions = null;
+    this.instanceMap = null;
   }
 
   public int getType() {
@@ -926,6 +940,41 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     }
   }
 
+  public int getInstanceMapSize() {
+    return (this.instanceMap == null) ? 0 : this.instanceMap.size();
+  }
+
+  public void putToInstanceMap(byte key, long val) {
+    if (this.instanceMap == null) {
+      this.instanceMap = new HashMap<Byte,Long>();
+    }
+    this.instanceMap.put(key, val);
+  }
+
+  public Map<Byte,Long> getInstanceMap() {
+    return this.instanceMap;
+  }
+
+  public Command setInstanceMap(Map<Byte,Long> instanceMap) {
+    this.instanceMap = instanceMap;
+    return this;
+  }
+
+  public void unsetInstanceMap() {
+    this.instanceMap = null;
+  }
+
+  /** Returns true if field instanceMap is set (has been assigned a value) and false otherwise */
+  public boolean isSetInstanceMap() {
+    return this.instanceMap != null;
+  }
+
+  public void setInstanceMapIsSet(boolean value) {
+    if (!value) {
+      this.instanceMap = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case TYPE:
@@ -1104,6 +1153,14 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       }
       break;
 
+    case INSTANCE_MAP:
+      if (value == null) {
+        unsetInstanceMap();
+      } else {
+        setInstanceMap((Map<Byte,Long>)value);
+      }
+      break;
+
     }
   }
 
@@ -1175,6 +1232,9 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     case INVOLVED_PARTITIONS:
       return getInvolvedPartitions();
 
+    case INSTANCE_MAP:
+      return getInstanceMap();
+
     }
     throw new IllegalStateException();
   }
@@ -1230,6 +1290,8 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       return isSetSignal();
     case INVOLVED_PARTITIONS:
       return isSetInvolvedPartitions();
+    case INSTANCE_MAP:
+      return isSetInstanceMap();
     }
     throw new IllegalStateException();
   }
@@ -1442,6 +1504,15 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       if (!(this_present_involvedPartitions && that_present_involvedPartitions))
         return false;
       if (!this.involvedPartitions.equals(that.involvedPartitions))
+        return false;
+    }
+
+    boolean this_present_instanceMap = true && this.isSetInstanceMap();
+    boolean that_present_instanceMap = true && that.isSetInstanceMap();
+    if (this_present_instanceMap || that_present_instanceMap) {
+      if (!(this_present_instanceMap && that_present_instanceMap))
+        return false;
+      if (!this.instanceMap.equals(that.instanceMap))
         return false;
     }
 
@@ -1681,6 +1752,16 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetInstanceMap()).compareTo(other.isSetInstanceMap());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetInstanceMap()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.instanceMap, other.instanceMap);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -1900,6 +1981,16 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       sb.append(this.involvedPartitions);
     }
     first = false;
+    if (isSetInstanceMap()) {
+      if (!first) sb.append(", ");
+      sb.append("instanceMap:");
+      if (this.instanceMap == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.instanceMap);
+      }
+      first = false;
+    }
     sb.append(")");
     return sb.toString();
   }
@@ -2203,6 +2294,26 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 24: // INSTANCE_MAP
+            if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
+              {
+                org.apache.thrift.protocol.TMap _map211 = iprot.readMapBegin();
+                struct.instanceMap = new HashMap<Byte,Long>(2*_map211.size);
+                for (int _i212 = 0; _i212 < _map211.size; ++_i212)
+                {
+                  byte _key213;
+                  long _val214;
+                  _key213 = iprot.readByte();
+                  _val214 = iprot.readI64();
+                  struct.instanceMap.put(_key213, _val214);
+                }
+                iprot.readMapEnd();
+              }
+              struct.setInstanceMapIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -2357,13 +2468,28 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
         oprot.writeFieldBegin(INVOLVED_PARTITIONS_FIELD_DESC);
         {
           oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, struct.involvedPartitions.size()));
-          for (byte _iter211 : struct.involvedPartitions)
+          for (byte _iter215 : struct.involvedPartitions)
           {
-            oprot.writeByte(_iter211);
+            oprot.writeByte(_iter215);
           }
           oprot.writeSetEnd();
         }
         oprot.writeFieldEnd();
+      }
+      if (struct.instanceMap != null) {
+        if (struct.isSetInstanceMap()) {
+          oprot.writeFieldBegin(INSTANCE_MAP_FIELD_DESC);
+          {
+            oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, struct.instanceMap.size()));
+            for (Map.Entry<Byte, Long> _iter216 : struct.instanceMap.entrySet())
+            {
+              oprot.writeByte(_iter216.getKey());
+              oprot.writeI64(_iter216.getValue());
+            }
+            oprot.writeMapEnd();
+          }
+          oprot.writeFieldEnd();
+        }
       }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
@@ -2449,7 +2575,10 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       if (struct.isSetInvolvedPartitions()) {
         optionals.set(21);
       }
-      oprot.writeBitSet(optionals, 22);
+      if (struct.isSetInstanceMap()) {
+        optionals.set(22);
+      }
+      oprot.writeBitSet(optionals, 23);
       if (struct.isSetType()) {
         oprot.writeI32(struct.type);
       }
@@ -2516,9 +2645,19 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       if (struct.isSetInvolvedPartitions()) {
         {
           oprot.writeI32(struct.involvedPartitions.size());
-          for (byte _iter212 : struct.involvedPartitions)
+          for (byte _iter217 : struct.involvedPartitions)
           {
-            oprot.writeByte(_iter212);
+            oprot.writeByte(_iter217);
+          }
+        }
+      }
+      if (struct.isSetInstanceMap()) {
+        {
+          oprot.writeI32(struct.instanceMap.size());
+          for (Map.Entry<Byte, Long> _iter218 : struct.instanceMap.entrySet())
+          {
+            oprot.writeByte(_iter218.getKey());
+            oprot.writeI64(_iter218.getValue());
           }
         }
       }
@@ -2527,7 +2666,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, Command struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(22);
+      BitSet incoming = iprot.readBitSet(23);
       if (incoming.get(0)) {
         struct.type = iprot.readI32();
         struct.setTypeIsSet(true);
@@ -2632,16 +2771,31 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       }
       if (incoming.get(21)) {
         {
-          org.apache.thrift.protocol.TSet _set213 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, iprot.readI32());
-          struct.involvedPartitions = new HashSet<Byte>(2*_set213.size);
-          for (int _i214 = 0; _i214 < _set213.size; ++_i214)
+          org.apache.thrift.protocol.TSet _set219 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, iprot.readI32());
+          struct.involvedPartitions = new HashSet<Byte>(2*_set219.size);
+          for (int _i220 = 0; _i220 < _set219.size; ++_i220)
           {
-            byte _elem215;
-            _elem215 = iprot.readByte();
-            struct.involvedPartitions.add(_elem215);
+            byte _elem221;
+            _elem221 = iprot.readByte();
+            struct.involvedPartitions.add(_elem221);
           }
         }
         struct.setInvolvedPartitionsIsSet(true);
+      }
+      if (incoming.get(22)) {
+        {
+          org.apache.thrift.protocol.TMap _map222 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, iprot.readI32());
+          struct.instanceMap = new HashMap<Byte,Long>(2*_map222.size);
+          for (int _i223 = 0; _i223 < _map222.size; ++_i223)
+          {
+            byte _key224;
+            long _val225;
+            _key224 = iprot.readByte();
+            _val225 = iprot.readI64();
+            struct.instanceMap.put(_key224, _val225);
+          }
+        }
+        struct.setInstanceMapIsSet(true);
       }
     }
   }

@@ -8,12 +8,17 @@ import ch.usi.paxosfs.filesystem.FileSystem;
 import ch.usi.paxosfs.filesystem.LinkNode;
 import ch.usi.paxosfs.filesystem.Node;
 import ch.usi.paxosfs.filesystem.Permissions;
+import ch.usi.paxosfs.rpc.DBlock;
 import ch.usi.paxosfs.rpc.FSError;
 import ch.usi.paxosfs.util.Paths;
 import fuse.FuseException;
 
 
-
+/**
+ * Implements a filesystem tree in memory. This is not a thread-safe implementation.
+ * @author pacheco
+ *
+ */
 public class MemFileSystem implements FileSystem {
 	private Node root;
 	
@@ -27,22 +32,22 @@ public class MemFileSystem implements FileSystem {
 
 	public DirNode createDir(String absolutePath, int mode, int time, int uid, int gid) throws FSError {
 		String parentPath = Paths.dirname(absolutePath);
-		DirNode parent = this.getDir(parentPath);
+		MemDir parent = (MemDir) this.getDir(parentPath);
 		Node child = parent.getChild(Paths.basename(absolutePath));
 		if (child != null) {
-			throw alreadyExists(absolutePath);
+			throw errorAlreadyExists(absolutePath);
 		}
-		DirNode newDir = new MemDir(mode, time, uid, gid);
+		MemDir newDir = new MemDir(mode, time, uid, gid);
 		parent.addChild(Paths.basename(absolutePath), newDir);
 		return newDir;
 	}
 
 	public FileNode createFile(String absolutePath, int mode, int time, int uid, int gid) throws FSError {
 		String parentPath = Paths.dirname(absolutePath);
-		DirNode parent = this.getDir(parentPath);
+		MemDir parent = (MemDir) this.getDir(parentPath);
 		Node child = parent.getChild(Paths.basename(absolutePath));
 		if (child != null) {
-			throw alreadyExists(absolutePath);
+			throw errorAlreadyExists(absolutePath);
 		}
 		FileNode newFile = new MemFile(mode, time, uid, gid);
 		parent.addChild(Paths.basename(absolutePath), newFile);
@@ -51,10 +56,10 @@ public class MemFileSystem implements FileSystem {
 
 	public LinkNode createLink(String absolutePath, String absoluteTarget, int time, int uid, int gid) throws FSError {
 		String parentPath = Paths.dirname(absolutePath);
-		DirNode parent = this.getDir(parentPath);
+		MemDir parent = (MemDir) this.getDir(parentPath);
 		Node child = parent.getChild(Paths.basename(absolutePath));
 		if (child != null) {
-			throw alreadyExists(absolutePath);
+			throw errorAlreadyExists(absolutePath);
 		}
 		LinkNode newLink = new MemLink(absoluteTarget, time, uid, gid);
 		parent.addChild(Paths.basename(absolutePath), newLink);
@@ -71,82 +76,91 @@ public class MemFileSystem implements FileSystem {
 		while (iter.hasNext()) {
 			String elem = iter.next();
 			if (current == null){
-				throw notFound(path);
+				throw errorNotFound(path);
 			} else if (!current.isDir()) {
-				throw notDir(path);
+				throw errorNotDir(path);
 			}
 			current = ((DirNode)current).getChild(elem);
 		}
 		if (current == null){
-			throw notFound(path);
+			throw errorNotFound(path);
 		}
 		return current;
 	}
 	
 	@Override
-	public void removeFileOrLink(String path) throws FSError {
+	public Node removeFileOrLink(String path) throws FSError {
 		String parentPath = Paths.dirname(path);
-		DirNode parent = getDir(parentPath);
+		MemDir parent = (MemDir) getDir(parentPath);
 		String name = Paths.basename(path);
 		Node child = parent.getChild(name);
 		if (child == null) {
-			throw notFound(path);
+			throw errorNotFound(path);
 		} else if (child.isDir()) {
-			throw isDir(path);
+			throw errorIsDir(path);
 		}
-		parent.removeChild(Paths.basename(name));
+		return parent.removeChild(Paths.basename(name));
 	}
 
 
 	@Override
-	public void removeDir(String path) throws FSError {
+	public DirNode removeDir(String path) throws FSError {
 		String parentPath = Paths.dirname(path);
-		DirNode parent = getDir(parentPath);
+		MemDir parent = (MemDir) getDir(parentPath);
 		String name = Paths.basename(path);
 		Node child = parent.getChild(name);
 		if (child == null) {
-			throw notFound(path);
+			throw errorNotFound(path);
 		} else if (!child.isDir()) {
-			throw notDir(path);
+			throw errorNotDir(path);
 		}
 		DirNode dir = (DirNode) child;
 		if (!dir.getChildren().isEmpty()) {
-			throw notEmpty(path);
+			throw errorNotEmpty(path);
 		}
-		parent.removeChild(Paths.basename(name));
+		return (DirNode) parent.removeChild(Paths.basename(name));
 	}
 
 	@Override
 	public DirNode getDir(String path) throws FSError {
 		Node n = this.get(path);
 		if (!n.isDir()){
-			throw notDir(path);
+			throw errorNotDir(path);
 		}
 		return (DirNode) n;
 	}
 	
 	@Override
+	public FileNode getFile(String path) throws FSError {
+		Node n = this.get(path);
+		if (!n.isFile()) {
+			throw errorIsDir(path);
+		}
+		return (FileNode) n;
+	}
+	
+	@Override
 	public Node rename(String from, String to) throws FSError {
-		DirNode parentFrom = getDir(Paths.dirname(from));
+		MemDir parentFrom = (MemDir) getDir(Paths.dirname(from));
 		String nameFrom = Paths.basename(from);
-		DirNode parentTo = getDir(Paths.dirname(to));
+		MemDir parentTo = (MemDir) getDir(Paths.dirname(to));
 		String nameTo = Paths.basename(to);
 		
 		Node nodeFrom = parentFrom.getChild(nameFrom);
 		if (nodeFrom == null) {
-			throw notFound(from);
+			throw errorNotFound(from);
 		}
 		Node nodeTo = parentTo.getChild(nameTo);
 		if (nodeTo != null) {
 			if (nodeFrom.isDir()) {
 				if (!nodeTo.isDir()) { 
-					throw notDir(to); 
+					throw errorNotDir(to); 
 				} else if (!((DirNode) nodeTo).getChildren().isEmpty()) {
-					throw notEmpty(to);
+					throw errorNotEmpty(to);
 				}
 			} else { // nodeFrom is a file or link
 				if (nodeTo.isDir()) {
-					throw isDir(to);
+					throw errorIsDir(to);
 				}
 			}
 			parentTo.removeChild(nameTo);
@@ -156,24 +170,47 @@ public class MemFileSystem implements FileSystem {
 		return nodeFrom;
 	}
 	
-	private FSError notFound(String file) {
+	@Override
+	public void setFileData(String absolutePath, Iterable<DBlock> blocks) throws FSError {
+		MemFile f = (MemFile) this.getFile(absolutePath);
+		f.setData(blocks);
+	}
+
+	@Override
+	public void appendFileData(String absolutePath, Iterable<DBlock> blocks) throws FSError {
+		MemFile f = (MemFile) this.getFile(absolutePath);
+		f.appendData(blocks);
+	}
+
+	@Override
+	public void updateFileData(String absolutePath, Iterable<DBlock> blocks, long offset) throws FSError {
+		MemFile f = (MemFile) this.getFile(absolutePath);
+		f.updateData(blocks, offset);
+	}
+
+	@Override
+	public void truncateFile(String absolutePath, long size) throws FSError {
+		MemFile f = (MemFile) this.getFile(absolutePath);
+		f.truncate(size);
+	}
+	
+	private FSError errorNotFound(String file) {
 		return new FSError(FuseException.ENOENT, "No such file or directory");
 	}
 	
-	private FSError notDir(String file) {
+	private FSError errorNotDir(String file) {
 		return new FSError(FuseException.ENOTDIR, "Not a directory");
 	}
 	
-	private FSError alreadyExists(String file) {
+	private FSError errorAlreadyExists(String file) {
 		return new FSError(FuseException.EEXIST, "File already exists");
 	}
 
-
-	private FSError isDir(String file) {
+	private FSError errorIsDir(String file) {
 		return new FSError(FuseException.EISDIR, "Is a directory");
 	}
 
-	private FSError notEmpty(String path) {
+	private FSError errorNotEmpty(String path) {
 		return new FSError(FuseException.ENOTEMPTY, "Not empty");
 	}
 }

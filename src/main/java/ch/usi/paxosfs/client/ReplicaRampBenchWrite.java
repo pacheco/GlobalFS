@@ -4,8 +4,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.apache.thrift.TException;
@@ -17,6 +19,7 @@ import org.apache.thrift.transport.TTransportException;
 
 import ch.usi.paxosfs.rpc.FSError;
 import ch.usi.paxosfs.rpc.FuseOps;
+import ch.usi.paxosfs.rpc.Response;
 
 public class ReplicaRampBenchWrite {
 	// bench parameters
@@ -34,6 +37,7 @@ public class ReplicaRampBenchWrite {
 		private BufferedWriter out;
 		private long workerDuration;
 		private String path;
+		private Map<Byte, Long> instanceMap = new HashMap<>();
 		
 		public Worker(int id, long durationMillis, String path) throws IOException {
 			this.id = id;
@@ -70,9 +74,11 @@ public class ReplicaRampBenchWrite {
 				long start = System.currentTimeMillis();
 				try {
 					if (global) {
-						c.getdir("/");
+						Response r = c.getdir("/", instanceMap);
+						instanceMap.putAll(r.instanceMap);
 					} else {
-						c.getdir(path);
+						Response r = c.getdir(path, instanceMap);
+						instanceMap.putAll(r.instanceMap);
 					}
 					long end = System.currentTimeMillis();
 					benchNow = end;
@@ -116,7 +122,7 @@ public class ReplicaRampBenchWrite {
 		TProtocol protocol = new TBinaryProtocol(transport);
 		FuseOps.Client c = new FuseOps.Client(protocol);
 		try {
-			c.mkdir(path, 0, 0, 0);
+			c.mkdir(path, 0, 0, 0, new HashMap<Byte, Long>());
 		} catch (TException e) {
 			e.printStackTrace();
 		}

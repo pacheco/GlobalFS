@@ -2,8 +2,10 @@ package ch.usi.paxosfs.client;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
@@ -27,6 +29,7 @@ import ch.usi.paxosfs.rpc.FSError;
 import ch.usi.paxosfs.rpc.FileHandle;
 import ch.usi.paxosfs.rpc.FuseOps;
 import ch.usi.paxosfs.rpc.ReadResult;
+import ch.usi.paxosfs.rpc.Response;
 import ch.usi.paxosfs.storage.HttpStorageClient;
 import ch.usi.paxosfs.storage.Storage;
 import ch.usi.paxosfs.util.PathsNIO;
@@ -38,6 +41,7 @@ public class CommandLineClient {
 	private static FuseOps.Client[] client;
 	private static ReplicaManager rm;
 	private static PartitioningOracle oracle;
+	private static Map<Byte, Long> instanceMap = new HashMap<Byte, Long>(); 
 	
 	private static class PathCompleter implements Completer {
 		@Override
@@ -58,7 +62,9 @@ public class CommandLineClient {
 			}
 			int partition = oracle.partitionsOf(dir).iterator().next().intValue()-1;
 			try {
-				List<DirEntry> entries = client[partition].getdir(dir);
+				Response r = client[partition].getdir(dir, instanceMap);
+				instanceMap.putAll(r.instanceMap);
+				List<DirEntry> entries = r.getGetdir();
 				for (DirEntry e: entries) {
 					if (e.getName().startsWith(name)){
 						// fix for root "/"
@@ -125,21 +131,26 @@ public class CommandLineClient {
 			try {
 			switch (cmd) {
 			case "statfs": {
-				System.out.println(client[0].statfs());
+				Response r = client[0].statfs(instanceMap);
+				instanceMap.putAll(r.instanceMap);
+				System.out.println(r.statfs);
 				break;
 			}
 			case "getdir": {
 				if (parts.length < 2) continue;
 				String path = parts[1];
 				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
-				System.out.println(client[partition].getdir(path));
+				Response r = client[partition].getdir(path, instanceMap);
+				System.out.println(r.getdir);
+				instanceMap.putAll(r.instanceMap);
 				break;
 			}
 			case "mknod": {
 				if (parts.length < 2) continue;
 				String path = parts[1];
 				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
-				client[partition].mknod(path, 0, 0, 0, 0);
+				Response r = client[partition].mknod(path, 0, 0, 0, 0, instanceMap);
+				instanceMap.putAll(r.instanceMap);
 				System.out.println("File created.");
 				break;
 			}
@@ -147,14 +158,17 @@ public class CommandLineClient {
 				if (parts.length < 2) continue;
 				String path = parts[1];
 				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
-				System.out.println(client[partition].getattr(path));
+				Response r = client[partition].getattr(path, instanceMap);
+				System.out.println(r.getattr);
+				instanceMap.putAll(r.instanceMap);
 				break;
 			}
 			case "mkdir": {
 				if (parts.length < 2) continue;
 				String path = parts[1];
 				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
-				client[partition].mkdir(path, 0, 0, 0);
+				Response r = client[partition].mkdir(path, 0, 0, 0, instanceMap);
+				instanceMap.putAll(r.instanceMap);
 				System.out.println("Dir created.");
 				break;
 			}
@@ -162,7 +176,8 @@ public class CommandLineClient {
 				if (parts.length < 2) continue;
 				String path = parts[1];
 				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
-				client[partition].rmdir(path);
+				Response r = client[partition].rmdir(path, instanceMap);
+				instanceMap.putAll(r.instanceMap);
 				System.out.println("Dir removed.");
 				break;
 			}
@@ -170,7 +185,8 @@ public class CommandLineClient {
 				if (parts.length < 2) continue;
 				String path = parts[1];
 				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
-				client[partition].unlink(path);
+				Response r = client[partition].unlink(path, instanceMap);
+				instanceMap.putAll(r.instanceMap);
 				System.out.println("File removed.");
 				break;
 			}
@@ -179,7 +195,8 @@ public class CommandLineClient {
 				String from = parts[1];
 				String to = parts[2];
 				int partition = oracle.partitionsOf(from).iterator().next().intValue()-1;
-				client[partition].rename(from, to);
+				Response r = client[partition].rename(from, to, instanceMap);
+				instanceMap.putAll(r.instanceMap);
 				System.out.println("File renamed.");
 				break;			
 			}
@@ -187,7 +204,9 @@ public class CommandLineClient {
 				if (parts.length < 2) continue;
 				String path = parts[1];
 				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
-				fh = client[partition].open(path, UnixConstants.O_RDWR.getValue());
+				Response r = client[partition].open(path, UnixConstants.O_RDWR.getValue(), instanceMap);
+				fh = r.open;
+				instanceMap.putAll(r.instanceMap);
 				System.out.println(fh);
 				break;
 			}
@@ -205,7 +224,8 @@ public class CommandLineClient {
 				blocks.add(new DBlock(null, 0, data.length(), new HashSet<Byte>()));
 				blocks.get(0).setId(UUIDUtils.longToBytes(rand.nextLong()));
 				storage.put(blocks.get(0).getId(), data.getBytes()).get();
-				client[partition].writeBlocks(path, fh, offset, blocks);
+				Response r = client[partition].writeBlocks(path, fh, offset, blocks, instanceMap);
+				instanceMap.putAll(r.instanceMap);
 				System.out.println("File written");
 				break;
 			}
@@ -219,7 +239,9 @@ public class CommandLineClient {
 					break;
 				}
 				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
-				ReadResult rr = client[partition].readBlocks(path, fh, offset, bytes);
+				Response r = client[partition].readBlocks(path, fh, offset, bytes, instanceMap);
+				ReadResult rr = r.readBlocks;
+				instanceMap.putAll(r.instanceMap);
 				for (DBlock b : rr.getBlocks()) {
 //					System.out.println(new String(b.getId()));
 					if (b.getId().length == 0) {
@@ -238,7 +260,8 @@ public class CommandLineClient {
 					System.out.println("Open a file first");
 					break;
 				}
-				client[partition].release(path, fh, 0);
+				Response r = client[partition].release(path, fh, 0, instanceMap);
+				instanceMap.putAll(r.instanceMap);
 				System.out.println("File closed");
 				fh = null;
 				break;

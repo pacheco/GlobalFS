@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -24,6 +25,7 @@ import ch.usi.paxosfs.replica.ReplicaManager;
 import ch.usi.paxosfs.rpc.DBlock;
 import ch.usi.paxosfs.rpc.FileHandle;
 import ch.usi.paxosfs.rpc.FuseOps;
+import ch.usi.paxosfs.rpc.Response;
 import ch.usi.paxosfs.storage.FakeStorage;
 import ch.usi.paxosfs.storage.Storage;
 import ch.usi.paxosfs.storage.StorageFactory;
@@ -68,6 +70,8 @@ public class ReplicaBench {
 	private class Worker implements Runnable {
 		private FuseOps.Client c;
 		int writeSize;
+		private Map<Byte, Long> instanceMap = new HashMap<>();
+		
 		public Worker(String path, int writeSize) {
 			this.writeSize = writeSize;
 			String replicaAddr;
@@ -93,12 +97,15 @@ public class ReplicaBench {
 			String path = "/1/" + Long.toString(r.nextLong());
 			FileHandle fh = null;
 			try {
-				c.mknod(path , 644, 0, 0, 0);
+				Response r = c.mknod(path , 644, 0, 0, 0, instanceMap);
+				instanceMap.putAll(r.instanceMap);
 			} catch (TException e) {
 				e.printStackTrace();
 			}
 			try {
-				fh = c.open(path, UnixConstants.O_WRONLY.getValue());
+				Response r = c.open(path, UnixConstants.O_WRONLY.getValue(), instanceMap); 
+				instanceMap.putAll(r.instanceMap);
+				fh = r.open;
 			} catch (TException e) {
 				e.printStackTrace();
 			}
@@ -108,7 +115,8 @@ public class ReplicaBench {
 				blocks.add(new DBlock(ByteBuffer.wrap(UUIDUtils.longToBytes(r.nextLong())), 0, writeSize, Sets.newHashSet(Byte.valueOf((byte)1))));
 				long start = System.nanoTime();
 				try {
-					c.writeBlocks(path, fh, 0, blocks);
+					Response r = c.writeBlocks(path, fh, 0, blocks, instanceMap);
+					instanceMap.putAll(r.instanceMap);
 					ReplicaBench.opcount.incrementAndGet();
 				} catch (TException e) {
 					System.err.println("timeout");
