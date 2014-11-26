@@ -75,7 +75,8 @@ public class FileSystemReplica implements Runnable {
 	private String host;
 	private int port;
 	private Map<Byte, Long> instanceMap;
-	
+	private long timeoutValue = 10; // timeout for operations in seconds
+
 	public Map<Byte, Long> getInstanceMap(){
 		return instanceMap;
 	}
@@ -789,7 +790,7 @@ public class FileSystemReplica implements Runnable {
 		// Wait for the command to be applied and for the result
 		boolean timeout = false;
 		try {
-			timeout = !res.await(10, TimeUnit.SECONDS);
+			timeout = !res.await(timeoutValue, TimeUnit.SECONDS);
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 			throw new FSError(Errno.EINTR, "Error waiting for command result");

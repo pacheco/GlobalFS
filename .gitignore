@@ -3,3 +3,4 @@
 .project
 .settings
 /src/main/thrift/ch/
+/paxos-fuse.iml

@@ -1,0 +1,76 @@
+#!/bin/bash
+
+ZKDIR=${HOME}/usr/zookeeper-3.4.6/
+ZKHOST=localhost:2181
+UPAXOSDIR=${HOME}/workspace/URingPaxos/
+#UPAXOSDIR=${HOME}/programming/doutorado/eduardo_uringpaxos/
+PAXOSFSDIR=${HOME}/workspace/sinergiafs/
+
+CLASSPATH=~/workspace/sinergiafs/target/paxosfs-fuse-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+LIBPATH=~/usr/lib
+JVMOPT="-XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/tmp/java-$$.vgc"
+GC="-XX:+UseConcMarkSweepGC"
+PORT_START=20000
+
+
+PARTITIONS=$1
+
+if [ -z $PARTITIONS ]; then
+    echo "start <partitions>"
+    exit
+fi
+
+## start zookeeper
+# $ZKDIR/bin/zkServer.sh stop
+# rm -r /tmp/zookeeper
+# $ZKDIR/bin/zkServer.sh start
+# pushd $UPAXOSDIR;
+# target/Paxos-trunk/ringpaxos.sh '0,0:A;1,0:A;2,0:A;3,0:A;4,0:A;5,0:A;6,0:A;7,0:A;8,0:A' &
+# popd
+
+#sleep 3
+#killall -INT ringpaxos.sh
+
+
+# write configs
+STORAGE=ch.usi.da.paxos.storage.CyclicArray
+
+echo "
+set /ringpaxos/config/multi_ring_start_time `date +%s`000
+set /ringpaxos/config/multi_ring_lambda 20000
+set /ringpaxos/config/multi_ring_delta_t 10
+set /ringpaxos/topology0/config/stable_storage $STORAGE
+set /ringpaxos/topology0/config/tcp_nodelay 1
+set /ringpaxos/topology1/config/stable_storage $STORAGE
+set /ringpaxos/topology1/config/tcp_nodelay 1
+set /ringpaxos/topology2/config/stable_storage $STORAGE
+set /ringpaxos/topology2/config/tcp_nodelay 1
+set /ringpaxos/topology3/config/stable_storage $STORAGE
+set /ringpaxos/topology3/config/tcp_nodelay 1
+set /ringpaxos/topology4/config/stable_storage $STORAGE
+set /ringpaxos/topology4/config/tcp_nodelay 1
+set /ringpaxos/topology5/config/stable_storage $STORAGE
+set /ringpaxos/topology5/config/tcp_nodelay 1
+set /ringpaxos/topology6/config/stable_storage $STORAGE
+set /ringpaxos/topology6/config/tcp_nodelay 1
+set /ringpaxos/topology7/config/stable_storage $STORAGE
+set /ringpaxos/topology7/config/tcp_nodelay 1
+" | $ZKDIR/bin/zkCli.sh -server $ZKHOST
+
+
+# start paxos small rings
+port=$PORT_START
+for p in `seq 1 $PARTITIONS`; do
+    for id in `seq 0 2`; do
+        xterm -e "java -ea -cp $CLASSPATH $JVMOPT $GC -Djava.library.path=$LIBPATH ch.usi.paxosfs.replica.FSMain $PARTITIONS $p $id $port $ZKHOST; sleep 10" &
+        ((port++))
+    done
+done
+
+# start acceptors for the big ring (these HAVE to be started last due to a strange behaviour of ring paxos latency)
+xterm -e "cd $UPAXOSDIR; target/Paxos-trunk/ringpaxos.sh 0,0:A $ZKHOST" &
+sleep 0.5
+xterm -e "cd $UPAXOSDIR; target/Paxos-trunk/ringpaxos.sh 0,1:A $ZKHOST" &
+sleep 2
+
+wait
