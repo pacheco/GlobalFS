@@ -56,8 +56,9 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
   private static final org.apache.thrift.protocol.TField RELEASE_FIELD_DESC = new org.apache.thrift.protocol.TField("release", org.apache.thrift.protocol.TType.STRUCT, (short)20);
   private static final org.apache.thrift.protocol.TField STATFS_FIELD_DESC = new org.apache.thrift.protocol.TField("statfs", org.apache.thrift.protocol.TType.STRUCT, (short)21);
   private static final org.apache.thrift.protocol.TField SIGNAL_FIELD_DESC = new org.apache.thrift.protocol.TField("signal", org.apache.thrift.protocol.TType.STRUCT, (short)22);
-  private static final org.apache.thrift.protocol.TField INVOLVED_PARTITIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("involvedPartitions", org.apache.thrift.protocol.TType.SET, (short)23);
-  private static final org.apache.thrift.protocol.TField INSTANCE_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("instanceMap", org.apache.thrift.protocol.TType.MAP, (short)24);
+  private static final org.apache.thrift.protocol.TField DEBUG_FIELD_DESC = new org.apache.thrift.protocol.TField("debug", org.apache.thrift.protocol.TType.STRUCT, (short)23);
+  private static final org.apache.thrift.protocol.TField INVOLVED_PARTITIONS_FIELD_DESC = new org.apache.thrift.protocol.TField("involvedPartitions", org.apache.thrift.protocol.TType.SET, (short)24);
+  private static final org.apache.thrift.protocol.TField INSTANCE_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("instanceMap", org.apache.thrift.protocol.TType.MAP, (short)25);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -86,6 +87,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
   public ReleaseCmd release; // optional
   public StatFsCmd statfs; // optional
   public Signal signal; // optional
+  public ch.usi.paxosfs.rpc.Debug debug; // optional
   public Set<Byte> involvedPartitions; // required
   public Map<Byte,Long> instanceMap; // optional
 
@@ -112,8 +114,9 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     RELEASE((short)20, "release"),
     STATFS((short)21, "statfs"),
     SIGNAL((short)22, "signal"),
-    INVOLVED_PARTITIONS((short)23, "involvedPartitions"),
-    INSTANCE_MAP((short)24, "instanceMap");
+    DEBUG((short)23, "debug"),
+    INVOLVED_PARTITIONS((short)24, "involvedPartitions"),
+    INSTANCE_MAP((short)25, "instanceMap");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -170,9 +173,11 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
           return STATFS;
         case 22: // SIGNAL
           return SIGNAL;
-        case 23: // INVOLVED_PARTITIONS
+        case 23: // DEBUG
+          return DEBUG;
+        case 24: // INVOLVED_PARTITIONS
           return INVOLVED_PARTITIONS;
-        case 24: // INSTANCE_MAP
+        case 25: // INSTANCE_MAP
           return INSTANCE_MAP;
         default:
           return null;
@@ -218,7 +223,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
   private static final int __REQID_ISSET_ID = 1;
   private static final int __REQTIME_ISSET_ID = 2;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.GETDIR,_Fields.ATTR,_Fields.MKNOD,_Fields.MKDIR,_Fields.UNLINK,_Fields.RMDIR,_Fields.SYMLINK,_Fields.RENAME,_Fields.CHMOD,_Fields.CHOWN,_Fields.TRUNCATE,_Fields.UTIME,_Fields.OPEN,_Fields.READ,_Fields.WRITE,_Fields.RELEASE,_Fields.STATFS,_Fields.SIGNAL,_Fields.INSTANCE_MAP};
+  private _Fields optionals[] = {_Fields.GETDIR,_Fields.ATTR,_Fields.MKNOD,_Fields.MKDIR,_Fields.UNLINK,_Fields.RMDIR,_Fields.SYMLINK,_Fields.RENAME,_Fields.CHMOD,_Fields.CHOWN,_Fields.TRUNCATE,_Fields.UTIME,_Fields.OPEN,_Fields.READ,_Fields.WRITE,_Fields.RELEASE,_Fields.STATFS,_Fields.SIGNAL,_Fields.DEBUG,_Fields.INSTANCE_MAP};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -264,6 +269,8 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, StatFsCmd.class)));
     tmpMap.put(_Fields.SIGNAL, new org.apache.thrift.meta_data.FieldMetaData("signal", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Signal.class)));
+    tmpMap.put(_Fields.DEBUG, new org.apache.thrift.meta_data.FieldMetaData("debug", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ch.usi.paxosfs.rpc.Debug.class)));
     tmpMap.put(_Fields.INVOLVED_PARTITIONS, new org.apache.thrift.meta_data.FieldMetaData("involvedPartitions", org.apache.thrift.TFieldRequirementType.DEFAULT, 
         new org.apache.thrift.meta_data.SetMetaData(org.apache.thrift.protocol.TType.SET, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE))));
@@ -356,6 +363,9 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     if (other.isSetSignal()) {
       this.signal = new Signal(other.signal);
     }
+    if (other.isSetDebug()) {
+      this.debug = new ch.usi.paxosfs.rpc.Debug(other.debug);
+    }
     if (other.isSetInvolvedPartitions()) {
       Set<Byte> __this__involvedPartitions = new HashSet<Byte>(other.involvedPartitions);
       this.involvedPartitions = __this__involvedPartitions;
@@ -396,6 +406,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     this.release = null;
     this.statfs = null;
     this.signal = null;
+    this.debug = null;
     this.involvedPartitions = null;
     this.instanceMap = null;
   }
@@ -901,6 +912,30 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     }
   }
 
+  public ch.usi.paxosfs.rpc.Debug getDebug() {
+    return this.debug;
+  }
+
+  public Command setDebug(ch.usi.paxosfs.rpc.Debug debug) {
+    this.debug = debug;
+    return this;
+  }
+
+  public void unsetDebug() {
+    this.debug = null;
+  }
+
+  /** Returns true if field debug is set (has been assigned a value) and false otherwise */
+  public boolean isSetDebug() {
+    return this.debug != null;
+  }
+
+  public void setDebugIsSet(boolean value) {
+    if (!value) {
+      this.debug = null;
+    }
+  }
+
   public int getInvolvedPartitionsSize() {
     return (this.involvedPartitions == null) ? 0 : this.involvedPartitions.size();
   }
@@ -1145,6 +1180,14 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       }
       break;
 
+    case DEBUG:
+      if (value == null) {
+        unsetDebug();
+      } else {
+        setDebug((ch.usi.paxosfs.rpc.Debug)value);
+      }
+      break;
+
     case INVOLVED_PARTITIONS:
       if (value == null) {
         unsetInvolvedPartitions();
@@ -1229,6 +1272,9 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     case SIGNAL:
       return getSignal();
 
+    case DEBUG:
+      return getDebug();
+
     case INVOLVED_PARTITIONS:
       return getInvolvedPartitions();
 
@@ -1288,6 +1334,8 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       return isSetStatfs();
     case SIGNAL:
       return isSetSignal();
+    case DEBUG:
+      return isSetDebug();
     case INVOLVED_PARTITIONS:
       return isSetInvolvedPartitions();
     case INSTANCE_MAP:
@@ -1495,6 +1543,15 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       if (!(this_present_signal && that_present_signal))
         return false;
       if (!this.signal.equals(that.signal))
+        return false;
+    }
+
+    boolean this_present_debug = true && this.isSetDebug();
+    boolean that_present_debug = true && that.isSetDebug();
+    if (this_present_debug || that_present_debug) {
+      if (!(this_present_debug && that_present_debug))
+        return false;
+      if (!this.debug.equals(that.debug))
         return false;
     }
 
@@ -1742,6 +1799,16 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetDebug()).compareTo(other.isSetDebug());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetDebug()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.debug, other.debug);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = Boolean.valueOf(isSetInvolvedPartitions()).compareTo(other.isSetInvolvedPartitions());
     if (lastComparison != 0) {
       return lastComparison;
@@ -1973,6 +2040,16 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       }
       first = false;
     }
+    if (isSetDebug()) {
+      if (!first) sb.append(", ");
+      sb.append("debug:");
+      if (this.debug == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.debug);
+      }
+      first = false;
+    }
     if (!first) sb.append(", ");
     sb.append("involvedPartitions:");
     if (this.involvedPartitions == null) {
@@ -2051,6 +2128,9 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     }
     if (signal != null) {
       signal.validate();
+    }
+    if (debug != null) {
+      debug.validate();
     }
   }
 
@@ -2276,7 +2356,16 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 23: // INVOLVED_PARTITIONS
+          case 23: // DEBUG
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+              struct.debug = new ch.usi.paxosfs.rpc.Debug();
+              struct.debug.read(iprot);
+              struct.setDebugIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 24: // INVOLVED_PARTITIONS
             if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
               {
                 org.apache.thrift.protocol.TSet _set208 = iprot.readSetBegin();
@@ -2294,7 +2383,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 24: // INSTANCE_MAP
+          case 25: // INSTANCE_MAP
             if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
               {
                 org.apache.thrift.protocol.TMap _map211 = iprot.readMapBegin();
@@ -2464,6 +2553,13 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
           oprot.writeFieldEnd();
         }
       }
+      if (struct.debug != null) {
+        if (struct.isSetDebug()) {
+          oprot.writeFieldBegin(DEBUG_FIELD_DESC);
+          struct.debug.write(oprot);
+          oprot.writeFieldEnd();
+        }
+      }
       if (struct.involvedPartitions != null) {
         oprot.writeFieldBegin(INVOLVED_PARTITIONS_FIELD_DESC);
         {
@@ -2572,13 +2668,16 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       if (struct.isSetSignal()) {
         optionals.set(20);
       }
-      if (struct.isSetInvolvedPartitions()) {
+      if (struct.isSetDebug()) {
         optionals.set(21);
       }
-      if (struct.isSetInstanceMap()) {
+      if (struct.isSetInvolvedPartitions()) {
         optionals.set(22);
       }
-      oprot.writeBitSet(optionals, 23);
+      if (struct.isSetInstanceMap()) {
+        optionals.set(23);
+      }
+      oprot.writeBitSet(optionals, 24);
       if (struct.isSetType()) {
         oprot.writeI32(struct.type);
       }
@@ -2642,6 +2741,9 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       if (struct.isSetSignal()) {
         struct.signal.write(oprot);
       }
+      if (struct.isSetDebug()) {
+        struct.debug.write(oprot);
+      }
       if (struct.isSetInvolvedPartitions()) {
         {
           oprot.writeI32(struct.involvedPartitions.size());
@@ -2666,7 +2768,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, Command struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(23);
+      BitSet incoming = iprot.readBitSet(24);
       if (incoming.get(0)) {
         struct.type = iprot.readI32();
         struct.setTypeIsSet(true);
@@ -2770,6 +2872,11 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
         struct.setSignalIsSet(true);
       }
       if (incoming.get(21)) {
+        struct.debug = new ch.usi.paxosfs.rpc.Debug();
+        struct.debug.read(iprot);
+        struct.setDebugIsSet(true);
+      }
+      if (incoming.get(22)) {
         {
           org.apache.thrift.protocol.TSet _set219 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, iprot.readI32());
           struct.involvedPartitions = new HashSet<Byte>(2*_set219.size);
@@ -2782,7 +2889,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
         }
         struct.setInvolvedPartitionsIsSet(true);
       }
-      if (incoming.get(22)) {
+      if (incoming.get(23)) {
         {
           org.apache.thrift.protocol.TMap _map222 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, iprot.readI32());
           struct.instanceMap = new HashMap<Byte,Long>(2*_map222.size);

@@ -1,16 +1,13 @@
 package ch.usi.paxosfs.replica;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import ch.usi.paxosfs.rpc.*;
+import ch.usi.paxosfs.util.UUIDUtils;
 import org.apache.commons.lang3.text.StrBuilder;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -40,13 +37,6 @@ import ch.usi.paxosfs.replica.commands.RenameData;
 import ch.usi.paxosfs.replica.commands.Signal;
 import ch.usi.paxosfs.replica.commands.TruncateCmd;
 import ch.usi.paxosfs.replica.commands.WriteBlocksCmd;
-import ch.usi.paxosfs.rpc.Attr;
-import ch.usi.paxosfs.rpc.DBlock;
-import ch.usi.paxosfs.rpc.DirEntry;
-import ch.usi.paxosfs.rpc.FSError;
-import ch.usi.paxosfs.rpc.FileHandle;
-import ch.usi.paxosfs.rpc.FuseOps;
-import ch.usi.paxosfs.rpc.ReadResult;
 import ch.usi.paxosfs.util.Paths;
 import ch.usi.paxosfs.util.UnixConstants;
 
@@ -66,7 +56,7 @@ public class FileSystemReplica implements Runnable {
 	private int nPartitions;
 	private int id;
 	private Byte localPartition;
-	private FileSystem fs;
+	private FileSystem fs = null;
 	private Map<Long, FileNode> openFiles; // map file handles to files
 	private ReplicaManager manager;
 	private String zoohost;
@@ -81,7 +71,7 @@ public class FileSystemReplica implements Runnable {
 		return instanceMap;
 	}
 
-	public FileSystemReplica(int nPartitions, int id, byte partition, CommunicationService comm, String host, int port, String zoohost) {
+	public FileSystemReplica(int nPartitions, int id, byte partition, CommunicationService comm, String host, int port, String zoohost, FileSystem initialFS) {
 		this.nPartitions = nPartitions;
 		this.comm = comm;
 		this.pendingCommands = new ConcurrentHashMap<Long, CommandResult>();
@@ -93,10 +83,15 @@ public class FileSystemReplica implements Runnable {
 		this.host = host;
 		this.port = port;
 		this.instanceMap = new ConcurrentHashMap<>();
+		this.fs = initialFS;
 		// keep track of local partition and global partition
 		instanceMap.put(Byte.valueOf((byte) 0), -1L);
 		instanceMap.put(Byte.valueOf(localPartition), -1L);
 		log.setLevel(Level.INFO);
+	}
+
+	public FileSystemReplica(int nPartitions, int id, byte partition, CommunicationService comm, String host, int port, String zoohost) {
+		this(nPartitions, id, partition, comm, host, port, zoohost, null);
 	}
 
 	/**
@@ -130,7 +125,9 @@ public class FileSystemReplica implements Runnable {
 		this.thriftServer.start();
 
 		// start the replica
-		fs = new MemFileSystem((int) (System.currentTimeMillis() / 1000), 0, 0);
+		if (fs == null) {
+			fs = new MemFileSystem((int) (System.currentTimeMillis() / 1000), 0, 0);
+		}
 
 		// FIXME: EC2 HACK
 		String public_ip = System.getenv("EC2");
@@ -170,8 +167,10 @@ public class FileSystemReplica implements Runnable {
 	 * Apply a new command to the FileSystem state. FIXME: Assuming it's correct
 	 * to return upon error without waiting for signals. Check if this is true!
 	 * 
-	 * @param c
+	 * @param decision
 	 *            the command to be applied
+	 * @param isReadonly
+	 *            indicates if the command is readonly or not
 	 */
 	private void applyCommand(CommandDecision decision, boolean isReadonly) {
 		// FIXME: this function is a bit of a mess. It has basically all the
@@ -199,6 +198,26 @@ public class FileSystemReplica implements Runnable {
 				}
 				// handle each command type
 				switch (CommandType.findByValue(c.getType())) {
+				case DEBUG: {
+					log.debug(new StringBuilder().append("debugcmd ").toString());
+					Debug debug = c.getDebug();
+					if (debug.getType() == DebugCommands.POPULATE_FILE.getId()) {
+						Random rand = new Random();
+						String filename = debug.getData().get("name");
+						Integer nBlocks = Integer.valueOf(debug.getData().get("nBlocks"));
+						Integer blockSize = Integer.valueOf(debug.getData().get("blockSize"));
+						List<DBlock> blocks = new ArrayList<>(nBlocks);
+						for (int i = 0; i < nBlocks; i++) {
+							DBlock b = new DBlock(null, 0, blockSize, new HashSet<Byte>());
+							b.setId(UUIDUtils.longToBytes(rand.nextLong()));
+							blocks.add(b);
+						}
+						fs.setFileData(filename, blocks);
+					}
+					res.setSuccess(true);
+					break;
+				}
+				/* -------------------------------- */
 				case ATTR: {
 					log.debug(new StringBuilder().append("attr ").append(c.getAttr().getPath()).toString());
 					Node n = fs.get(c.getAttr().getPath());
@@ -766,8 +785,6 @@ public class FileSystemReplica implements Runnable {
 	 * 
 	 * @param c
 	 *            The command to be processed
-	 * @param partitions
-	 *            The partitions this command will be submitted to
 	 * @return Result of the request. If the operation produces no result (e.g.
 	 *         renaming a file), it returns null.
 	 * @throws FSError

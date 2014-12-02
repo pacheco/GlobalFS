@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import ch.usi.paxosfs.rpc.*;
 import org.apache.thrift.TException;
 import org.apache.thrift.TProcessor;
 import org.apache.thrift.server.TThreadPoolServer;
@@ -20,16 +21,9 @@ import ch.usi.paxosfs.filesystem.DirNode;
 import ch.usi.paxosfs.filesystem.FileNode;
 import ch.usi.paxosfs.filesystem.Node;
 import ch.usi.paxosfs.filesystem.memory.MemFileSystem;
-import ch.usi.paxosfs.rpc.DBlock;
-import ch.usi.paxosfs.rpc.DirEntry;
-import ch.usi.paxosfs.rpc.FSError;
-import ch.usi.paxosfs.rpc.FileHandle;
-import ch.usi.paxosfs.rpc.FileSystemStats;
-import ch.usi.paxosfs.rpc.FuseOps;
-import ch.usi.paxosfs.rpc.ReadResult;
-import ch.usi.paxosfs.rpc.Response;
 import ch.usi.paxosfs.util.UnixConstants;
 import fuse.FuseException;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Non-replicated file system server. Same thrift interface as
@@ -306,7 +300,12 @@ public class NonReplicatedFileSystemServer implements FuseOps.Iface, Runnable {
 		r.setInstanceMap(this.instanceMap);
 		return r;
 	}
-	
+
+	@Override
+	public Response debug(Debug debug) throws FSError, TException {
+		throw new TException("Not implemented!");
+	}
+
 	public static void main(String[] args) {
 		if (args.length != 2) {
 			System.err.println("server <port> <zookeeperHost>");

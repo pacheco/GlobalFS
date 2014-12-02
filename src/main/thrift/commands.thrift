@@ -20,6 +20,7 @@ enum CommandType {
     WRITE_BLOCKS = 14,
     RELEASE = 15,
     SIGNAL = 16,
+    DEBUG = 17,
 }
 
 struct AttrCmd {
@@ -173,7 +174,6 @@ struct Signal {
     4: optional fuseops.FSError error
 }
 
-
 struct Command {
     1: i32 type
     2: i64 reqId
@@ -196,6 +196,7 @@ struct Command {
     20: optional ReleaseCmd release
     21: optional StatFsCmd statfs
     22: optional Signal signal
-    23: set<byte> involvedPartitions
-    24: optional map<byte, i64> instanceMap
+    23: optional fuseops.Debug debug
+    24: set<byte> involvedPartitions
+    25: optional map<byte, i64> instanceMap
 }

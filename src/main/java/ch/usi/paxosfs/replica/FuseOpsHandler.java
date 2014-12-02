@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import ch.usi.paxosfs.rpc.*;
 import org.apache.thrift.TException;
 
 import ch.usi.paxosfs.partitioning.PartitioningOracle;
@@ -24,15 +25,6 @@ import ch.usi.paxosfs.replica.commands.RmdirCmd;
 import ch.usi.paxosfs.replica.commands.TruncateCmd;
 import ch.usi.paxosfs.replica.commands.UnlinkCmd;
 import ch.usi.paxosfs.replica.commands.WriteBlocksCmd;
-import ch.usi.paxosfs.rpc.Attr;
-import ch.usi.paxosfs.rpc.DBlock;
-import ch.usi.paxosfs.rpc.DirEntry;
-import ch.usi.paxosfs.rpc.FSError;
-import ch.usi.paxosfs.rpc.FileHandle;
-import ch.usi.paxosfs.rpc.FileSystemStats;
-import ch.usi.paxosfs.rpc.FuseOps;
-import ch.usi.paxosfs.rpc.ReadResult;
-import ch.usi.paxosfs.rpc.Response;
 import ch.usi.paxosfs.util.Paths;
 
 import com.google.common.collect.Sets;
@@ -242,6 +234,15 @@ public class FuseOpsHandler implements FuseOps.Iface {
 		Command cmd = newCommand(CommandType.RELEASE, parts, instanceMap);
 		ReleaseCmd release = new ReleaseCmd(path, fh, flags, parts);
 		cmd.setRelease(release);
+		replica.submitCommand(cmd);
+		Response r = new Response(replica.getInstanceMap());
+		return r;
+	}
+
+	@Override
+	public Response debug(Debug debug) throws FSError, TException {
+		Command cmd = newCommand(CommandType.DEBUG, oracle.partitionsOf("/"), null);
+		cmd.setDebug(debug);
 		replica.submitCommand(cmd);
 		Response r = new Response(replica.getInstanceMap());
 		return r;

@@ -14,9 +14,12 @@ PORT_START=20000
 
 
 PARTITIONS=$1
+NCLI=$2
+NBLOCKS=$3
+BLOCKSIZE=$4
 
-if [ -z $PARTITIONS ]; then
-    echo "start <partitions>"
+if [[ -z $PARTITIONS || -z $NCLI || -z $NBLOCKS || -z $BLOCKSIZE ]]; then
+    echo "start <partitions> <nclients> <nblocks> <blocksize>"
     exit
 fi
 
@@ -62,7 +65,7 @@ set /ringpaxos/topology7/config/tcp_nodelay 1
 port=$PORT_START
 for p in `seq 1 $PARTITIONS`; do
     for id in `seq 0 2`; do
-        xterm -e "java -ea -cp $CLASSPATH $JVMOPT $GC -Djava.library.path=$LIBPATH ch.usi.paxosfs.replica.FSMain $PARTITIONS $p $id $port $ZKHOST; sleep 10" &
+        xterm -e "java -ea -cp $CLASSPATH $JVMOPT $GC -Djava.library.path=$LIBPATH ch.usi.paxosfs.replica.FSMainPopulated $PARTITIONS $p $id $port $ZKHOST $NCLI $NBLOCKS $BLOCKSIZE; sleep 10" &
         ((port++))
     done
 done

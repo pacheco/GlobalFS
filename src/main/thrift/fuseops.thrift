@@ -70,6 +70,11 @@ struct Response {
     7: optional ReadResult readBlocks
 }
 
+struct Debug {
+    1: i32 type
+    2: optional map<string, string> data
+}
+
 service FuseOps {
 	Response getattr(1: string path, 2: map<byte, i64> instanceMap) throws (1: FSError e),
 	Response readlink(1: string path, 2: map<byte, i64> instanceMap) throws (1: FSError e),
@@ -89,4 +94,5 @@ service FuseOps {
 	Response readBlocks(1: string path, 2: FileHandle fh, 3: i64 offset, 4: i64 bytes, 5: map<byte, i64> instanceMap) throws (1: FSError e),
 	Response writeBlocks(1: string path, 2: FileHandle fh, 3: i64 offset, 4: list<DBlock> blocks, 5: map<byte, i64> instanceMap) throws (1: FSError e),
 	Response release(1: string path, 2: FileHandle fh, 3: i32 flags, 4: map<byte, i64> instanceMap) throws (1: FSError e),
+	Response debug(1: Debug debug) throws (1: FSError e),
 }

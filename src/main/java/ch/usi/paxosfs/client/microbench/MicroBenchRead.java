@@ -20,9 +20,10 @@ import java.util.*;
 /**
  * Created by pacheco on 24/11/14.
  */
-public class MicroBenchAppend implements MicroBench {
+public class MicroBenchRead implements MicroBench {
     private static Integer FILE_BLOCKS = 100*1024;
     private static Integer FILE_BLOCK_SIZE = 1024;
+    private static Integer READ_SIZE = 32*1024;
     private String replicaAddr;
     private byte partition;
     private String logPrefix;
@@ -73,19 +74,6 @@ public class MicroBenchAppend implements MicroBench {
             FileHandle globalFh;
             FileHandle localFh;
 
-            /* setup files used by the worker */
-            try {
-                Response r = c.mknod(localPath, 0, 0, 0, 0, instanceMap);
-                instanceMap.putAll(r.getInstanceMap());
-            } catch (TException e) {
-                //e.printStackTrace();
-            }
-            try {
-                Response r = c.mknod(globalPath, 0, 0, 0, 0, instanceMap);
-                instanceMap.putAll(r.getInstanceMap());
-            } catch (TException e) {
-                //e.printStackTrace();
-            }
             try {
                 Response r = c.open(globalPath, UnixConstants.O_RDWR.getValue() | UnixConstants.O_APPEND.getValue(), instanceMap);
                 instanceMap.putAll(r.getInstanceMap());
@@ -100,25 +88,23 @@ public class MicroBenchAppend implements MicroBench {
             /* actual benchmark */
             long benchStart = System.currentTimeMillis();
             long benchNow = System.currentTimeMillis();
-            long writeAt = 0;
+            long readAt = 0;
             while ((benchNow - benchStart) < workerDuration) {
                 boolean global = doGlobal(); // should we submit a global command?
                 long start = System.currentTimeMillis();
                 int type;
                 try {
                     try {
-                        List<DBlock> blocks = new ArrayList<>();
-                        blocks.add(new DBlock(null, 0, FILE_BLOCK_SIZE, new HashSet<Byte>()));
-                        blocks.get(0).setId(UUIDUtils.longToBytes(rand.nextLong()));
                         if (global) {
                             type = 1;
-                            Response r = c.writeBlocks(globalPath, globalFh, (writeAt % FILE_BLOCKS) * FILE_BLOCK_SIZE, blocks, instanceMap);
+                            Response r = c.readBlocks(globalPath, globalFh, readAt % (FILE_BLOCKS * FILE_BLOCK_SIZE), READ_SIZE, instanceMap);
                             instanceMap.putAll(r.getInstanceMap());
                         } else {
                             type = 0;
-                            Response r = c.writeBlocks(localPath, localFh, (writeAt % FILE_BLOCKS) * FILE_BLOCK_SIZE, blocks, instanceMap);
+                            Response r = c.readBlocks(localPath, localFh, readAt % (FILE_BLOCKS * FILE_BLOCK_SIZE), READ_SIZE, instanceMap);
                             instanceMap.putAll(r.getInstanceMap());
                         }
+                        readAt += READ_SIZE;
                     } catch (FSError e) {
                         if (e.getErrorCode() == Errno.ETIMEDOUT) {
                             type = 2;
@@ -130,7 +116,6 @@ public class MicroBenchAppend implements MicroBench {
                             throw e;
                         }
                     }
-                    writeAt++;
                     long end = System.currentTimeMillis();
                     benchNow = end;
                     try {
@@ -159,7 +144,7 @@ public class MicroBenchAppend implements MicroBench {
         }
     }
 
-    public MicroBenchAppend() {
+    public MicroBenchRead() {
     }
 
     @Override
@@ -172,22 +157,22 @@ public class MicroBenchAppend implements MicroBench {
 		/*
 		 * Create paths used by the benchmark
 		 */
-        String replicaHost = replicaAddr.split(":")[0];
-        int replicaPort = Integer.parseInt(replicaAddr.split(":")[1]);
-        TTransport transport = new TSocket(replicaHost, replicaPort);
-        try {
-            transport.open();
-        } catch (TTransportException e) {
-            throw new RuntimeException(e);
-        }
-        TProtocol protocol = new TBinaryProtocol(transport);
-        FuseOps.Client c = new FuseOps.Client(protocol);
-        try {
-            c.mkdir(path, 0, 0, 0, new HashMap<Byte, Long>());
-        } catch (TException e) {
-            e.printStackTrace();
-        }
-        transport.close();
+//        String replicaHost = replicaAddr.split(":")[0];
+//        int replicaPort = Integer.parseInt(replicaAddr.split(":")[1]);
+//        TTransport transport = new TSocket(replicaHost, replicaPort);
+//        try {
+//            transport.open();
+//        } catch (TTransportException e) {
+//            throw new RuntimeException(e);
+//        }
+//        TProtocol protocol = new TBinaryProtocol(transport);
+//        FuseOps.Client c = new FuseOps.Client(protocol);
+//        try {
+//            c.mkdir(path, 0, 0, 0, new HashMap<Byte, Long>());
+//        } catch (TException e) {
+//            e.printStackTrace();
+//        }
+//        transport.close();
     }
 
     @Override

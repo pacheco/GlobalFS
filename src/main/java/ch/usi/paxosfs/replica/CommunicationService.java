@@ -118,6 +118,8 @@ public class CommunicationService {
 								 * without the signal result.
 								 */
 								switch (CommandType.findByValue(c.getType())) {
+								case DEBUG:
+									break;
 								/* these would be the read-only */
 								case GETDIR:
 								case ATTR:
