@@ -20,13 +20,16 @@ import java.util.*;
 /**
  * Created by pacheco on 24/11/14.
  */
-public class MicroBenchWrite implements MicroBench {
+public class MicroBenchReadWrite implements MicroBench {
+    private static Integer FILE_BLOCKS = 100*1024;
+    private static Integer FILE_BLOCK_SIZE = 1024;
     private String replicaAddr;
     private byte partition;
     private String logPrefix;
     private String path;
     private Random rand;
     private int globals;
+    private int writePercent;
 
     private class Worker implements Runnable {
         private final int globals;
@@ -62,6 +65,7 @@ public class MicroBenchWrite implements MicroBench {
         private boolean doGlobal() {
             return rand.nextInt(100) < this.globals;
         }
+        private boolean doWrite() { return rand.nextInt(100) < writePercent; }
 
         private String outputLine(long start, long now, int type) {
             return start + "\t" + now + "\t" + (now - start) + "\t" + type + "\n";
@@ -99,22 +103,21 @@ public class MicroBenchWrite implements MicroBench {
             /* actual benchmark */
             long benchStart = System.currentTimeMillis();
             long benchNow = System.currentTimeMillis();
+            long writeAt = 0;
             while ((benchNow - benchStart) < workerDuration) {
                 boolean global = doGlobal(); // should we submit a global command?
+                boolean write = doWrite(); // write or read?
                 long start = System.currentTimeMillis();
                 int type;
                 try {
                     try {
-                        List<DBlock> blocks = new ArrayList<>();
-                        blocks.add(new DBlock(null, 0, 1024, new HashSet<Byte>()));
-                        blocks.get(0).setId(UUIDUtils.longToBytes(rand.nextLong()));
                         if (global) {
                             type = 1;
-                            Response r = c.writeBlocks(globalPath, globalFh, 0, blocks, instanceMap);
+                            Response r = doOperation(globalFh, globalPath, (writeAt % FILE_BLOCKS) * FILE_BLOCK_SIZE, write);
                             instanceMap.putAll(r.getInstanceMap());
                         } else {
                             type = 0;
-                            Response r = c.writeBlocks(localPath, localFh, 0, blocks, instanceMap);
+                            Response r = doOperation(localFh, localPath, (writeAt % FILE_BLOCKS) * FILE_BLOCK_SIZE, write);
                             instanceMap.putAll(r.getInstanceMap());
                         }
                     } catch (FSError e) {
@@ -128,6 +131,7 @@ public class MicroBenchWrite implements MicroBench {
                             throw e;
                         }
                     }
+                    writeAt++;
                     long end = System.currentTimeMillis();
                     benchNow = end;
                     try {
@@ -154,9 +158,21 @@ public class MicroBenchWrite implements MicroBench {
                 e.printStackTrace();
             }
         }
+
+        Response doOperation(FileHandle fh, String path, long position, boolean isWrite) throws TException {
+            if (isWrite) {
+                List<DBlock> blocks = new ArrayList<>();
+                blocks.add(new DBlock(null, 0, FILE_BLOCK_SIZE, new HashSet<Byte>()));
+                blocks.get(0).setId(UUIDUtils.longToBytes(rand.nextLong()));
+                return c.writeBlocks(path, fh, position, blocks, instanceMap);
+            } else {
+                return c.readBlocks(path, fh, position, FILE_BLOCK_SIZE, instanceMap);
+            }
+        }
     }
 
-    public MicroBenchWrite() {
+
+    public MicroBenchReadWrite() {
     }
 
     @Override
@@ -167,6 +183,7 @@ public class MicroBenchWrite implements MicroBench {
         this.path = "/" + this.partition;
         this.rand = rand;
         this.globals = Integer.parseInt(benchArgs[0]);
+        this.writePercent = Integer.parseInt(benchArgs[1]);
 		/*
 		 * Create paths used by the benchmark
 		 */

@@ -25,19 +25,19 @@ public class ReplicaRampBench {
 	// bench parameters
 	private static String replicaAddr;
 	private static long durationMillis;
-	private static int globals;
 	private static String prefix;
 	private static int startThreads;
 	private static int maxThreads;
 	private static byte partition;
 	private static MicroBench bench;
+	private static String[] benchArgs;
 
 	private static int targetRunningThreads(long durationMillis, long runningTimeMillis, long totalThreads) {
 		return (int)Math.ceil((runningTimeMillis/(double)durationMillis) * totalThreads);
 	}	
 
 	private static void start() throws InterruptedException, IOException, TException {
-		bench.setup(replicaAddr, partition, prefix, new Random());
+		bench.setup(replicaAddr, partition, prefix, new Random(), benchArgs);
 
 		System.err.println("# Starting " + startThreads + ".." + maxThreads + " threads...");
 
@@ -50,7 +50,7 @@ public class ReplicaRampBench {
 		long benchStart = System.currentTimeMillis();
 		// launch the starting number of threads
 		for (int n = 0; n < startThreads; n++) {
-			workers.add(bench.startWorker(n, durationMillis - runningMillis, globals));
+			workers.add(bench.startWorker(n, durationMillis - runningMillis));
 		}
 		while (runningMillis < durationMillis) {
 			Thread.sleep(500); // launch more workers every 500ms
@@ -58,7 +58,7 @@ public class ReplicaRampBench {
 			int target = targetRunningThreads(durationMillis, runningMillis, maxThreads - startThreads);
 			int toStart = Math.max(0, target + startThreads - workers.size());
 			for (int i = 0; i < toStart; i++){
-				workers.add(bench.startWorker(workers.size(), durationMillis - runningMillis, globals));
+				workers.add(bench.startWorker(workers.size(), durationMillis - runningMillis));
 			}
 		}
 		// wait for started threads to finish
@@ -72,8 +72,8 @@ public class ReplicaRampBench {
 		/*
 		 * Get cmdline parameters
 		 */
-		if (args.length != 8) {
-			System.err.println("bench <benchType> <replicaAddr> <partition> <duration> <startthreads> <maxthreads> <globals> <logprefix>");
+		if (args.length < 7) {
+			System.err.println("bench <bench_type> <replica_addr> <partition> <duration> <start_threads> <max_threads> <log_prefix> [<bench_arg1> ...]");
 			return;
 		}
 		String benchType = args[0];
@@ -82,8 +82,8 @@ public class ReplicaRampBench {
 		durationMillis = Long.parseLong(args[3])*1000;
 		startThreads = Integer.parseInt(args[4]);
 		maxThreads = Integer.parseInt(args[5]);
-		globals = Integer.parseInt(args[6]);
-		prefix = args[7];
+		prefix = args[6];
+		benchArgs = Arrays.copyOfRange(args, 7, args.length);
 
 		/*
 		 * Instantiate the microbench

@@ -173,9 +173,7 @@ public class FileSystemReplica implements Runnable {
 	 *            indicates if the command is readonly or not
 	 */
 	private void applyCommand(CommandDecision decision, boolean isReadonly) {
-		// FIXME: this function is a bit of a mess. It has basically all the
-		// logic to advance the state of the replica (implementation of all the
-		// commands). It is handling both state-machine commands (which advance
+		// FIXME: It is handling both state-machine commands (which advance
 		// the replica state) and readonly commands which reply if the state is
 		// recent enough. It was simpler than separating it in two separate
 		// methods and synchronizing them.
@@ -198,500 +196,57 @@ public class FileSystemReplica implements Runnable {
 				}
 				// handle each command type
 				switch (CommandType.findByValue(c.getType())) {
-				case DEBUG: {
-					log.debug(new StringBuilder().append("debugcmd ").toString());
-					Debug debug = c.getDebug();
-					if (debug.getType() == DebugCommands.POPULATE_FILE.getId()) {
-						Random rand = new Random();
-						String filename = debug.getData().get("name");
-						Integer nBlocks = Integer.valueOf(debug.getData().get("nBlocks"));
-						Integer blockSize = Integer.valueOf(debug.getData().get("blockSize"));
-						List<DBlock> blocks = new ArrayList<>(nBlocks);
-						for (int i = 0; i < nBlocks; i++) {
-							DBlock b = new DBlock(null, 0, blockSize, new HashSet<Byte>());
-							b.setId(UUIDUtils.longToBytes(rand.nextLong()));
-							blocks.add(b);
-						}
-						fs.setFileData(filename, blocks);
-					}
-					res.setSuccess(true);
+				case DEBUG:
+					applyDebug(c, res);
 					break;
-				}
-				/* -------------------------------- */
-				case ATTR: {
-					log.debug(new StringBuilder().append("attr ").append(c.getAttr().getPath()).toString());
-					Node n = fs.get(c.getAttr().getPath());
-					res.setSuccess(true);
-					Attr response = new Attr(n.getAttributes());
-
-					if (c.getInvolvedPartitions().size() > 1) {
-						// wait for other signals
-						for (Byte part : c.getInvolvedPartitions()) {
-							if (part == localPartition)
-								continue;
-							//this.waitForSignal(c.getReqId(), part.byteValue());
-						}
-					}
-
-					response.setMode(response.getMode() | n.typeMode());
-					res.setResponse(response);
+				case ATTR:
+					applyAttr(c, res);
 					break;
-				}
-				/* -------------------------------- */
-				case MKNOD: {
-					log.debug(new StrBuilder().append("mknod ").append(c.getMknod().getPath()).toString());
-					// if the create fails here, there is no need for signals,
-					// the other partitions also fail
-					fs.createFile(c.getMknod().getPath(), c.getMknod().getMode(), c.getReqTime(), c.getMknod().getUid(), c.getMknod().getGid());
-
-					if (c.getInvolvedPartitions().size() > 1) {
-						// wait for other signals
-						for (Byte part : c.getInvolvedPartitions()) {
-							if (part == localPartition)
-								continue;
-							//this.waitForSignal(c.getReqId(), part.byteValue());
-						}
-					}
-					res.setSuccess(true);
-					res.setResponse(null);
-
+				case MKNOD:
+					applyMknod(c, res);
 					break;
-				}
-				/* -------------------------------- */
-				case GETDIR: {
-					log.debug(new StrBuilder().append("getdir ").append(c.getGetdir().getPath()).toString());
-
-					Node n = fs.get(c.getGetdir().getPath());
-					if (!n.isDir()) {
-						throw new FSError(FuseException.ENOTDIR, "Not a directory");
-					}
-					DirNode dir = (DirNode) n;
-
-					List<DirEntry> entries = new LinkedList<DirEntry>();
-					for (String child : dir.getChildren()) {
-						entries.add(new DirEntry(child, 0, dir.getChild(child).typeMode()));
-					}
-
-					if (c.getInvolvedPartitions().size() > 1) {
-						// wait for other signals
-						for (Byte part : c.getInvolvedPartitions()) {
-							if (part == localPartition)
-								continue;
-							//this.waitForSignal(c.getReqId(), part.byteValue());
-						}
-					}
-
-					res.setSuccess(true);
-					res.setResponse(entries);
+				case GETDIR:
+					applyGetdir(c, res);
 					break;
-				}
-				/* -------------------------------- */
-				case MKDIR: {
-					log.debug(new StrBuilder().append("mkdir ").append(c.getMkdir().getPath()).toString());
-
-					fs.createDir(c.getMkdir().getPath(), c.getMkdir().getMode(), c.getReqTime(), c.getMkdir().getUid(), c.getMkdir().getGid());
-
-					if (c.getInvolvedPartitions().size() > 1) {
-						// wait for other signals
-						for (Byte part : c.getInvolvedPartitions()) {
-							if (part == localPartition)
-								continue;
-							//this.waitForSignal(c.getReqId(), part.byteValue());
-						}
-					}
-					res.setSuccess(true);
-					res.setResponse(null);
+				case MKDIR:
+					applyMkdir(c, res);
 					break;
-				}
-				/* -------------------------------- */
-				case UNLINK: {
-					log.debug(new StrBuilder().append("unlink ").append(c.getUnlink().getPath()).toString());
-
-					fs.removeFileOrLink(c.getUnlink().getPath());
-					;
-
-					if (c.getInvolvedPartitions().size() > 1) {
-						// wait for other signals
-						for (Byte part : c.getInvolvedPartitions()) {
-							if (part == localPartition)
-								continue;
-							//this.waitForSignal(c.getReqId(), part.byteValue());
-						}
-					}
-					res.setSuccess(true);
-					res.setResponse(null);
+				case UNLINK:
+					applyUnlink(c, res);
 					break;
-				}
-				/* -------------------------------- */
-				case RMDIR: {
-					log.debug(new StrBuilder().append("rmdir ").append(c.getRmdir().getPath()).toString());
-
-					fs.removeDir(c.getRmdir().getPath());
-
-					if (c.getInvolvedPartitions().size() > 1) {
-						// wait for other signals
-						for (Byte part : c.getInvolvedPartitions()) {
-							if (part == localPartition)
-								continue;
-							//this.waitForSignal(c.getReqId(), part.byteValue());
-						}
-					}
-					res.setSuccess(true);
-					res.setResponse(null);
+				case RMDIR:
+					applyRmdir(c, res);
 					break;
-				}
-				/* -------------------------------- */
-				case RENAME: {
-					log.debug(new StrBuilder().append("rename ").append(c.getRename().getFrom()).append(" ").append(c.getRename().getTo()).toString());
-					RenameCmd r = c.getRename();
-					// some partition in partitionTo is not in partitionFrom ->
-					// it will need data
-					boolean toNeedsData = !Sets.difference(r.getPartitionTo(), r.getPartitionFrom()).isEmpty();
-					// some partition in parentPartitionTo is not in
-					// partitionFrom -> it will need data
-					boolean parentToNeedsData = !Sets.difference(r.getParentPartitionTo(), r.getPartitionFrom()).isEmpty();
-					boolean signalWithData = toNeedsData || parentToNeedsData;
-
-					if (c.getInvolvedPartitions().size() == 1) {
-						// single partition. just move the file
-						Node n = fs.rename(r.getFrom(), r.getTo());
-						n.getAttributes().setCtime(c.getReqTime());
-					} else {
-						/*
-						 * partitions in partitionFrom send the first signal
-						 * (checks origin exists) and file data
-						 */
-						if (r.getPartitionFrom().contains(localPartition)) {
-							Signal s = new Signal();
-							s.setFromPartition(localPartition.byteValue());
-							try {
-								Node n = fs.get(r.getFrom());
-								if (signalWithData) {
-									if (n.isDir() && !((DirNode) n).isEmpty()) {
-										// TODO: we don't support moving
-										// non-empty directories accross
-										// partitions
-										throw new FSError(FuseException.ENOTEMPTY, "Moving non-empty directory accross partitions");
-									}
-									s.setRenameData(this.renameDataFromNode(n));
-								}
-								s.setSuccess(true);
-								// partitionFrom signals if file exists
-								// (possibly with data)
-								comm.signal(c.getReqId(), s, c.getInvolvedPartitions());
-							} catch (FSError e) {
-								// origin does not exist.
-								// FIXME: we fail early by throwing e. Is it ok
-								// (linearizable) to not wait for signals in
-								// this case?
-								s.setSuccess(false);
-								s.setError(e);
-								comm.signal(c.getReqId(), s, c.getInvolvedPartitions());
-								throw e;
-							}
-						}
-
-						/*
-						 * wait for signals
-						 */
-						boolean allSuccess = true;
-						RenameData data = null;
-						FSError error = null;
-						if (c.getInvolvedPartitions().size() > 1) {
-							// wait for other signals
-							for (Byte part : c.getInvolvedPartitions()) {
-								if (part == localPartition)
-									continue;
-								Signal s = this.waitForSignal(c.getReqId(), part.byteValue());
-								if (!s.isSuccess()) {
-									allSuccess = false;
-									error = s.getError();
-								} else if (s.isSetRenameData()) {
-									data = s.getRenameData();
-								}
-							}
-						}
-
-						if (allSuccess) {
-							/*
-							 * partitions in To check if operation fails on its
-							 * side and signals the others
-							 */
-							if (r.getPartitionTo().contains(localPartition)) {
-								try {
-									DirNode d = fs.getDir(Paths.dirname(r.getTo()));
-									Node n = d.getChild(Paths.basename(r.getTo()));
-									// check if the rename can proceed. It fails
-									// when:
-									// - origin and destination differ in type
-									// - destination is directory and is not
-									// empty
-									if (n != null) {
-										boolean originIsDir = (signalWithData && renameDataOriginIsDir(data))
-												|| (!signalWithData && fs.get(r.getFrom()).isDir());
-										if (n.isDir()) {
-											if (!originIsDir) {
-												throw new FSError(FuseException.ENOTDIR, "Not a directory");
-											} else if (!((DirNode) n).isEmpty()) {
-												throw new FSError(FuseException.ENOTEMPTY, "Directory not empty");
-											}
-										} else if (!n.isDir() && originIsDir) {
-											throw new FSError(FuseException.EISDIR, "Is a directory");
-										}
-									}
-									// signal that operation can succeed
-									comm.signal(c.getReqId(), new Signal(localPartition.byteValue(), true), c.getInvolvedPartitions());
-								} catch (FSError e) {
-									Signal s = new Signal(localPartition.byteValue(), false);
-									s.setError(e);
-									comm.signal(c.getReqId(), s, c.getInvolvedPartitions());
-									// FIXME: we fail early by throwing e. Is it
-									// ok (linearizable) to not wait for signals
-									// in this case?
-									throw e;
-								}
-							}
-
-							/*
-							 * Perform the rename
-							 */
-							if (signalWithData) {
-								// this is used because a partition does not
-								// receive a signal from itself (so it can't use
-								// signal data)
-								Node removedNode = null;
-								if (r.getPartitionFrom().contains(localPartition) || r.getParentPartitionFrom().contains(localPartition)) {
-									// remove node
-									DirNode d = fs.getDir(Paths.dirname(r.getFrom()));
-									removedNode = d.removeChild(Paths.basename(r.getFrom()));
-								}
-								// TODO: parentTo does not need "full" file
-								if (r.getPartitionTo().contains(localPartition) || r.getParentPartitionTo().contains(localPartition)) {
-									Node n = (data == null) ? removedNode : renameDataNewNode(data);
-									DirNode d = fs.getDir(Paths.dirname(r.getTo()));
-									n.getAttributes().setCtime(c.getReqTime());
-									d.addChild(Paths.basename(r.getTo()), n);
-								}
-							} else { // no need of the data from signal
-								if (r.getPartitionTo().contains(localPartition) || r.getParentPartitionTo().contains(localPartition)) {
-									// to and parentTo have the origin. Just
-									// rename
-									Node n = fs.rename(r.getFrom(), r.getTo());
-									n.getAttributes().setCtime(c.getReqTime());
-								} else {
-									// remove node
-									DirNode d = fs.getDir(Paths.dirname(r.getFrom()));
-									d.removeChild(Paths.basename(r.getFrom()));
-								}
-							}
-						} else { // some signal received was NOT success
-							if (r.getPartitionTo().contains(localPartition)) {
-								// partitionTo still needs to send its signal
-								comm.signal(c.getReqId(), new Signal(localPartition.byteValue(), false), c.getInvolvedPartitions());
-							}
-							throw error;
-						}
-					}
-
-					res.setSuccess(true);
-					res.setResponse(null);
+				case RENAME:
+					applyRename(c, res);
 					break;
-				}
-				/* -------------------------------- */
 				case SYMLINK:
-					log.debug(new StrBuilder().append("symlink ").append(c.getSymlink().getPath()).append(" ").append(c.getSymlink().getTarget()).toString());
-					res.setSuccess(true);
-					res.setResponse(null);
+					applySymlink(c, res);
 					break;
-				/* -------------------------------- */
-				case CHMOD: {
-					log.debug(new StrBuilder().append("chmod ").append(c.getChmod().getPath()).toString());
-					ChmodCmd chmod = c.getChmod();
-					Node f = fs.get(chmod.getPath());
-					if (f == null) {
-						throw new FSError(FuseException.ENOENT, "File not found");
-					}
-					f.getAttributes().setMode(chmod.getMode());
-					f.getAttributes().setCtime(c.getReqTime());
-
-					if (c.getInvolvedPartitions().size() > 1) {
-						// wait for other signals
-						for (Byte part : c.getInvolvedPartitions()) {
-							if (part == localPartition)
-								continue;
-							//this.waitForSignal(c.getReqId(), part.byteValue());
-						}
-					}
-					res.setSuccess(true);
-					res.setResponse(null);
+				case CHMOD:
+					applyChmod(c, res);
 					break;
-				}
-				/* -------------------------------- */
 				case CHOWN:
-					log.debug(new StrBuilder().append("chown ").append(c.getChown().getPath()).toString());
-					res.setSuccess(true);
-					res.setResponse(null);
+					applyChown(c, res);
 					break;
-				/* -------------------------------- */
-				case TRUNCATE: {
-					log.debug(new StrBuilder().append("truncate ").append(c.getTruncate().getPath()).toString());
-					TruncateCmd t = c.getTruncate();
-					Node f = fs.get(t.getPath());
-					if (f == null) {
-						throw new FSError(FuseException.ENOENT, "File not found");
-					} else if (!f.isFile()) {
-						throw new FSError(FuseException.EINVAL, "Not a file");
-					}
-					((FileNode) f).truncate(t.getSize());
-					f.getAttributes().setCtime(c.getReqTime());
-					f.getAttributes().setMtime(c.getReqTime());
-
-					if (c.getInvolvedPartitions().size() > 1) {
-						// wait for other signals
-						for (Byte part : c.getInvolvedPartitions()) {
-							if (part == localPartition)
-								continue;
-							//this.waitForSignal(c.getReqId(), part.byteValue());
-						}
-					}
-
-					res.setSuccess(true);
-					res.setResponse(null);
+				case TRUNCATE:
+					applyTruncate(c, res);
 					break;
-				}
-				/* -------------------------------- */
 				case UTIME:
-					// TODO: not implemented
-					log.debug(new StrBuilder().append("utime ").append(c.getUtime().getPath()).toString());
-					res.setSuccess(true);
-					res.setResponse(null);
+					applyUtime(c, res);
 					break;
-				/* -------------------------------- */
-				case OPEN: {
-					log.debug(new StrBuilder().append("open ").append(c.getOpen().getPath()).toString());
-					OpenCmd open = c.getOpen();
-					Node n = fs.get(open.getPath());
-					if (n.isDir()) {
-						throw new FSError(FuseException.EISDIR, "Is a directory");
-					}
-					/*
-					 * Flags from open(2) - already removed flags the Fuse docs
-					 * say are not passed on
-					 * 
-					 * O_RDONLY open for reading only O_WRONLY open for writing
-					 * only O_RDWR open for reading and writing O_NONBLOCK do
-					 * not block on open or for data to become available
-					 * O_APPEND append on each write O_TRUNC truncate size to 0
-					 * O_SHLOCK atomically obtain a shared lock O_EXLOCK
-					 * atomically obtain an exclusive lock O_NOFOLLOW do not
-					 * follow symlinks O_SYMLINK allow open of symlinks
-					 * O_EVTONLY descriptor requested for event notifications
-					 * only O_CLOEXEC mark as close-on-exec
-					 */
-					log.debug("Flags " + Integer.toHexString(open.getFlags()));
-					FileHandle fh = new FileHandle(c.getReqId(), open.getFlags(), localPartition.byteValue());
-					this.openFiles.put(Long.valueOf(fh.getId()), (FileNode) n);
-
-					if (c.getInvolvedPartitions().size() > 1) {
-						// wait for other signals
-						for (Byte part : c.getInvolvedPartitions()) {
-							if (part == localPartition)
-								continue;
-							//this.waitForSignal(c.getReqId(), part.byteValue());
-						}
-					}
-
-					res.setSuccess(true);
-					res.setResponse(fh);
+				case OPEN:
+					applyOpen(c, res);
 					break;
-				}
-				/* -------------------------------- */
-				case READ_BLOCKS: {
-					log.debug(new StrBuilder().append("read ").append(c.getRead().getPath()).toString());
-					ReadBlocksCmd read = c.getRead();
-					FileNode f = openFiles.get(Long.valueOf(read.getFileHandle().getId()));
-					if (f == null) {
-						throw new FSError(FuseException.EBADF, "Bad file descriptor");
-					}
-					if ((read.getFileHandle().getFlags() & UnixConstants.O_ACCMODE.getValue()) == UnixConstants.O_WRONLY.getValue()) {
-						throw new FSError(FuseException.EBADF, "File not open for reading");
-					}
-					// FIXME: check for negative offset?
-					ReadResult rr = f.getBlocks(read.getOffset(), read.getBytes());
-					if (rr == null) {
-						rr = new ReadResult(new ArrayList<DBlock>());
-					}
-
-					if (c.getInvolvedPartitions().size() > 1) {
-						// wait for other signals
-						for (Byte part : c.getInvolvedPartitions()) {
-							if (part == localPartition)
-								continue;
-							//this.waitForSignal(c.getReqId(), part.byteValue());
-						}
-					}
-
-					res.setSuccess(true);
-					res.setResponse(rr);
+				case READ_BLOCKS:
+					applyReadBlocks(c, res);
 					break;
-				}
-				/* -------------------------------- */
-				case WRITE_BLOCKS: {
-					log.debug(new StrBuilder().append("write ").append(c.getWrite().getPath()).toString());
-					WriteBlocksCmd write = c.getWrite();
-					FileNode f = openFiles.get(Long.valueOf(write.getFileHandle().getId()));
-					if (f == null) {
-						throw new FSError(FuseException.EBADF, "Bad file descriptor");
-					}
-					if ((write.getFileHandle().getFlags() & UnixConstants.O_ACCMODE.getValue()) == UnixConstants.O_RDONLY.getValue()) {
-						throw new FSError(FuseException.EBADF, "File not open for writing");
-					}
-					// FIXME: check for negative offset?
-					if ((write.getFileHandle().getFlags() & UnixConstants.O_APPEND.getValue()) != 0) {
-						f.appendData(write.getBlocks());
-					} else {
-						f.updateData(write.getBlocks(), write.getOffset());
-					}
-
-					f.getAttributes().setCtime(c.getReqTime());
-					f.getAttributes().setMtime(c.getReqTime());
-
-					if (c.getInvolvedPartitions().size() > 1) {
-						// wait for other signals
-						for (Byte part : c.getInvolvedPartitions()) {
-							if (part == localPartition)
-								continue;
-							//this.waitForSignal(c.getReqId(), part.byteValue());
-						}
-					}
-
-					res.setSuccess(true);
-					res.setResponse(null);
+				case WRITE_BLOCKS:
+					applyWriteBlocks(c, res);
 					break;
-				}
-				/* -------------------------------- */
-				case RELEASE: {
-					log.debug(new StrBuilder().append("release ").append(c.getRelease().getPath()).toString());
-					ReleaseCmd rel = c.getRelease();
-					FileNode f = openFiles.remove(Long.valueOf(rel.getFileHandle().getId()));
-					if (f == null) {
-						throw new FSError(FuseException.EBADF, "Bad file descriptor");
-					}
-
-					if (c.getInvolvedPartitions().size() > 1) {
-						// wait for other signals
-						for (Byte part : c.getInvolvedPartitions()) {
-							if (part == localPartition)
-								continue;
-							//this.waitForSignal(c.getReqId(), part.byteValue());
-						}
-					}
-
-					res.setSuccess(true);
-					res.setResponse(null);
+				case RELEASE:
+					applyRelease(c, res);
 					break;
-				}
-				/* -------------------------------- */
 				default:
 					log.error(new StrBuilder().append("Invalid command").toString());
 					res.setSuccess(false);
@@ -709,6 +264,484 @@ public class FileSystemReplica implements Runnable {
 			// signal the waiting client
 			res.countDown();
 		}
+	}
+
+	private void applyRelease(Command c, CommandResult res) throws FSError {
+		log.debug(new StrBuilder().append("release ").append(c.getRelease().getPath()).toString());
+		ReleaseCmd rel = c.getRelease();
+		FileNode f = openFiles.remove(Long.valueOf(rel.getFileHandle().getId()));
+		if (f == null) {
+            throw new FSError(FuseException.EBADF, "Bad file descriptor");
+        }
+
+		if (c.getInvolvedPartitions().size() > 1) {
+            // wait for other signals
+            for (Byte part : c.getInvolvedPartitions()) {
+                if (part == localPartition)
+                    continue;
+                //this.waitForSignal(c.getReqId(), part.byteValue());
+            }
+        }
+
+		res.setSuccess(true);
+		res.setResponse(null);
+	}
+
+	private void applyWriteBlocks(Command c, CommandResult res) throws FSError {
+		log.debug(new StrBuilder().append("write ").append(c.getWrite().getPath()).toString());
+		WriteBlocksCmd write = c.getWrite();
+		FileNode f = openFiles.get(Long.valueOf(write.getFileHandle().getId()));
+		if (f == null) {
+            throw new FSError(FuseException.EBADF, "Bad file descriptor");
+        }
+		if ((write.getFileHandle().getFlags() & UnixConstants.O_ACCMODE.getValue()) == UnixConstants.O_RDONLY.getValue()) {
+            throw new FSError(FuseException.EBADF, "File not open for writing");
+        }
+		// FIXME: check for negative offset?
+		if ((write.getFileHandle().getFlags() & UnixConstants.O_APPEND.getValue()) != 0) {
+            f.appendData(write.getBlocks());
+        } else {
+            f.updateData(write.getBlocks(), write.getOffset());
+        }
+
+		f.getAttributes().setCtime(c.getReqTime());
+		f.getAttributes().setMtime(c.getReqTime());
+
+		if (c.getInvolvedPartitions().size() > 1) {
+            // wait for other signals
+            for (Byte part : c.getInvolvedPartitions()) {
+                if (part == localPartition)
+                    continue;
+                //this.waitForSignal(c.getReqId(), part.byteValue());
+            }
+        }
+
+		res.setSuccess(true);
+		res.setResponse(null);
+	}
+
+	private void applyReadBlocks(Command c, CommandResult res) throws FSError {
+		log.debug(new StrBuilder().append("read ").append(c.getRead().getPath()).toString());
+		ReadBlocksCmd read = c.getRead();
+		FileNode f = openFiles.get(Long.valueOf(read.getFileHandle().getId()));
+		if (f == null) {
+            throw new FSError(FuseException.EBADF, "Bad file descriptor");
+        }
+		if ((read.getFileHandle().getFlags() & UnixConstants.O_ACCMODE.getValue()) == UnixConstants.O_WRONLY.getValue()) {
+            throw new FSError(FuseException.EBADF, "File not open for reading");
+        }
+		// FIXME: check for negative offset?
+		ReadResult rr = f.getBlocks(read.getOffset(), read.getBytes());
+		if (rr == null) {
+            rr = new ReadResult(new ArrayList<DBlock>());
+        }
+
+		if (c.getInvolvedPartitions().size() > 1) {
+            // wait for other signals
+            for (Byte part : c.getInvolvedPartitions()) {
+                if (part == localPartition)
+                    continue;
+                //this.waitForSignal(c.getReqId(), part.byteValue());
+            }
+        }
+
+		res.setSuccess(true);
+		res.setResponse(rr);
+	}
+
+	private void applyOpen(Command c, CommandResult res) throws FSError {
+		log.debug(new StrBuilder().append("open ").append(c.getOpen().getPath()).toString());
+		OpenCmd open = c.getOpen();
+		Node n = fs.get(open.getPath());
+		if (n.isDir()) {
+            throw new FSError(FuseException.EISDIR, "Is a directory");
+        }
+					/*
+					 * Flags from open(2) - already removed flags the Fuse docs
+					 * say are not passed on
+					 *
+					 * O_RDONLY open for reading only O_WRONLY open for writing
+					 * only O_RDWR open for reading and writing O_NONBLOCK do
+					 * not block on open or for data to become available
+					 * O_APPEND append on each write O_TRUNC truncate size to 0
+					 * O_SHLOCK atomically obtain a shared lock O_EXLOCK
+					 * atomically obtain an exclusive lock O_NOFOLLOW do not
+					 * follow symlinks O_SYMLINK allow open of symlinks
+					 * O_EVTONLY descriptor requested for event notifications
+					 * only O_CLOEXEC mark as close-on-exec
+					 */
+		log.debug("Flags " + Integer.toHexString(open.getFlags()));
+		FileHandle fh = new FileHandle(c.getReqId(), open.getFlags(), localPartition.byteValue());
+		this.openFiles.put(Long.valueOf(fh.getId()), (FileNode) n);
+
+		if (c.getInvolvedPartitions().size() > 1) {
+            // wait for other signals
+            for (Byte part : c.getInvolvedPartitions()) {
+                if (part == localPartition)
+                    continue;
+                //this.waitForSignal(c.getReqId(), part.byteValue());
+            }
+        }
+
+		res.setSuccess(true);
+		res.setResponse(fh);
+	}
+
+	private void applyUtime(Command c, CommandResult res) {
+		// TODO: not implemented
+		log.debug(new StrBuilder().append("utime ").append(c.getUtime().getPath()).toString());
+		res.setSuccess(true);
+		res.setResponse(null);
+	}
+
+	private void applyTruncate(Command c, CommandResult res) throws FSError {
+		log.debug(new StrBuilder().append("truncate ").append(c.getTruncate().getPath()).toString());
+		TruncateCmd t = c.getTruncate();
+		Node f = fs.get(t.getPath());
+		if (f == null) {
+            throw new FSError(FuseException.ENOENT, "File not found");
+        } else if (!f.isFile()) {
+            throw new FSError(FuseException.EINVAL, "Not a file");
+        }
+		((FileNode) f).truncate(t.getSize());
+		f.getAttributes().setCtime(c.getReqTime());
+		f.getAttributes().setMtime(c.getReqTime());
+
+		if (c.getInvolvedPartitions().size() > 1) {
+            // wait for other signals
+            for (Byte part : c.getInvolvedPartitions()) {
+                if (part == localPartition)
+                    continue;
+                //this.waitForSignal(c.getReqId(), part.byteValue());
+            }
+        }
+
+		res.setSuccess(true);
+		res.setResponse(null);
+	}
+
+	private void applyChown(Command c, CommandResult res) {
+		log.debug(new StrBuilder().append("chown ").append(c.getChown().getPath()).toString());
+		res.setSuccess(true);
+		res.setResponse(null);
+	}
+
+	private void applyChmod(Command c, CommandResult res) throws FSError {
+		log.debug(new StrBuilder().append("chmod ").append(c.getChmod().getPath()).toString());
+		ChmodCmd chmod = c.getChmod();
+		Node f = fs.get(chmod.getPath());
+		if (f == null) {
+            throw new FSError(FuseException.ENOENT, "File not found");
+        }
+		f.getAttributes().setMode(chmod.getMode());
+		f.getAttributes().setCtime(c.getReqTime());
+
+		if (c.getInvolvedPartitions().size() > 1) {
+            // wait for other signals
+            for (Byte part : c.getInvolvedPartitions()) {
+                if (part == localPartition)
+                    continue;
+                //this.waitForSignal(c.getReqId(), part.byteValue());
+            }
+        }
+		res.setSuccess(true);
+		res.setResponse(null);
+	}
+
+	private void applySymlink(Command c, CommandResult res) {
+		log.debug(new StrBuilder().append("symlink ").append(c.getSymlink().getPath()).append(" ").append(c.getSymlink().getTarget()).toString());
+		res.setSuccess(true);
+		res.setResponse(null);
+	}
+
+	private void applyRename(Command c, CommandResult res) throws FSError {
+		log.debug(new StrBuilder().append("rename ").append(c.getRename().getFrom()).append(" ").append(c.getRename().getTo()).toString());
+		RenameCmd r = c.getRename();
+		// some partition in partitionTo is not in partitionFrom ->
+		// it will need data
+		boolean toNeedsData = !Sets.difference(r.getPartitionTo(), r.getPartitionFrom()).isEmpty();
+		// some partition in parentPartitionTo is not in
+		// partitionFrom -> it will need data
+		boolean parentToNeedsData = !Sets.difference(r.getParentPartitionTo(), r.getPartitionFrom()).isEmpty();
+		boolean signalWithData = toNeedsData || parentToNeedsData;
+
+		if (c.getInvolvedPartitions().size() == 1) {
+            // single partition. just move the file
+            Node n = fs.rename(r.getFrom(), r.getTo());
+            n.getAttributes().setCtime(c.getReqTime());
+        } else {
+            /*
+             * partitions in partitionFrom send the first signal
+             * (checks origin exists) and file data
+             */
+            if (r.getPartitionFrom().contains(localPartition)) {
+                Signal s = new Signal();
+                s.setFromPartition(localPartition.byteValue());
+                try {
+                    Node n = fs.get(r.getFrom());
+                    if (signalWithData) {
+                        if (n.isDir() && !((DirNode) n).isEmpty()) {
+                            // TODO: we don't support moving
+                            // non-empty directories accross
+                            // partitions
+                            throw new FSError(FuseException.ENOTEMPTY, "Moving non-empty directory accross partitions");
+                        }
+                        s.setRenameData(this.renameDataFromNode(n));
+                    }
+                    s.setSuccess(true);
+                    // partitionFrom signals if file exists
+                    // (possibly with data)
+                    comm.signal(c.getReqId(), s, c.getInvolvedPartitions());
+                } catch (FSError e) {
+                    // origin does not exist.
+                    // FIXME: we fail early by throwing e. Is it ok
+                    // (linearizable) to not wait for signals in
+                    // this case?
+                    s.setSuccess(false);
+                    s.setError(e);
+                    comm.signal(c.getReqId(), s, c.getInvolvedPartitions());
+                    throw e;
+                }
+            }
+
+            /*
+             * wait for signals
+             */
+            boolean allSuccess = true;
+            RenameData data = null;
+            FSError error = null;
+            if (c.getInvolvedPartitions().size() > 1) {
+                // wait for other signals
+                for (Byte part : c.getInvolvedPartitions()) {
+                    if (part == localPartition)
+                        continue;
+                    Signal s = this.waitForSignal(c.getReqId(), part.byteValue());
+                    if (!s.isSuccess()) {
+                        allSuccess = false;
+                        error = s.getError();
+                    } else if (s.isSetRenameData()) {
+                        data = s.getRenameData();
+                    }
+                }
+            }
+
+            if (allSuccess) {
+                /*
+                 * partitions in To check if operation fails on its
+                 * side and signals the others
+                 */
+                if (r.getPartitionTo().contains(localPartition)) {
+                    try {
+                        DirNode d = fs.getDir(Paths.dirname(r.getTo()));
+                        Node n = d.getChild(Paths.basename(r.getTo()));
+                        // check if the rename can proceed. It fails
+                        // when:
+                        // - origin and destination differ in type
+                        // - destination is directory and is not
+                        // empty
+                        if (n != null) {
+                            boolean originIsDir = (signalWithData && renameDataOriginIsDir(data))
+                                    || (!signalWithData && fs.get(r.getFrom()).isDir());
+                            if (n.isDir()) {
+                                if (!originIsDir) {
+                                    throw new FSError(FuseException.ENOTDIR, "Not a directory");
+                                } else if (!((DirNode) n).isEmpty()) {
+                                    throw new FSError(FuseException.ENOTEMPTY, "Directory not empty");
+                                }
+                            } else if (!n.isDir() && originIsDir) {
+                                throw new FSError(FuseException.EISDIR, "Is a directory");
+                            }
+                        }
+                        // signal that operation can succeed
+                        comm.signal(c.getReqId(), new Signal(localPartition.byteValue(), true), c.getInvolvedPartitions());
+                    } catch (FSError e) {
+                        Signal s = new Signal(localPartition.byteValue(), false);
+                        s.setError(e);
+                        comm.signal(c.getReqId(), s, c.getInvolvedPartitions());
+                        // FIXME: we fail early by throwing e. Is it
+                        // ok (linearizable) to not wait for signals
+                        // in this case?
+                        throw e;
+                    }
+                }
+
+                /*
+                 * Perform the rename
+                 */
+                if (signalWithData) {
+                    // this is used because a partition does not
+                    // receive a signal from itself (so it can't use
+                    // signal data)
+                    Node removedNode = null;
+                    if (r.getPartitionFrom().contains(localPartition) || r.getParentPartitionFrom().contains(localPartition)) {
+                        // remove node
+                        DirNode d = fs.getDir(Paths.dirname(r.getFrom()));
+                        removedNode = d.removeChild(Paths.basename(r.getFrom()));
+                    }
+                    // TODO: parentTo does not need "full" file
+                    if (r.getPartitionTo().contains(localPartition) || r.getParentPartitionTo().contains(localPartition)) {
+                        Node n = (data == null) ? removedNode : renameDataNewNode(data);
+                        DirNode d = fs.getDir(Paths.dirname(r.getTo()));
+                        n.getAttributes().setCtime(c.getReqTime());
+                        d.addChild(Paths.basename(r.getTo()), n);
+                    }
+                } else { // no need of the data from signal
+                    if (r.getPartitionTo().contains(localPartition) || r.getParentPartitionTo().contains(localPartition)) {
+                        // to and parentTo have the origin. Just
+                        // rename
+                        Node n = fs.rename(r.getFrom(), r.getTo());
+                        n.getAttributes().setCtime(c.getReqTime());
+                    } else {
+                        // remove node
+                        DirNode d = fs.getDir(Paths.dirname(r.getFrom()));
+                        d.removeChild(Paths.basename(r.getFrom()));
+                    }
+                }
+            } else { // some signal received was NOT success
+                if (r.getPartitionTo().contains(localPartition)) {
+                    // partitionTo still needs to send its signal
+                    comm.signal(c.getReqId(), new Signal(localPartition.byteValue(), false), c.getInvolvedPartitions());
+                }
+                throw error;
+            }
+        }
+
+		res.setSuccess(true);
+		res.setResponse(null);
+	}
+
+	private void applyRmdir(Command c, CommandResult res) throws FSError {
+		log.debug(new StrBuilder().append("rmdir ").append(c.getRmdir().getPath()).toString());
+
+		fs.removeDir(c.getRmdir().getPath());
+
+		if (c.getInvolvedPartitions().size() > 1) {
+            // wait for other signals
+            for (Byte part : c.getInvolvedPartitions()) {
+                if (part == localPartition)
+                    continue;
+                //this.waitForSignal(c.getReqId(), part.byteValue());
+            }
+        }
+		res.setSuccess(true);
+		res.setResponse(null);
+	}
+
+	private void applyUnlink(Command c, CommandResult res) throws FSError {
+		log.debug(new StrBuilder().append("unlink ").append(c.getUnlink().getPath()).toString());
+
+		fs.removeFileOrLink(c.getUnlink().getPath());
+
+		if (c.getInvolvedPartitions().size() > 1) {
+            // wait for other signals
+            for (Byte part : c.getInvolvedPartitions()) {
+                if (part == localPartition)
+                    continue;
+                //this.waitForSignal(c.getReqId(), part.byteValue());
+            }
+        }
+		res.setSuccess(true);
+		res.setResponse(null);
+	}
+
+	private void applyMkdir(Command c, CommandResult res) throws FSError {
+		log.debug(new StrBuilder().append("mkdir ").append(c.getMkdir().getPath()).toString());
+
+		fs.createDir(c.getMkdir().getPath(), c.getMkdir().getMode(), c.getReqTime(), c.getMkdir().getUid(), c.getMkdir().getGid());
+
+		if (c.getInvolvedPartitions().size() > 1) {
+            // wait for other signals
+            for (Byte part : c.getInvolvedPartitions()) {
+                if (part == localPartition)
+                    continue;
+                //this.waitForSignal(c.getReqId(), part.byteValue());
+            }
+        }
+		res.setSuccess(true);
+		res.setResponse(null);
+	}
+
+	private void applyGetdir(Command c, CommandResult res) throws FSError {
+		log.debug(new StrBuilder().append("getdir ").append(c.getGetdir().getPath()).toString());
+
+		Node n = fs.get(c.getGetdir().getPath());
+		if (!n.isDir()) {
+            throw new FSError(FuseException.ENOTDIR, "Not a directory");
+        }
+		DirNode dir = (DirNode) n;
+
+		List<DirEntry> entries = new LinkedList<DirEntry>();
+		for (String child : dir.getChildren()) {
+            entries.add(new DirEntry(child, 0, dir.getChild(child).typeMode()));
+        }
+
+		if (c.getInvolvedPartitions().size() > 1) {
+            // wait for other signals
+            for (Byte part : c.getInvolvedPartitions()) {
+                if (part == localPartition)
+                    continue;
+                //this.waitForSignal(c.getReqId(), part.byteValue());
+            }
+        }
+
+		res.setSuccess(true);
+		res.setResponse(entries);
+	}
+
+	private void applyMknod(Command c, CommandResult res) throws FSError {
+		log.debug(new StrBuilder().append("mknod ").append(c.getMknod().getPath()).toString());
+		// if the create fails here, there is no need for signals,
+		// the other partitions also fail
+		fs.createFile(c.getMknod().getPath(), c.getMknod().getMode(), c.getReqTime(), c.getMknod().getUid(), c.getMknod().getGid());
+
+		if (c.getInvolvedPartitions().size() > 1) {
+            // wait for other signals
+            for (Byte part : c.getInvolvedPartitions()) {
+                if (part == localPartition)
+                    continue;
+                //this.waitForSignal(c.getReqId(), part.byteValue());
+            }
+        }
+		res.setSuccess(true);
+		res.setResponse(null);
+	}
+
+	private void applyAttr(Command c, CommandResult res) throws FSError {
+		log.debug(new StringBuilder().append("attr ").append(c.getAttr().getPath()).toString());
+		Node n = fs.get(c.getAttr().getPath());
+		res.setSuccess(true);
+		Attr response = new Attr(n.getAttributes());
+
+		if (c.getInvolvedPartitions().size() > 1) {
+            // wait for other signals
+            for (Byte part : c.getInvolvedPartitions()) {
+                if (part == localPartition)
+                    continue;
+                //this.waitForSignal(c.getReqId(), part.byteValue());
+            }
+        }
+
+		response.setMode(response.getMode() | n.typeMode());
+		res.setResponse(response);
+	}
+
+	private void applyDebug(Command c, CommandResult res) throws FSError {
+		log.debug(new StringBuilder().append("debugcmd ").toString());
+		Debug debug = c.getDebug();
+		if (debug.getType() == DebugCommands.POPULATE_FILE.getId()) {
+            Random rand = new Random();
+            String filename = debug.getData().get("name");
+            Integer nBlocks = Integer.valueOf(debug.getData().get("nBlocks"));
+            Integer blockSize = Integer.valueOf(debug.getData().get("blockSize"));
+            List<DBlock> blocks = new ArrayList<>(nBlocks);
+            for (int i = 0; i < nBlocks; i++) {
+                DBlock b = new DBlock(null, 0, blockSize, new HashSet<Byte>());
+                b.setId(UUIDUtils.longToBytes(rand.nextLong()));
+                blocks.add(b);
+            }
+            fs.setFileData(filename, blocks);
+        }
+		res.setSuccess(true);
 	}
 
 	private boolean renameDataOriginIsDir(RenameData r) {

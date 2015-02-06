@@ -28,6 +28,7 @@ public class MicroBenchGetdir implements MicroBench {
     private String logPrefix;
     private String path;
     private Random rand;
+    private int globals;
 
     private class Worker implements Runnable {
         private final int globals;
@@ -119,12 +120,13 @@ public class MicroBenchGetdir implements MicroBench {
     }
 
     @Override
-    public void setup(String replicaAddr, byte partition, String logPrefix, Random rand) throws TException {
+    public void setup(String replicaAddr, byte partition, String logPrefix, Random rand, String[] benchArgs) throws TException {
         this.replicaAddr = replicaAddr;
         this.partition = partition;
         this.logPrefix = logPrefix;
         this.path = "/" + this.partition;
         this.rand = rand;
+        this.globals = Integer.parseInt(benchArgs[0]);
 		/*
 		 * Create paths used by the benchmark
 		 */
@@ -147,7 +149,7 @@ public class MicroBenchGetdir implements MicroBench {
     }
 
     @Override
-    public Thread startWorker(int workerId, long durationMillis, int globals) throws IOException {
+    public Thread startWorker(int workerId, long durationMillis) throws IOException {
         Thread t = new Thread(new Worker(workerId, durationMillis, path, globals));
         t.start();
         return t;
