@@ -1,4 +1,4 @@
-package ch.inf.paxosfs.filesystem;
+package ch.usi.paxosfs.filesystem;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashSet;

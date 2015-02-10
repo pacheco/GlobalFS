@@ -1,4 +1,4 @@
-package ch.inf.paxosfs.partitioning;
+package ch.usi.paxosfs.partitioning;
 
 import static org.junit.Assert.*;
 
