@@ -3,7 +3,7 @@
 ZKDIR=/home/pacheco/usr/zookeeper-3.4.5/
 ZOOHOST=node249:2182
 UPAXOSDIR=/home/pacheco/programming/eduardo_URingPaxos/
-PAXOSFSDIR=/home/pacheco/programming/paxosfs-fuse/
+FSDIR=/home/pacheco/programming/paxosfs-fuse/
 
 
 PARTITIONS=$1
@@ -50,7 +50,7 @@ for C in `seq 0 $[CLIENTS-1]`; do
     dir=/tmp/fs$C
     echo "mounting client $C on $node at $dir"
     ssh $node <<EOF
-cd $PAXOSFSDIR;
+cd $FSDIR;
 mkdir -p $dir;
 nohup ./mount.sh $PARTITIONS $ZOOHOST http://${storage}:${STORAGE_PORT} ${rep_id} $dir -f -o direct_io 2> /dev/null > /dev/null < /dev/null &
 EOF

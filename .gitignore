@@ -4,4 +4,4 @@
 .settings
 /src/main/thrift/ch/
 /paxosfs-fuse.iml
-/nodes.sh
+/src/scripts/nodes.sh

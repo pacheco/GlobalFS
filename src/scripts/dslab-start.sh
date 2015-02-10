@@ -4,7 +4,7 @@ ZKDIR=/home/pacheco/usr/zookeeper-3.4.5/
 ZOOHOST=node249:2182
 #UPAXOSDIR=/home/pacheco/programming/eduardo_URingPaxos/
 UPAXOSDIR=/home/pacheco/programming/URingPaxos/
-PAXOSFSDIR=/home/pacheco/programming/paxosfs-fuse/
+FSDIR=/home/pacheco/programming/paxosfs-fuse/
 
 
 PARTITIONS=$1
@@ -103,11 +103,11 @@ sleep 3
 X=200
 N=$START_NODE
 for p in `seq 1 $PARTITIONS`; do
-    xterm -geometry 120x10+0+$X -e ssh node$N "cd $PAXOSFSDIR; ./runreplica.sh $PARTITIONS $p 0 31000 $ZOOHOST" &
+    xterm -geometry 120x10+0+$X -e ssh node$N "cd $FSDIR; ./replica.sh $PARTITIONS $p 0 31000 $ZOOHOST" &
     N=$[N+1]
     X=$[X+100]
     #sleep 0.5
-    xterm -geometry 120x10+0+$X -e ssh node$N "cd $PAXOSFSDIR; ./runreplica.sh $PARTITIONS $p 1 31000 $ZOOHOST" &
+    xterm -geometry 120x10+0+$X -e ssh node$N "cd $FSDIR; ./replica.sh $PARTITIONS $p 1 31000 $ZOOHOST" &
     N=$[N+1]
     X=$[X+100]
     #sleep 0.5

@@ -1,12 +1,13 @@
 #!/bin/bash
 
-ZKDIR=${HOME}/usr/zookeeper-3.4.6/
+SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+source $SCRIPTDIR/const.sh
+
+ZKDIR=${HOME}/usr/zookeeper/
 ZKHOST=localhost:2181
 UPAXOSDIR=${HOME}/workspace/URingPaxos/
-#UPAXOSDIR=${HOME}/programming/doutorado/eduardo_uringpaxos/
-PAXOSFSDIR=${HOME}/workspace/sinergiafs/
+FSDIR=${HOME}/workspace/sinergiafs/
 
-CLASSPATH=~/workspace/sinergiafs/target/paxosfs-fuse-0.0.1-SNAPSHOT-jar-with-dependencies.jar
 LIBPATH=~/usr/lib
 JVMOPT="-XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/tmp/java-$$.vgc"
 GC="-XX:+UseConcMarkSweepGC"
@@ -36,7 +37,8 @@ fi
 
 
 # write configs
-STORAGE=ch.usi.da.paxos.storage.CyclicArray
+source const.sh
+STORAGE=ch.usi.da.paxos.storage.CyclicArray #  BufferArray uses too much memory to run multiple instances locally
 
 echo "
 set /ringpaxos/config/multi_ring_start_time `date +%s`000

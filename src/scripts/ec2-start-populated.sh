@@ -1,7 +1,8 @@
 #!/bin/bash
 
-source const.sh
-source nodes.sh
+SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+source $SCRIPTDIR/const.sh
+source $SCRIPTDIR/nodes.sh
 
 DB=/ssd/storage/
 
@@ -19,6 +20,15 @@ DB=/ssd/storage/
 ssh $ZKHOST sudo service zookeeper stop
 ssh $ZKHOST sudo service zookeeper start
 STARTTIME=`ssh $ZKHOST date +%s`000
+
+CLI=$1
+NBLOCKS=$2
+BLOCKSIZE=$3
+if [[ $# != 3 ]]; then
+    echo "<cli> <nblocks> <blocksize>"
+    exit 1
+fi
+
 
 for n in ${DC1_SERVERS[@]} ${DC1_CLIENTS[@]} ${DC2_SERVERS[@]} ${DC2_CLIENTS[@]} ${DC3_SERVERS[@]} ${DC3_CLIENTS[@]}; do
     ssh $n <<EOF &
@@ -87,44 +97,44 @@ sleep 2
 
 #start coordinators for each ring
 #------------
-xterm -e "ssh $DC1_ACC_0 sinergiafs/node-ec2.sh; sleep 1000" &
-xterm -e "ssh $DC1_REP_0 sinergiafs/node-ec2.sh; sleep 1000" &
-xterm -e "ssh $DC2_REP_0 sinergiafs/node-ec2.sh; sleep 1000" &
-xterm -e "ssh $DC3_REP_0 sinergiafs/node-ec2.sh; sleep 1000" &
+xterm -e "ssh $DC1_ACC_0 $FSDIR/node-ec2.sh $CLI $NBLOCKS $BLOCKSIZE; sleep 1000" &
+xterm -e "ssh $DC1_REP_0 $FSDIR/node-ec2.sh $CLI $NBLOCKS $BLOCKSIZE; sleep 1000" &
+xterm -e "ssh $DC2_REP_0 $FSDIR/node-ec2.sh $CLI $NBLOCKS $BLOCKSIZE; sleep 1000" &
+xterm -e "ssh $DC3_REP_0 $FSDIR/node-ec2.sh $CLI $NBLOCKS $BLOCKSIZE; sleep 1000" &
 
 sleep 5
 
 # start everything else
 #------------
-xterm -e "ssh $DC2_ACC_0 sinergiafs/node-ec2.sh; sleep 1000" &
+xterm -e "ssh $DC2_ACC_0 $FSDIR/node-ec2.sh $CLI $NBLOCKS $BLOCKSIZE; sleep 1000" &
 
-xterm -e "ssh $DC1_REP_1 sinergiafs/node-ec2.sh; sleep 1000" &
-xterm -e "ssh $DC1_REP_2 sinergiafs/node-ec2.sh; sleep 1000" &
+xterm -e "ssh $DC1_REP_1 $FSDIR/node-ec2.sh $CLI $NBLOCKS $BLOCKSIZE; sleep 1000" &
+xterm -e "ssh $DC1_REP_2 $FSDIR/node-ec2.sh $CLI $NBLOCKS $BLOCKSIZE; sleep 1000" &
 
-xterm -e "ssh $DC2_REP_1 sinergiafs/node-ec2.sh; sleep 1000" &
-xterm -e "ssh $DC2_REP_2 sinergiafs/node-ec2.sh; sleep 1000" &
+xterm -e "ssh $DC2_REP_1 $FSDIR/node-ec2.sh $CLI $NBLOCKS $BLOCKSIZE; sleep 1000" &
+xterm -e "ssh $DC2_REP_2 $FSDIR/node-ec2.sh $CLI $NBLOCKS $BLOCKSIZE; sleep 1000" &
 
-xterm -e "ssh $DC3_REP_1 sinergiafs/node-ec2.sh; sleep 1000" &
-xterm -e "ssh $DC3_REP_2 sinergiafs/node-ec2.sh; sleep 1000" &
+xterm -e "ssh $DC3_REP_1 $FSDIR/node-ec2.sh $CLI $NBLOCKS $BLOCKSIZE; sleep 1000" &
+xterm -e "ssh $DC3_REP_2 $FSDIR/node-ec2.sh $CLI $NBLOCKS $BLOCKSIZE; sleep 1000" &
 
 
 # #start acceptors for the big ring (these HAVE to be started last due to a strange behaviour of ring paxos latency)
 # #------------
-# xterm -e "ssh $DC1_ACC_0 sinergiafs/node-ec2.sh" &
-# xterm -e "ssh $DC2_ACC_0 sinergiafs/node-ec2.sh" &
+# xterm -e "ssh $DC1_ACC_0 $FSDIR/node-ec2.sh" &
+# xterm -e "ssh $DC2_ACC_0 $FSDIR/node-ec2.sh" &
 
 # # start paxos small rings
 # #------------
-# xterm -e "ssh $DC1_REP_0 sinergiafs/node-ec2.sh" &
-# xterm -e "ssh $DC1_REP_1 sinergiafs/node-ec2.sh" &
-# xterm -e "ssh $DC1_REP_2 sinergiafs/node-ec2.sh" &
+# xterm -e "ssh $DC1_REP_0 $FSDIR/node-ec2.sh" &
+# xterm -e "ssh $DC1_REP_1 $FSDIR/node-ec2.sh" &
+# xterm -e "ssh $DC1_REP_2 $FSDIR/node-ec2.sh" &
 
-# xterm -e "ssh $DC2_REP_0 sinergiafs/node-ec2.sh" &
-# xterm -e "ssh $DC2_REP_1 sinergiafs/node-ec2.sh" &
-# xterm -e "ssh $DC2_REP_2 sinergiafs/node-ec2.sh" &
+# xterm -e "ssh $DC2_REP_0 $FSDIR/node-ec2.sh" &
+# xterm -e "ssh $DC2_REP_1 $FSDIR/node-ec2.sh" &
+# xterm -e "ssh $DC2_REP_2 $FSDIR/node-ec2.sh" &
 
-# xterm -e "ssh $DC3_REP_0 sinergiafs/node-ec2.sh" &
-# xterm -e "ssh $DC3_REP_1 sinergiafs/node-ec2.sh" &
-# xterm -e "ssh $DC3_REP_2 sinergiafs/node-ec2.sh" &
+# xterm -e "ssh $DC3_REP_0 $FSDIR/node-ec2.sh" &
+# xterm -e "ssh $DC3_REP_1 $FSDIR/node-ec2.sh" &
+# xterm -e "ssh $DC3_REP_2 $FSDIR/node-ec2.sh" &
 
 wait

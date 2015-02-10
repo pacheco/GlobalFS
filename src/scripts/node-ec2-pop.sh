@@ -1,11 +1,9 @@
 #!/bin/bash
 
-CLASSPATH=sinergiafs/
-UPAXOSDIR=Paxos-trunk/
-LIBPATH=usr/lib/
+SCRIPTDIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+source $SCRIPTDIR/const.sh
+
 JVMOPT="-XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/tmp/java-$$.vgc"
-#export GC="-XX:+UseParallelGC"
-GC="-XX:+UseConcMarkSweepGC"
 PORT=20000
 
 # get node information
