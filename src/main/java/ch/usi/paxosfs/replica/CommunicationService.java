@@ -188,7 +188,6 @@ public class CommunicationService {
 	/**
 	 * Atomically multicast command.
 	 * 
-	 * @param ringId
 	 * @param command
 	 * @return A FutureDecision that can be waited on
 	 */

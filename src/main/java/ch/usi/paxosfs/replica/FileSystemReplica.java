@@ -740,6 +740,8 @@ public class FileSystemReplica implements Runnable {
                 blocks.add(b);
             }
             fs.setFileData(filename, blocks);
+        } else if (debug.getType() == DebugCommands.NULL.getId()) {
+            // Null command does nothing
         }
 		res.setSuccess(true);
 	}

@@ -35,9 +35,6 @@ fi
 #sleep 3
 #killall -INT ringpaxos.sh
 
-
-# write configs
-source const.sh
 STORAGE=ch.usi.da.paxos.storage.CyclicArray #  BufferArray uses too much memory to run multiple instances locally
 
 echo "
@@ -73,9 +70,9 @@ for p in `seq 1 $PARTITIONS`; do
 done
 
 # start acceptors for the big ring (these HAVE to be started last due to a strange behaviour of ring paxos latency)
-xterm -e "cd $UPAXOSDIR; target/Paxos-trunk/ringpaxos.sh 0,0:A $ZKHOST" &
+xterm -e "cd $UPAXOSDIR; target/Paxos-trunk/ringpaxos.sh 0,0:A $ZKHOST; sleep 10" &
 sleep 0.5
-xterm -e "cd $UPAXOSDIR; target/Paxos-trunk/ringpaxos.sh 0,1:A $ZKHOST" &
+xterm -e "cd $UPAXOSDIR; target/Paxos-trunk/ringpaxos.sh 0,1:A $ZKHOST; sleep 10" &
 sleep 2
 
 wait
