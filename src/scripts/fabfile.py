@@ -1,10 +1,12 @@
 from fabric.api import *
-from ec2helper import grouped_instances
+from ec2config import roledefs_from_instances
 import time
+
 
 env.use_ssh_config = True
 env.colorize_errors = True
 env.disable_known_hosts = True
+env.roledefs = roledefs_from_instances() # get ips for the roledef lists from ec2 instances
 
 MRP_CONFIG = {
     'MRP_START_TIME' : 0,
@@ -67,8 +69,6 @@ set /ringpaxos/topology3/config/p1_resend_time %(MRP_P1_TIMEOUT)s
 set /ringpaxos/topology3/config/value_resend_time %(MRP_PROPOSER_TIMEOUT)s
 """
 
-env.roledefs = grouped_instances()
-
 
 @parallel
 @roles('replica', 'client')
@@ -95,7 +95,7 @@ def ntpsync():
 @parallel
 @roles('replica')
 def kill_and_clear():
-    """Kill 
+    """Kill server processes and remove old data
     """
     sudo('killall -9 java')
     sudo('rm -f /tmp/*.vgc')
@@ -134,12 +134,12 @@ def start_node():
             run('dtach -n /tmp/nodeec2 ./node-ec2.sh')
 
 
-def start_system():
-    """Start the system
+def start_servers():
+    """Start the sinergiafs servers
     """
     env.roles = ['paxos_coordinator']
     execute(start_node)
-    local('sleep 10')
+    local('sleep 5')
     env.roles = ['paxos_rest']
     execute(start_node)
 
@@ -155,3 +155,14 @@ def mount_fs():
         HEADNODE = env.roledefs['head'][0]
         with cd('usr/sinergiafs'):
             run('source ~/whoami.sh; dtach -n /tmp/sinergiafs ./client-mount.sh 3 %s:2182 http://fake $ID $RING -f -o direct_io /tmp/fs' % (HEADNODE))
+
+
+def start_all():
+    """Starts the whole system, replicas and clients (mountpoints)
+    """
+    execute(kill_and_clear)
+    execute(ntpsync)
+    execute(setup_zookeeper)
+    execute(start_servers)
+    execute(paxos_on)
+    execute(mount_fs)
