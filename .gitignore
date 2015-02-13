@@ -5,3 +5,4 @@
 /src/main/thrift/ch/
 /paxosfs-fuse.iml
 /src/scripts/nodes.sh
+*.pyc

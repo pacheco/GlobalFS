@@ -1,0 +1,157 @@
+from fabric.api import *
+from ec2helper import grouped_instances
+import time
+
+env.use_ssh_config = True
+env.colorize_errors = True
+env.disable_known_hosts = True
+
+MRP_CONFIG = {
+    'MRP_START_TIME' : 0,
+    'MRP_DELTA' : 10,
+    'MRP_LAMBDA' : 100000,
+    'MRP_M' : 1,
+    'MRP_REF_RING' : 0,
+    'MRP_STORAGE' : 'ch.usi.da.paxos.storage.BufferArray',
+    'MRP_BATCH' : 'none',
+    'MRP_RECOVERY' : 1,
+    'MRP_TRIM_MOD' : 0,
+    'MRP_TRIM_AUTO' : 0,
+    'MRP_P1_TIMEOUT' : 10000,
+    'MRP_PROPOSER_TIMEOUT' : 10000,
+}
+
+# note the MRP_CONFIG interpolation at the end
+ZKCONFIG ="""
+delete /ringpaxos/boot_time.bin
+set /ringpaxos/config/multi_ring_start_time %(MRP_START_TIME)s
+set /ringpaxos/config/multi_ring_lambda %(MRP_LAMBDA)s
+set /ringpaxos/config/multi_ring_delta_t %(MRP_DELTA)s
+set /ringpaxos/config/multi_ring_m %(MRP_M)s
+set /ringpaxos/config/reference_ring %(MRP_REF_RING)s
+
+set /ringpaxos/topology0/config/stable_storage %(MRP_STORAGE)s
+set /ringpaxos/topology0/config/tcp_nodelay 1
+set /ringpaxos/topology0/config/learner_recovery %(MRP_RECOVERY)s
+set /ringpaxos/topology0/config/trim_modulo %(MRP_TRIM_MOD)s
+set /ringpaxos/topology0/config/auto_trim %(MRP_TRIM_AUTO)s
+set /ringpaxos/topology0/config/proposer_batch_policy %(MRP_BATCH)s
+set /ringpaxos/topology0/config/p1_resend_time %(MRP_P1_TIMEOUT)s
+set /ringpaxos/topology0/config/value_resend_time %(MRP_PROPOSER_TIMEOUT)s
+
+set /ringpaxos/topology1/config/stable_storage %(MRP_STORAGE)s
+set /ringpaxos/topology1/config/tcp_nodelay 1
+set /ringpaxos/topology1/config/learner_recovery %(MRP_RECOVERY)s
+set /ringpaxos/topology1/config/trim_modulo %(MRP_TRIM_MOD)s
+set /ringpaxos/topology1/config/auto_trim %(MRP_TRIM_AUTO)s
+set /ringpaxos/topology1/config/proposer_batch_policy %(MRP_BATCH)s
+set /ringpaxos/topology1/config/p1_resend_time %(MRP_P1_TIMEOUT)s
+set /ringpaxos/topology1/config/value_resend_time %(MRP_PROPOSER_TIMEOUT)s
+
+set /ringpaxos/topology2/config/stable_storage %(MRP_STORAGE)s
+set /ringpaxos/topology2/config/tcp_nodelay 1
+set /ringpaxos/topology2/config/learner_recovery %(MRP_RECOVERY)s
+set /ringpaxos/topology2/config/trim_modulo %(MRP_TRIM_MOD)s
+set /ringpaxos/topology2/config/auto_trim %(MRP_TRIM_AUTO)s
+set /ringpaxos/topology2/config/proposer_batch_policy %(MRP_BATCH)s
+set /ringpaxos/topology2/config/p1_resend_time %(MRP_P1_TIMEOUT)s
+set /ringpaxos/topology2/config/value_resend_time %(MRP_PROPOSER_TIMEOUT)s
+
+set /ringpaxos/topology3/config/stable_storage %(MRP_STORAGE)s
+set /ringpaxos/topology3/config/tcp_nodelay 1
+set /ringpaxos/topology3/config/learner_recovery %(MRP_RECOVERY)s
+set /ringpaxos/topology3/config/trim_modulo %(MRP_TRIM_MOD)s
+set /ringpaxos/topology3/config/auto_trim %(MRP_TRIM_AUTO)s
+set /ringpaxos/topology3/config/proposer_batch_policy %(MRP_BATCH)s
+set /ringpaxos/topology3/config/p1_resend_time %(MRP_P1_TIMEOUT)s
+set /ringpaxos/topology3/config/value_resend_time %(MRP_PROPOSER_TIMEOUT)s
+"""
+
+env.roledefs = grouped_instances()
+
+
+@parallel
+@roles('replica', 'client')
+def rsync_from_head():
+    """Synchronize code from headnode
+    """
+    with hide('stdout', 'stderr'):
+        HEADNODE = env.roledefs['head'][0]
+        run('rsync -azr --delete %s:.bashrc ~' % (HEADNODE))
+        run('rsync -azr --delete %s:.ssh ~' % (HEADNODE))
+        run('rsync -azr --delete %s:usr ~' % (HEADNODE))
+
+
+@parallel
+@roles('replica', 'client')
+def ntpsync():
+    """Synchronize NTP with remote server
+    """
+    with hide('stdout', 'stderr'):
+        sudo('service ntp stop')
+        sudo('ntpdate -b pool.ntp.org')
+
+
+@parallel
+@roles('replica')
+def kill_and_clear():
+    """Kill 
+    """
+    sudo('killall -9 java')
+    sudo('rm -f /tmp/*.vgc')
+    sudo('rm -rf /ssd/storage/ringpaxos-db')
+
+
+@roles('head')
+def setup_zookeeper():
+    """Setup zookeeper with MRP parameters
+    """
+    with hide('stdout', 'stderr'):
+        sudo('service zookeeper restart')
+        MRP_CONFIG['MRP_START_TIME'] = run('date +%s000')
+        time.sleep(5) # needed?
+        # set zookeeper MRP variables
+        run('echo "%s" | zkCli.sh -server localhost:2182' % (ZKCONFIG % MRP_CONFIG))
+
+
+@roles('head')        
+def paxos_on():
+    """
+    """
+    with cd('usr/sinergiafs'):
+        with settings(warn_only=True):
+            while run('java ch.usi.paxosfs.client.CheckIfRunning 3 localhost:2182').return_code != 0:
+                print 'NOT YET :('
+    print 'OK!'
+
+
+@parallel
+def start_node():
+    """Start the paxos/replica node
+    """
+    with hide('stdout', 'stderr'):
+        with cd('usr/sinergiafs/'):
+            run('dtach -n /tmp/nodeec2 ./node-ec2.sh')
+
+
+def start_system():
+    """Start the system
+    """
+    env.roles = ['paxos_coordinator']
+    execute(start_node)
+    local('sleep 10')
+    env.roles = ['paxos_rest']
+    execute(start_node)
+
+
+@parallel
+@roles('client')
+def mount_fs():
+    """Mount the fuse filesystem
+    """
+    with settings(warn_only=True):
+        sudo('umount -l /tmp/fs')
+        run('mkdir -p /tmp/fs')
+        HEADNODE = env.roledefs['head'][0]
+        with cd('usr/sinergiafs'):
+            run('source ~/whoami.sh; dtach -n /tmp/sinergiafs ./client-mount.sh 3 %s:2182 http://fake $ID $RING -f -o direct_io /tmp/fs' % (HEADNODE))
