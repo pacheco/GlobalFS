@@ -118,10 +118,9 @@ def setup_zookeeper():
 def paxos_on():
     """
     """
-    with cd('usr/sinergiafs'):
-        with settings(warn_only=True):
-            while run('java ch.usi.paxosfs.client.CheckIfRunning 3 localhost:2182').return_code != 0:
-                print 'NOT YET :('
+    with cd('usr/sinergiafs'), settings(warn_only=True):
+        while run('java ch.usi.paxosfs.client.CheckIfRunning 3 localhost:2182').return_code != 0:
+            print 'NOT YET :('
     print 'OK!'
 
 
@@ -129,9 +128,8 @@ def paxos_on():
 def start_node():
     """Start the paxos/replica node
     """
-    with hide('stdout', 'stderr'):
-        with cd('usr/sinergiafs/'):
-            run('dtach -n /tmp/nodeec2 ./node-ec2.sh')
+    with hide('stdout', 'stderr'), cd('usr/sinergiafs/'):
+        run('dtach -n /tmp/nodeec2 ./node-ec2.sh')
 
 
 def start_servers():
