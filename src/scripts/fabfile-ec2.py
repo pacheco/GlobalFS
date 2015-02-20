@@ -1,247 +1,166 @@
 from fabric.api import *
-from ec2helper import *
-from ec2config import *
-import sys
+from ec2config import roledefs_from_instances
+import time
 
 
 env.use_ssh_config = True
 env.colorize_errors = True
 env.disable_known_hosts = True
-#env.roledefs = roledefs_from_instances() # get ips for the roledef lists from ec2 instances
+env.roledefs = roledefs_from_instances() # get ips for the roledef lists from ec2 instances
+
+MRP_CONFIG = {
+    'MRP_START_TIME' : 0,
+    'MRP_DELTA' : 10,
+    'MRP_LAMBDA' : 100000,
+    'MRP_M' : 1,
+    'MRP_REF_RING' : 0,
+    'MRP_STORAGE' : 'ch.usi.da.paxos.storage.BufferArray',
+    'MRP_BATCH' : 'none',
+    'MRP_RECOVERY' : 1,
+    'MRP_TRIM_MOD' : 0,
+    'MRP_TRIM_AUTO' : 0,
+    'MRP_P1_TIMEOUT' : 10000,
+    'MRP_PROPOSER_TIMEOUT' : 10000,
+}
+
+# note the MRP_CONFIG interpolation at the end
+ZKCONFIG ="""
+delete /ringpaxos/boot_time.bin
+set /ringpaxos/config/multi_ring_start_time %(MRP_START_TIME)s
+set /ringpaxos/config/multi_ring_lambda %(MRP_LAMBDA)s
+set /ringpaxos/config/multi_ring_delta_t %(MRP_DELTA)s
+set /ringpaxos/config/multi_ring_m %(MRP_M)s
+set /ringpaxos/config/reference_ring %(MRP_REF_RING)s
+
+set /ringpaxos/topology0/config/stable_storage %(MRP_STORAGE)s
+set /ringpaxos/topology0/config/tcp_nodelay 1
+set /ringpaxos/topology0/config/learner_recovery %(MRP_RECOVERY)s
+set /ringpaxos/topology0/config/trim_modulo %(MRP_TRIM_MOD)s
+set /ringpaxos/topology0/config/auto_trim %(MRP_TRIM_AUTO)s
+set /ringpaxos/topology0/config/proposer_batch_policy %(MRP_BATCH)s
+set /ringpaxos/topology0/config/p1_resend_time %(MRP_P1_TIMEOUT)s
+set /ringpaxos/topology0/config/value_resend_time %(MRP_PROPOSER_TIMEOUT)s
+
+set /ringpaxos/topology1/config/stable_storage %(MRP_STORAGE)s
+set /ringpaxos/topology1/config/tcp_nodelay 1
+set /ringpaxos/topology1/config/learner_recovery %(MRP_RECOVERY)s
+set /ringpaxos/topology1/config/trim_modulo %(MRP_TRIM_MOD)s
+set /ringpaxos/topology1/config/auto_trim %(MRP_TRIM_AUTO)s
+set /ringpaxos/topology1/config/proposer_batch_policy %(MRP_BATCH)s
+set /ringpaxos/topology1/config/p1_resend_time %(MRP_P1_TIMEOUT)s
+set /ringpaxos/topology1/config/value_resend_time %(MRP_PROPOSER_TIMEOUT)s
+
+set /ringpaxos/topology2/config/stable_storage %(MRP_STORAGE)s
+set /ringpaxos/topology2/config/tcp_nodelay 1
+set /ringpaxos/topology2/config/learner_recovery %(MRP_RECOVERY)s
+set /ringpaxos/topology2/config/trim_modulo %(MRP_TRIM_MOD)s
+set /ringpaxos/topology2/config/auto_trim %(MRP_TRIM_AUTO)s
+set /ringpaxos/topology2/config/proposer_batch_policy %(MRP_BATCH)s
+set /ringpaxos/topology2/config/p1_resend_time %(MRP_P1_TIMEOUT)s
+set /ringpaxos/topology2/config/value_resend_time %(MRP_PROPOSER_TIMEOUT)s
+
+set /ringpaxos/topology3/config/stable_storage %(MRP_STORAGE)s
+set /ringpaxos/topology3/config/tcp_nodelay 1
+set /ringpaxos/topology3/config/learner_recovery %(MRP_RECOVERY)s
+set /ringpaxos/topology3/config/trim_modulo %(MRP_TRIM_MOD)s
+set /ringpaxos/topology3/config/auto_trim %(MRP_TRIM_AUTO)s
+set /ringpaxos/topology3/config/proposer_batch_policy %(MRP_BATCH)s
+set /ringpaxos/topology3/config/p1_resend_time %(MRP_P1_TIMEOUT)s
+set /ringpaxos/topology3/config/value_resend_time %(MRP_PROPOSER_TIMEOUT)s
+"""
 
 
-@task
-def head_start(image_name):
-    """Start a machine with the given image
+@parallel
+@roles('replica', 'client')
+def rsync_from_head():
+    """Synchronize code from headnode
     """
-    conn = connect(head_region)
-    req = request_spot_instances(conn, image_name, instance_type, head_price,
-                                 count=1,
-                                 availability_zone=head_zone)
+    with hide('stdout', 'stderr'):
+        HEADNODE = env.roledefs['head'][0]
+        run('rsync -azr --delete %s:.bashrc ~' % (HEADNODE))
+        run('rsync -azr --delete %s:.ssh ~' % (HEADNODE))
+        run('rsync -azr --delete %s:usr ~' % (HEADNODE))
 
 
-def get_head_instance():
-    """Return the head instance or None if it is not running
+@parallel
+@roles('replica', 'client')
+def ntpsync():
+    """Synchronize NTP with remote server
     """
-    connections = connect_all(*regions)
-    instances = list_instances(*connections.values())
-    for worker in instances:
-        # ignore head node
-        if 'Name' in worker.tags and worker.tags['Name'] == 'head':
-            return worker
-    return None
+    with hide('stdout', 'stderr'):
+        sudo('service ntp stop')
+        sudo('ntpdate -b pool.ntp.org')
 
 
-@task
-def head_status():
-    """Check if the is a machine with name 'head' running
+@parallel
+@roles('replica')
+def kill_and_clear():
+    """Kill server processes and remove old data
     """
-    head = get_head_instance()
-    if head:
-        print "%s (%s) at %s: %s" % (head.id, head.instance_type, head.region.name, head.state)
+    sudo('killall -9 java')
+    sudo('rm -f /tmp/*.vgc')
+    sudo('rm -rf /ssd/storage/ringpaxos-db')
 
 
-@task
-def image_delete(image_name):
-    """List images available on each region
+@roles('head')
+def setup_zookeeper():
+    """Setup zookeeper with MRP parameters
     """
-    connections = connect_all(*regions)
-    for region, conn in connections.iteritems():
-        images = list_images(conn)
-        print '%s:' % (region)
-        for img in images:
-            if img.name == image_name:
-                print "removing", img
-                img.deregister()
+    with hide('stdout', 'stderr'):
+        sudo('service zookeeper restart')
+        MRP_CONFIG['MRP_START_TIME'] = run('date +%s000')
+        time.sleep(5) # needed?
+        # set zookeeper MRP variables
+        run('echo "%s" | zkCli.sh -server localhost:2182' % (ZKCONFIG % MRP_CONFIG))
 
 
-@task
-def image_distribute(image_name):
-    """Distribute an image availabe on the main (head) region to the other regions
+@roles('head')        
+def paxos_on():
     """
-    region_origin = head_region
-    other_regions = [r for r in regions if r != region_origin]
-    name = 'head'
-
-    connections = connect_all(*other_regions)
-    for conn in connections.values():
-        copy_image(conn, image_name, region_origin)
-
-
-@task
-def image_from_head(image_name):
-    """Create a new snapshot image from the 'head' instance
     """
-    connection = connect(head_region)
-    create_snapshot_image(connection, 'head', image_name)
+    with cd('usr/sinergiafs'), settings(warn_only=True):
+        while run('java ch.usi.paxosfs.client.CheckIfRunning 3 localhost:2182').return_code != 0:
+            print 'NOT YET :('
+    print 'OK!'
 
 
-@task
-def image_list():
-    """List images available on each region
+@parallel
+def start_node():
+    """Start the paxos/replica node
     """
-    connections = connect_all(*regions)
-    for region, conn in connections.iteritems():
-        images = list_images(conn)
-        print '%s:' % (region)
-        for img in images:
-            print ' %s %s - %s' % (img.name, img.id, img.state)
+    with hide('stdout', 'stderr'), cd('usr/sinergiafs/'):
+        run('dtach -n /tmp/nodeec2 ./node-ec2.sh')
 
 
-def gen_nodes():
-    """Generate code for creating bash variables with the ips of the instances on ec2
+def start_servers():
+    """Start the sinergiafs servers
     """
-    result = []
-    connections = connect_all(*regions)
-    instances = list_instances(*connections.values())
-    servers = defaultdict(list)
-    clients = defaultdict(list)
-    for worker in instances:
-        if worker.state_code != 16:
-            continue
-        if 'Name' in worker.tags and worker.tags['Name'] == 'head':
-            result.append('export ZKHOST=%s' % (worker.dns_name))
-            continue
-        if worker.tags['Type'] == 'server':
-            servers[worker.tags['DC']].append(worker)
-        else:
-            clients[worker.tags['DC']].append(worker)
-        
-        result.append('export DC%s_%s_%s=%s' % (worker.tags['DC'],
-                                        worker.tags['Name'][:3].upper(),
-                                        worker.tags['Name'][-1:],
-                                        worker.dns_name))
-    for dc,serv in servers.items():
-        result.append('export DC%s_SERVERS=(' % (dc))
-        for s in serv:
-            result.append(s.dns_name)
-        result.append(')')
-    for dc,cli in clients.items():
-        result.append('export DC%s_CLIENTS=(' % (dc))
-        for c in cli:
-            result.append(c.dns_name)
-        result.append(')')
-    result.append('\n')
-    return '\n'.join(result)
+    env.roles = ['paxos_coordinator']
+    execute(start_node)
+    local('sleep 5')
+    env.roles = ['paxos_rest']
+    execute(start_node)
 
 
-@task
-def spot_terminate_all():
-    """Terminate all worker spot instances (leaving the 'head' running)
+@parallel
+@roles('client')
+def mount_fs():
+    """Mount the fuse filesystem
     """
-    connections = connect_all(*regions)
-    instances = list_instances(*connections.values())
-    for worker in instances:
-        # ignore head node
-        if 'Name' in worker.tags and worker.tags['Name'] == 'head':
-            continue
-        worker.terminate()
+    with settings(warn_only=True):
+        sudo('umount -l /tmp/fs')
+        run('mkdir -p /tmp/fs')
+        HEADNODE = env.roledefs['head'][0]
+        with cd('usr/sinergiafs'):
+            run('source ~/whoami.sh; dtach -n /tmp/sinergiafs ./client-mount.sh 3 %s:2182 http://fake $ID $RING -f -o direct_io /tmp/fs' % (HEADNODE))
 
 
-@task
-def spot_list():
-    """List running spot instances 
+def start_all():
+    """Starts the whole system, replicas and clients (mountpoints)
     """
-    connections = connect_all(*regions)
-    instances = list_instances(*connections.values())
-    for worker in instances:
-        # ignore head node
-        if 'Name' in worker.tags and worker.tags['Name'] == 'head':
-            continue
-        print '%s: %s at %s is %s(%d)' % ((worker.tags['Name'] if 'Name' in worker.tags else 'unnamed'),
-                                          worker.id,
-                                          worker.region.name,
-                                          worker.state, worker.state_code)
-
-
-@task
-def spot_request_list():
-    """List spot requests and their status
-    """
-    connections = connect_all(*regions)
-    requests = list_spot_requests(*connections.values())
-    for req in requests:
-        print '%s at %s: %s' % (req.id, req.region.name, req.status.message)
-
-
-@task
-def spot_start(image_name):
-    """Spin up all spot instances with the given image
-    """
-    connections = connect_all(*regions)
-    for region, zone, price in zip(regions, regions_zones, regions_prices):
-        conn = connections[region]
-        request_spot_instances(conn, image_name, instance_type, price,
-                               count=7,
-                               availability_zone=zone)
-    for conn in connections.values():
-        conn.close()
-
-
-def spot_tag():
-    """Tags the instances given the required roles. 
-    Should be called after spot_start and only after all instances are up/running
-    """
-    connections = connect_all(*regions)
-    for rid,r in enumerate(regions):
-        instances = list_instances(connections[r])
-        instances = [i for i in instances if 
-                     ('Name' not in i.tags or i.tags['Name'] != 'head') and (i.state_code == 16)]
-        instances[0].add_tag('Name', 'acc%s_0' % (rid+1))
-        for i, inst in enumerate(instances[1:4]):
-            inst.add_tag('Name', 'rep%s_%s' % (rid+1, i))
-        for i, inst in enumerate(instances[4:]):
-            inst.add_tag('Name', 'cli%s_%s' % (rid+1, i))
-        
-        connections[r].create_tags([i.id for i in instances[0:4]], {'Type': 'server', 'DC': rid+1})
-        connections[r].create_tags([i.id for i in instances[4:]], {'Type': 'client', 'DC': rid+1})
-    
-
-def whoami_create():
-    """Create a whoami.sh file in the ~ of the remote machine.
-    Contains variables regarding the local machine
-    """
-    run('rm -f ~/whoami.sh')
-    head = get_head_instance()
-    if not head:
-        raise "'head' instance not running!"
-    run('echo export ZKHOST=%s >> ~/whoami.sh' % head.dns_name)
-    run('echo -n export NAME= >> ~/whoami.sh')
-    run('ec2din --region \$REGION \$INSTANCE | grep Name | cut -f 5 >> ~/whoami.sh')
-    
-    run('echo -n export ID= >> ~/whoami.sh')
-    run('echo \\\`echo \\\$NAME \| cut -c6\\\` >> ~/whoami.sh')
-    
-    run('echo -n export RING= >> ~/whoami.sh')
-    run('echo \\\`echo \\\$NAME \| cut -c4\\\` >> ~/whoami.sh')
-
-
-def mount_ssd():
-    """Mount instance SSD drives at /ssd/storage
-    """
-    sudo('echo -e "o\nn\np\n1\n\n\nw" | fdisk /dev/xvdb')
-    sudo('mkfs.ext4 /dev/xvdb1')
-    sudo('mkdir -p /ssd')
-    sudo('mount -text4 /dev/xvdb1 /ssd')
-    sudo('mkdir -p /ssd/storage')
-    sudo('chmod 777 /ssd/storage')
-    
-
-
-@task
-def spot_setup_all():
-    """Setup instances after they are running:
-    - Tags them
-    - Generates 'nodes.sh' with the instance ips. Copy it to 'head'
-    - Generates 'whoami.sh' scripts on the instances
-    - Mounts ssd drives on the instances
-    """
-    spot_tag()
-    env.roledefs = roledefs_from_instances()
-    with open('nodes.sh', 'w') as f:
-        f.write(gen_nodes())
-    with settings(roles = ['head']):
-        execute(lambda: put('nodes.sh', 'out/'))
-    with settings(roles = ['replica', 'client']):
-        execute(whoami_create)
-        execute(mount_ssd)
+    execute(kill_and_clear)
+    execute(ntpsync)
+    execute(setup_zookeeper)
+    execute(start_servers)
+    execute(paxos_on)
+    execute(mount_fs)

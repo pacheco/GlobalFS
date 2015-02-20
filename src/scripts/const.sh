@@ -2,7 +2,6 @@
 
 export CLASSPATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
-export ZKDIR=${HOME}/usr/zookeeper
 export UPAXOSDIR=${HOME}/usr/Paxos-trunk
 export FSDIR=${HOME}/usr/sinergiafs
 export LIBPATH=${HOME}/usr/lib
