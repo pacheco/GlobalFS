@@ -108,7 +108,7 @@ def kill_and_clear():
         local('sudo rm -f /tmp/*.vgc')
         local('sudo rm -f /tmp/replica*')
         local('sudo rm -f /tmp/acceptor*')
-        local('sudo rm -rf /ssd/storage/ringpaxos-db')
+        local('sudo rm -rf /tmp/ringpaxos-db')
 
 
 def paxos_on():
@@ -190,6 +190,7 @@ def start_all():
     """
     execute(kill_and_clear)
     execute(setup_zookeeper)
+    time.sleep(5)
     execute(start_servers)
     execute(paxos_on)
     execute(mount_fs, '/tmp/fs1', 0, 1)
