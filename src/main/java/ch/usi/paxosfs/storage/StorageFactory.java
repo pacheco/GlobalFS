@@ -11,7 +11,17 @@ public class StorageFactory {
 	public static Storage storageFromUrls(String... serverUrl) {
 		return new HttpStorageClient(serverUrl);
 	}
-	
+
+    /**
+     * Instantiates the Storage client from a config file.
+     * The first line of the config file should be the fully a qualified class name.
+     * This class should implement the ch.usi.paxosfs.storage.Storage interface.
+     * This method will instantiate the Storage and give it this same config file as argument.
+     * Only the first line in the config file is required. The rest of its content is determined by the
+     * Storage implementation.
+     * @param configFile path to the configuration file
+     * @return
+     */
 	public static Storage storageFromConfig(Path configFile) throws FileNotFoundException {
 		List<String> hosts = new LinkedList<>();
 		Scanner sc = new Scanner(new FileInputStream(configFile.toFile()));
