@@ -1,19 +1,17 @@
 package ch.usi.paxosfs.filesystem.memory;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-
 import ch.usi.paxosfs.filesystem.FileNode;
 import ch.usi.paxosfs.rpc.Attr;
 import ch.usi.paxosfs.rpc.DBlock;
 import ch.usi.paxosfs.rpc.ReadResult;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-
 import fuse.FuseFtypeConstants;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 
 public class MemFile extends MemNode implements FileNode {
 	private LinkedList<DBlock> blocks;

@@ -1,25 +1,12 @@
 package ch.usi.paxosfs.client.microbench;
 
-import ch.usi.da.paxos.api.StableStorage;
-import ch.usi.paxosfs.client.microbench.MicroBench;
-import ch.usi.paxosfs.client.microbench.MicroBenchGetdir;
-import ch.usi.paxosfs.rpc.FSError;
-import ch.usi.paxosfs.rpc.FuseOps;
-import ch.usi.paxosfs.rpc.Response;
-import fuse.Errno;
 import org.apache.thrift.TException;
-import org.apache.thrift.protocol.TBinaryProtocol;
-import org.apache.thrift.protocol.TProtocol;
-import org.apache.thrift.transport.TSocket;
-import org.apache.thrift.transport.TTransport;
-import org.apache.thrift.transport.TTransportException;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
 
 public class ReplicaRampBench {
 	// bench parameters

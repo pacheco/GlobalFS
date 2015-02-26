@@ -1,35 +1,14 @@
 package ch.usi.paxosfs.replica;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-
+import ch.usi.paxosfs.partitioning.PartitioningOracle;
+import ch.usi.paxosfs.replica.commands.*;
 import ch.usi.paxosfs.rpc.*;
+import ch.usi.paxosfs.util.Paths;
+import com.google.common.collect.Sets;
+import fuse.FuseException;
 import org.apache.thrift.TException;
 
-import ch.usi.paxosfs.partitioning.PartitioningOracle;
-import ch.usi.paxosfs.replica.commands.AttrCmd;
-import ch.usi.paxosfs.replica.commands.ChmodCmd;
-import ch.usi.paxosfs.replica.commands.Command;
-import ch.usi.paxosfs.replica.commands.CommandType;
-import ch.usi.paxosfs.replica.commands.GetdirCmd;
-import ch.usi.paxosfs.replica.commands.MkdirCmd;
-import ch.usi.paxosfs.replica.commands.MknodCmd;
-import ch.usi.paxosfs.replica.commands.OpenCmd;
-import ch.usi.paxosfs.replica.commands.ReadBlocksCmd;
-import ch.usi.paxosfs.replica.commands.ReleaseCmd;
-import ch.usi.paxosfs.replica.commands.RenameCmd;
-import ch.usi.paxosfs.replica.commands.RmdirCmd;
-import ch.usi.paxosfs.replica.commands.TruncateCmd;
-import ch.usi.paxosfs.replica.commands.UnlinkCmd;
-import ch.usi.paxosfs.replica.commands.WriteBlocksCmd;
-import ch.usi.paxosfs.util.Paths;
-
-import com.google.common.collect.Sets;
-
-import fuse.FuseException;
+import java.util.*;
 
 /**
  * FIXME: The methods here assume that this replica is part of the partitions of

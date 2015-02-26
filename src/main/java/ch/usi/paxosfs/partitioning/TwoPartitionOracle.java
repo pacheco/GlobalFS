@@ -1,9 +1,9 @@
 package ch.usi.paxosfs.partitioning;
 
+import ch.usi.paxosfs.util.Paths;
+
 import java.util.HashSet;
 import java.util.Set;
-
-import ch.usi.paxosfs.util.Paths;
 
 public class TwoPartitionOracle implements PartitioningOracle {
 	Byte partitionA = Byte.valueOf((byte)1);

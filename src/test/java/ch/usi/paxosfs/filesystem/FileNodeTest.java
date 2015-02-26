@@ -1,16 +1,15 @@
 package ch.usi.paxosfs.filesystem;
+
+import ch.usi.paxosfs.filesystem.memory.MemFile;
+import ch.usi.paxosfs.rpc.DBlock;
+import ch.usi.paxosfs.rpc.ReadResult;
+import org.junit.Assert;
+import org.junit.Test;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-
-import org.junit.Assert;
-import org.junit.Test;
-
-import ch.usi.paxosfs.filesystem.FileNode;
-import ch.usi.paxosfs.filesystem.memory.MemFile;
-import ch.usi.paxosfs.rpc.DBlock;
-import ch.usi.paxosfs.rpc.ReadResult;
 
 public class FileNodeTest {
 	private static byte[] uuid(int i) {

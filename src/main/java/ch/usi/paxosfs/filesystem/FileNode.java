@@ -1,9 +1,9 @@
 package ch.usi.paxosfs.filesystem;
 
-import java.util.List;
-
 import ch.usi.paxosfs.rpc.DBlock;
 import ch.usi.paxosfs.rpc.ReadResult;
+
+import java.util.List;
 
 public interface FileNode extends Node {
 	/**

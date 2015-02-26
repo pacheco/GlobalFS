@@ -1,13 +1,13 @@
 package ch.usi.paxosfs.util;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Iterator;
-
 import com.google.common.base.Functions;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Iterator;
 
 
 /**

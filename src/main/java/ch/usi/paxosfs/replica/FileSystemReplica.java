@@ -1,22 +1,5 @@
 package ch.usi.paxosfs.replica;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
-import ch.usi.paxosfs.rpc.*;
-import ch.usi.paxosfs.util.UUIDUtils;
-import org.apache.commons.lang3.text.StrBuilder;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.thrift.TProcessor;
-import org.apache.thrift.server.TThreadPoolServer;
-import org.apache.thrift.transport.TServerSocket;
-import org.apache.thrift.transport.TServerTransport;
-import org.apache.thrift.transport.TTransportException;
-
 import ch.usi.paxosfs.filesystem.DirNode;
 import ch.usi.paxosfs.filesystem.FileNode;
 import ch.usi.paxosfs.filesystem.FileSystem;
@@ -26,25 +9,29 @@ import ch.usi.paxosfs.filesystem.memory.MemFile;
 import ch.usi.paxosfs.filesystem.memory.MemFileSystem;
 import ch.usi.paxosfs.partitioning.DefaultMultiPartitionOracle;
 import ch.usi.paxosfs.replica.CommunicationService.CommandDecision;
-import ch.usi.paxosfs.replica.commands.ChmodCmd;
-import ch.usi.paxosfs.replica.commands.Command;
-import ch.usi.paxosfs.replica.commands.CommandType;
-import ch.usi.paxosfs.replica.commands.OpenCmd;
-import ch.usi.paxosfs.replica.commands.ReadBlocksCmd;
-import ch.usi.paxosfs.replica.commands.ReleaseCmd;
-import ch.usi.paxosfs.replica.commands.RenameCmd;
-import ch.usi.paxosfs.replica.commands.RenameData;
-import ch.usi.paxosfs.replica.commands.Signal;
-import ch.usi.paxosfs.replica.commands.TruncateCmd;
-import ch.usi.paxosfs.replica.commands.WriteBlocksCmd;
+import ch.usi.paxosfs.replica.commands.*;
+import ch.usi.paxosfs.rpc.*;
 import ch.usi.paxosfs.util.Paths;
+import ch.usi.paxosfs.util.UUIDUtils;
 import ch.usi.paxosfs.util.UnixConstants;
-
 import com.google.common.collect.Sets;
-
 import fuse.Errno;
 import fuse.FuseException;
 import fuse.FuseFtypeConstants;
+import org.apache.commons.lang3.text.StrBuilder;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.thrift.TProcessor;
+import org.apache.thrift.server.TThreadPoolServer;
+import org.apache.thrift.transport.TServerSocket;
+import org.apache.thrift.transport.TServerTransport;
+import org.apache.thrift.transport.TTransportException;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class FileSystemReplica implements Runnable {
 	private Logger log = Logger.getLogger(FileSystemReplica.class);

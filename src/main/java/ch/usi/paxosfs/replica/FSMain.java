@@ -1,20 +1,19 @@
 package ch.usi.paxosfs.replica;
 
 
+import ch.usi.da.paxos.Util;
+import ch.usi.da.paxos.api.PaxosRole;
+import ch.usi.da.paxos.ring.Node;
+import ch.usi.da.paxos.ring.RingDescription;
+import org.apache.log4j.Logger;
+import org.apache.thrift.transport.TTransportException;
+import org.apache.zookeeper.KeeperException;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.apache.log4j.Logger;
-import org.apache.thrift.transport.TTransportException;
-import org.apache.zookeeper.KeeperException;
-
-import ch.usi.da.paxos.Util;
-import ch.usi.da.paxos.api.PaxosRole;
-import ch.usi.da.paxos.ring.Node;
-import ch.usi.da.paxos.ring.RingDescription;
 
 public class FSMain {
 	private static Logger log = Logger.getLogger(FSMain.class); 

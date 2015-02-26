@@ -1,8 +1,8 @@
 package ch.usi.paxosfs.partitioning;
 
-import java.util.Set;
-
 import com.google.common.collect.Sets;
+
+import java.util.Set;
 
 
 public class SinglePartitionOracle implements PartitioningOracle {

@@ -1,14 +1,13 @@
 package ch.usi.paxosfs.replica;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
+import ch.usi.da.paxos.Util;
+import ch.usi.paxosfs.filesystem.DirNode;
+import ch.usi.paxosfs.filesystem.FileNode;
+import ch.usi.paxosfs.filesystem.Node;
+import ch.usi.paxosfs.filesystem.memory.MemFileSystem;
 import ch.usi.paxosfs.rpc.*;
+import ch.usi.paxosfs.util.UnixConstants;
+import fuse.FuseException;
 import org.apache.thrift.TException;
 import org.apache.thrift.TProcessor;
 import org.apache.thrift.server.TThreadPoolServer;
@@ -16,14 +15,9 @@ import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
 
-import ch.usi.da.paxos.Util;
-import ch.usi.paxosfs.filesystem.DirNode;
-import ch.usi.paxosfs.filesystem.FileNode;
-import ch.usi.paxosfs.filesystem.Node;
-import ch.usi.paxosfs.filesystem.memory.MemFileSystem;
-import ch.usi.paxosfs.util.UnixConstants;
-import fuse.FuseException;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.util.*;
 
 /**
  * Non-replicated file system server. Same thrift interface as

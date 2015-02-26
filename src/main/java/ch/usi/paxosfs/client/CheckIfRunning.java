@@ -15,8 +15,6 @@ import org.apache.thrift.transport.TTransportException;
 import org.apache.zookeeper.KeeperException;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Checks if paxos is running by sending NULL commands to each partition (and the global ring)

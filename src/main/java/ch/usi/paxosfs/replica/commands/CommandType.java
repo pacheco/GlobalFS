@@ -7,10 +7,6 @@
 package ch.usi.paxosfs.replica.commands;
 
 
-import java.util.Map;
-import java.util.HashMap;
-import org.apache.thrift.TEnum;
-
 public enum CommandType implements org.apache.thrift.TEnum {
   ATTR(0),
   GETDIR(1),

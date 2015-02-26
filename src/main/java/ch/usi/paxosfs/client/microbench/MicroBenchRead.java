@@ -1,7 +1,9 @@
 package ch.usi.paxosfs.client.microbench;
 
-import ch.usi.paxosfs.rpc.*;
-import ch.usi.paxosfs.util.UUIDUtils;
+import ch.usi.paxosfs.rpc.FSError;
+import ch.usi.paxosfs.rpc.FileHandle;
+import ch.usi.paxosfs.rpc.FuseOps;
+import ch.usi.paxosfs.rpc.Response;
 import ch.usi.paxosfs.util.UnixConstants;
 import fuse.Errno;
 import org.apache.thrift.TException;
@@ -15,7 +17,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * Created by pacheco on 24/11/14.

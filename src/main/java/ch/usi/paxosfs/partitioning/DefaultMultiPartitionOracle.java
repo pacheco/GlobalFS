@@ -1,10 +1,10 @@
 package ch.usi.paxosfs.partitioning;
 
+import com.google.common.collect.Sets;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-
-import com.google.common.collect.Sets;
 
 /**
  * This partitioning oracle will partition the path into the given number n (up to 8) of partitions. The partitioning works like this:

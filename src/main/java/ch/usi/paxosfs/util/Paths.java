@@ -1,8 +1,8 @@
 package ch.usi.paxosfs.util;
 
-import java.util.Iterator;
-
 import com.google.common.collect.Lists;
+
+import java.util.Iterator;
 
 
 /**

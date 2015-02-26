@@ -3,10 +3,9 @@ package ch.usi.paxosfs.partitioning;
 import ch.usi.paxosfs.storage.*;
 import ch.usi.paxosfs.util.UUIDUtils;
 import ch.usi.paxosfs.util.Utils;
-import org.junit.Test;
 import org.junit.Assert;
+import org.junit.Test;
 
-import java.io.*;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;

@@ -1,10 +1,10 @@
 package ch.usi.paxosfs.client.microbench;
 
 import ch.usi.paxosfs.replica.DebugCommands;
-import ch.usi.paxosfs.rpc.*;
-import ch.usi.paxosfs.util.UUIDUtils;
-import ch.usi.paxosfs.util.UnixConstants;
-import fuse.Errno;
+import ch.usi.paxosfs.rpc.Debug;
+import ch.usi.paxosfs.rpc.FileHandle;
+import ch.usi.paxosfs.rpc.FuseOps;
+import ch.usi.paxosfs.rpc.Response;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
@@ -12,9 +12,6 @@ import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 

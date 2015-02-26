@@ -1,12 +1,12 @@
 package ch.usi.paxosfs.filesystem.memory;
 
-import java.util.Collection;
-import java.util.HashMap;
-
 import ch.usi.paxosfs.filesystem.DirNode;
 import ch.usi.paxosfs.filesystem.Node;
 import ch.usi.paxosfs.rpc.Attr;
 import fuse.FuseFtypeConstants;
+
+import java.util.Collection;
+import java.util.HashMap;
 
 public class MemDir extends MemNode implements DirNode {
 	private HashMap<String, Node> children;

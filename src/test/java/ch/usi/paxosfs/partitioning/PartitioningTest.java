@@ -1,16 +1,11 @@
 package ch.usi.paxosfs.partitioning;
 
-import static org.junit.Assert.*;
+import com.google.common.collect.Sets;
+import org.junit.Test;
 
 import java.util.Set;
 
-import org.junit.Test;
-
-import com.google.common.collect.Sets;
-
-import ch.usi.paxosfs.partitioning.DefaultMultiPartitionOracle;
-import ch.usi.paxosfs.partitioning.PartitioningOracle;
-import ch.usi.paxosfs.partitioning.TwoPartitionOracle;
+import static org.junit.Assert.assertTrue;
 
 public class PartitioningTest {
 
