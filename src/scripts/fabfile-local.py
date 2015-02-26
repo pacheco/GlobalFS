@@ -103,11 +103,15 @@ def kill_and_clear():
     """Kill java processes and remove old data
     """
     with settings(warn_only = True):
-        local('sudo killall -9 java')
+        local('pkill --signal 9 -f TTYNode')
+        local('pkill --signal 9 -f FSMain')
+        local('pkill --signal 9 -f dht-fake.py')
+        local('sudo pkill --signal 9 -f PaxosFileSystem')
         local('sudo umount -l /tmp/fs*')
         local('sudo rm -f /tmp/*.vgc')
         local('sudo rm -f /tmp/replica*')
         local('sudo rm -f /tmp/acceptor*')
+        local('sudo rm -f /tmp/storage*')
         local('sudo rm -rf /tmp/ringpaxos-db')
 
 
@@ -119,6 +123,14 @@ def paxos_on():
         while local(cmd).return_code != 0:
             print 'PAXOS NOT YET RUNNING... :('
     print 'PAXOS OK!'
+
+
+def start_http_storage(port):
+    """Start the simple, non-replicated, http storage
+    """
+    cmd = './dht-fake.py %s' % (port)
+    with hide('stdout', 'stderr'):
+        local('dtach -n /tmp/storage_%s %s' % (port, cmd))
 
 
 def start_acceptor(partition, id):
@@ -176,7 +188,7 @@ def mount_fs(mountpath, replica_id, closest_partition):
         local('sudo umount -l %s' % (mountpath))
         local('mkdir -p %s' % (mountpath))
     with lcd(FSDIR):
-        local('dtach -n /tmp/sinergiafs-%(rid)s ./client-mount.sh %(npart)s %(zkhost)s http://fake %(rid)s %(closestp)s -f -o direct_io %(mountpath)s' % {
+        local('dtach -n /tmp/sinergiafs-%(rid)s ./client-mount.sh %(npart)s %(zkhost)s storagecfg/3-httpstorage.cfg %(rid)s %(closestp)s -f -o direct_io %(mountpath)s' % {
             'rid': replica_id,
             'npart': NPARTITIONS,
             'zkhost': ZKHOST,
@@ -192,6 +204,9 @@ def start_all():
     execute(setup_zookeeper)
     time.sleep(5)
     execute(start_servers)
+    execute(start_http_storage, 15001)
+    execute(start_http_storage, 15002)
+    execute(start_http_storage, 15003)
     execute(paxos_on)
     execute(mount_fs, '/tmp/fs1', 0, 1)
     execute(mount_fs, '/tmp/fs2', 1, 2)

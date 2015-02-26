@@ -1,24 +1,14 @@
 package ch.usi.paxosfs.client;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.file.FileSystems;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
+import ch.usi.paxosfs.partitioning.DefaultMultiPartitionOracle;
+import ch.usi.paxosfs.partitioning.PartitioningOracle;
+import ch.usi.paxosfs.replica.ReplicaManager;
+import ch.usi.paxosfs.rpc.*;
+import ch.usi.paxosfs.storage.Storage;
+import ch.usi.paxosfs.storage.StorageFactory;
+import ch.usi.paxosfs.util.UUIDUtils;
+import ch.usi.paxosfs.util.Utils;
+import fuse.*;
 import org.apache.commons.lang3.text.StrBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,34 +20,15 @@ import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 import org.apache.zookeeper.KeeperException;
 
-import ch.usi.paxosfs.partitioning.DefaultMultiPartitionOracle;
-import ch.usi.paxosfs.partitioning.DefaultStorageOracle;
-import ch.usi.paxosfs.partitioning.PartitioningOracle;
-import ch.usi.paxosfs.partitioning.StorageOracle;
-import ch.usi.paxosfs.replica.ReplicaManager;
-import ch.usi.paxosfs.rpc.Attr;
-import ch.usi.paxosfs.rpc.DBlock;
-import ch.usi.paxosfs.rpc.DirEntry;
-import ch.usi.paxosfs.rpc.FSError;
-import ch.usi.paxosfs.rpc.FileHandle;
-import ch.usi.paxosfs.rpc.FileSystemStats;
-import ch.usi.paxosfs.rpc.FuseOps;
-import ch.usi.paxosfs.rpc.ReadResult;
-import ch.usi.paxosfs.rpc.Response;
-import ch.usi.paxosfs.storage.FakeStorage;
-import ch.usi.paxosfs.storage.Storage;
-import ch.usi.paxosfs.storage.StorageFactory;
-import ch.usi.paxosfs.util.UUIDUtils;
-import ch.usi.paxosfs.util.Utils;
-import fuse.Errno;
-import fuse.Filesystem3;
-import fuse.FuseContext;
-import fuse.FuseDirFiller;
-import fuse.FuseException;
-import fuse.FuseGetattrSetter;
-import fuse.FuseMount;
-import fuse.FuseOpenSetter;
-import fuse.FuseStatfsSetter;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.file.FileSystems;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class PaxosFileSystem implements Filesystem3 {
 	private Random rand = new Random();
@@ -67,8 +38,7 @@ public class PaxosFileSystem implements Filesystem3 {
 	private ReplicaManager rm;
 	private String zoohost;
 	private PartitioningOracle partitionOracle;
-	private StorageOracle storageOracle;
-	private Map<Byte, Storage> storages;
+	private Storage storage;
 	private int numberOfPartitions;
 	private ConcurrentLinkedQueue<FuseOps.Client>[] clients;
     private Byte closestPartition; // TODO: an array of the partitions in order of proximity would be more complete
@@ -121,30 +91,15 @@ public class PaxosFileSystem implements Filesystem3 {
 	}
 
 	@SuppressWarnings("unchecked")
-	public PaxosFileSystem(int numberOfPartitions, String zoohost, String storageCfgPrefix, int replicaId, Byte closestPartition) throws FileNotFoundException {
+	public PaxosFileSystem(int numberOfPartitions, String zoohost, String storageCfg, int replicaId, Byte closestPartition) throws Exception {
 		this.numberOfPartitions = numberOfPartitions;
 		this.zoohost = zoohost;
-		this.storages = new ConcurrentHashMap<>();
-		// TODO: figure out a better (more generic) way to configure the system. Right now its pretty static
-		for (byte part=1; part<=numberOfPartitions; part++) {
-			if (storageCfgPrefix.equals("http://fake")) {
-				System.out.println("STORAGE: FAKE " + storageCfgPrefix);
-				storages.put(Byte.valueOf(part), new FakeStorage());
-			} else if (storageCfgPrefix.startsWith("http://")) { // FIXME: simple hack so that i can test with a single storage without config files
-				System.out.println("STORAGE: " + storageCfgPrefix);
-				Storage storage = StorageFactory.storageFromUrls(storageCfgPrefix);
-				storages.put(Byte.valueOf(part), storage);
-			} else {
-				storages.put(Byte.valueOf(part), StorageFactory.storageFromConfig(FileSystems.getDefault().getPath(storageCfgPrefix + part)));
-			}
-		}
-
-		this.storageOracle = new DefaultStorageOracle();
+		this.storage = StorageFactory.storageFromConfig(FileSystems.getDefault().getPath(storageCfg));
 		this.partitionOracle = new DefaultMultiPartitionOracle(numberOfPartitions);
 		this.replicaId = replicaId;
         this.closestPartition = closestPartition;
 		
-		// haxxor around generics
+		// hack around generics
 		clients = (ConcurrentLinkedQueue<FuseOps.Client>[]) new ConcurrentLinkedQueue<?>[this.numberOfPartitions];
 		for (byte i = 0; i < this.numberOfPartitions; i++) {
 			clients[i] = new ConcurrentLinkedQueue<>();
@@ -513,7 +468,7 @@ public class PaxosFileSystem implements Filesystem3 {
 				if (b.getId().length != 0) {
 					// TODO: reading from a random datacenter replicating the file. Implement locality?
 					Byte storageId = choosePartition(b.getStorage());
-					futureValues.add(storages.get(storageId).get(b.getId()));
+					futureValues.add(storage.get(storageId, b.getId()));
 				}
 			}
 			// wait for completion
@@ -561,7 +516,6 @@ public class PaxosFileSystem implements Filesystem3 {
 	public int write(String path, Object fh, boolean isWritepage, ByteBuffer buf, long offset) throws FuseException {
 		FileHandle handle = (FileHandle) fh;
 		Set<Byte> allPartitions = this.partitionOracle.partitionsOf(path);
-		Set<Byte> storageIds = storageOracle.storageOf(allPartitions);
 		int partition = choosePartition(allPartitions).intValue(); // partition to send the request
 		FuseOps.Client client = getClient((byte) partition);
 		try {
@@ -571,11 +525,11 @@ public class PaxosFileSystem implements Filesystem3 {
 			while (buf.remaining() >= MAXBLOCKSIZE) {
 				byte[] data = new byte[MAXBLOCKSIZE];
 				buf.get(data);
-				DBlock b = new DBlock(null, 0, MAXBLOCKSIZE, storageIds);
+				DBlock b = new DBlock(null, 0, MAXBLOCKSIZE, allPartitions);
 				b.setId(UUIDUtils.longToBytes(rand.nextLong()));
 				// store the block in all partitions
-				for (Byte id: storageIds) {
-					putFutures.add(storages.get(id).put(b.getId(), data));
+				for (Byte p: allPartitions) {
+					putFutures.add(storage.put(p, b.getId(), data));
 				}
 				blocks.add(b);
 			}
@@ -585,8 +539,8 @@ public class PaxosFileSystem implements Filesystem3 {
 				DBlock b = new DBlock(null, 0, remainingData.length, allPartitions);
 				b.setId(UUIDUtils.longToBytes(rand.nextLong()));
 				// store the blocks in all partitions
-				for (Byte id: storageIds) {
-					putFutures.add(storages.get(id).put(b.getId(), remainingData));
+				for (Byte p: allPartitions) {
+					putFutures.add(storage.put(p, b.getId(), remainingData));
 				}
 				blocks.add(b);
 			}
@@ -670,13 +624,13 @@ public class PaxosFileSystem implements Filesystem3 {
 		return FuseContext.get().gid;
 	}
 	
-	public static void main(String[] args) throws MalformedURLException, NumberFormatException, FileNotFoundException {
+	public static void main(String[] args) throws Exception {
 		// small sanity check to avoid problems later (fuse hangs on exceptions
 		// sometimes)
 		if (args.length < 5) {
 			System.err.println("usage: PaxosFileSystem <n_partitions> <zoohost> <storage> <replica_id> <closest_partition> <MOUNT PARAMETERS>\n"
 					+ "\treplica_id -> in each partition, connect to the replica with this id\n"
-					+ "\tstorage -> cfg prefix path | http://host:port | http://fake\n"
+					+ "\tstorage -> storage config file \n"
                     + "\tclosest_partition -> id of the partition geographically closest to the client machine");
 			return;
 		}

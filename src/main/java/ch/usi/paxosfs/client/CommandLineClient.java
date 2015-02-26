@@ -1,40 +1,25 @@
 package ch.usi.paxosfs.client;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.ExecutionException;
-
+import ch.usi.paxosfs.partitioning.DefaultMultiPartitionOracle;
+import ch.usi.paxosfs.partitioning.PartitioningOracle;
+import ch.usi.paxosfs.replica.ReplicaManager;
+import ch.usi.paxosfs.rpc.*;
+import ch.usi.paxosfs.storage.Storage;
+import ch.usi.paxosfs.storage.StorageFactory;
+import ch.usi.paxosfs.util.PathsNIO;
+import ch.usi.paxosfs.util.UUIDUtils;
+import ch.usi.paxosfs.util.UnixConstants;
 import jline.console.ConsoleReader;
 import jline.console.completer.Completer;
 import jline.console.completer.StringsCompleter;
-
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
-import org.apache.zookeeper.KeeperException;
 
-import ch.usi.paxosfs.partitioning.DefaultMultiPartitionOracle;
-import ch.usi.paxosfs.partitioning.PartitioningOracle;
-import ch.usi.paxosfs.replica.ReplicaManager;
-import ch.usi.paxosfs.rpc.DBlock;
-import ch.usi.paxosfs.rpc.DirEntry;
-import ch.usi.paxosfs.rpc.FSError;
-import ch.usi.paxosfs.rpc.FileHandle;
-import ch.usi.paxosfs.rpc.FuseOps;
-import ch.usi.paxosfs.rpc.ReadResult;
-import ch.usi.paxosfs.rpc.Response;
-import ch.usi.paxosfs.storage.HttpStorageClient;
-import ch.usi.paxosfs.storage.Storage;
-import ch.usi.paxosfs.util.PathsNIO;
-import ch.usi.paxosfs.util.UUIDUtils;
-import ch.usi.paxosfs.util.UnixConstants;
+import java.nio.file.FileSystems;
+import java.util.*;
 
 public class CommandLineClient {
 	private static TTransport[] transport;
@@ -82,18 +67,18 @@ public class CommandLineClient {
 		
 	}
 
-	public static void main(String[] args) throws FSError, TException, KeeperException, InterruptedException, IOException, ExecutionException {
+	public static void main(String[] args) throws Exception {
 		Random rand = new Random();
 		
 		if (args.length != 3) {
-			System.err.println("client <npartitions> <zkhost> <storage>");
+			System.err.println("client <npartitions> <zkhost> <storageCfg>");
 			System.exit(1);
 		}
 		
 		int nPartitions = Integer.parseInt(args[0]);
 		String zoohost = args[1];
-		String storageHost = args[2];
-		Storage storage = new HttpStorageClient(storageHost);
+		String storageCfg = args[2];
+		Storage storage = StorageFactory.storageFromConfig(FileSystems.getDefault().getPath(storageCfg));
 		
 		rm = new ReplicaManager(zoohost);
 		rm.start();
@@ -223,7 +208,7 @@ public class CommandLineClient {
 				List<DBlock> blocks = new ArrayList<DBlock>();
 				blocks.add(new DBlock(null, 0, data.length(), new HashSet<Byte>()));
 				blocks.get(0).setId(UUIDUtils.longToBytes(rand.nextLong()));
-				storage.put(blocks.get(0).getId(), data.getBytes()).get();
+				storage.put((byte) 0, blocks.get(0).getId(), data.getBytes()).get();
 				Response r = client[partition].writeBlocks(path, fh, offset, blocks, instanceMap);
 				instanceMap.putAll(r.instanceMap);
 				System.out.println("File written");
@@ -247,7 +232,7 @@ public class CommandLineClient {
 					if (b.getId().length == 0) {
 						System.out.print(new byte[(int)b.size()]);
 					}
-					System.out.print(new String(storage.get(b.getId()).get()));
+					System.out.print(new String(storage.get((byte) 0, b.getId()).get()));
 				}
 				System.out.println("");
 				break;

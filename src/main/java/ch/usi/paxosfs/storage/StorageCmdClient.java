@@ -1,31 +1,15 @@
 package ch.usi.paxosfs.storage;
 
-import java.io.FileNotFoundException;
+import ch.usi.paxosfs.util.UUIDUtils;
+
 import java.nio.file.FileSystems;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
 
-import ch.usi.paxosfs.util.UUIDUtils;
-
 public class StorageCmdClient {
-	static List<Storage> storages;
-	
-	public static void main(String[] args) throws FileNotFoundException, InterruptedException {
-		storages = new LinkedList<>();
-		for (String storagePath: args) {
-			if (storagePath.equals("http://fake")) {
-				System.out.println("STORAGE: FAKE " + storagePath);
-				storages.add(new FakeStorage());
-			} else if (storagePath.startsWith("http://")) { // FIXME: simple hack so that i can test with a single storage without config files
-				System.out.println("STORAGE: " + storagePath);
-				storages.add(StorageFactory.storageFromUrls(storagePath));
-			} else {
-				storages.add(StorageFactory.storageFromConfig(FileSystems.getDefault().getPath(storagePath)));
-			}
-		}
-		
+	public static void main(String[] args) throws Exception {
+		Storage storage = StorageFactory.storageFromConfig(FileSystems.getDefault().getPath(args[0]));
+
 		Scanner s = new Scanner(System.in);
 		while (s.hasNext()) {
 			String cmd = s.next();
@@ -34,7 +18,7 @@ public class StorageCmdClient {
 				Long key = s.nextLong();
 				String value;
 				try {
-					value = new String(storages.get(0).get(UUIDUtils.longToBytes(key)).get());
+					value = new String(storage.get((byte) 0, UUIDUtils.longToBytes(key)).get());
 					System.out.println(value);
 				} catch (ExecutionException e) {
 					e.printStackTrace();
@@ -44,12 +28,10 @@ public class StorageCmdClient {
 			case "put": {
 				Long key = s.nextLong();
 				String value = s.next();
-				for (Storage storage: storages) {
-					try {
-						System.out.println(storage.put(UUIDUtils.longToBytes(key), value.getBytes()).get());
-					} catch (ExecutionException e) {
-						e.printStackTrace();
-					}
+                try {
+        		    System.out.println(storage.put((byte) 0, UUIDUtils.longToBytes(key), value.getBytes()).get());
+				} catch (ExecutionException e) {
+					e.printStackTrace();
 				}
 				break;
 			}

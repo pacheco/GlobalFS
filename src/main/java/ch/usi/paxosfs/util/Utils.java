@@ -16,4 +16,10 @@ public class Utils {
 		// should never get here but the compiler needs the return.
 		return partitions.iterator().next();
 	}
+
+    public static byte[] randomBytes(Random rand, int size) {
+        byte[] bytes = new byte[size];
+        rand.nextBytes(bytes);
+        return bytes;
+    }
 }
