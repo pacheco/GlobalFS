@@ -102,6 +102,9 @@ For sinergiafs:
   - mvn clean install
   - copy the 'target/sinergia-0.0.1-SNAPSHOT-deploy folder into ~/usr/sinergiafs
     - You can create a softlink there instead as I did in the VM
+  - whenever there is need to update from the repository, run:
+    - git fetch origin; git rebase; mvn clean install
+  
 
 More simply, just copy the ~/workspace and ~/usr folders from the example VM
 
