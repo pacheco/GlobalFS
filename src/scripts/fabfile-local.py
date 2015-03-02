@@ -8,7 +8,15 @@ import os
 FSDIR=os.path.expanduser('~/usr/sinergiafs')
 UPAXOSDIR=os.path.expanduser('~/usr/Paxos-trunk')
 ZKHOST='localhost:2181'
-NPARTITIONS=3
+
+# metadata replica parameters
+REPLICA_CONFIG = {
+    'JVMOPT' : '-XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/tmp/java-$$.vgc',
+    'GC' : '-XX:+UseConcMarkSweepGC',
+    'LIBPATH' : os.path.expanduser('~/usr/lib'),
+    'NPARTITIONS' : 3,
+    'ZKHOST' : ZKHOST,
+}
 
 # URingPaxos parameters
 MRP_CONFIG = {
@@ -24,16 +32,6 @@ MRP_CONFIG = {
     'MRP_TRIM_AUTO' : 0,
     'MRP_P1_TIMEOUT' : 10000,
     'MRP_PROPOSER_TIMEOUT' : 10000,
-}
-
-
-# metadata replica parameters
-REPLICA_CONFIG = {
-    'JVMOPT' : '-XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/tmp/java-$$.vgc',
-    'GC' : '-XX:+UseConcMarkSweepGC',
-    'LIBPATH' : os.path.expanduser('~/usr/lib'),
-    'NPARTITIONS' : NPARTITIONS,
-    'ZKHOST' : ZKHOST,
 }
 
 
@@ -155,30 +153,21 @@ def start_replica(partition, id, port=20000):
 
 
 def start_servers():
+    partitions = REPLICA_CONFIG['NPARTITIONS']
     port = 20000
     # start ring leaders
     execute(start_acceptor, 0, 0)
-    execute(start_replica, 1, 0, port)
-    port += 1
-    execute(start_replica, 2, 0, port)
-    port += 1
-    execute(start_replica, 3, 0, port)
-    port += 1
+    for i in range(1,partitions+1):
+        execute(start_replica, i, 0, port)
+        port += 1
     # start other servers
     execute(start_acceptor, 0, 1)
-    execute(start_replica, 1, 1, port)
-    port += 1
-    execute(start_replica, 2, 1, port)
-    port += 1
-    execute(start_replica, 3, 1, port)
-    port += 1
     execute(start_acceptor, 0, 2)
-    execute(start_replica, 1, 2, port)
-    port += 1
-    execute(start_replica, 2, 2, port)
-    port += 1
-    execute(start_replica, 3, 2, port)
-    port += 1
+    for i in range(1,partitions+1):
+        execute(start_replica, i, 1, port)
+        port += 1
+        execute(start_replica, i, 2, port)
+        port += 1
     
     
 def mount_fs(mountpath, replica_id, closest_partition):
@@ -190,16 +179,17 @@ def mount_fs(mountpath, replica_id, closest_partition):
     with lcd(FSDIR):
         local('dtach -n /tmp/sinergiafs-%(rid)s ./client-mount.sh %(npart)s %(zkhost)s storagecfg/3-httpstorage.cfg %(rid)s %(closestp)s -f -o direct_io %(mountpath)s' % {
             'rid': replica_id,
-            'npart': NPARTITIONS,
+            'npart': REPLICA_CONFIG['NPARTITIONS'],
             'zkhost': ZKHOST,
             'closestp': closest_partition,
             'mountpath': mountpath,
         })
 
 
-def start_all():
+def start_all_3part():
     """Starts the whole system, replicas and clients (mountpoints)
     """
+    REPLICA_CONFIG['NPARTITIONS'] = 3
     execute(kill_and_clear)
     execute(setup_zookeeper)
     time.sleep(5)
@@ -211,3 +201,18 @@ def start_all():
     execute(mount_fs, '/tmp/fs1', 0, 1)
     execute(mount_fs, '/tmp/fs2', 1, 2)
     execute(mount_fs, '/tmp/fs3', 2, 3)
+
+
+def start_all_2part():
+    """Starts the whole system, replicas and clients (mountpoints)
+    """
+    REPLICA_CONFIG['NPARTITIONS'] = 2
+    execute(kill_and_clear)
+    execute(setup_zookeeper)
+    time.sleep(5)
+    execute(start_servers)
+    execute(start_http_storage, 15001)
+    execute(start_http_storage, 15002)
+    execute(paxos_on)
+    execute(mount_fs, '/tmp/fs1', 0, 1)
+    execute(mount_fs, '/tmp/fs2', 1, 2)

@@ -11,7 +11,11 @@ storage = dict()
 
 @app.route('/')
 def index():
-    return "Server running\n"
+    result = """
+<p>KEYS STORED: %s</p>
+<p>VALUES STORED IN KBYTES: %s</p>
+""" % (len(storage), sum([sys.getsizeof(v) for v in storage.values()]) / 1024.0)
+    return result
 
 @app.route('/<string:key>', methods = ['GET'])
 def get(key):
