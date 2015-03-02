@@ -39,20 +39,22 @@ For a read, the client contacts a single replica.
 ** EXTENDING/INTEGRATING
 ***********************************
 
-The HttpStorage class is based on an older version of Raluca's DHT, so
-if nothing changed it should just be a matter of adding the
-address:port of the servers to a config file in the correct format
-(check the class JavaDoc).
+When mounting the filesystem, it is possible to select a Storage
+implementation. A basic client for an http storage is provided as the
+HttpStorage class. It is based on an older version of Raluca's DHT. If
+nothing changed, it should just be a matter of adding the address:port
+of the servers to a config file in the correct format (check the class
+JavaDoc).
 
-To create a new storage type the Storage interface has to be
-implemented.  It has the get/put/delete and an initialize method which
+To support a new storage type the Storage interface has to be
+implemented.  It has get/put/delete and an initialize method which
 receives a config file. The first line in this config file has to be
 the full path to the implementation, for example
 ch.usi.paxosfs.storage.HttpStorage. The rest of the file is
-used/interpreted by each Storage implementation.  The clients (fuse
-mounts) receive this config file as a parameter and then instantiate
-the correct implementation. Storage calls are made parallel by means
-of Future's (java.util.concurrent.Future).
+interpreted by each Storage implementation. The clients (fuse mounts)
+receive this config file as a parameter and then instantiate the
+correct implementation. Storage calls are made parallel by means of
+Future's (java.util.concurrent.Future).
 
 For a complete example, check the HttpStorage code and JavaDoc and the
 respective unit test (StorageTest.testHttpStorage).
