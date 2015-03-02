@@ -186,33 +186,16 @@ def mount_fs(mountpath, replica_id, closest_partition):
         })
 
 
-def start_all_3part():
+def start_all(partitions):
     """Starts the whole system, replicas and clients (mountpoints)
     """
-    REPLICA_CONFIG['NPARTITIONS'] = 3
+    partitions = int(partitions)
+    REPLICA_CONFIG['NPARTITIONS'] = partitions
     execute(kill_and_clear)
     execute(setup_zookeeper)
     time.sleep(5)
     execute(start_servers)
-    execute(start_http_storage, 15001)
-    execute(start_http_storage, 15002)
-    execute(start_http_storage, 15003)
-    execute(paxos_on)
-    execute(mount_fs, '/tmp/fs1', 0, 1)
-    execute(mount_fs, '/tmp/fs2', 1, 2)
-    execute(mount_fs, '/tmp/fs3', 2, 3)
-
-
-def start_all_2part():
-    """Starts the whole system, replicas and clients (mountpoints)
-    """
-    REPLICA_CONFIG['NPARTITIONS'] = 2
-    execute(kill_and_clear)
-    execute(setup_zookeeper)
-    time.sleep(5)
-    execute(start_servers)
-    execute(start_http_storage, 15001)
-    execute(start_http_storage, 15002)
-    execute(paxos_on)
-    execute(mount_fs, '/tmp/fs1', 0, 1)
-    execute(mount_fs, '/tmp/fs2', 1, 2)
+    for p in range(1, partitions + 1):
+        execute(start_http_storage, 15000 + p)
+        execute(paxos_on)
+        execute(mount_fs, '/tmp/fs%s' % (p), p-1, p)
