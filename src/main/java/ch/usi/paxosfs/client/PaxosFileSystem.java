@@ -31,10 +31,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class PaxosFileSystem implements Filesystem3 {
+    private static int MAXBLOCKSIZE = 1024 * 300;
+    private static int KEYSIZE = 128;
 	private Random rand = new Random();
 	private int replicaId;
 	private static Log log = LogFactory.getLog(PaxosFileSystem.class);
-	private static int MAXBLOCKSIZE = 1024 * 300;
 	private ReplicaManager rm;
 	private String zoohost;
 	private PartitioningOracle partitionOracle;
@@ -42,7 +43,8 @@ public class PaxosFileSystem implements Filesystem3 {
 	private int numberOfPartitions;
 	private ConcurrentLinkedQueue<FuseOps.Client>[] clients;
     private Byte closestPartition; // TODO: an array of the partitions in order of proximity would be more complete
-	// FIXME: To be sure this is correct I need to understand how threads are used inside Fuse4J
+
+	// TODO: To be sure this is correct check how threads are used inside Fuse4J. Should be good enough for benchmarking.
 	private ThreadLocal<Map<Byte, Long>> instanceMap = new ThreadLocal<Map<Byte, Long>>(){
         @Override protected Map<Byte, Long> initialValue() {
             return new ConcurrentHashMap<Byte, Long>();
@@ -466,7 +468,6 @@ public class PaxosFileSystem implements Filesystem3 {
 			// dispatch the requests
 			for (DBlock b : res.getBlocks()) {
 				if (b.getId().length != 0) {
-					// TODO: reading from a random datacenter replicating the file. Implement locality?
 					Byte storageId = choosePartition(b.getStorage());
 					futureValues.add(storage.get(storageId, b.getId()));
 				}
@@ -526,7 +527,7 @@ public class PaxosFileSystem implements Filesystem3 {
 				byte[] data = new byte[MAXBLOCKSIZE];
 				buf.get(data);
 				DBlock b = new DBlock(null, 0, MAXBLOCKSIZE, allPartitions);
-				b.setId(UUIDUtils.longToBytes(rand.nextLong()));
+				b.setId(UUIDUtils.randomBytes(rand, KEYSIZE));
 				// store the block in all partitions
 				for (Byte p: allPartitions) {
 					putFutures.add(storage.put(p, b.getId(), data));
@@ -537,7 +538,7 @@ public class PaxosFileSystem implements Filesystem3 {
 				byte[] remainingData = new byte[buf.remaining()];
 				buf.get(remainingData);
 				DBlock b = new DBlock(null, 0, remainingData.length, allPartitions);
-				b.setId(UUIDUtils.longToBytes(rand.nextLong()));
+				b.setId(UUIDUtils.randomBytes(rand, KEYSIZE));
 				// store the blocks in all partitions
 				for (Byte p: allPartitions) {
 					putFutures.add(storage.put(p, b.getId(), remainingData));

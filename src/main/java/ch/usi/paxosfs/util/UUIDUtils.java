@@ -2,9 +2,21 @@ package ch.usi.paxosfs.util;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Random;
 import java.util.UUID;
 
 public class UUIDUtils {
+    /**
+     * Generate a random byte array of size n
+     * @param n
+     * @return
+     */
+    public static byte[] randomBytes(Random r, int n) {
+        byte[] bytes = new byte[n];
+        r.nextBytes(bytes);
+        return bytes;
+    }
+
 	public static byte[] uuidToBytes(UUID id) {
 		byte[] b = new byte[16];
 		return ByteBuffer.wrap(b)
