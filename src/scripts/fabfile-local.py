@@ -89,11 +89,12 @@ def setup_zookeeper():
         local('sudo service zookeeper restart')
         MRP_CONFIG['MRP_START_TIME'] = local('date +%s000', capture = True)
         time.sleep(3) # needed?
-        # set zookeeper MRP variables
+        # create URingPaxos default config on zookeeper
         local('dtach -n /tmp/zkcfg %s/ringpaxos.sh "0,0:L;1,0:L;2,0:L;3,0:L" %s' % (UPAXOSDIR, ZKHOST))
         time.sleep(3)
         with settings(warn_only = True): # pkill is not returning 0 even on success
             local('pkill --signal 9 -f TTYNode')
+        # change the config we need
         local('echo "%s" | zkCli.sh -server %s' % (ZKCONFIG % MRP_CONFIG, ZKHOST))
 
 
@@ -195,7 +196,7 @@ def start_all(partitions):
     execute(setup_zookeeper)
     time.sleep(5)
     execute(start_servers)
+    execute(paxos_on)
     for p in range(1, partitions + 1):
         execute(start_http_storage, 15000 + p)
-        execute(paxos_on)
         execute(mount_fs, '/tmp/fs%s' % (p), p-1, p)
