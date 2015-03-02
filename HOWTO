@@ -56,6 +56,9 @@ receive this config file as a parameter and then instantiate the
 correct implementation. Storage calls are made parallel by means of
 Future's (java.util.concurrent.Future).
 
+Be sure to have the implementing class available on the classpath - by
+copying it to the sinergiafs deploy folder, for example.
+
 For a complete example, check the HttpStorage code and JavaDoc and the
 respective unit test (StorageTest.testHttpStorage).
 
