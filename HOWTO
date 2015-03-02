@@ -43,8 +43,9 @@ When mounting the filesystem, it is possible to select a Storage
 implementation. A basic client for an http storage is provided as the
 HttpStorage class. It is based on an older version of Raluca's DHT. If
 nothing changed, it should just be a matter of adding the address:port
-of the servers to a config file in the correct format (check the class
-JavaDoc).
+of the servers to a config file in the correct format. Check the
+HttpStorage class and the config file
+(src/main/resources/storagecfg/3-httpstorage.cfg) for details.
 
 To support a new storage type the Storage interface has to be
 implemented.  It has get/put/delete and an initialize method which

@@ -188,7 +188,9 @@ def mount_fs(mountpath, replica_id, closest_partition):
 
 
 def start_all(partitions):
-    """Starts the whole system, replicas and clients (mountpoints)
+    """Starts the whole system, replicas and clients (mountpoints). Be
+    sure that mount_fs is using a storage config that supports the
+    number of partitions.
     """
     partitions = int(partitions)
     REPLICA_CONFIG['NPARTITIONS'] = partitions
