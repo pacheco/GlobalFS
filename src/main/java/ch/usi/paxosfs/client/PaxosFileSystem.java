@@ -32,7 +32,7 @@ import java.util.concurrent.Future;
 
 public class PaxosFileSystem implements Filesystem3 {
     private static int MAXBLOCKSIZE = 1024 * 300;
-    private static int KEYSIZE = 128;
+    private static int KEYSIZE = 16;
 	private Random rand = new Random();
 	private int replicaId;
 	private static Log log = LogFactory.getLog(PaxosFileSystem.class);
