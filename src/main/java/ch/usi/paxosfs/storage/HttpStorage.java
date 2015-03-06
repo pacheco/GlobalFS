@@ -4,10 +4,8 @@ import ch.usi.paxosfs.util.UUIDUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.fluent.Async;
-import org.apache.http.client.fluent.Content;
 import org.apache.http.client.fluent.Request;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -15,7 +13,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class HttpStorage implements Storage {
 	private static int TIMEOUT = 3000;
@@ -25,56 +25,22 @@ public class HttpStorage implements Storage {
 	private ExecutorService threadpool;
 	private Async asyncHttp;
 
-    private class GetFuture implements Future<byte[]> {
-		private Future<Content> f;
-		public GetFuture(Future<Content> contentFuture) {
-			f = contentFuture;
-		}
-		@Override
-		public boolean cancel(boolean mayInterruptIfRunning) {
-			return f.cancel(mayInterruptIfRunning);
-		}
-		@Override
-		public boolean isCancelled() {
-			return f.isCancelled();
-		}
-		@Override
-		public boolean isDone() {
-			return f.isDone();
-		}
-		@Override
-		public byte[] get() throws InterruptedException, ExecutionException {
-			try {
-				Content c = f.get();
-				InputStream in = c.asStream();
-				byte[] value = IOUtils.toByteArray(in);
-				in.close();
-				return value;
-			} catch (IOException e) {
-				throw new ExecutionException(e);
-			}
-		}
-		@Override
-		public byte[] get(long timeout, TimeUnit unit)
-				throws InterruptedException, ExecutionException,
-				TimeoutException {
-			try {
-				Content c = f.get(timeout, unit);
-				InputStream in = c.asStream();
-				in.skip(6);
-				byte[] value = IOUtils.toByteArray(in);
-				in.close();
-				return value;
-			} catch (IOException e) {
-				e.printStackTrace();
-				return null;
-			}			
-		}
-	}
-	
+    private class GetHandler implements ResponseHandler<byte[]> {
+        @Override
+        public byte[] handleResponse(HttpResponse httpResponse) throws IOException {
+            if (httpResponse.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+                return null;
+            }
+            InputStream in = httpResponse.getEntity().getContent();
+            byte[] value = IOUtils.toByteArray(in);
+            in.close();
+            return value;
+        }
+    }
+
 	private class PutHandler implements ResponseHandler<Boolean> {
 		@Override
-		public Boolean handleResponse(HttpResponse response) throws ClientProtocolException, IOException {
+		public Boolean handleResponse(HttpResponse response) throws IOException {
 			return Boolean.valueOf(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK);
 		}
 	}
@@ -171,7 +137,7 @@ public class HttpStorage implements Storage {
                 .addHeader("Content-Type", "application/octet-stream")
                 .addHeader("Sync-Mode", "sync")
                 .connectTimeout(TIMEOUT);
-        return new GetFuture(asyncHttp.execute(req));
+        return asyncHttp.execute(req, new GetHandler());
     }
 
     @Override
