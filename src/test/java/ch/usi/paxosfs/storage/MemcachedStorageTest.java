@@ -18,7 +18,7 @@ import java.util.Random;
 /**
  * Created by pacheco on 05/03/15.
  */
-public class HttpStorageTest {
+public class MemcachedStorageTest {
     Random rand = new Random();
     List<Process> storages = new LinkedList<>();
 
@@ -31,9 +31,9 @@ public class HttpStorageTest {
 
     @Before
     public void startStorageServers() throws Exception {
-        storages.add(Runtime.getRuntime().exec("src/scripts/dht-fake.py 15001"));
-        storages.add(Runtime.getRuntime().exec("src/scripts/dht-fake.py 15002"));
-        storages.add(Runtime.getRuntime().exec("src/scripts/dht-fake.py 15003"));
+        storages.add(Runtime.getRuntime().exec("memcached -p 15001"));
+        storages.add(Runtime.getRuntime().exec("memcached -p 15002"));
+        storages.add(Runtime.getRuntime().exec("memcached -p 15003"));
     }
 
     @After
@@ -45,14 +45,15 @@ public class HttpStorageTest {
 
     @Test
     public void testCreate() throws Exception {
-        Storage st = newStorage("storagecfg/httpstorage.cfg");
+        Storage st = newStorage("storagecfg/memcachedstorage.cfg");
         Assert.assertNotNull(st);
-        Assert.assertTrue(st instanceof HttpStorage);
+        Assert.assertTrue(st instanceof MemcachedStorage);
     }
 
     @Test
     public void testPutGet() throws Exception {
-        Storage st = newStorage("storagecfg/httpstorage.cfg");
+        Storage st = newStorage("storagecfg/memcachedstorage.cfg");
+        ((MemcachedStorage)st).clearStorage();
 
         // insert fails if the key already exists or the partition is not known (in the config file)
         byte[] key1 = UUIDUtils.longToBytes(33);
@@ -80,7 +81,7 @@ public class HttpStorageTest {
         Assert.assertNull(st.get(nonExistentPartition, key2).get()); // non-existent partition
         Assert.assertNull(st.get((byte) 3, nonExistentKey).get()); // non-existent key
 
-        // test support for keys of 16 bytes
+        // test support for keys of 128 bits
         byte[] longKey1 = new byte[16];
         byte[] longKey2 = new byte[16]; longKey2[15] = 1;
         Assert.assertTrue(st.put((byte) 1, longKey1, value1).get());
@@ -92,9 +93,7 @@ public class HttpStorageTest {
     /* delete is not implemented yet and throws NotImplementedException */
     @Test(expected = NotImplementedException.class)
     public void testDelete() throws Exception {
-        Storage st = newStorage("storagecfg/httpstorage.cfg");
-        Assert.assertNotNull(st);
-        Assert.assertTrue(st instanceof HttpStorage);
+        Storage st = newStorage("storagecfg/memcachedstorage.cfg");
 
         byte[] key1 = UUIDUtils.longToBytes(33);
         st.delete((byte) 1, key1).get();
