@@ -474,12 +474,14 @@ public class PaxosFileSystem implements Filesystem3 {
 			}
 			// wait for completion
 			List<byte[]> values = new ArrayList<byte[]>(futureValues.size());
+            Iterator<DBlock> blocksIter = res.getBlocks().iterator(); // TODO: this iterator is required only for the debug message. Remove later?
 			for (Future<byte[]> f: futureValues) {
+                DBlock b = blocksIter.next();
 				try {
 					values.add(f.get());
 				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
-					throw new FSError(Errno.EREMOTEIO, "Error fetching data block!");
+    				throw new FSError(Errno.EREMOTEIO, "Error fetching data block!");
 				}
 			}
 			
@@ -494,6 +496,7 @@ public class PaxosFileSystem implements Filesystem3 {
 					// block fetched from the storage
 					byte[] data = valuesIter.next();
 					if (data == null) {
+                        log.error("Error fetching data block " + new String(b.getId()));
 						throw new FSError(Errno.EREMOTEIO, "Error fetching data block!");
 					}
 					buf.put(data, b.getStartOffset(), b.getEndOffset() - b.getStartOffset());
@@ -547,10 +550,13 @@ public class PaxosFileSystem implements Filesystem3 {
 			}
 			
 			// Check all puts were successful
+            Iterator<DBlock> blocksIter = blocks.iterator();
 			for (Future<Boolean> put : putFutures) {
+                DBlock b = blocksIter.next();
 				try {
 					if (!put.get()) {
-						throw new FSError(Errno.EREMOTEIO, "Error storing data block!");
+                        log.error("Error writing data block " + new String(b.getId()));
+                        throw new FSError(Errno.EREMOTEIO, "Error storing data block!");
 					}
 				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();

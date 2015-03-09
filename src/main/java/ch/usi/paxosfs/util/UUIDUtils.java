@@ -6,6 +6,8 @@ import java.util.Random;
 import java.util.UUID;
 
 public class UUIDUtils {
+    final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+
     /**
      * Generate a random byte array of size n
      * @param n
@@ -51,4 +53,24 @@ public class UUIDUtils {
 				.order(ByteOrder.BIG_ENDIAN);
 		return bb.getLong();
 	}
+
+
+    /**
+     * Convert byte array to Hex string. Taken from StackOverflow:
+     * http://stackoverflow.com/questions/9655181/convert-from-byte-array-to-hex-string-in-java
+     * @param bytes
+     * @return
+     */
+    public static String bytesToHex(byte[] bytes) {
+        if (bytes.length % 4 != 0) {
+            throw new IllegalArgumentException("byte array should be multiple of 4");
+        }
+        char[] hexChars = new char[bytes.length * 2];
+        for ( int j = 0; j < bytes.length; j++ ) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
+    }
 }

@@ -69,9 +69,8 @@ public class HttpStorage implements Storage {
      * @param bytes
      * @return
      */
-	private static String bytesToLongAsString(byte[] bytes) {
-		long l = UUIDUtils.bytesToLong(bytes);
-		return String.valueOf(l);
+	private static String keyBytesToString(byte[] bytes) {
+        return UUIDUtils.bytesToHex(bytes);
 	}
 	
     /**
@@ -119,7 +118,7 @@ public class HttpStorage implements Storage {
         if (server == null) { // unknown partition
             return new DecidedFuture<>(false);
         }
-        Request req = Request.Put(server + bytesToLongAsString(key))
+        Request req = Request.Put(server + keyBytesToString(key))
                 .addHeader("Content-Type", "application/octet-stream")
                 .addHeader("Sync-Mode", "sync")
                 .connectTimeout(TIMEOUT)
@@ -133,7 +132,7 @@ public class HttpStorage implements Storage {
         if (server == null) { // unknown partition
             return new DecidedFuture<>(null);
         }
-        Request req = Request.Get(server + bytesToLongAsString(key))
+        Request req = Request.Get(server + keyBytesToString(key))
                 .addHeader("Content-Type", "application/octet-stream")
                 .addHeader("Sync-Mode", "sync")
                 .connectTimeout(TIMEOUT);

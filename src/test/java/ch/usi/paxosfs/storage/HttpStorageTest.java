@@ -72,14 +72,21 @@ public class HttpStorageTest {
         Assert.assertFalse(st.put((byte) 1, key1, value1).get());
         Assert.assertFalse(st.put((byte) 2, key2, value2).get());
 
+        // gets work for existing keys. Returns null otherwise
         byte[] nonExistentKey = UUIDUtils.longToBytes(4356);
         byte nonExistentPartition = 7;
-
-        // gets work for existing keys. Returns null otherwise
         Assert.assertArrayEquals(st.get((byte) 1, key2).get(), value2);
         Assert.assertArrayEquals(st.get((byte) 3, key3).get(), value3);
         Assert.assertNull(st.get(nonExistentPartition, key2).get()); // non-existent partition
         Assert.assertNull(st.get((byte) 3, nonExistentKey).get()); // non-existent key
+
+        // test support of keys of 128 bytes
+        byte[] longKey1 = new byte[128];
+        byte[] longKey2 = new byte[128]; longKey2[127] = 1;
+        Assert.assertTrue(st.put((byte) 1, longKey1, value1).get());
+        Assert.assertTrue(st.put((byte) 1, longKey2, value2).get());
+        Assert.assertArrayEquals(st.get((byte) 1, longKey1).get(), value1);
+        Assert.assertArrayEquals(st.get((byte) 1, longKey2).get(), value2);
     }
 
     /* delete is not implemented yet and throws NotImplementedException */
