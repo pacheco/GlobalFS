@@ -15,7 +15,7 @@ def head_start(image_name):
     """Start a machine with the given image
     """
     conn = connect(head_region)
-    req = request_spot_instances(conn, image_name, instance_type, head_price,
+    req = request_spot_instances(conn, image_name, head_type, head_price,
                                  count=1,
                                  availability_zone=head_zone)
 
@@ -172,7 +172,7 @@ def spot_start(image_name):
     for region, zone, price in zip(regions, regions_zones, regions_prices):
         conn = connections[region]
         request_spot_instances(conn, image_name, instance_type, price,
-                               count=7,
+                               count=instances_per_region,
                                availability_zone=zone)
     for conn in connections.values():
         conn.close()
@@ -240,8 +240,18 @@ def spot_setup_all():
     env.roledefs = roledefs_from_instances()
     with open('nodes.sh', 'w') as f:
         f.write(gen_nodes())
+    # create dht config files
+    for dc in range(1, 4):
+        # hosts and ports
+        local('cat nodes.sh | grep DC%s_REP | sort | cut -d= -f2 > dhthosts' % (dc))
+        local('seq 15100 100 15300 > dhtports')
+        # replication level
+        local('echo replication = 1 > dht%s.config' % dc)
+        local('paste -d" " dhthosts dhtports >> dht%s.config' % (dc))
+        local('rm dhtports dhthosts')
     with settings(roles = ['head']):
         execute(lambda: put('nodes.sh', 'out/'))
     with settings(roles = ['replica', 'client']):
+        put('dht*.config', '/home/ubuntu/')
         execute(whoami_create)
-        execute(mount_ssd)
+        #execute(mount_ssd)

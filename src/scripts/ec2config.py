@@ -8,13 +8,15 @@ from collections import defaultdict
 # -----------------------------
 regions = ['us-west-1', 'us-west-2', 'eu-west-1']
 regions_zones=['us-west-1c', 'us-west-2c', 'eu-west-1a']
-regions_prices=[0.03, 0.03, 0.03]
+regions_prices=[0.03, 0.04, 0.03]
 
 head_region='us-west-1'
 head_zone='us-west-1c'
-head_price=0.03
+head_price=0.04
+head_type='r3.large'
 
-instance_type='r3.large'
+instance_type='c3.large'
+instances_per_region=7 # should be at least 5 for the spot_tag() to work
 
 
 # SinergiaFS stuff

@@ -97,8 +97,17 @@ def ntpsync():
 def kill_and_clear():
     """Kill server processes and remove old data
     """
-    sudo('killall -9 java')
+    sudo('pkill --signal 9 -f TTYNode')
+    sudo('pkill --signal 9 -f FSMain')
+    sudo('pkill --signal 9 -f dht-')
+    sudo('pkill --signal 9 -f PaxosFileSystem')
+    sudo('umount -l /tmp/fs*')
     sudo('rm -f /tmp/*.vgc')
+    sudo('rm -f /tmp/replica*')
+    sudo('rm -f /tmp/dht*')
+    sudo('rm -f /tmp/acceptor*')
+    sudo('rm -f /tmp/storage*')
+    sudo('rm -rf /tmp/ringpaxos-db')
     sudo('rm -rf /ssd/storage/ringpaxos-db')
 
 
@@ -128,8 +137,12 @@ def paxos_on():
 def start_node():
     """Start the paxos/replica node
     """
-    with hide('stdout', 'stderr'), cd('usr/sinergiafs/'):
-        run('dtach -n /tmp/nodeec2 ./node-ec2.sh')
+    with hide('stdout', 'stderr'):
+        with cd('usr/sinergiafs/'):
+            run('dtach -n /tmp/nodeec2 ./node-ec2.sh')
+        with cd('usr/sinergiafs-dht/'):
+            run('dtach -n /tmp/dht lua ./dht.lua /home/ubuntu/dht.config $ID')
+            
 
 
 def start_servers():
@@ -152,7 +165,7 @@ def mount_fs():
         run('mkdir -p /tmp/fs')
         HEADNODE = env.roledefs['head'][0]
         with cd('usr/sinergiafs'):
-            run('source ~/whoami.sh; dtach -n /tmp/sinergiafs ./client-mount.sh 3 %s:2182 http://fake $ID $RING -f -o direct_io /tmp/fs' % (HEADNODE))
+            run('source ~/whoami.sh; dtach -n /tmp/dht ./client-mount.sh 3 %s:2182 storagecfg/storage.cfg $ID $RING -f -o direct_io /tmp/fs' % (HEADNODE))
 
 
 def start_all():
