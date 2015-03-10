@@ -178,7 +178,7 @@ def mount_fs(mountpath, replica_id, closest_partition):
         local('sudo umount -l %s' % (mountpath))
         local('mkdir -p %s' % (mountpath))
     with lcd(FSDIR):
-        local('dtach -n /tmp/sinergiafs-%(rid)s ./client-mount.sh %(npart)s %(zkhost)s storagecfg/3-httpstorage.cfg %(rid)s %(closestp)s -f -o direct_io %(mountpath)s' % {
+        local('dtach -n /tmp/sinergiafs-%(rid)s ./client-mount.sh %(npart)s %(zkhost)s storagecfg/storage.cfg %(rid)s %(closestp)s -f -o direct_io %(mountpath)s' % {
             'rid': replica_id,
             'npart': REPLICA_CONFIG['NPARTITIONS'],
             'zkhost': ZKHOST,
