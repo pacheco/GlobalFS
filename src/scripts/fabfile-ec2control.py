@@ -1,13 +1,21 @@
 from fabric.api import *
 from ec2helper import *
 from ec2config import *
+from pprint import pprint
 import sys
 
 
 env.use_ssh_config = True
 env.colorize_errors = True
 env.disable_known_hosts = True
-#env.roledefs = roledefs_from_instances() # get ips for the roledef lists from ec2 instances
+env.roledefs = roledefs_from_instances() # get ips for the roledef lists from ec2 instances
+
+
+@task
+def print_roles():
+    """Print instances grouped by roles
+    """
+    pprint(dict(env.roledefs))
 
 
 @task
@@ -197,6 +205,9 @@ def spot_tag():
         connections[r].create_tags([i.id for i in instances[4:]], {'Type': 'client', 'DC': rid+1})
     
 
+@task
+@parallel
+@roles(['replica', 'client'])
 def whoami_create():
     """Create a whoami.sh file in the ~ of the remote machine.
     Contains variables regarding the local machine
@@ -227,6 +238,31 @@ def mount_ssd():
     sudo('chmod 777 /ssd/storage')
     
 
+@task
+@parallel
+@roles(['replica', 'client'])
+def put_dht_config():
+    """Push dht and storage config files to ec2 instances"""
+    put('*.config', '/home/ubuntu/')
+    
+
+@task
+def create_dht_config():
+    """Generate dht and storage config files"""
+    # create dht config files
+    local('echo ch.usi.paxosfs.storage.HttpStorage > storage.config')
+    for dc in range(1, 4):
+        # hosts and ports
+        local('cat nodes.sh | grep DC%s_REP | sort | cut -d= -f2 > dhthosts' % (dc))
+        local('seq 15100 100 15300 > dhtports')
+        local('echo replication = 1 > dht%s.config' % dc) # replication level
+        local('paste -d" " dhthosts dhtports >> dht%s.config' % (dc)) # create final dhtN.config
+        # storage cfg
+        local('seq 15101 100 15301 > dhtports') # http ports are +1
+        local('paste -d":" dhthosts dhtports >> storage')
+        local('sed -e "s/\(.*\)/%s http:\/\/\\1/g" storage >> storage.config' % (dc))
+        local('rm -f dhtports dhthosts storage')
+
 
 @task
 def spot_setup_all():
@@ -237,21 +273,12 @@ def spot_setup_all():
     - Mounts ssd drives on the instances
     """
     spot_tag()
-    env.roledefs = roledefs_from_instances()
     with open('nodes.sh', 'w') as f:
         f.write(gen_nodes())
-    # create dht config files
-    for dc in range(1, 4):
-        # hosts and ports
-        local('cat nodes.sh | grep DC%s_REP | sort | cut -d= -f2 > dhthosts' % (dc))
-        local('seq 15100 100 15300 > dhtports')
-        # replication level
-        local('echo replication = 1 > dht%s.config' % dc)
-        local('paste -d" " dhthosts dhtports >> dht%s.config' % (dc))
-        local('rm dhtports dhthosts')
     with settings(roles = ['head']):
         execute(lambda: put('nodes.sh', 'out/'))
-    with settings(roles = ['replica', 'client']):
-        put('dht*.config', '/home/ubuntu/')
-        execute(whoami_create)
-        #execute(mount_ssd)
+    pprint(dict(env.roledefs))
+    execute(create_dht_config)
+    execute(put_dht_config)
+    execute(whoami_create)
+    #execute(mount_ssd)

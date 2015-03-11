@@ -16,7 +16,7 @@ head_price=0.04
 head_type='r3.large'
 
 instance_type='c3.large'
-instances_per_region=7 # should be at least 5 for the spot_tag() to work
+instances_per_region=5 # should be at least 5 for the spot_tag() to work
 
 
 # SinergiaFS stuff
@@ -27,7 +27,6 @@ coordinators = [ # 'Name' of the ring coordinators
     'rep2_0',
     'rep3_0',
 ]
-
 
 def roledefs_from_instances():
     """Return instance ips, grouped in roles, as used by fabric 'env.roledefs'
@@ -44,6 +43,8 @@ def roledefs_from_instances():
             continue
         if instance.tags['Type'] == 'server':
             roles['replica'].append(instance.dns_name)
+            if instance.tags['Name'].startswith("rep"):
+                roles['dht'].append(instance.dns_name)
             if instance.tags['Name'] in coordinators: ## instances of id 0 are coordinators
                 roles['paxos_coordinator'].append(instance.dns_name)
             else: ## others are grouped in rest

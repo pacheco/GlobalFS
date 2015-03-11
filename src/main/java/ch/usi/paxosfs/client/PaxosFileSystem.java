@@ -450,7 +450,10 @@ public class PaxosFileSystem implements Filesystem3 {
         } catch (TException e) {
 			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
-		}
+		} catch (NoSuchElementException e) {
+            e.printStackTrace();
+            throw e;
+        }
 		return 0;
 	}
 
@@ -513,7 +516,11 @@ public class PaxosFileSystem implements Filesystem3 {
         } catch (TException e) {
 			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
-		}
+		} catch (NoSuchElementException e) {
+            log.error(e);
+            e.printStackTrace();
+            throw e;
+        }
 		return 0;
 	}
 
@@ -551,8 +558,12 @@ public class PaxosFileSystem implements Filesystem3 {
 			
 			// Check all puts were successful
             Iterator<DBlock> blocksIter = blocks.iterator();
+            int blocksIterAux = 1; // there are more futures than blocks because of replication. This var is used to control when .next() is called.
+            DBlock b = null;
 			for (Future<Boolean> put : putFutures) {
-                DBlock b = blocksIter.next();
+                if (blocksIterAux % allPartitions.size() == 1) { b = blocksIter.next(); }
+                blocksIterAux++;
+
 				try {
 					if (!put.get()) {
                         log.error("Error writing data block " + new String(b.getId()));
@@ -575,7 +586,11 @@ public class PaxosFileSystem implements Filesystem3 {
         } catch (TException e) {
 			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
-		}
+		} catch (NoSuchElementException e) {
+            log.error(e);
+            e.printStackTrace();
+            throw e;
+        }
 		return 0;
 	}
 

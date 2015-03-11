@@ -31,9 +31,9 @@ public class MemcachedStorageTest {
 
     @Before
     public void startStorageServers() throws Exception {
-        storages.add(Runtime.getRuntime().exec("memcached -p 15001"));
-        storages.add(Runtime.getRuntime().exec("memcached -p 15002"));
-        storages.add(Runtime.getRuntime().exec("memcached -p 15003"));
+        storages.add(Runtime.getRuntime().exec("memcached -p 17001"));
+        storages.add(Runtime.getRuntime().exec("memcached -p 17002"));
+        storages.add(Runtime.getRuntime().exec("memcached -p 17003"));
     }
 
     @After
