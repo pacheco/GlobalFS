@@ -29,8 +29,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class PaxosFileSystem implements Filesystem3 {
+    private static AtomicInteger readCount = new AtomicInteger(0);
+    private static AtomicInteger writeCount = new AtomicInteger(0);
+    private static AtomicInteger statCount = new AtomicInteger(0);
+    private static AtomicInteger opCount = new AtomicInteger(0);
     private static int MAXBLOCKSIZE = 1024 * 300;
     private static int KEYSIZE = 16;
 	private Random rand = new Random();
@@ -50,6 +55,31 @@ public class PaxosFileSystem implements Filesystem3 {
             return new ConcurrentHashMap<Byte, Long>();
         }
     };
+
+    /**
+     * Print op statistics
+     */
+    private static Thread statsPrinter = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            while (true) {
+                long start = System.currentTimeMillis();
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {}
+                long elapsed = System.currentTimeMillis() - start;
+                double readSec = readCount.get()*1000.0 / elapsed;
+                double writeSec = writeCount.get()*1000.0 / elapsed;
+                double statSec = statCount.get()*1000.0 / elapsed;
+                double opSec = opCount.get()*1000.0 / elapsed;
+                readCount.set(0);
+                writeCount.set(0);
+                statCount.set(0);
+                opCount.set(0);
+                log.info(String.format("op/s: %f\tread/s: %f\twrite/s: %f\tstat/s: %f\t", opSec, readSec, writeSec, statSec));
+            }
+        }
+    });
 
 	/**
 	 * client connection pool return
@@ -136,6 +166,8 @@ public class PaxosFileSystem implements Filesystem3 {
 	}
 
 	public int getattr(String path, FuseGetattrSetter getattrSetter) throws FuseException {
+        statCount.incrementAndGet();
+        opCount.incrementAndGet();
 		int partition = choosePartition(this.partitionOracle.partitionsOf(path)).intValue();
 		FuseOps.Client client = getClient((byte) partition);
 		try {
@@ -458,6 +490,8 @@ public class PaxosFileSystem implements Filesystem3 {
 	}
 
 	public int read(String path, Object fh, ByteBuffer buf, long offset) throws FuseException {
+        readCount.incrementAndGet();
+        opCount.incrementAndGet();
 		FileHandle handle = (FileHandle) fh;
 		Set<Byte> allPartitions = this.partitionOracle.partitionsOf(path);
 		int partition = choosePartition(allPartitions).intValue();
@@ -525,6 +559,8 @@ public class PaxosFileSystem implements Filesystem3 {
 	}
 
 	public int write(String path, Object fh, boolean isWritepage, ByteBuffer buf, long offset) throws FuseException {
+        writeCount.incrementAndGet();
+        opCount.incrementAndGet();
 		FileHandle handle = (FileHandle) fh;
 		Set<Byte> allPartitions = this.partitionOracle.partitionsOf(path);
 		int partition = choosePartition(allPartitions).intValue(); // partition to send the request
@@ -658,6 +694,8 @@ public class PaxosFileSystem implements Filesystem3 {
 		}
 
 		System.out.println(Arrays.toString(LogFactory.getFactory().getAttributeNames()));
+
+        statsPrinter.start();
 
 		PaxosFileSystem fs = new PaxosFileSystem(Integer.parseInt(args[0]), args[1], args[2], Integer.parseInt(args[3]), Byte.parseByte(args[4]));
 		try {
