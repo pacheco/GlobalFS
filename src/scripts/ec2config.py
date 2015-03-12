@@ -11,8 +11,8 @@ regions_zones=['us-west-1c', 'us-west-2c', 'eu-west-1a']
 regions_prices=[0.03, 0.04, 0.03]
 
 head_region='us-west-1'
-head_zone='us-west-1c'
-head_price=0.04
+head_zone='us-west-1a'
+head_price=0.05
 head_type='r3.large'
 
 instance_type='c3.large'

@@ -8,8 +8,11 @@ import sys
 env.use_ssh_config = True
 env.colorize_errors = True
 env.disable_known_hosts = True
-env.roledefs = roledefs_from_instances() # get ips for the roledef lists from ec2 instances
+env.roledefs = None
 
+@task
+def set_roles():
+    env.roledefs = roledefs_from_instances() # get ips for the roledef lists from ec2 instances
 
 @task
 def print_roles():
@@ -246,7 +249,6 @@ def put_dht_config():
     put('*.config', '/home/ubuntu/')
     
 
-@task
 def create_dht_config():
     """Generate dht and storage config files"""
     # create dht config files
@@ -273,6 +275,7 @@ def spot_setup_all():
     - Mounts ssd drives on the instances
     """
     spot_tag()
+    execute(set_roles)
     with open('nodes.sh', 'w') as f:
         f.write(gen_nodes())
     with settings(roles = ['head']):

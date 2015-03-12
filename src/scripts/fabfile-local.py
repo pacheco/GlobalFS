@@ -34,6 +34,17 @@ MRP_CONFIG = {
     'MRP_PROPOSER_TIMEOUT' : 10000,
 }
 
+# FUSE mount options
+FUSE_OPTIONS = " ".join([
+    '-o direct_io',
+    #'-o noauto_cache',
+    '-o entry_timeout=10s',
+    '-o negative_timeout=10s',
+    '-o attr_timeout=10s',
+    '-o ac_attr_timeout=10s',
+])
+
+
 
 # Script to configure zookeeper -> MRP_CONFIG will be interpolated with it later
 ZKCONFIG ="""
@@ -178,12 +189,13 @@ def mount_fs(mountpath, replica_id, closest_partition):
         local('sudo umount -l %s' % (mountpath))
         local('mkdir -p %s' % (mountpath))
     with lcd(FSDIR):
-        local('dtach -n /tmp/sinergiafs-%(rid)s ./client-mount.sh %(npart)s %(zkhost)s storagecfg/storage.cfg %(rid)s %(closestp)s -f -o direct_io %(mountpath)s' % {
+        local('dtach -n /tmp/sinergiafs-%(rid)s ./client-mount.sh %(npart)s %(zkhost)s storagecfg/storage.cfg %(rid)s %(closestp)s -f %(fuseopt)s %(mountpath)s' % {
             'rid': replica_id,
             'npart': REPLICA_CONFIG['NPARTITIONS'],
             'zkhost': ZKHOST,
             'closestp': closest_partition,
             'mountpath': mountpath,
+            'fuseopt': FUSE_OPTIONS,
         })
 
 

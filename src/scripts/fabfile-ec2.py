@@ -23,6 +23,17 @@ MRP_CONFIG = {
     'MRP_PROPOSER_TIMEOUT' : 10000,
 }
 
+# FUSE mount options
+FUSE_OPTIONS = " ".join([
+    '-o direct_io',
+    '-o noauto_cache',
+    '-o entry_timeout=10s',
+    '-o negative_timeout=10s',
+    '-o attr_timeout=10s',
+    '-o ac_attr_timeout=10s',
+])
+
+
 # note the MRP_CONFIG interpolation at the end
 ZKCONFIG ="""
 delete /ringpaxos/boot_time.bin
@@ -173,7 +184,7 @@ def mount_fs():
         run('mkdir -p /tmp/fs')
         HEADNODE = env.roledefs['head'][0]
         with cd('usr/sinergiafs'):
-            run('source ~/whoami.sh; dtach -n /tmp/sinergiafs ./client-mount.sh 3 %s:2182 ~/storage.config $ID $RING -f -o direct_io /tmp/fs' % (HEADNODE))
+            run('source ~/whoami.sh; dtach -n /tmp/sinergiafs ./client-mount.sh 3 %s:2182 ~/storage.config $ID $RING -f %s /tmp/fs' % (HEADNODE, FUSE_OPTIONS))
 
 
 def start_all():
