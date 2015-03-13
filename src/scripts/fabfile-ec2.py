@@ -26,7 +26,7 @@ MRP_CONFIG = {
 # FUSE mount options
 FUSE_OPTIONS = " ".join([
     '-o direct_io',
-    '-o noauto_cache',
+    #'-o noauto_cache',
     '-o entry_timeout=10s',
     '-o negative_timeout=10s',
     '-o attr_timeout=10s',
@@ -81,6 +81,14 @@ set /ringpaxos/topology3/config/value_resend_time %(MRP_PROPOSER_TIMEOUT)s
 """
 
 
+def dtach_and_log(command, dtach_socket, logfile):
+    """Generate a command to leave the program running in the background
+    with its output copied to a logfile.
+
+    """
+    return 'dtach -n %s bash -c "%s | tee %s"' % (dtach_socket, command, logfile)
+
+
 @parallel
 @roles('replica', 'client')
 def rsync_from_head():
@@ -121,7 +129,8 @@ def kill_and_clear():
                  '/tmp/acceptor*',
                  '/tmp/storage*',
                  '/tmp/ringpaxos-db',
-                 '/ssd/storage/ringpaxos-db',]
+                 '/ssd/storage/ringpaxos-db',
+                 '/tmp/*.log']
         sudo('rm -rf ' + ' '.join(to_rm))
 
 @roles('head')
@@ -152,7 +161,9 @@ def start_node():
     """
     with hide('stdout', 'stderr'):
         with cd('usr/sinergiafs/'):
-            run('dtach -n /tmp/nodeec2 ./node-ec2.sh')
+            run(dtach_and_log('./node-ec2.sh',
+                              '/tmp/nodeec2',
+                              '/tmp/nodeec2.log'))
 
 
 @parallel
@@ -161,7 +172,10 @@ def start_dht():
     """Start the dht
     """
     with cd('usr/sinergiafs-dht/'):
-        run('source ~/whoami.sh; dtach -n /tmp/dht lua ./dht.lua /home/ubuntu/dht${RING}.config $[ID + 1] /tmp/dhtstorage dht')
+        run(dtach_and_log(
+            'source ~/whoami.sh; lua ./dht.lua /home/ubuntu/dht${RING}.config $[ID + 1] /tmp/dhtstorage dht',
+            '/tmp/dht',
+            '/tmp/dht.log'))
 
             
 def start_servers():
@@ -184,7 +198,8 @@ def mount_fs():
         run('mkdir -p /tmp/fs')
         HEADNODE = env.roledefs['head'][0]
         with cd('usr/sinergiafs'):
-            run('source ~/whoami.sh; dtach -n /tmp/sinergiafs ./client-mount.sh 3 %s:2182 ~/storage.config $ID $RING -f %s /tmp/fs' % (HEADNODE, FUSE_OPTIONS))
+            cmd = 'source ~/whoami.sh; ./client-mount.sh 3 %s:2182 ~/storage.config $ID $RING -f %s /tmp/fs' % (HEADNODE, FUSE_OPTIONS)
+            run(dtach_and_log(cmd, '/tmp/sinergiafs', '/tmp/sinergiafs.log'))
 
 
 def start_all():

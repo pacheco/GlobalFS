@@ -249,6 +249,7 @@ def put_dht_config():
     put('*.config', '/home/ubuntu/')
     
 
+@task
 def create_dht_config():
     """Generate dht and storage config files"""
     # create dht config files
@@ -257,7 +258,8 @@ def create_dht_config():
         # hosts and ports
         local('cat nodes.sh | grep DC%s_REP | sort | cut -d= -f2 > dhthosts' % (dc))
         local('seq 15100 100 15300 > dhtports')
-        local('echo replication = 1 > dht%s.config' % dc) # replication level
+        # REPLICATION LEVEL
+        local('echo replication = 1 > dht%s.config' % dc)
         local('paste -d" " dhthosts dhtports >> dht%s.config' % (dc)) # create final dhtN.config
         # storage cfg
         local('seq 15101 100 15301 > dhtports') # http ports are +1
