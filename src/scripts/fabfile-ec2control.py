@@ -230,6 +230,13 @@ def whoami_create():
     run('echo \\\`echo \\\$NAME \| cut -c4\\\` >> ~/whoami.sh')
 
 
+@task
+@parallel
+@roles(['replica', 'client'])
+def hostname_set():
+    sudo('source ~/whoami.sh; hostname `echo $NAME | tr _ -`')
+    
+
 def mount_ssd():
     """Mount instance SSD drives at /ssd/storage
     """
@@ -286,4 +293,5 @@ def spot_setup_all():
     execute(create_dht_config)
     execute(put_dht_config)
     execute(whoami_create)
+    execute(hostname_set)
     #execute(mount_ssd)
