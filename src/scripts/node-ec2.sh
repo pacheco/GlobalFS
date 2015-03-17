@@ -18,7 +18,7 @@ rm $LOG
 # LATCOMP=(0 160 20 100) # us-east-1 us-west-2 eu-west-1
 
 LATCOMP=(0 170 10 90)
-DB=/ssd/storage/
+DB=/mnt/
 
 case $NAME in
     rep*)
