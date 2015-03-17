@@ -234,7 +234,8 @@ def whoami_create():
 @parallel
 @roles(['replica', 'client'])
 def hostname_set():
-    sudo('source ~/whoami.sh; hostname `echo $NAME | tr _ -`')
+    sudo('[[ -f ~/whoami.sh ]] && hostname `echo $NAME | tr _ -`')
+    sudo('[[ -f ~/whoami.sh ]] && echo 127.0.1.1 `echo $NAME | tr _ -` >> /etc/hosts')
     
 
 def mount_ssd():

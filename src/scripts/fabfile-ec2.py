@@ -179,7 +179,7 @@ def start_dht():
     """
     with cd('usr/sinergiafs-dht/'):
         run(dtach_and_log(
-            'source ~/whoami.sh; lua ./dht.lua /home/ubuntu/dht${RING}.config $[ID + 1] /tmp/dhtstorage dht',
+            'lua ./dht.lua /home/ubuntu/dht${RING}.config $[ID + 1] /tmp/dhtstorage dht',
             '/tmp/dht',
             '/tmp/dht.log'))
 
@@ -189,7 +189,7 @@ def start_servers():
     """
     env.roles = ['paxos_coordinator']
     execute(start_node)
-    local('sleep 5')
+    time.sleep(5)
     env.roles = ['paxos_rest']
     execute(start_node)
 
@@ -204,7 +204,7 @@ def mount_fs():
         run('mkdir -p /tmp/fs')
         HEADNODE = env.roledefs['head'][0]
         with cd('usr/sinergiafs'):
-            cmd = 'source ~/whoami.sh; ./client-mount.sh 3 %s:2182 ~/storage.config $ID $RING -f %s /tmp/fs' % (HEADNODE, FUSE_OPTIONS)
+            cmd = './client-mount.sh 3 %s:2182 ~/storage.config $ID $RING -f %s /tmp/fs' % (HEADNODE, FUSE_OPTIONS)
             run(dtach_and_log(cmd, '/tmp/sinergiafs', '/tmp/sinergiafs.log'))
 
 
@@ -216,5 +216,6 @@ def start_all():
     execute(setup_zookeeper)
     execute(start_servers)
     execute(start_dht)
+    time.sleep(5)
     execute(paxos_on)
     execute(mount_fs)
