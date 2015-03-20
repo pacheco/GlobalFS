@@ -34,6 +34,7 @@ public class MemcachedStorageTest {
         storages.add(Runtime.getRuntime().exec("memcached -p 17001"));
         storages.add(Runtime.getRuntime().exec("memcached -p 17002"));
         storages.add(Runtime.getRuntime().exec("memcached -p 17003"));
+        Thread.sleep(2000); // wait a bit for memcached to start
     }
 
     @After
