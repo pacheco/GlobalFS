@@ -26,11 +26,11 @@ MRP_CONFIG = {
 # FUSE mount options
 FUSE_OPTIONS = " ".join([
     '-o direct_io',
-    #'-o noauto_cache',
-    '-o entry_timeout=10s',
-    '-o negative_timeout=10s',
-    '-o attr_timeout=10s',
-    '-o ac_attr_timeout=10s',
+    '-o noauto_cache',
+    '-o entry_timeout=0s',
+    '-o negative_timeout=0s',
+    '-o attr_timeout=0s',
+    '-o ac_attr_timeout=0s',
 ])
 
 
@@ -151,7 +151,7 @@ def setup_zookeeper():
         run('echo "%s" | zkCli.sh -server localhost:2182' % (ZKCONFIG % MRP_CONFIG))
 
 
-@roles('head')        
+@roles('head')
 def paxos_on():
     """
     """
@@ -183,7 +183,7 @@ def start_dht():
             '/tmp/dht',
             '/tmp/dht.log'))
 
-            
+
 def start_servers():
     """Start the sinergiafs servers
     """
@@ -206,6 +206,19 @@ def mount_fs():
         with cd('usr/sinergiafs'):
             cmd = './client-mount.sh 3 %s:2182 ~/storage.config $ID $RING -f %s /tmp/fs' % (HEADNODE, FUSE_OPTIONS)
             run(dtach_and_log(cmd, '/tmp/sinergiafs', '/tmp/sinergiafs.log'))
+
+
+@roles('singleclient')
+def mount_fs_local():
+    """Mount the fuse filesystem on the local machine
+    """
+    with settings(warn_only=True), lcd('~/usr/sinergiafs/'):
+        HEADNODE = env.roledefs['head'][0]
+        cmd = './client-mount.sh 3 %s:2182 ~/storage.config 0 3 -f %s /tmp/fs' % (HEADNODE, FUSE_OPTIONS)
+        get('storage.config', './storage.config')
+        local('mkdir -p /tmp/fs')
+        local('sudo umount -l /tmp/fs')
+        local(dtach_and_log(cmd, '/tmp/sinergiafs', '/tmp/sinergiafs.log'))
 
 
 def start_all():

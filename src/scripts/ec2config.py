@@ -51,6 +51,8 @@ def roledefs_from_instances():
                 roles['paxos_rest'].append(instance.dns_name)
         else:
             roles['client'].append(instance.dns_name)
+
+    roles['singleclient'] = roles['client'][0:1]
     return roles
 
 if __name__ == '__main__':
