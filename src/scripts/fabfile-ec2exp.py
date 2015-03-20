@@ -9,6 +9,14 @@ env.disable_known_hosts = True
 env.roledefs = roledefs_from_instances() # get ips for the roledef lists from ec2 instances
 
 
+def results_ok(results):
+    """Returns True if all return values are for succeed"""
+    for r in results.values():
+        if r.failed:
+            return False
+    return True
+
+
 def dtach_and_log(command, dtach_socket, logfile):
     """Generate a command to leave the program running in the background
     with its output copied to a logfile.
@@ -57,7 +65,9 @@ def putfiles(opertype, headfile):
 def seqwrite(file, writesize, threads, duration, log):
     """Run sequential write benchmark
     """
-    run('~/usr/sinergiafs-clients/seq-write %s %s %s %s %s' % (file, writesize, threads, duration, log))
+    with settings(warn_only=True):
+        return run('~/usr/sinergiafs-clients/seq-write %s %s %s %s %s' %
+                   (file, writesize, threads, duration, log))
 
 
 @parallel
@@ -65,8 +75,9 @@ def seqwrite(file, writesize, threads, duration, log):
 def randwrite(file, writesize, filesize, threads, duration, log):
     """Run sequential write benchmark
     """
-    run('~/usr/sinergiafs-clients/rand-write %s %s %s %s %s %s' %
-        (file, writesize, filesize, threads, duration, log))
+    with settings(warn_only=True):
+        return run('~/usr/sinergiafs-clients/rand-write %s %s %s %s %s %s' %
+                   (file, writesize, filesize, threads, duration, log))
 
 
 @parallel
@@ -75,7 +86,9 @@ def seqread(file, readsize, threads, duration, log):
     """Run sequential write benchmark
     """
     # TODO check file exists on remote
-    run('~/usr/sinergiafs-clients/seq-read %s %s %s %s %s' % (file, readsize, threads, duration, log))
+    with settings(warn_only=True):
+        return run('~/usr/sinergiafs-clients/seq-read %s %s %s %s %s' %
+                   (file, readsize, threads, duration, log))
 
 
 def opertype_file(opertype):
@@ -101,8 +114,13 @@ def do_seqwrite(opertype, writesize, threads, duration, outdir):
         return
     execute(clearresult)
     execute(ensuredirs)
-    execute(seqwrite, '/tmp/fs/' + filename, writesize, threads, duration, '/tmp/${NAME}_')
-    execute(copyresult, outdir)
+    results = execute(seqwrite, '/tmp/fs/' + filename, writesize, threads, duration, '/tmp/${NAME}_')
+    if results_ok(results):
+        execute(copyresult, outdir)
+    else:
+        with open('./FAILED_RUNS', 'a') as f:
+            f.write(outdir)
+            f.write('\n')
 
 
 @task
@@ -116,8 +134,13 @@ def do_randwrite(opertype, writesize, filesize, threads, duration, outdir):
         return
     execute(clearresult)
     execute(ensuredirs)
-    execute(randwrite, '/tmp/fs/' + filename, writesize, filesize, threads, duration, '/tmp/${NAME}_')
-    execute(copyresult, outdir)
+    results = execute(randwrite, '/tmp/fs/' + filename, writesize, filesize, threads, duration, '/tmp/${NAME}_')
+    if results_ok(results):
+        execute(copyresult, outdir)
+    else:
+        with open('./FAILED_RUNS', 'a') as f:
+            f.write(outdir)
+            f.write('\n')
 
 
 @task
@@ -130,5 +153,10 @@ def do_seqread(opertype, readsize, threads, duration, outdir):
         print "choose an operation type [loc | glob | rem]"
         return
     execute(clearresult)
-    execute(seqread, '/tmp/fs/' + filename, readsize, threads, duration, '/tmp/${NAME}_')
-    execute(copyresult, outdir)
+    results = execute(seqread, '/tmp/fs/' + filename, readsize, threads, duration, '/tmp/${NAME}_')
+    if results_ok(results):
+        execute(copyresult, outdir)
+    else:
+        with open('./FAILED_RUNS', 'a') as f:
+            f.write(outdir)
+            f.write('\n')
