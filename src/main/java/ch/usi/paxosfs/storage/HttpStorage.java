@@ -1,6 +1,7 @@
 package ch.usi.paxosfs.storage;
 
 import ch.usi.paxosfs.util.UUIDUtils;
+import com.google.common.cache.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -18,14 +19,22 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class HttpStorage implements Storage {
-	private static int TIMEOUT = 3000;
+	private static final int TIMEOUT = 3000;
+    private static final int CACHE_WEIGHT = 32*1024*1024; // cache 32MB of data
 	private static Random rand = new Random();
+    private static Cache<String, byte[]> cache;
+    private static Weigher<String, byte[]> cacheWeighter;
     /* Each partition has a list of servers */
     private Map<Byte, List<String>> partitionServers;
 	private ExecutorService threadpool;
 	private Async asyncHttp;
 
     private class GetHandler implements ResponseHandler<byte[]> {
+        private final String keyStr;
+        public GetHandler(String keyStr) {
+            this.keyStr = keyStr;
+        }
+
         @Override
         public byte[] handleResponse(HttpResponse httpResponse) throws IOException {
             if (httpResponse.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
@@ -34,21 +43,47 @@ public class HttpStorage implements Storage {
             InputStream in = httpResponse.getEntity().getContent();
             byte[] value = IOUtils.toByteArray(in);
             in.close();
+            // put value into cache
+            cache.put(keyStr, value);
             return value;
         }
     }
 
 	private class PutHandler implements ResponseHandler<Boolean> {
+        private final String key;
+        private final byte[] value;
+
+        public PutHandler(String key, byte[] value) {
+            this.key = key;
+            this.value = value;
+        }
+
 		@Override
 		public Boolean handleResponse(HttpResponse response) throws IOException {
-			return Boolean.valueOf(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK);
+            if (Boolean.valueOf(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK)) {
+                // put value into the cache
+                cache.put(key, value);
+                return Boolean.TRUE;
+            }
+            return Boolean.FALSE;
 		}
 	}
 
 	public HttpStorage() {
 		threadpool = Executors.newFixedThreadPool(100);
 		asyncHttp = Async.newInstance().use(threadpool);
-	}
+        cacheWeighter = new Weigher<String, byte[]>() {
+            @Override
+            public int weigh(String key, byte[] value) {
+                return value.length;
+            }
+        };
+
+        cache = CacheBuilder.newBuilder()
+                .weigher(cacheWeighter)
+                .maximumWeight(CACHE_WEIGHT)
+                .build();
+    }
 
     /**
      * Return a random server url from a given partiton
@@ -118,12 +153,13 @@ public class HttpStorage implements Storage {
         if (server == null) { // unknown partition
             return new DecidedFuture<>(false);
         }
-        Request req = Request.Put(server + keyBytesToString(key))
+        final String keyStr = keyBytesToString(key);
+        Request req = Request.Put(server + keyStr)
                 .addHeader("Content-Type", "application/octet-stream")
                 .addHeader("Sync-Mode", "sync")
                 .connectTimeout(TIMEOUT)
                 .bodyByteArray(value);
-        return asyncHttp.execute(req, new PutHandler());
+        return asyncHttp.execute(req, new PutHandler(keyStr, value));
     }
 
     @Override
@@ -132,11 +168,18 @@ public class HttpStorage implements Storage {
         if (server == null) { // unknown partition
             return new DecidedFuture<>(null);
         }
-        Request req = Request.Get(server + keyBytesToString(key))
+        // first look into the local cache
+        final String keyStr = keyBytesToString(key);
+        final byte[] value = cache.getIfPresent(keyStr);
+        if (value != null) {
+            return new DecidedFuture<>(value);
+        }
+        // go to the storage
+        Request req = Request.Get(server + keyStr)
                 .addHeader("Content-Type", "application/octet-stream")
                 .addHeader("Sync-Mode", "sync")
                 .connectTimeout(TIMEOUT);
-        return asyncHttp.execute(req, new GetHandler());
+        return asyncHttp.execute(req, new GetHandler(keyStr));
     }
 
     @Override
