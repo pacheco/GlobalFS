@@ -63,10 +63,15 @@ public class PaxosFileSystem implements Filesystem3 {
         @Override
         public void run() {
             while (true) {
+                if (Thread.interrupted()) {
+                    return;
+                }
                 long start = System.currentTimeMillis();
                 try {
                     Thread.sleep(1000);
-                } catch (InterruptedException e) {}
+                } catch (InterruptedException e) {
+                    return;
+                }
                 long elapsed = System.currentTimeMillis() - start;
                 double readSec = readCount.get()*1000.0 / elapsed;
                 double writeSec = writeCount.get()*1000.0 / elapsed;
@@ -707,6 +712,7 @@ public class PaxosFileSystem implements Filesystem3 {
 			e.printStackTrace();
 		} finally {
 			log.debug("Exiting...");
+            statsPrinter.interrupt();
 		}
 	}
 }
