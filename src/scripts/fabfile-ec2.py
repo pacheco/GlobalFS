@@ -214,7 +214,7 @@ def mount_fs_local():
     """
     with settings(warn_only=True), lcd('~/usr/sinergiafs/'):
         HEADNODE = env.roledefs['head'][0]
-        cmd = './client-mount.sh 3 %s:2182 ~/storage.config 0 3 -f %s /tmp/fs' % (HEADNODE, FUSE_OPTIONS)
+        cmd = './client-mount.sh 3 %s:2182 ./storage.config 0 3 -f %s /tmp/fs' % (HEADNODE, FUSE_OPTIONS)
         get('storage.config', './storage.config')
         local('mkdir -p /tmp/fs')
         local('sudo umount -l /tmp/fs')
