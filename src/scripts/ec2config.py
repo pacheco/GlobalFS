@@ -6,9 +6,9 @@ from collections import defaultdict
 
 # EC2 constants
 # -----------------------------
-regions = ['us-west-1', 'us-west-2', 'eu-west-1']
-regions_zones=['us-west-1c', 'us-west-2c', 'eu-west-1a']
-regions_prices=[0.03, 0.04, 0.03]
+regions = ['us-west-1', 'us-east-1', 'eu-west-1']
+regions_zones=['us-west-1c', 'us-east-1e', 'eu-west-1a']
+regions_prices=[0.03, 0.03, 0.03]
 
 head_region='us-west-1'
 head_zone='us-west-1a'
@@ -16,7 +16,7 @@ head_price=0.05
 head_type='r3.large'
 
 instance_type='c3.large'
-instances_per_region=5 # should be at least 5 for the spot_tag() to work
+instances_per_region=7 # should be at least 5 for the spot_tag() to work
 
 
 # SinergiaFS stuff

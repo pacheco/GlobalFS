@@ -117,7 +117,7 @@ def gen_nodes():
             servers[worker.tags['DC']].append(worker)
         else:
             clients[worker.tags['DC']].append(worker)
-        
+
         result.append('export DC%s_%s_%s=%s' % (worker.tags['DC'],
                                         worker.tags['Name'][:3].upper(),
                                         worker.tags['Name'][-1:],
@@ -151,7 +151,7 @@ def spot_terminate_all():
 
 @task
 def spot_list():
-    """List running spot instances 
+    """List running spot instances
     """
     connections = connect_all(*regions)
     instances = list_instances(*connections.values())
@@ -175,6 +175,24 @@ def spot_request_list():
         print '%s at %s: %s' % (req.id, req.region.name, req.status.message)
 
 
+def count_spot(conn, only_running=True):
+    """Returns the number of non-head instances in this region. If
+    only_running is True only counts instances that are in the running
+    state.
+
+    """
+    count = 0
+    instances = list_instances(conn)
+    for i in instances:
+        # ignore head node
+        if 'Name' in i.tags and i.tags['Name'] == 'head':
+            continue
+        elif only_running and i.state_code != 16:
+            continue
+        count += 1
+    return count
+
+
 @task
 def spot_start(image_name):
     """Spin up all spot instances with the given image
@@ -182,31 +200,34 @@ def spot_start(image_name):
     connections = connect_all(*regions)
     for region, zone, price in zip(regions, regions_zones, regions_prices):
         conn = connections[region]
-        request_spot_instances(conn, image_name, instance_type, price,
-                               count=instances_per_region,
-                               availability_zone=zone)
+        to_start = instances_per_region - count_spot(conn)
+        print region, to_start
+        if to_start > 0:
+            request_spot_instances(conn, image_name, instance_type, price,
+                                   count=to_start,
+                                   availability_zone=zone)
     for conn in connections.values():
         conn.close()
 
 
 def spot_tag():
-    """Tags the instances given the required roles. 
+    """Tags the instances given the required roles.
     Should be called after spot_start and only after all instances are up/running
     """
     connections = connect_all(*regions)
     for rid,r in enumerate(regions):
         instances = list_instances(connections[r])
-        instances = [i for i in instances if 
+        instances = [i for i in instances if
                      ('Name' not in i.tags or i.tags['Name'] != 'head') and (i.state_code == 16)]
         instances[0].add_tag('Name', 'acc%s_0' % (rid+1))
         for i, inst in enumerate(instances[1:4]):
             inst.add_tag('Name', 'rep%s_%s' % (rid+1, i))
         for i, inst in enumerate(instances[4:]):
             inst.add_tag('Name', 'cli%s_%s' % (rid+1, i))
-        
+
         connections[r].create_tags([i.id for i in instances[0:4]], {'Type': 'server', 'DC': rid+1})
         connections[r].create_tags([i.id for i in instances[4:]], {'Type': 'client', 'DC': rid+1})
-    
+
 
 @task
 @parallel
@@ -222,10 +243,10 @@ def whoami_create():
     run('echo export ZKHOST=%s >> ~/whoami.sh' % head.dns_name)
     run('echo -n export NAME= >> ~/whoami.sh')
     run('ec2din --region \$REGION \$INSTANCE | grep Name | cut -f 5 >> ~/whoami.sh')
-    
+
     run('echo -n export ID= >> ~/whoami.sh')
     run('echo \\\`echo \\\$NAME \| cut -c6\\\` >> ~/whoami.sh')
-    
+
     run('echo -n export RING= >> ~/whoami.sh')
     run('echo \\\`echo \\\$NAME \| cut -c4\\\` >> ~/whoami.sh')
 
@@ -236,7 +257,7 @@ def whoami_create():
 def hostname_set():
     sudo('[[ -f ~/whoami.sh ]] && hostname `echo $NAME | tr _ -`')
     sudo('[[ -f ~/whoami.sh ]] && echo 127.0.1.1 `echo $NAME | tr _ -` >> /etc/hosts')
-    
+
 
 def mount_ssd():
     """Mount instance SSD drives at /ssd/storage
@@ -247,7 +268,7 @@ def mount_ssd():
     sudo('mount -text4 /dev/xvdb1 /ssd')
     sudo('mkdir -p /ssd/storage')
     sudo('chmod 777 /ssd/storage')
-    
+
 
 @task
 @parallel
@@ -255,7 +276,7 @@ def mount_ssd():
 def put_dht_config():
     """Push dht and storage config files to ec2 instances"""
     put('*.config', '/home/ubuntu/')
-    
+
 
 @task
 def create_dht_config():
