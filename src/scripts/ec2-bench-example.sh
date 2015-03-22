@@ -1,8 +1,13 @@
 #!/bin/bash
 
-OUTDIR=~/out-sinergia
-DURATION=30
+OUTDIR=$1
 
+if [[ -z "$OUTDIR" ]]; then
+    >&2 echo "script.sh <output_dir>"
+    exit 1
+fi
+
+DURATION=30
 SMALL=32
 LARGE=$[4*1024]
 THREADS=(1 4 16 64)
@@ -43,10 +48,10 @@ done
 #
 
 fab -f fabfile-ec2exp.py \
-    putfiles:glob,~/linux.tar.xz
+    putfiles:glob,1024,100,64
 
 fab -f fabfile-ec2exp.py \
-    putfiles:loc,~/linux.tar.xz
+    putfiles:loc,1024,1024,64
 
 # global small
 for T in ${THREADS[@]}; do

@@ -40,6 +40,7 @@ def copyresult(outdir):
     get('/tmp/cli*', outdir)
 
 
+@task
 @roles('singleclient')
 def ensuredirs():
     """Create benchmark directories
@@ -50,15 +51,16 @@ def ensuredirs():
 @task
 @parallel
 @roles('client')
-def putfiles(opertype, headfile):
-    """Copy files to the fs, to be used by the read benchmark. Rsyncs the file from the headnode
+def putfiles(opertype, bsize, bcount, nthreads):
+    """Use dd to create files to be used by the read benchmark.
     """
     destfile = opertype_file(opertype)
-    HEADNODE = env.roledefs['head'][0]
-    run('mkdir -p /tmp/fs/{1,2,3,g}')
-    run('rsync -avz %s:%s ~/readfile' % (HEADNODE, headfile))
-    run('cp ~/readfile %s' % ('/tmp/fs/' + destfile))
-
+    run('parallel -j %s dd if=/dev/urandom of=%s{} bs=%s count=%s ::: `seq 0 %s`' %
+        (nthreads,
+         '/tmp/fs/' + destfile,
+         bsize,
+         bcount,
+         int(nthreads) - 1))
 
 @parallel
 @roles('client')
@@ -113,7 +115,6 @@ def do_seqwrite(opertype, writesize, threads, duration, outdir):
         print "choose an operation type [loc | glob | rem]"
         return
     execute(clearresult)
-    execute(ensuredirs)
     results = execute(seqwrite, '/tmp/fs/' + filename, writesize, threads, duration, '/tmp/${NAME}_')
     if results_ok(results):
         execute(copyresult, outdir)
@@ -133,7 +134,6 @@ def do_randwrite(opertype, writesize, filesize, threads, duration, outdir):
         print "choose an operation type [loc | glob | rem]"
         return
     execute(clearresult)
-    execute(ensuredirs)
     results = execute(randwrite, '/tmp/fs/' + filename, writesize, filesize, threads, duration, '/tmp/${NAME}_')
     if results_ok(results):
         execute(copyresult, outdir)
