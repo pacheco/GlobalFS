@@ -15,9 +15,11 @@ rm $LOG
 # letency compensation for ring 0,1,2,3...
 # from wait queue*delta
 #
-# LATCOMP=(0 160 20 100) # us-east-1 us-west-2 eu-west-1
 
-LATCOMP=(0 170 10 90)
+# LATCOMP=(0 160 10 60) # us-west-1 us-east-1 eu-west-1
+
+LATCOMP=(0 160 10 60) # us-west-1 us-east-1 eu-west-1
+
 DB=/mnt/
 
 case $NAME in

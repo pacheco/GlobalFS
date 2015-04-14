@@ -1,5 +1,6 @@
 from fabric.api import *
 from ec2config import roledefs_from_instances
+import subprocess
 import time
 
 
@@ -80,6 +81,9 @@ set /ringpaxos/topology3/config/p1_resend_time %(MRP_P1_TIMEOUT)s
 set /ringpaxos/topology3/config/value_resend_time %(MRP_PROPOSER_TIMEOUT)s
 """
 
+def popup(msg):
+    """Show a popup dialog using zenity"""
+    subprocess.call(['zenity','--info', '--text', '"%s"' % (msg)])
 
 def dtach_and_log(command, dtach_socket, logfile):
     """Generate a command to leave the program running in the background
@@ -117,6 +121,7 @@ def kill_and_clear():
     """Kill server processes and remove old data
     """
     with settings(warn_only=True):
+        run('pkill --signal 9 -f Replica')
         run('pkill --signal 9 -f TTYNode')
         run('pkill --signal 9 -f FSMain')
         run('pkill --signal 9 -f dht.lua')
@@ -232,3 +237,4 @@ def start_all():
     time.sleep(5)
     execute(paxos_on)
     execute(mount_fs)
+    popup('System started successfully')

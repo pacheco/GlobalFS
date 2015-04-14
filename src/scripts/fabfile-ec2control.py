@@ -75,7 +75,21 @@ def image_distribute(image_name):
     name = 'head'
 
     connections = connect_all(*other_regions)
-    for conn in connections.values():
+
+    conn_tocopy = {}
+    for region, conn in connections.iteritems():
+        images = list_images(conn)
+        print '%s:' % (region)
+        needcopy = True
+        for img in images:
+            if img.name == image_name:
+                print "\talready available:", img
+                needcopy = False
+        if needcopy:
+            print "\tcopying..."
+            conn_tocopy[region] = conn
+
+    for conn in conn_tocopy.values():
         copy_image(conn, image_name, region_origin)
 
 
@@ -296,6 +310,12 @@ def create_dht_config():
         local('sed -e "s/\(.*\)/%s http:\/\/\\1/g" storage >> storage.config' % (dc))
         local('rm -f dhtports dhthosts storage')
 
+
+@task
+def gen_nodes_sh():
+    execute(set_roles)
+    with open('nodes.sh', 'w') as f:
+        f.write(gen_nodes())
 
 @task
 def spot_setup_all():

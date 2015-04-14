@@ -75,7 +75,12 @@ def request_spot_instances(conn, image_name, instance_type, price,
     #     zones = conn.get_all_zones(zones=[availability_zone])
     #     placement = zones[0]
     placement = availability_zone
-    imageid = list_images(conn, name=image_name)[0].id
+    imageid=None
+    for img in list_images(conn, name=image_name):
+        if img.state == u'available':
+            imageid=img.id
+    if not imageid:
+        raise Exception('no image available')
     return conn.request_spot_instances(price, imageid, count=count,
                                        placement = placement,
                                        placement_group = placement_group,

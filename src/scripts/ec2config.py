@@ -7,15 +7,20 @@ from collections import defaultdict
 # EC2 constants
 # -----------------------------
 regions = ['us-west-1', 'us-east-1', 'eu-west-1']
-regions_zones=['us-west-1c', 'us-east-1e', 'eu-west-1a']
-regions_prices=[0.03, 0.03, 0.03]
+regions_zones=['us-west-1c', 'us-east-1a', 'eu-west-1a']
+regions_prices=[0.03, 0.045, 0.03]
+
+# 5 REGION
+# regions = ['us-west-1', 'us-east-1', 'eu-west-1', 'ap-southeast-2', 'ap-southeast-1']
+# regions_zones=['us-west-1c', 'us-east-1a', 'eu-west-1a', 'ap-southeast-2b', 'ap-southeast-1b']
+# regions_prices=[0.03, 0.045, 0.03, 0.03, 0.04]
 
 head_region='us-west-1'
 head_zone='us-west-1a'
 head_price=0.05
 head_type='r3.large'
 
-instance_type='c3.large'
+instance_type='r3.large'
 instances_per_region=7 # should be at least 5 for the spot_tag() to work
 
 
@@ -26,6 +31,8 @@ coordinators = [ # 'Name' of the ring coordinators
     'rep1_0',
     'rep2_0',
     'rep3_0',
+    'rep4_0',
+    'rep5_0',
 ]
 
 def roledefs_from_instances():
