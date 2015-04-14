@@ -8,10 +8,15 @@ import java.util.concurrent.TimeoutException;
 /**
  * Used when a future is needed but its value is already available/decided.
  */
-class DecidedFuture<T> implements Future<T> {
-    private T theValue;
-    public DecidedFuture(T value) {
+class DecidedStorageFuture<T> implements StorageFuture<T> {
+    private final T theValue;
+    private final byte thePartition;
+    private final byte[] theKey;
+
+    public DecidedStorageFuture(final byte partition, final byte[] key, final T value) {
         theValue = value;
+        theKey = key;
+        thePartition = partition;
     }
 
     @Override
@@ -39,5 +44,14 @@ class DecidedFuture<T> implements Future<T> {
             ExecutionException, TimeoutException {
         return theValue;
     }
-}
 
+    @Override
+    public byte getPartition() {
+        return thePartition;
+    }
+
+    @Override
+    public byte[] getKey() {
+        return theKey;
+    }
+}

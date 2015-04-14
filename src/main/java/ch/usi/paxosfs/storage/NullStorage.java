@@ -11,18 +11,18 @@ public class NullStorage implements Storage {
     }
 
     @Override
-    public Future<Boolean> put(byte partition, byte[] key, byte[] value) {
-        return new DecidedFuture<>(Boolean.TRUE);
+    public StorageFuture<Boolean> put(byte partition, byte[] key, byte[] value) {
+        return new DecidedStorageFuture<>(partition, key, Boolean.TRUE);
     }
 
     @Override
-    public Future<byte[]> get(byte partition, byte[] key) {
-        return new DecidedFuture<>(data);
+    public StorageFuture<byte[]> get(byte partition, byte[] key) {
+        return new DecidedStorageFuture<>(partition, key, data);
     }
 
     @Override
-    public Future<Boolean> delete(byte partition, byte[] key) {
-        return new DecidedFuture<>(Boolean.TRUE);
+    public StorageFuture<Boolean> delete(byte partition, byte[] key) {
+        return new DecidedStorageFuture<>(partition, key, Boolean.TRUE);
     }
 
 }

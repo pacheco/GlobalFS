@@ -79,25 +79,25 @@ public class MemcachedStorage implements Storage {
     }
 
     @Override
-    public Future<Boolean> put(byte partition, byte[] key, byte[] value) {
+    public StorageFuture<Boolean> put(byte partition, byte[] key, byte[] value) {
         MemcachedClient c = partitionClients.get(Byte.valueOf(partition));
         if (c == null) {
-            return new DecidedFuture<>(Boolean.FALSE);
+            return new DecidedStorageFuture<>(partition, key, Boolean.FALSE);
         }
-        return c.add(keyBytesToString(key), 0, value);
+        return new StorageFutureWrapper<>(partition, key, c.add(keyBytesToString(key), 0, value));
     }
 
     @Override
-    public Future<byte[]> get(byte partition, byte[] key) {
+    public StorageFuture<byte[]> get(byte partition, byte[] key) {
         MemcachedClient c = partitionClients.get(Byte.valueOf(partition));
         if (c == null) {
-            return new DecidedFuture<>(null);
+            return new DecidedStorageFuture<>(partition, key, null);
         }
-        return (Future<byte[]>)(Future<?>) c.asyncGet(keyBytesToString(key));
+        return new StorageFutureWrapper<>(partition, key, (Future<byte[]>)(Future<?>) c.asyncGet(keyBytesToString(key)));
     }
 
     @Override
-    public Future<Boolean> delete(byte partition, byte[] key) {
+    public StorageFuture<Boolean> delete(byte partition, byte[] key) {
         // TODO not implemented
         throw new NotImplementedException();
     }

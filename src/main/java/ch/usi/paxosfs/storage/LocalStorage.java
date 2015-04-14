@@ -16,34 +16,34 @@ public class LocalStorage implements Storage {
     }
 
     @Override
-    public Future<Boolean> put(byte partition, byte[] key, byte[] value) {
+    public StorageFuture<Boolean> put(byte partition, byte[] key, byte[] value) {
         HashMap<String, byte[]> store = partitions.get(Byte.valueOf(partition));
         if (store == null) {
             store = new HashMap<>();
             partitions.put(Byte.valueOf(partition), store);
         }
         store.put(new String(key), value);
-        return new DecidedFuture<>(true);
+        return new DecidedStorageFuture<>(partition, key, true);
     }
 
     @Override
-    public Future<byte[]> get(byte partition, byte[] key) {
+    public StorageFuture<byte[]> get(byte partition, byte[] key) {
         HashMap<String, byte[]> store = partitions.get(Byte.valueOf(partition));
         byte[] value = null;
         if (store != null) {
             value = store.get(new String(key));
         }
-        return new DecidedFuture<>(value);
+        return new DecidedStorageFuture<>(partition, key, value);
     }
 
     @Override
-    public Future<Boolean> delete(byte partition, byte[] key) {
+    public StorageFuture<Boolean> delete(byte partition, byte[] key) {
         HashMap<String, byte[]> store = partitions.get(Byte.valueOf(partition));
         if (store != null) {
             if (store.remove(new String(key)) != null) {
-                return new DecidedFuture<>(true);
+                return new DecidedStorageFuture<>(partition, key, true);
             }
         }
-        return new DecidedFuture<>(false);
+        return new DecidedStorageFuture<>(partition, key, false);
     }
 }

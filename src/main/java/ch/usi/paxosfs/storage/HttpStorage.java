@@ -16,7 +16,6 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 public class HttpStorage implements Storage {
 	private static final int TIMEOUT = 3000;
@@ -148,10 +147,10 @@ public class HttpStorage implements Storage {
     }
 
     @Override
-    public Future<Boolean> put(byte partition, byte[] key, byte[] value) {
+    public StorageFuture<Boolean> put(final byte partition, final byte[] key, final byte[] value) {
         String server = this.randomServer(Byte.valueOf(partition));
         if (server == null) { // unknown partition
-            return new DecidedFuture<>(false);
+            return new DecidedStorageFuture<>(partition, key, false);
         }
         final String keyStr = keyBytesToString(key);
         Request req = Request.Put(server + keyStr)
@@ -159,31 +158,31 @@ public class HttpStorage implements Storage {
                 .addHeader("Sync-Mode", "sync")
                 .connectTimeout(TIMEOUT)
                 .bodyByteArray(value);
-        return asyncHttp.execute(req, new PutHandler(keyStr, value));
+        return new StorageFutureWrapper<>(partition, key, asyncHttp.execute(req, new PutHandler(keyStr, value)));
     }
 
     @Override
-    public Future<byte[]> get(byte partition, byte[] key) {
-        String server = this.randomServer(Byte.valueOf(partition));
+    public StorageFuture<byte[]> get(final byte partition, final byte[] key) {
+        final String server = this.randomServer(Byte.valueOf(partition));
         if (server == null) { // unknown partition
-            return new DecidedFuture<>(null);
+            return new DecidedStorageFuture<>(partition, key, null);
         }
         // first look into the local cache
         final String keyStr = keyBytesToString(key);
         final byte[] value = cache.getIfPresent(keyStr);
         if (value != null) {
-            return new DecidedFuture<>(value);
+            return new DecidedStorageFuture<>(partition, key, value);
         }
         // go to the storage
         Request req = Request.Get(server + keyStr)
                 .addHeader("Content-Type", "application/octet-stream")
                 .addHeader("Sync-Mode", "sync")
                 .connectTimeout(TIMEOUT);
-        return asyncHttp.execute(req, new GetHandler(keyStr));
+        return new StorageFutureWrapper<>(partition, key, asyncHttp.execute(req, new GetHandler(keyStr)));
     }
 
     @Override
-    public Future<Boolean> delete(byte partition, byte[] key) {
+    public StorageFuture<Boolean> delete(final byte partition, final byte[] key) {
         // TODO not implemented
         throw new NotImplementedException();
     }

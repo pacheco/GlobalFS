@@ -6,6 +6,7 @@ import ch.usi.paxosfs.replica.ReplicaManager;
 import ch.usi.paxosfs.rpc.*;
 import ch.usi.paxosfs.storage.Storage;
 import ch.usi.paxosfs.storage.StorageFactory;
+import ch.usi.paxosfs.storage.StorageFuture;
 import ch.usi.paxosfs.util.UUIDUtils;
 import ch.usi.paxosfs.util.Utils;
 import fuse.*;
@@ -28,7 +29,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class PaxosFileSystem implements Filesystem3 {
@@ -506,7 +506,7 @@ public class PaxosFileSystem implements Filesystem3 {
 			Response r = client.readBlocks(path, handle, offset, (long) buf.remaining(), instanceMap.get());
 			instanceMap.get().putAll(r.instanceMap);
 			res = r.readBlocks;
-			List<Future<byte[]>> futureValues = new LinkedList<>();
+			List<StorageFuture<byte[]>> futureValues = new LinkedList<>();
 			// dispatch the requests
 			for (DBlock b : res.getBlocks()) {
 				if (b.getId().length != 0) {
@@ -515,10 +515,8 @@ public class PaxosFileSystem implements Filesystem3 {
 				}
 			}
 			// wait for completion
-			List<byte[]> values = new ArrayList<byte[]>(futureValues.size());
-            Iterator<DBlock> blocksIter = res.getBlocks().iterator(); // TODO: this iterator is required only for the debug message. Remove later?
-			for (Future<byte[]> f: futureValues) {
-                DBlock b = blocksIter.next();
+			List<byte[]> values = new ArrayList<>(futureValues.size());
+			for (StorageFuture<byte[]> f: futureValues) {
 				try {
 					values.add(f.get());
 				} catch (InterruptedException | ExecutionException e) {
@@ -531,7 +529,7 @@ public class PaxosFileSystem implements Filesystem3 {
 			Iterator<byte[]> valuesIter = values.iterator();
 			for (DBlock b : res.getBlocks()) {
 				if (b.getId().length == 0){ 
-					// zero block
+					// zeroed block
 					int size = b.getEndOffset() - b.getStartOffset();
 					buf.put(new byte[size], 0, size);
 				} else { 
@@ -567,12 +565,12 @@ public class PaxosFileSystem implements Filesystem3 {
         writeCount.incrementAndGet();
         opCount.incrementAndGet();
 		FileHandle handle = (FileHandle) fh;
-		Set<Byte> allPartitions = this.partitionOracle.partitionsOf(path);
+		Set<Byte> allPartitions = this.partitionOracle.partitionsOf(path); // partitions to store the data block
 		int partition = choosePartition(allPartitions).intValue(); // partition to send the request
 		FuseOps.Client client = getClient((byte) partition);
 		try {
 			List<DBlock> blocks = new LinkedList<>();
-			List<Future<Boolean>> putFutures = new LinkedList<>();
+			List<StorageFuture<Boolean>> putFutures = new LinkedList<>();
 
 			while (buf.remaining() >= MAXBLOCKSIZE) {
 				byte[] data = new byte[MAXBLOCKSIZE];
@@ -601,19 +599,23 @@ public class PaxosFileSystem implements Filesystem3 {
             Iterator<DBlock> blocksIter = blocks.iterator();
             int blocksIterAux = 1; // there are more futures than blocks because of replication. This var is used to control when .next() is called.
             DBlock b = null;
-			for (Future<Boolean> put : putFutures) {
+			for (StorageFuture<Boolean> put : putFutures) {
                 if (blocksIterAux % allPartitions.size() == 1) { b = blocksIter.next(); }
                 blocksIterAux++;
-
 				try {
 					if (!put.get()) {
-                        log.error("Error writing data block " + new String(b.getId()));
-                        throw new FSError(Errno.EREMOTEIO, "Error storing data block!");
+                        b.getStorage().remove(Byte.valueOf(put.getPartition()));
+                        log.error("Error writing data block to storage " + put.getPartition());
 					}
 				} catch (InterruptedException | ExecutionException e) {
+                    b.getStorage().remove(Byte.valueOf(put.getPartition()));
 					e.printStackTrace();
-					throw new FSError(Errno.EREMOTEIO, "Error storing data block!");
+                    log.error("Error writing data block to storage " + put.getPartition());
 				}
+                if (b.getStorage().size() < 2) {
+                    // FIXME: TODO: hardcoded replication level
+                    throw new FSError(Errno.EREMOTEIO, "Error storing data block: Required replication not possible");
+                }
 			}
 			Response r = client.writeBlocks(path, handle, offset, blocks, instanceMap.get());
 			instanceMap.get().putAll(r.instanceMap);

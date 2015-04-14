@@ -343,22 +343,25 @@ public class FileSystemReplica implements Runnable {
 		if (n.isDir()) {
             throw new FSError(FuseException.EISDIR, "Is a directory");
         }
-					/*
-					 * Flags from open(2) - already removed flags the Fuse docs
-					 * say are not passed on
-					 *
-					 * O_RDONLY open for reading only O_WRONLY open for writing
-					 * only O_RDWR open for reading and writing O_NONBLOCK do
-					 * not block on open or for data to become available
-					 * O_APPEND append on each write O_TRUNC truncate size to 0
-					 * O_SHLOCK atomically obtain a shared lock O_EXLOCK
-					 * atomically obtain an exclusive lock O_NOFOLLOW do not
-					 * follow symlinks O_SYMLINK allow open of symlinks
-					 * O_EVTONLY descriptor requested for event notifications
-					 * only O_CLOEXEC mark as close-on-exec
-					 */
-		log.debug("Flags " + Integer.toHexString(open.getFlags()));
-		FileHandle fh = new FileHandle(c.getReqId(), open.getFlags(), localPartition.byteValue());
+        /*
+         * Flags from open(2) - already removed flags the Fuse docs
+		 * say are not passed on
+		 *
+		 * O_RDONLY open for reading only
+		 * O_WRONLY open for writing only
+		 * O_RDWR open for reading and writing
+		 * O_NONBLOCK do not block on open or for data to become available
+		 * O_APPEND append on each write
+		 * O_TRUNC truncate size to 0
+		 * O_SHLOCK atomically obtain a shared lock
+		 * O_EXLOCK atomically obtain an exclusive lock
+		 * O_NOFOLLOW do not follow symlinks
+		 * O_SYMLINK allow open of symlinks
+		 * O_EVTONLY descriptor requested for event notifications only
+		 * O_CLOEXEC mark as close-on-exec
+		 */
+        log.debug("Flags " + Integer.toHexString(open.getFlags()));
+        FileHandle fh = new FileHandle(c.getReqId(), open.getFlags(), localPartition.byteValue());
 		this.openFiles.put(Long.valueOf(fh.getId()), (FileNode) n);
 
 		if (c.getInvolvedPartitions().size() > 1) {

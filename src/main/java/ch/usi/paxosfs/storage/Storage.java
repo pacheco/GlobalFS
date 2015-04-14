@@ -24,7 +24,7 @@ public interface Storage {
      * @param value
      * @return
      */
-    Future<Boolean> put(byte partition, byte[] key, byte[] value);
+    StorageFuture<Boolean> put(byte partition, byte[] key, byte[] value);
 
     /**
      * Fetch data related to a key in a given partition. Future.get() returns null if the key does not exist
@@ -33,7 +33,7 @@ public interface Storage {
      * @param key
      * @return
      */
-    Future<byte[]> get(byte partition, byte[] key);
+    StorageFuture<byte[]> get(byte partition, byte[] key);
 
     /**
      * Delete data related to a key in a given partition
@@ -42,5 +42,5 @@ public interface Storage {
      * @param key
      * @return
      */
-    Future<Boolean> delete(byte partition, byte[] key);
+    StorageFuture<Boolean> delete(byte partition, byte[] key);
 }
