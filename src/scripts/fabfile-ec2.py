@@ -90,7 +90,7 @@ def dtach_and_log(command, dtach_socket, logfile):
     with its output copied to a logfile.
 
     """
-    return 'dtach -n %s bash -c "%s | tee %s"' % (dtach_socket, command, logfile)
+    return 'dtach -n %s bash -c "%s 2>&1 | tee %s"' % (dtach_socket, command, logfile)
 
 
 @parallel
