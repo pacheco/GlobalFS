@@ -856,6 +856,9 @@ public class FileSystemReplica implements Runnable {
 		case GETDIR:
 		case READ_BLOCKS:
 			return true;
+        case OPEN:
+            // check for the O_RDONLY flag
+            return ((c.getOpen().getFlags() & UnixConstants.O_ACCMODE.getValue()) == UnixConstants.O_RDONLY.getValue());
 		default:
 			return false;
 		}
