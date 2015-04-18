@@ -74,6 +74,16 @@ def seqwrite(file, writesize, threads, duration, log):
 
 @parallel
 @roles('client')
+def create(file, filesize, threads, duration, log):
+    """Run create file benchmark
+    """
+    with settings(warn_only=True):
+        return run('~/usr/sinergiafs-clients/create %s %s %s %s %s' %
+                   (file, filesize, threads, duration, log))
+
+
+@parallel
+@roles('client')
 def randwrite(file, writesize, filesize, threads, duration, log):
     """Run sequential write benchmark
     """
@@ -116,6 +126,25 @@ def do_seqwrite(opertype, writesize, threads, duration, outdir):
         return
     execute(clearresult)
     results = execute(seqwrite, '/tmp/fs/' + filename, writesize, threads, duration, '/tmp/${NAME}_')
+    if results_ok(results):
+        execute(copyresult, outdir)
+    else:
+        with open('./FAILED_RUNS', 'a') as f:
+            f.write(outdir)
+            f.write('\n')
+
+
+@task
+def do_create(opertype, filesize, threads, duration, outdir):
+    """
+    (loc|glob|rem, filesize, threads, duration, outdir)
+    """
+    filename = opertype_file(opertype)
+    if not filename:
+        print "choose an operation type [loc | glob | rem]"
+        return
+    execute(clearresult)
+    results = execute(create, '/tmp/fs/' + filename, filesize, threads, duration, '/tmp/${NAME}_')
     if results_ok(results):
         execute(copyresult, outdir)
     else:
