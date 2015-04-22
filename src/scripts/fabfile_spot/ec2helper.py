@@ -32,6 +32,14 @@ def find_instance_by_name(conn, name):
         return None
 
 
+def list_spot_requests(*ec2conn):
+    """list spot requests through the connections passed as argument"""
+    reqs = []
+    for conn in ec2conn:
+        reqs += conn.get_all_spot_instance_requests()
+    return reqs
+
+
 def list_images(conn, name=None):
     """get image id by its name"""
     if name:
@@ -56,7 +64,7 @@ def copy_image(conn, image_name, from_region):
     fromconn.close()
 
 
-def request_instances(conn, image_name, instance_type, price,
+def request_spot_instances(conn, image_name, instance_type, price,
                            count=1,
                            availability_zone=None,
                            key_name='macubuntu',

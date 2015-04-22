@@ -1,19 +1,12 @@
 from fabric.api import *
-from deployments import *
+from ec2config import roledefs_from_instances
 import time
 
 
 env.use_ssh_config = True
 env.colorize_errors = True
 env.disable_known_hosts = True
-env.roledefs = None
-
-
-@task
-def set_roles(deployment):
-    """Set fabric roles from running instances
-    """
-    env.roledefs = roledefs_from_instances(deployment) # get ips for the roledef lists from ec2 instances
+env.roledefs = roledefs_from_instances() # get ips for the roledef lists from ec2 instances
 
 
 def results_ok(results):
@@ -55,6 +48,7 @@ def ensuredirs():
     run('mkdir -p /tmp/fs/{1,2,3,g}')
 
 
+@task
 @parallel
 @roles('client')
 def putfiles(opertype, bsize, bcount, nthreads):
@@ -76,16 +70,6 @@ def seqwrite(file, writesize, threads, duration, log):
     with settings(warn_only=True):
         return run('~/usr/sinergiafs-clients/seq-write %s %s %s %s %s' %
                    (file, writesize, threads, duration, log))
-
-
-@parallel
-@roles('client')
-def create(file, filesize, threads, duration, log):
-    """Run create file benchmark
-    """
-    with settings(warn_only=True):
-        return run('~/usr/sinergiafs-clients/create %s %s %s %s %s' %
-                   (file, filesize, threads, duration, log))
 
 
 @parallel
@@ -132,25 +116,6 @@ def do_seqwrite(opertype, writesize, threads, duration, outdir):
         return
     execute(clearresult)
     results = execute(seqwrite, '/tmp/fs/' + filename, writesize, threads, duration, '/tmp/${NAME}_')
-    if results_ok(results):
-        execute(copyresult, outdir)
-    else:
-        with open('./FAILED_RUNS', 'a') as f:
-            f.write(outdir)
-            f.write('\n')
-
-
-@task
-def do_create(opertype, filesize, threads, duration, outdir):
-    """
-    (loc|glob|rem, filesize, threads, duration, outdir)
-    """
-    filename = opertype_file(opertype)
-    if not filename:
-        print "choose an operation type [loc | glob | rem]"
-        return
-    execute(clearresult)
-    results = execute(create, '/tmp/fs/' + filename, filesize, threads, duration, '/tmp/${NAME}_')
     if results_ok(results):
         execute(copyresult, outdir)
     else:

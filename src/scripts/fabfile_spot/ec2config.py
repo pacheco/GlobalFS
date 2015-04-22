@@ -6,7 +6,7 @@ from collections import defaultdict
 
 # EC2 constants
 # -----------------------------
-regions = ['us-west-1', 'us-east-1', 'eu-west-1']
+regions = ['us-west-2', 'us-east-1', 'eu-west-1']
 regions_zones=['us-west-1c', 'us-east-1a', 'eu-west-1a']
 regions_prices=[0.03, 0.045, 0.03]
 

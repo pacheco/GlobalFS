@@ -169,7 +169,6 @@ def spot_list():
     """
     connections = connect_all(*regions)
     instances = list_instances(*connections.values())
-    count = 0
     for worker in instances:
         # ignore head node
         if 'Name' in worker.tags and worker.tags['Name'] == 'head':
@@ -178,9 +177,6 @@ def spot_list():
                                           worker.id,
                                           worker.region.name,
                                           worker.state, worker.state_code)
-        if worker.state_code == 16:
-            count+=1
-    print "\n%d running spot instances." % count
 
 
 @task

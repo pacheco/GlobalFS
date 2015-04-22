@@ -1,240 +1,280 @@
+#!/usr/bin/env python
 from fabric.api import *
-from ec2config import roledefs_from_instances
-import subprocess
+import ec2helper as ec2
 import time
-
+from deployments import *
+from pprint import pprint
 
 env.use_ssh_config = True
 env.colorize_errors = True
 env.disable_known_hosts = True
-env.roledefs = roledefs_from_instances() # get ips for the roledef lists from ec2 instances
-
-MRP_CONFIG = {
-    'MRP_START_TIME' : 0,
-    'MRP_DELTA' : 10,
-    'MRP_LAMBDA' : 100000,
-    'MRP_M' : 1,
-    'MRP_REF_RING' : 0,
-    'MRP_STORAGE' : 'ch.usi.da.paxos.storage.BufferArray',
-    'MRP_BATCH' : 'none',
-    'MRP_RECOVERY' : 1,
-    'MRP_TRIM_MOD' : 0,
-    'MRP_TRIM_AUTO' : 0,
-    'MRP_P1_TIMEOUT' : 10000,
-    'MRP_PROPOSER_TIMEOUT' : 10000,
-}
-
-# FUSE mount options
-FUSE_OPTIONS = " ".join([
-    '-o direct_io',
-    '-o noauto_cache',
-    '-o entry_timeout=0s',
-    '-o negative_timeout=0s',
-    '-o attr_timeout=0s',
-    '-o ac_attr_timeout=0s',
-])
+env.roledefs = None
 
 
-# note the MRP_CONFIG interpolation at the end
-ZKCONFIG ="""
-delete /ringpaxos/boot_time.bin
-set /ringpaxos/config/multi_ring_start_time %(MRP_START_TIME)s
-set /ringpaxos/config/multi_ring_lambda %(MRP_LAMBDA)s
-set /ringpaxos/config/multi_ring_delta_t %(MRP_DELTA)s
-set /ringpaxos/config/multi_ring_m %(MRP_M)s
-set /ringpaxos/config/reference_ring %(MRP_REF_RING)s
-
-set /ringpaxos/topology0/config/stable_storage %(MRP_STORAGE)s
-set /ringpaxos/topology0/config/tcp_nodelay 1
-set /ringpaxos/topology0/config/learner_recovery %(MRP_RECOVERY)s
-set /ringpaxos/topology0/config/trim_modulo %(MRP_TRIM_MOD)s
-set /ringpaxos/topology0/config/auto_trim %(MRP_TRIM_AUTO)s
-set /ringpaxos/topology0/config/proposer_batch_policy %(MRP_BATCH)s
-set /ringpaxos/topology0/config/p1_resend_time %(MRP_P1_TIMEOUT)s
-set /ringpaxos/topology0/config/value_resend_time %(MRP_PROPOSER_TIMEOUT)s
-
-set /ringpaxos/topology1/config/stable_storage %(MRP_STORAGE)s
-set /ringpaxos/topology1/config/tcp_nodelay 1
-set /ringpaxos/topology1/config/learner_recovery %(MRP_RECOVERY)s
-set /ringpaxos/topology1/config/trim_modulo %(MRP_TRIM_MOD)s
-set /ringpaxos/topology1/config/auto_trim %(MRP_TRIM_AUTO)s
-set /ringpaxos/topology1/config/proposer_batch_policy %(MRP_BATCH)s
-set /ringpaxos/topology1/config/p1_resend_time %(MRP_P1_TIMEOUT)s
-set /ringpaxos/topology1/config/value_resend_time %(MRP_PROPOSER_TIMEOUT)s
-
-set /ringpaxos/topology2/config/stable_storage %(MRP_STORAGE)s
-set /ringpaxos/topology2/config/tcp_nodelay 1
-set /ringpaxos/topology2/config/learner_recovery %(MRP_RECOVERY)s
-set /ringpaxos/topology2/config/trim_modulo %(MRP_TRIM_MOD)s
-set /ringpaxos/topology2/config/auto_trim %(MRP_TRIM_AUTO)s
-set /ringpaxos/topology2/config/proposer_batch_policy %(MRP_BATCH)s
-set /ringpaxos/topology2/config/p1_resend_time %(MRP_P1_TIMEOUT)s
-set /ringpaxos/topology2/config/value_resend_time %(MRP_PROPOSER_TIMEOUT)s
-
-set /ringpaxos/topology3/config/stable_storage %(MRP_STORAGE)s
-set /ringpaxos/topology3/config/tcp_nodelay 1
-set /ringpaxos/topology3/config/learner_recovery %(MRP_RECOVERY)s
-set /ringpaxos/topology3/config/trim_modulo %(MRP_TRIM_MOD)s
-set /ringpaxos/topology3/config/auto_trim %(MRP_TRIM_AUTO)s
-set /ringpaxos/topology3/config/proposer_batch_policy %(MRP_BATCH)s
-set /ringpaxos/topology3/config/p1_resend_time %(MRP_P1_TIMEOUT)s
-set /ringpaxos/topology3/config/value_resend_time %(MRP_PROPOSER_TIMEOUT)s
-"""
-
-def popup(msg):
-    """Show a popup dialog using zenity"""
-    subprocess.call(['zenity','--info', '--text', '"%s"' % (msg)])
-
-def dtach_and_log(command, dtach_socket, logfile):
-    """Generate a command to leave the program running in the background
-    with its output copied to a logfile.
-
+def set_roles(deployment):
+    """Set fabric roles from running instances
     """
-    return 'dtach -n %s bash -c "%s 2>&1 | tee %s"' % (dtach_socket, command, logfile)
+    env.roledefs = roledefs_from_instances(deployment) # get ips for the roledef lists from ec2 instances
+
+
+@task
+def image_list(deployment):
+    """List images available on each region
+    """
+    dep = deployments[deployment]
+    connections = ec2.connect_all(*[x.region for x in dep.regions])
+    for region, conn in connections.iteritems():
+        images = ec2.list_images(conn)
+        print '%s:' % (region)
+        for img in images:
+            print ' %s %s - %s' % (img.name, img.id, img.state)
+
+
+@task
+def head_stop(deployment):
+    """Stop head instance
+    """
+    dep = deployments[deployment]
+    connections = ec2.connect_all(*[dep.head.region])
+    instances = ec2.list_instances(*connections.values())
+    for worker in instances:
+        # ignore nodes named 'head'
+        if 'Name' in worker.tags and worker.tags['Name'] == 'head':
+            worker.stop()
+            break
+
+
+@task
+def head_start(deployment, image_name=None):
+    """Start/restart head instance
+    """
+    dep = deployments[deployment]
+    connections = ec2.connect_all(*[dep.head.region])
+    instances = ec2.list_instances(*connections.values())
+    exists=False
+    for worker in instances:
+        # ignore nodes named 'head'
+        if 'Name' in worker.tags and worker.tags['Name'] == 'head':
+            if worker.state_code == 16:
+                print '* Head already running:', worker.region.name, worker.id
+            else:
+                worker.start()
+                exists=True
+                break
+    # create new instance
+    if not exists and image_name:
+        conn = connections[dep.head.region]
+        imageid=None
+        for img in ec2.list_images(conn, name=image_name):
+            if img.state == u'available':
+                imageid=img.id
+                break
+        if not imageid:
+            raise Exception('image not available in region ' + dep.head.region)
+        reserv = conn.run_instances(image[dep.head.region],
+                                    instance_type = dep.head.type,
+                                    placement = dep.head.region + dep.head.zone,
+                                    key_name = 'macubuntu',
+                                    security_groups = ['default'],
+                                    client_token = dep.head.name + token,
+                                    dry_run = False)
+        instance = reserv.instances[0]
+        status = instance.update()
+        while status == 'pending':
+            time.sleep(5)
+            status = instance.update()
+        if status == 'running':
+            print '* Tagging instance: ', dep.head.name
+            instance.add_tag('Name', dep.head.name)
+        else:
+            print '* ERROR: starting node', dep.head, status
+
+
+@task
+def inst_list(deployment):
+    """List instances in each region
+    """
+    dep = deployments[deployment]
+    connections = ec2.connect_all(*[x.region for x in dep.regions])
+    instances = ec2.list_instances(*connections.values())
+    count = 0
+    for worker in instances:
+        # ignore nodes named 'head'
+        print '%s: %s at %s is %s(%d)' % ((worker.tags['Name'] if 'Name' in worker.tags else 'unnamed'),
+                                          worker.id,
+                                          worker.region.name,
+                                          worker.state, worker.state_code)
+        if worker.state_code == 16:
+            count += 1
+    print '* Total running instances = ', count
+
+
+@task
+def inst_terminate(deployment):
+    """Terminate all instances in each region (except those named 'head')
+    """
+    dep = deployments[deployment]
+    connections = ec2.connect_all(*[x.region for x in dep.regions])
+    instances = ec2.list_instances(*connections.values())
+    for worker in instances:
+        # ignore nodes named 'head'
+        if 'Name' in worker.tags and worker.tags['Name'] == 'head':
+            continue
+        print '* Terminating instance', worker.region.name, worker.id, worker.state
+        worker.terminate()
+
+
+@task
+def inst_start(deployment, image_name, token='A'):
+    """Start and configure instances
+    """
+    dep = deployments[deployment]
+    regions = [x.region for x in dep.regions]
+    connections = ec2.connect_all(*regions)
+    images = {}
+    reservations = {}
+
+    # first check that image is available everywhere
+    for region, conn in connections.items():
+        imageid=None
+        for img in ec2.list_images(conn, name=image_name):
+            if img.state == u'available':
+                imageid=img.id
+                images[region] = imageid
+        if not imageid:
+            raise Exception('image not available in region ' + region)
+    # start instances
+    for dc in dep.regions:
+        conn = connections[dc.region]
+        for node in dc.nodes:
+            print '* Starting node', node.name, ':', node
+            reservation = conn.run_instances(images[node.region],
+                                             instance_type = node.type,
+                                             placement = node.region + node.zone,
+                                             key_name = 'macubuntu',
+                                             security_groups = ['default'],
+                                             client_token = node.name + token,
+                                             # user_data =
+                                             dry_run = False)
+            reservations[node.name] = (node, reservation)
+    # wait for instances to be running and tag them
+    print '**********************'
+    for node, reserv in reservations.values():
+        instance = reserv.instances[0] # each reservation is for a single instance
+        status = instance.update()
+        while status == 'pending':
+            time.sleep(5)
+            status = instance.update()
+        if status == 'running':
+            print '* Tagging instance: ', node.name
+            instance.add_tag('Name', node.name)
+        else:
+            print '* ERROR: starting node', node, status
+    print '* DONE!'
+
+
+def gen_nodes(deployment):
+    """Generate nodes.sh contents
+    """
+    dep = deployments[deployment]
+    connections = ec2.connect_all(*[x.region for x in dep.regions])
+    instances = ec2.list_instances(*connections.values())
+
+    servers = defaultdict(list)
+    clients = defaultdict(list)
+    result = []
+    for worker in instances:
+        if worker.state_code != 16:
+            continue
+        if 'Name' in worker.tags:
+            name = worker.tags['Name']
+            if name == 'head':
+                result.append('export ZKHOST=%s' % (worker.dns_name))
+                continue
+            elif name.startswith('rep'):
+                servers[name[3]].append(worker)
+            elif name.startswith('cli'):
+                clients[name[3]].append(worker)
+            result.append('export DC%s_%s_%s=%s' % (name[3],
+                                                    name[:3].upper(),
+                                                    name[5],
+                                                    worker.dns_name))
+    for dc,serv in servers.items():
+        result.append('export DC%s_SERVERS=(' % (dc))
+        for s in serv:
+            result.append(s.dns_name)
+        result.append(')')
+    for dc,cli in clients.items():
+        result.append('export DC%s_CLIENTS=(' % (dc))
+        for c in cli:
+            result.append(c.dns_name)
+        result.append(')')
+    result.append('\n')
+    return '\n'.join(result)
 
 
 @parallel
-@roles('replica', 'client')
-def rsync_from_head():
-    """Synchronize code from headnode
+@roles(['server', 'client'])
+def whoami_create():
+    """Create a whoami.sh file in the ~ of the remote machine.
+    Contains variables regarding the local machine
     """
-    with hide('stdout', 'stderr'):
-        HEADNODE = env.roledefs['head'][0]
-        run('rsync -azr --delete %s:.bashrc ~' % (HEADNODE))
-        run('rsync -azr --delete %s:.ssh ~' % (HEADNODE))
-        run('rsync -azr --delete %s:usr ~' % (HEADNODE))
+    run('rm -f ~/whoami.sh')
+    run('echo export ZKHOST=%s >> ~/whoami.sh' % env.roledefs['head'][0])
+    run('echo -n export NAME= >> ~/whoami.sh')
+    run('ec2din --region \$REGION \$INSTANCE | grep Name | cut -f 5 >> ~/whoami.sh')
+
+    run('echo -n export ID= >> ~/whoami.sh')
+    run('echo \\\`echo \\\$NAME \| cut -c6\\\` >> ~/whoami.sh')
+
+    run('echo -n export RING= >> ~/whoami.sh')
+    run('echo \\\`echo \\\$NAME \| cut -c4\\\` >> ~/whoami.sh')
+
+
+@task
+@parallel
+@roles(['server', 'client'])
+def config_put():
+    """Push dht and storage config files to ec2 instances"""
+    put('*.config', '/home/ubuntu/')
+
+
+def create_dht_config():
+    """Generate dht and storage config files"""
+    # create dht config files
+    local('echo ch.usi.paxosfs.storage.HttpStorage > storage.config')
+    for dc in range(1, 4):
+        # hosts and ports
+        local('cat nodes.sh | grep DC%s_REP | sort | cut -d= -f2 > dhthosts' % (dc))
+        local('seq 15100 100 15300 > dhtports')
+        # REPLICATION LEVEL
+        local('echo replication = 1 > dht%s.config' % dc)
+        local('paste -d" " dhthosts dhtports >> dht%s.config' % (dc)) # create final dhtN.config
+        # storage cfg
+        local('seq 15101 100 15301 > dhtports') # http ports are +1
+        local('paste -d":" dhthosts dhtports >> storage')
+        local('sed -e "s/\(.*\)/%s http:\/\/\\1/g" storage >> storage.config' % (dc))
+        local('rm -f dhtports dhthosts storage')
 
 
 @parallel
-@roles('replica', 'client')
-def ntpsync():
-    """Synchronize NTP with remote server
+@roles(['server', 'client'])
+def hostname_set():
+    sudo('[[ -f ~/whoami.sh ]] && hostname `echo $NAME | tr _ -`')
+    sudo('[[ -f ~/whoami.sh ]] && echo 127.0.1.1 `echo $NAME | tr _ -` >> /etc/hosts')
+
+
+@task
+def inst_config(deployment):
+    """Generate config files and deploy to running instances
     """
-    with hide('stdout', 'stderr'):
-        sudo('service ntp stop')
-        sudo('ntpdate -b pool.ntp.org')
-
-
-@parallel
-@roles('replica', 'client')
-def kill_and_clear():
-    """Kill server processes and remove old data
-    """
-    with settings(warn_only=True):
-        run('pkill --signal 9 -f Replica')
-        run('pkill --signal 9 -f TTYNode')
-        run('pkill --signal 9 -f FSMain')
-        run('pkill --signal 9 -f dht.lua')
-        sudo('pkill --signal 9 -f PaxosFileSystem')
-        sudo('umount -l /tmp/fs*')
-        to_rm = ['/tmp/*.vgc',
-                 '/tmp/sinergia*',
-                 '/tmp/replica*',
-                 '/tmp/dht*',
-                 '/tmp/acceptor*',
-                 '/tmp/storage*',
-                 '/tmp/ringpaxos-db',
-                 '/ssd/storage/ringpaxos-db',
-                 '/tmp/*.log']
-        sudo('rm -rf ' + ' '.join(to_rm))
-
-@roles('head')
-def setup_zookeeper():
-    """Setup zookeeper with MRP parameters
-    """
-    with hide('stdout', 'stderr'):
-        sudo('service zookeeper restart')
-        MRP_CONFIG['MRP_START_TIME'] = run('date +%s000')
-        time.sleep(5) # needed?
-        run(dtach_and_log("~/usr/Paxos-trunk/ringpaxos.sh '0,0:L;1,0:L;2,0:L;3,0:L' localhost:2182",
-                          '/tmp/zkcfg',
-                          '/tmp/trash'))
-        time.sleep(10)
-        with settings(warn_only = True): # pkill is not returning 0 even on success
-            run('pkill --signal 9 -f TTYNode')
-        # set zookeeper MRP variables
-        run('echo "%s" | zkCli.sh -server localhost:2182' % (ZKCONFIG % MRP_CONFIG))
-
-
-@roles('head')
-def paxos_on():
-    """
-    """
-    with cd('usr/sinergiafs'), settings(warn_only=True):
-        while run('java ch.usi.paxosfs.client.CheckIfRunning 3 localhost:2182').return_code != 0:
-            print 'NOT YET :('
-    print 'OK!'
-
-
-@parallel
-def start_node():
-    """Start the paxos/replica node
-    """
-    with hide('stdout', 'stderr'):
-        with cd('usr/sinergiafs/'):
-            run(dtach_and_log('./node-ec2.sh',
-                              '/tmp/nodeec2',
-                              '/tmp/nodeec2.log'))
-
-
-@parallel
-@roles('dht')
-def start_dht():
-    """Start the dht
-    """
-    with cd('usr/sinergiafs-dht/'):
-        run(dtach_and_log(
-            'lua ./dht.lua /home/ubuntu/dht${RING}.config $[ID + 1] /tmp/dhtstorage dht',
-            '/tmp/dht',
-            '/tmp/dht.log'))
-
-
-def start_servers():
-    """Start the sinergiafs servers
-    """
-    env.roles = ['paxos_coordinator']
-    execute(start_node)
-    time.sleep(5)
-    env.roles = ['paxos_rest']
-    execute(start_node)
-
-
-@parallel
-@roles('client')
-def mount_fs():
-    """Mount the fuse filesystem
-    """
-    with settings(warn_only=True):
-        sudo('umount -l /tmp/fs')
-        run('mkdir -p /tmp/fs')
-        HEADNODE = env.roledefs['head'][0]
-        with cd('usr/sinergiafs'):
-            cmd = './client-mount.sh 3 %s:2182 ~/storage.config $[ID %% 3] $RING -f %s /tmp/fs' % (HEADNODE, FUSE_OPTIONS)
-            run(dtach_and_log(cmd, '/tmp/sinergiafs', '/tmp/sinergiafs.log'))
-
-
-@roles('singleclient')
-def mount_fs_local():
-    """Mount the fuse filesystem on the local machine
-    """
-    with settings(warn_only=True), lcd('~/usr/sinergiafs/'):
-        HEADNODE = env.roledefs['head'][0]
-        cmd = './client-mount.sh 3 %s:2182 ./storage.config 0 3 -f %s /tmp/fs' % (HEADNODE, FUSE_OPTIONS)
-        get('storage.config', './storage.config')
-        local('mkdir -p /tmp/fs')
-        local('sudo umount -l /tmp/fs')
-        local(dtach_and_log(cmd, '/tmp/sinergiafs', '/tmp/sinergiafs.log'))
-
-
-def start_all():
-    """Starts the whole system, replicas and clients (mountpoints)
-    """
-    execute(kill_and_clear)
-    execute(ntpsync)
-    execute(setup_zookeeper)
-    execute(start_servers)
-    execute(start_dht)
-    time.sleep(5)
-    execute(paxos_on)
-    execute(mount_fs)
-    popup('System started successfully')
+    execute(set_roles, deployment)
+    with open('nodes.sh', 'w') as f:
+        f.write(gen_nodes(deployment))
+    with settings(roles = ['head']):
+        execute(lambda: put('nodes.sh', '~/'))
+    pprint(dict(env.roledefs))
+    execute(whoami_create)
+    execute(create_dht_config)
+    execute(config_put)
+    execute(hostname_set)
