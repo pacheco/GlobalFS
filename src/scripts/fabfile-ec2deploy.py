@@ -256,4 +256,11 @@ def start_all(deployment):
     time.sleep(5)
     execute(paxos_on)
     execute(mount_fs)
+
+
+@task
+def start_all_popup(deployment):
+    """Starts the whole system, replicas and clients (mountpoints)
+    """
+    execute(start_all, deployment)
     popup('System started successfully')
