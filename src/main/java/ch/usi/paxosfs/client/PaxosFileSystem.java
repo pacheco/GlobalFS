@@ -594,29 +594,33 @@ public class PaxosFileSystem implements Filesystem3 {
 				}
 				blocks.add(b);
 			}
-			
-			// Check all puts were successful
-            Iterator<DBlock> blocksIter = blocks.iterator();
-            int blocksIterAux = 1; // there are more futures than blocks because of replication. This var is used to control when .next() is called.
-            DBlock b = null;
-			for (StorageFuture<Boolean> put : putFutures) {
-                if (blocksIterAux % allPartitions.size() == 1) { b = blocksIter.next(); }
-                blocksIterAux++;
-				try {
-					if (!put.get()) {
-                        b.getStorage().remove(Byte.valueOf(put.getPartition()));
-                        log.error("Error writing data block to storage " + put.getPartition());
-					}
-				} catch (InterruptedException | ExecutionException e) {
-                    b.getStorage().remove(Byte.valueOf(put.getPartition()));
-					e.printStackTrace();
-                    log.error("Error writing data block to storage " + put.getPartition());
-				}
-                if (b.getStorage().size() < 2) {
-                    // FIXME: TODO: hardcoded replication level
-                    throw new FSError(Errno.EREMOTEIO, "Error storing data block: Required replication not possible");
+
+
+            // Check that puts were successful
+            Iterator<StorageFuture<Boolean>> futuresIter = putFutures.iterator();
+            for (DBlock b: blocks) {
+                // check each partition write
+                for (Byte p : allPartitions) {
+                    StorageFuture<Boolean> putFuture = futuresIter.next();
+                    boolean ok = false;
+                    try {
+                        ok = putFuture.get();
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    } finally {
+                        if (!ok) {
+                            b.getStorage().remove(Byte.valueOf(p));
+                            log.error("Error writing data block to storage " + p);
+                        }
+                    }
                 }
-			}
+
+                // FIXME: TODO: how to handle a replicated write? Right now we assume all replicated writes are for (3 partitions), writing to 2 is enough
+                if (allPartitions.size() == 3 && b.getStorage().size() < 2) {
+                    throw new FSError(Errno.EREMOTEIO, "Error storing data block: Required replication not achieved");
+                }
+            }
+
 			Response r = client.writeBlocks(path, handle, offset, blocks, instanceMap.get());
 			instanceMap.get().putAll(r.instanceMap);
 			returnClient(client, (byte) partition);
