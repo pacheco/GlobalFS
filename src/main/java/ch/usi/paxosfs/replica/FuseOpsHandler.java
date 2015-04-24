@@ -191,7 +191,7 @@ public class FuseOpsHandler implements FuseOps.Iface {
 	public Response statfs(Map<Byte, Long> instanceMap) throws TException {
 		// TODO: implement this if we care about statfs
 		Response r = new Response(replica.getInstanceMap());
-		r.setStatfs(new FileSystemStats(0, 0, 0, 0, 0, 0, 1024));
+		r.setStatfs(new FileSystemStats(32*1024, 0, Integer.MAX_VALUE, Integer.MAX_VALUE, 0, 0, 1024));
 		return r;
 	}
 
