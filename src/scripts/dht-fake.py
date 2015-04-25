@@ -2,10 +2,12 @@
 import flask
 import sys
 from time import sleep
-from kazoo.client import KazooClient
+#from kazoo.client import KazooClient
+from gevent.wsgi import WSGIServer
+
 
 app = flask.Flask(__name__)
-zk = KazooClient()
+#zk = KazooClient()
 
 storage = dict()
 
@@ -57,4 +59,6 @@ if __name__ == '__main__':
     # zk.start()
     # zk.create("/paxosfs/dht/1", ephemeral=True)
     # zk.ensure_path("/paxosfs/dht")
-    app.run(debug = False, host="0.0.0.0", port = int(sys.argv[1]), threaded = True)
+    http_server = WSGIServer(('', int(sys.argv[1])), app)
+    http_server.serve_forever()
+    #app.run(debug = False, host="0.0.0.0", port = int(sys.argv[1]), threaded = True)
