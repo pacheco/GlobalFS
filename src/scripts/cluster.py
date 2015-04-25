@@ -107,9 +107,9 @@ def gen_dhtcfg(partition):
     partition = int(partition)
     get_roles_cluster(partition) # just to check for the correct number of nodes
     cfg = "replication = 2\n"
-    cfg += "http://%s 30000\n" % (REPLICA_NODES[(partition-1)*3])
-    cfg += "http://%s 30000\n" % (REPLICA_NODES[(partition-1)*3 + 1])
-    cfg += "http://%s 30000\n" % (REPLICA_NODES[(partition-1)*3 + 2])
+    cfg += "%s 30000\n" % (REPLICA_NODES[(partition-1)*3])
+    cfg += "%s 30000\n" % (REPLICA_NODES[(partition-1)*3 + 1])
+    cfg += "%s 30000\n" % (REPLICA_NODES[(partition-1)*3 + 2])
     return cfg
 
 
