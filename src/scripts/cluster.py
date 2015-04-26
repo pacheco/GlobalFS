@@ -119,7 +119,7 @@ def gen_storagecfg(partitions):
     get_roles_cluster(partitions) # just to check for the correct number of nodes
     cfg = "ch.usi.paxosfs.storage.HttpStorage\n"
     for p in range(0, partitions):
-        cfg += "%s http://%s:30000\n" % (p+1, REPLICA_NODES[p*3])
-        cfg += "%s http://%s:30000\n" % (p+1, REPLICA_NODES[p*3 + 1])
-        cfg += "%s http://%s:30000\n" % (p+1, REPLICA_NODES[p*3 + 2])
+        cfg += "%s http://%s:30001\n" % (p+1, REPLICA_NODES[p*3])
+        cfg += "%s http://%s:30001\n" % (p+1, REPLICA_NODES[p*3 + 1])
+        cfg += "%s http://%s:30001\n" % (p+1, REPLICA_NODES[p*3 + 2])
     return cfg
