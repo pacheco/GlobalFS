@@ -44,6 +44,11 @@
 
 	<dependencies>
         <dependency>
+            <groupId>biz.paluch.redis</groupId>
+            <artifactId>lettuce</artifactId>
+            <version>3.1.Final</version>
+        </dependency>
+        <dependency>
             <groupId>net.spy</groupId>
             <artifactId>spymemcached</artifactId>
             <version>2.11.6</version>
