@@ -45,7 +45,7 @@ public class FileSystemReplica implements Runnable {
 	private Byte localPartition;
 	private FileSystem fs = null;
 	private Map<Long, FileNode> openFiles; // map file handles to files
-	private ReplicaManager manager;
+	private ZookeeperReplicaManager manager;
 	private String zoohost;
 	private Thread thriftServer;
 	private FuseOpsHandler thriftHandler;
@@ -121,12 +121,12 @@ public class FileSystemReplica implements Runnable {
 		if (public_ip == null) {
 			public_ip = this.host;
 		}
-		this.manager = new ReplicaManager(this.zoohost, this.localPartition.byteValue(), this.id, public_ip + ":" + Integer.toString(this.port));
+		this.manager = new ZookeeperReplicaManager(this.zoohost, this.localPartition.byteValue(), this.id, public_ip + ":" + Integer.toString(this.port));
 		try {
 			this.manager.start();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return;
+		} catch (ReplicaManagerException e) {
+            log.error("Error starting replica manager", e);
+			throw new RuntimeException(e);
 		}
 
 		while (!Thread.currentThread().isInterrupted()) {

@@ -3,9 +3,11 @@ package ch.usi.paxosfs.client;
 import ch.usi.paxosfs.partitioning.DefaultMultiPartitionOracle;
 import ch.usi.paxosfs.partitioning.PartitioningOracle;
 import ch.usi.paxosfs.replica.DebugCommands;
-import ch.usi.paxosfs.replica.ReplicaManager;
+import ch.usi.paxosfs.replica.ReplicaManagerException;
+import ch.usi.paxosfs.replica.ZookeeperReplicaManager;
 import ch.usi.paxosfs.rpc.Debug;
 import ch.usi.paxosfs.rpc.FuseOps;
+import com.google.common.net.HostAndPort;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
@@ -21,15 +23,15 @@ import java.io.IOException;
  */
 public class CheckIfRunning {
     public static void main(String[] args) {
-        ReplicaManager rm;
+        ZookeeperReplicaManager rm;
 
         int nPartitions = Integer.parseInt(args[0]);
         String zooHost = args[1];
 
         try {
-            rm = new ReplicaManager(zooHost);
+            rm = new ZookeeperReplicaManager(zooHost);
             rm.start();
-        } catch (IOException e) {
+        } catch (ReplicaManagerException e) {
             e.printStackTrace();
             System.exit(1);
             return;
@@ -39,18 +41,16 @@ public class CheckIfRunning {
 
         /* For each partition, connect to replica 0 and send a command */
         for (byte i=1; i<=nPartitions; i++) {
-            String replicaAddr;
+            HostAndPort replicaAddr;
             try {
                 replicaAddr = rm.getReplicaAddress(i, 0);
-            } catch (KeeperException | InterruptedException e) {
+            } catch (ReplicaManagerException e) {
                 e.printStackTrace();
                 System.exit(1);
                 return;
             }
-            String replicaHost = replicaAddr.split(":")[0];
-            int replicaPort = Integer.parseInt(replicaAddr.split(":")[1]);
 
-            TTransport transport = new TSocket(replicaHost, replicaPort);
+            TTransport transport = new TSocket(replicaAddr.getHostText(), replicaAddr.getPort());
             try {
                 transport.open();
             } catch (TTransportException e) {

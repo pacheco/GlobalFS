@@ -83,12 +83,12 @@ public class NonReplicatedFileSystemServer implements FuseOps.Iface, Runnable {
 			InetSocketAddress addr = new InetSocketAddress(Util.getHostAddress(), port);
 			public_ip = addr.getHostString();
 		} 
-		ReplicaManager rm = new ReplicaManager(this.zkHost, PARTITION, REPLICA_ID, public_ip + ":" + Integer.toString(this.port));
+		ZookeeperReplicaManager rm = new ZookeeperReplicaManager(this.zkHost, PARTITION, REPLICA_ID, public_ip + ":" + Integer.toString(this.port));
 		try {
 			rm.start();
-		} catch (IOException e) {
+		} catch (ReplicaManagerException e) {
 			e.printStackTrace();
-			return;
+            throw new RuntimeException(e);
 		}
 		
 		try {

@@ -2,13 +2,15 @@ package ch.usi.paxosfs.client;
 
 import ch.usi.paxosfs.partitioning.DefaultMultiPartitionOracle;
 import ch.usi.paxosfs.partitioning.PartitioningOracle;
-import ch.usi.paxosfs.replica.ReplicaManager;
+import ch.usi.paxosfs.replica.ReplicaManagerException;
+import ch.usi.paxosfs.replica.ZookeeperReplicaManager;
 import ch.usi.paxosfs.rpc.*;
 import ch.usi.paxosfs.storage.Storage;
 import ch.usi.paxosfs.storage.StorageFactory;
 import ch.usi.paxosfs.storage.StorageFuture;
 import ch.usi.paxosfs.util.UUIDUtils;
 import ch.usi.paxosfs.util.Utils;
+import com.google.common.net.HostAndPort;
 import fuse.*;
 import org.apache.commons.lang3.text.StrBuilder;
 import org.apache.commons.logging.Log;
@@ -41,7 +43,7 @@ public class PaxosFileSystem implements Filesystem3 {
 	private Random rand = new Random();
 	private int replicaId;
 	private static Log log = LogFactory.getLog(PaxosFileSystem.class);
-	private ReplicaManager rm;
+	private ZookeeperReplicaManager rm;
 	private String zoohost;
 	private PartitioningOracle partitionOracle;
 	private Storage storage;
@@ -95,15 +97,13 @@ public class PaxosFileSystem implements Filesystem3 {
 	private FuseOps.Client getClient(byte partition) {
 		FuseOps.Client c = clients[partition - 1].poll();
 		if (c == null) {
-			String replicaAddr;
+			HostAndPort replicaAddr;
 			try {
 				replicaAddr = rm.getReplicaAddress(partition, replicaId);
-			} catch (KeeperException | InterruptedException e) {
+			} catch (ReplicaManagerException e) {
 				throw new RuntimeException(e);
 			}
-			String replicaHost = replicaAddr.split(":")[0];
-			int replicaPort = Integer.parseInt(replicaAddr.split(":")[1]);
-			TTransport transport = new TSocket(replicaHost, replicaPort);
+			TTransport transport = new TSocket(replicaAddr.getHostText(), replicaAddr.getPort());
 			try {
 				transport.open();
 			} catch (TTransportException e) {
@@ -156,16 +156,11 @@ public class PaxosFileSystem implements Filesystem3 {
         }
     }
 
-	/**
-	 * Connect to the replicas
-	 * 
-	 * @throws TTransportException
-	 * @throws InterruptedException
-	 * @throws KeeperException
-	 * @throws IOException
-	 */
-	public void start() throws TTransportException, KeeperException, InterruptedException, IOException {
-		rm = new ReplicaManager(zoohost);
+    /**
+     * Get replica addresss
+     */
+	public void start() throws ReplicaManagerException {
+		rm = new ZookeeperReplicaManager(zoohost);
 		rm.start();
 
 	}

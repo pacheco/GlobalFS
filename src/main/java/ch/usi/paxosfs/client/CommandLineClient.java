@@ -2,13 +2,14 @@ package ch.usi.paxosfs.client;
 
 import ch.usi.paxosfs.partitioning.DefaultMultiPartitionOracle;
 import ch.usi.paxosfs.partitioning.PartitioningOracle;
-import ch.usi.paxosfs.replica.ReplicaManager;
+import ch.usi.paxosfs.replica.ZookeeperReplicaManager;
 import ch.usi.paxosfs.rpc.*;
 import ch.usi.paxosfs.storage.Storage;
 import ch.usi.paxosfs.storage.StorageFactory;
 import ch.usi.paxosfs.util.PathsNIO;
 import ch.usi.paxosfs.util.UUIDUtils;
 import ch.usi.paxosfs.util.UnixConstants;
+import com.google.common.net.HostAndPort;
 import jline.console.ConsoleReader;
 import jline.console.completer.Completer;
 import jline.console.completer.StringsCompleter;
@@ -24,7 +25,7 @@ import java.util.*;
 public class CommandLineClient {
 	private static TTransport[] transport;
 	private static FuseOps.Client[] client;
-	private static ReplicaManager rm;
+	private static ZookeeperReplicaManager rm;
 	private static PartitioningOracle oracle;
 	private static Map<Byte, Long> instanceMap = new HashMap<Byte, Long>(); 
 	
@@ -80,7 +81,7 @@ public class CommandLineClient {
 		String storageCfg = args[2];
 		Storage storage = StorageFactory.storageFromConfig(FileSystems.getDefault().getPath(storageCfg));
 		
-		rm = new ReplicaManager(zoohost);
+		rm = new ZookeeperReplicaManager(zoohost);
 		rm.start();
 
 		oracle = new DefaultMultiPartitionOracle(nPartitions);
@@ -89,11 +90,8 @@ public class CommandLineClient {
 		client = new FuseOps.Client[nPartitions];
 		
 		for (byte i=1; i<=nPartitions; i++) {
-			String replicaAddr = rm.getReplicaAddress(i, 0);
-			String replicaHost = replicaAddr.split(":")[0];
-			int replicaPort = Integer.parseInt(replicaAddr.split(":")[1]);
-			
-			transport[i-1] = new TSocket(replicaHost, replicaPort);
+			HostAndPort replicaAddr = rm.getReplicaAddress(i, 0);
+			transport[i-1] = new TSocket(replicaAddr.getHostText(), replicaAddr.getPort());
 			transport[i-1].open();
 			TProtocol protocol = new TBinaryProtocol(transport[i-1]);
 			client[i-1] = new FuseOps.Client(protocol);
