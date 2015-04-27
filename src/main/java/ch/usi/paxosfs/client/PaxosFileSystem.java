@@ -701,7 +701,7 @@ public class PaxosFileSystem implements Filesystem3 {
 
 		System.out.println(Arrays.toString(LogFactory.getFactory().getAttributeNames()));
 
-        statsPrinter.start();
+       // statsPrinter.start();
 
 		PaxosFileSystem fs = new PaxosFileSystem(Integer.parseInt(args[0]), args[1], args[2], Integer.parseInt(args[3]), Byte.parseByte(args[4]));
 		try {
@@ -713,7 +713,7 @@ public class PaxosFileSystem implements Filesystem3 {
 			e.printStackTrace();
 		} finally {
 			log.debug("Exiting...");
-            statsPrinter.interrupt();
+            // statsPrinter.interrupt();
 		}
 	}
 }
