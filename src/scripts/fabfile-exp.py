@@ -1,6 +1,7 @@
 from fabric.api import *
 from deployments import *
 import time
+import cluster
 
 
 env.use_ssh_config = True
@@ -8,9 +9,14 @@ env.colorize_errors = True
 env.disable_known_hosts = True
 env.roledefs = None
 
+@task
+def set_roles_cluster(partitions):
+    """Set fabric roles from cluster nodes
+    """
+    env.roledefs = cluster.get_roles_cluster(partitions)
 
 @task
-def set_roles(deployment):
+def set_roles_ec2(deployment):
     """Set fabric roles from running instances
     """
     env.roledefs = roledefs_from_instances(deployment) # get ips for the roledef lists from ec2 instances
