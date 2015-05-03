@@ -1,5 +1,6 @@
 from fabric.api import *
 from deployments import *
+import random
 import time
 import cluster
 
@@ -102,15 +103,6 @@ def putfiles(opertype, bsize, bcount, nthreads):
          bcount,
          int(nthreads) - 1))
 
-@parallel
-@roles('client')
-def seqwrite(file, writesize, threads, duration, log):
-    """Run sequential write benchmark
-    """
-    with settings(warn_only=True):
-        return run('~/usr/sinergiafs-clients/write %s %s 1 %s %s %s' %
-                   (file, writesize, threads, duration, log))
-
 
 @parallel
 @roles('client')
@@ -128,8 +120,8 @@ def create(file, filesize, threads, duration, log):
     """Run create file benchmark
     """
     with settings(warn_only=True):
-        return run('~/usr/sinergiafs-clients/create %s %s 1 %s %s %s' %
-                   (file, filesize, threads, duration, log))
+        return run('~/usr/sinergiafs-clients/create %s %s %s %s %s %s' %
+                   (file, filesize, 1, threads, duration, log))
 
 
 @parallel
@@ -139,33 +131,64 @@ def seqread(file, readsize, threads, duration, log):
     """
     # TODO check file exists on remote
     with settings(warn_only=True):
-        return run('~/usr/sinergiafs-clients/read %s %s 1 %s %s %s' %
-                   (file, readsize, threads, duration, log))
+        return run('~/usr/sinergiafs-clients/read %s %s %s %s %s %s' %
+                   (file, readsize, 1, threads, duration, log))
 
 
-def opertype_file(opertype):
-    """Get the filename to be used for a given operation type"""
+@parallel
+@roles('client')
+def seqwrite(file, writesize, threads, duration, log):
+    """Run sequential write benchmark
+    """
+    with settings(warn_only=True):
+        return run('~/usr/sinergiafs-clients/write %s %s %s %s %s %s' %
+                   (file, writesize, 1, threads, duration, log))
+
+
+def opertype_file(opertype, name):
+    """Get the filename path to be used for a given operation type"""
     if opertype == 'loc':
-        filename = '${RING}/file'
+        filename = '${RING}/file%s' % (name)
     elif opertype == 'glob':
-        filename = 'g/file${RING}_'
+        filename = 'g/${RING}_file%s' % (name)
     elif opertype == 'rem':
-        filename = '$[(RING+1) % 3]/file'
+        filename = '$[(RING+1) % 3]/file%s' % (name)
     else:
         filename = None
     return filename
 
 
 @task
-def do_populate(opertype, block_size, nblocks, nfiles):
+def do_populate(opertype, name, block_size, nblocks, nfiles):
     """
-    (loc|glob|rem, block_size, nblocks, nfiles)
+    (loc|glob|rem, fname, block_size, nblocks, nfiles)
     """
-    filename = opertype_file(opertype)
+    filename = opertype_file(opertype, name)
     if not filename:
         print "choose an operation type [loc | glob | rem]"
         return
-    execute(populate, '/tmp/fs' + filename, block_size, nblocks, nfiles)
+    execute(populate, '/tmp/fs/' + filename, block_size, nblocks, nfiles)
+
+
+@task
+def do_seqread(opertype, name, readsize, threads, duration, outdir):
+    """
+    (loc|glob|rem, readsize, threads, duration, outdir)
+    """
+    filename = opertype_file(opertype, name)
+    if not filename:
+        print "choose an operation type [loc | glob | rem]"
+        return
+    execute(clearresult)
+    execute(dstat)
+    results = execute(seqread, '/tmp/fs/' + filename, readsize, threads, duration, '/tmp/${NAME}_')
+    if results_ok(results):
+        execute(copyresult, outdir)
+    else:
+        with open('./FAILED_RUNS', 'a') as f:
+            f.write(outdir)
+            f.write('\n')
+    execute(dstat_results, outdir + '/dstat')
 
 
 @task
@@ -173,7 +196,7 @@ def do_seqwrite(opertype, writesize, threads, duration, outdir):
     """
     (loc|glob|rem, writesize, threads, duration, outdir)
     """
-    filename = opertype_file(opertype)
+    filename = opertype_file(opertype, str(random.randint(0,999999)))
     if not filename:
         print "choose an operation type [loc | glob | rem]"
         return
@@ -194,34 +217,13 @@ def do_create(opertype, filesize, threads, duration, outdir):
     """
     (loc|glob|rem, filesize, threads, duration, outdir)
     """
-    filename = opertype_file(opertype)
+    filename = opertype_file(opertype, str(random.randint(0,999999)))
     if not filename:
         print "choose an operation type [loc | glob | rem]"
         return
     execute(clearresult)
     execute(dstat)
     results = execute(create, '/tmp/fs/' + filename, filesize, threads, duration, '/tmp/${NAME}_')
-    if results_ok(results):
-        execute(copyresult, outdir)
-    else:
-        with open('./FAILED_RUNS', 'a') as f:
-            f.write(outdir)
-            f.write('\n')
-    execute(dstat_results, outdir + '/dstat')
-
-
-@task
-def do_seqread(opertype, readsize, threads, duration, outdir):
-    """
-    (loc|glob|rem, readsize, threads, duration, outdir)
-    """
-    filename = opertype_file(opertype)
-    if not filename:
-        print "choose an operation type [loc | glob | rem]"
-        return
-    execute(clearresult)
-    execute(dstat)
-    results = execute(seqread, '/tmp/fs/' + filename, readsize, threads, duration, '/tmp/${NAME}_')
     if results_ok(results):
         execute(copyresult, outdir)
     else:
