@@ -605,14 +605,16 @@ public class PaxosFileSystem implements Filesystem3 {
                     } finally {
                         if (!ok) {
                             b.getStorage().remove(Byte.valueOf(p));
-                            log.error("Error writing data block to storage " + p);
+                            log.error("Error writing data block " + UUIDUtils.bytesToHex(b.getId()) + " to storage " + p);
                         }
                     }
                 }
 
-                // FIXME: TODO: how to handle a replicated write? Right now we assume all replicated writes are for (3 partitions), writing to 2 is enough
-                if (allPartitions.size() == 3 && b.getStorage().size() < 2) {
-                    throw new FSError(Errno.EREMOTEIO, "Error storing data block: Required replication not achieved");
+                if (allPartitions.size() == 1 && b.getStorage().isEmpty()) {
+                    throw new FSError(Errno.EREMOTEIO, "Error storing single-partition data block: Could not write to storage " + allPartitions.iterator().next());
+                } else if (allPartitions.size() >= 2 && b.getStorage().size() < 2) {
+                    // FIXME: TODO: how to handle a replicated write? Right now we assume that for replicated writes, writing to 2 is enough
+                    throw new FSError(Errno.EREMOTEIO, "Error storing replicated data block: Required replication not achieved");
                 }
             }
 

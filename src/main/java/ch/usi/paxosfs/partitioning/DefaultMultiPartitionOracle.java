@@ -1,5 +1,6 @@
 package ch.usi.paxosfs.partitioning;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 import java.util.HashMap;
@@ -42,8 +43,8 @@ public class DefaultMultiPartitionOracle implements PartitioningOracle {
 		//p = partitionMapping.get(firstElem(path));
 		p = partitionMapping.get(path.substring(1, 2));
 		if (p == null) {
-			return allPartitions;
+			return Sets.newHashSet(allPartitions);
 		}
-		return p;
+		return Sets.newHashSet(p);
 	}
 }
