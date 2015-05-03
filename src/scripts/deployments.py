@@ -37,7 +37,14 @@ def roledefs_from_instances(deployment):
             if name == 'head': # head node
                 roles['head'].append(instance.dns_name)
                 continue
-            elif name.startswith('rep') or name.startswith('acc'):
+            elif name.startswith('rep'):
+                roles['server'].append(instance.dns_name)
+                roles['storage'].append(instance.dns_name)
+                if coordinators_re.match(name):
+                    roles['paxos_coordinator'].append(instance.dns_name)
+                else:
+                    roles['paxos_rest'].append(instance.dns_name)
+            elif name.startswith('acc'):
                 roles['server'].append(instance.dns_name)
                 if coordinators_re.match(name):
                     roles['paxos_coordinator'].append(instance.dns_name)

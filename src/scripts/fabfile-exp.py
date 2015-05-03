@@ -60,7 +60,8 @@ def dstat_results(outdir):
         run('pkill -f dstat')
         run('rm /tmp/dstat')
     local('mkdir -p %s' % (outdir))
-    get('/tmp/dstat.$(hostname)', outdir)
+    hostname = run('hostname')
+    get('/tmp/dstat.%s' % (hostname), outdir)
 
 
 @parallel
@@ -107,8 +108,18 @@ def seqwrite(file, writesize, threads, duration, log):
     """Run sequential write benchmark
     """
     with settings(warn_only=True):
-        return run('~/usr/sinergiafs-clients/seq-write %s %s 1 %s %s %s' %
+        return run('~/usr/sinergiafs-clients/write %s %s 1 %s %s %s' %
                    (file, writesize, threads, duration, log))
+
+
+@parallel
+@roles('client')
+def populate(file, block_size, nblocks, nfiles):
+    """Populate files for read bench
+    """
+    with settings(warn_only=True):
+        return run('~/usr/sinergiafs-clients/populate %s %s %s %s' %
+                   (file, block_size, nblocks, nfiles))
 
 
 @parallel
@@ -123,22 +134,12 @@ def create(file, filesize, threads, duration, log):
 
 @parallel
 @roles('client')
-def randwrite(file, writesize, filesize, threads, duration, log):
-    """Run sequential write benchmark
-    """
-    with settings(warn_only=True):
-        return run('~/usr/sinergiafs-clients/rand-write %s %s 1 %s %s %s %s' %
-                   (file, writesize, filesize, threads, duration, log))
-
-
-@parallel
-@roles('client')
 def seqread(file, readsize, threads, duration, log):
     """Run sequential write benchmark
     """
     # TODO check file exists on remote
     with settings(warn_only=True):
-        return run('~/usr/sinergiafs-clients/seq-read %s %s 1 %s %s %s' %
+        return run('~/usr/sinergiafs-clients/read %s %s 1 %s %s %s' %
                    (file, readsize, threads, duration, log))
 
 
@@ -153,6 +154,19 @@ def opertype_file(opertype):
     else:
         filename = None
     return filename
+
+
+@task
+def do_populate(opertype, block_size, nblocks, nfiles):
+    """
+    (loc|glob|rem, block_size, nblocks, nfiles)
+    """
+    filename = opertype_file(opertype)
+    if not filename:
+        print "choose an operation type [loc | glob | rem]"
+        return
+    execute(populate, '/tmp/fs' + filename, block_size, nblocks, nfiles)
+
 
 @task
 def do_seqwrite(opertype, writesize, threads, duration, outdir):
@@ -187,27 +201,6 @@ def do_create(opertype, filesize, threads, duration, outdir):
     execute(clearresult)
     execute(dstat)
     results = execute(create, '/tmp/fs/' + filename, filesize, threads, duration, '/tmp/${NAME}_')
-    if results_ok(results):
-        execute(copyresult, outdir)
-    else:
-        with open('./FAILED_RUNS', 'a') as f:
-            f.write(outdir)
-            f.write('\n')
-    execute(dstat_results, outdir + '/dstat')
-
-
-@task
-def do_randwrite(opertype, writesize, filesize, threads, duration, outdir):
-    """
-    (loc|glob|rem, writesize, threads, duration, outdir)
-    """
-    filename = opertype_file(opertype)
-    if not filename:
-        print "choose an operation type [loc | glob | rem]"
-        return
-    execute(clearresult)
-    execute(dstat)
-    results = execute(randwrite, '/tmp/fs/' + filename, writesize, filesize, threads, duration, '/tmp/${NAME}_')
     if results_ok(results):
         execute(copyresult, outdir)
     else:

@@ -191,7 +191,7 @@ def gen_nodes(deployment):
             if name == 'head':
                 result.append('export ZKHOST=%s' % (worker.dns_name))
                 continue
-            elif name.startswith('rep'):
+            elif name.startswith('rep') or name.startswith('acc'):
                 servers[name[3]].append(worker)
             elif name.startswith('cli'):
                 clients[name[3]].append(worker)

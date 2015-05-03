@@ -195,7 +195,7 @@ def start_node():
 
 
 @parallel
-@roles('server')
+@roles('storage')
 def start_dht():
     """Start the dht
     """
