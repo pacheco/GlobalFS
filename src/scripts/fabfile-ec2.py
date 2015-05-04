@@ -11,6 +11,7 @@ env.disable_known_hosts = True
 env.roledefs = None
 
 
+@task
 def set_roles(deployment):
     """Set fabric roles from running instances
     """
