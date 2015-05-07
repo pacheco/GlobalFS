@@ -135,7 +135,7 @@ def inst_start(deployment, image_name, token='A', keyname='macubuntu', security_
     """Start and configure instances
 
     Assumptions:
-    - Uou need to give the image with image_name (AMI-Name) available in all needed regions
+    - You need to give the image with image_name (AMI-Name) available in all needed regions
     - You have a keypair in your account called 'macubuntu' (otherwise use the keyname param)
     - Your account has a 'default' security group with all ports open (otherwise use the security_group param)
     """
