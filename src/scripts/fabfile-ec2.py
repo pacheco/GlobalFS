@@ -46,13 +46,13 @@ def head_stop(deployment):
 
 
 @task
-def head_start(deployment, image_name=None, token='A'):
+def head_start(deployment, image_name=None, token='A', keyname='macubuntu', security_group='default'):
     """Start/restart head instance.
 
     Assumptions:
-    - If you are creating a "head" instance, an image with image_name should exist in the head's region
-    - You have a keypair in your account called 'macubuntu'
-    - Your account has a 'default' security group with all ports open (or at least the relevant ones)
+    - If you are creating a "head" instance, you need to give the image_name (AMI-Name)
+    - You have a keypair in your account called 'macubuntu' (otherwise use the keyname param)
+    - Your account has a 'default' security group with all ports open (otherwise use the security_group param)
     """
     dep = deployments[deployment]
     connections = ec2.connect_all(*[dep.head.region])
@@ -80,8 +80,8 @@ def head_start(deployment, image_name=None, token='A'):
         reserv = conn.run_instances(imageid,
                                     instance_type = dep.head.type,
                                     placement = dep.head.region + dep.head.zone,
-                                    key_name = 'macubuntu',
-                                    security_groups = ['default'],
+                                    key_name = keyname,
+                                    security_groups = [security_group],
                                     client_token = dep.head.name + token,
                                     dry_run = False)
         instance = reserv.instances[0]
@@ -131,8 +131,13 @@ def inst_terminate(deployment):
 
 
 @task
-def inst_start(deployment, image_name, token='A'):
+def inst_start(deployment, image_name, token='A', keyname='macubuntu', security_group='default'):
     """Start and configure instances
+
+    Assumptions:
+    - Uou need to give the image with image_name (AMI-Name) available in all needed regions
+    - You have a keypair in your account called 'macubuntu' (otherwise use the keyname param)
+    - Your account has a 'default' security group with all ports open (otherwise use the security_group param)
     """
     dep = deployments[deployment]
     regions = [x.region for x in dep.regions]
@@ -157,8 +162,8 @@ def inst_start(deployment, image_name, token='A'):
             reservation = conn.run_instances(images[node.region],
                                              instance_type = node.type,
                                              placement = node.region + node.zone,
-                                             key_name = 'macubuntu',
-                                             security_groups = ['default'],
+                                             key_name = keyname,
+                                             security_groups = [security_group],
                                              client_token = node.name + token,
                                              # user_data =
                                              dry_run = False)
@@ -273,6 +278,12 @@ def hostname_set():
 @task
 def inst_config(deployment):
     """Generate config files and deploy to running instances
+
+    Assumptions:
+    - You have the head node running (head_start)
+    - You have started all instances (inst_start)
+    - The instances are already "ssh-able". You might need to wait a bit after inst_start.
+      You can check for the "Status Checks" to be done using the EC2 console.
     """
     execute(set_roles, deployment)
     with open('nodes.sh', 'w') as f:
