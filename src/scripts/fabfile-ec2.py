@@ -46,8 +46,13 @@ def head_stop(deployment):
 
 
 @task
-def head_start(deployment, image_name=None):
-    """Start/restart head instance
+def head_start(deployment, image_name=None, token='A'):
+    """Start/restart head instance.
+
+    Assumptions:
+    - If you are creating a "head" instance, an image with image_name should exist in the head's region
+    - You have a keypair in your account called 'macubuntu'
+    - Your account has a 'default' security group with all ports open (or at least the relevant ones)
     """
     dep = deployments[deployment]
     connections = ec2.connect_all(*[dep.head.region])
@@ -72,7 +77,7 @@ def head_start(deployment, image_name=None):
                 break
         if not imageid:
             raise Exception('image not available in region ' + dep.head.region)
-        reserv = conn.run_instances(image[dep.head.region],
+        reserv = conn.run_instances(imageid,
                                     instance_type = dep.head.type,
                                     placement = dep.head.region + dep.head.zone,
                                     key_name = 'macubuntu',
