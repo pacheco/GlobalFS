@@ -51,8 +51,8 @@ def head_start(deployment, image_name=None, token='A', keyname='macubuntu', secu
 
     Assumptions:
     - If you are creating a "head" instance, you need to give the image_name (AMI-Name)
-    - You have a keypair in your account called 'macubuntu' (otherwise use the keyname param)
-    - Your account has a 'default' security group with all ports open (otherwise use the security_group param)
+    - You have a keypair named 'macubuntu' in the head's region (otherwise use the keyname param)
+    - You have a security group named 'default' in the head's region, with all ports open (otherwise use the security_group param)
     """
     dep = deployments[deployment]
     connections = ec2.connect_all(*[dep.head.region])
@@ -136,8 +136,8 @@ def inst_start(deployment, image_name, token='A', keyname='macubuntu', security_
 
     Assumptions:
     - You need to give the image with image_name (AMI-Name) available in all needed regions
-    - You have a keypair in your account called 'macubuntu' (otherwise use the keyname param)
-    - Your account has a 'default' security group with all ports open (otherwise use the security_group param)
+    - You have a keypair named 'macubuntu' in all regions (otherwise use the keyname param)
+    - You have a security group named 'default' in all regions, with all ports open (otherwise use the security_group param)
     """
     dep = deployments[deployment]
     regions = [x.region for x in dep.regions]
