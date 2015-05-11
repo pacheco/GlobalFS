@@ -550,6 +550,10 @@ public class PaxosFileSystem implements Filesystem3 {
             log.error(e);
             e.printStackTrace();
             throw e;
+        } catch (IndexOutOfBoundsException e) {
+            log.error(e);
+            e.printStackTrace();
+            throw e;
         }
 		return 0;
 	}
