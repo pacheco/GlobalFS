@@ -21,9 +21,7 @@ import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
-import org.apache.zookeeper.KeeperException;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.file.FileSystems;
@@ -570,7 +568,9 @@ public class PaxosFileSystem implements Filesystem3 {
 			while (buf.remaining() >= MAXBLOCKSIZE) {
 				byte[] data = new byte[MAXBLOCKSIZE];
 				buf.get(data);
-				DBlock b = new DBlock(null, 0, MAXBLOCKSIZE, allPartitions);
+                Set<Byte> st = new HashSet<>();
+                st.addAll(allPartitions);
+				DBlock b = new DBlock(null, 0, MAXBLOCKSIZE, st);
 				b.setId(UUIDUtils.randomBytes(rand, KEYSIZE));
 				// store the block in all partitions
 				for (Byte p: allPartitions) {
@@ -581,7 +581,9 @@ public class PaxosFileSystem implements Filesystem3 {
 			if (buf.hasRemaining()) {
 				byte[] remainingData = new byte[buf.remaining()];
 				buf.get(remainingData);
-				DBlock b = new DBlock(null, 0, remainingData.length, allPartitions);
+                Set<Byte> st = new HashSet<>();
+                st.addAll(allPartitions);
+				DBlock b = new DBlock(null, 0, remainingData.length, st);
 				b.setId(UUIDUtils.randomBytes(rand, KEYSIZE));
 				// store the blocks in all partitions
 				for (Byte p: allPartitions) {
@@ -593,7 +595,7 @@ public class PaxosFileSystem implements Filesystem3 {
 
             // Check that puts were successful
             Iterator<StorageFuture<Boolean>> futuresIter = putFutures.iterator();
-            for (DBlock b: blocks) {
+            for (DBlock b : blocks) {
                 // check each partition write
                 for (Byte p : allPartitions) {
                     StorageFuture<Boolean> putFuture = futuresIter.next();
@@ -610,9 +612,9 @@ public class PaxosFileSystem implements Filesystem3 {
                     }
                 }
 
-                if (allPartitions.size() == 1 && b.getStorage().isEmpty()) {
+                if (allPartitions.size() == 1 && b.getStorageSize() == 0) {
                     throw new FSError(Errno.EREMOTEIO, "Error storing single-partition data block: Could not write to storage " + allPartitions.iterator().next());
-                } else if (allPartitions.size() >= 2 && b.getStorage().size() < 2) {
+                } else if (allPartitions.size() >= 2 && b.getStorageSize() < 2) {
                     // FIXME: TODO: how to handle a replicated write? Right now we assume that for replicated writes, writing to 2 is enough
                     throw new FSError(Errno.EREMOTEIO, "Error storing replicated data block: Required replication not achieved");
                 }

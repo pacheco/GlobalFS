@@ -38,13 +38,19 @@ public class DefaultMultiPartitionOracle implements PartitioningOracle {
 	
 	@Override
 	public Set<Byte> partitionsOf(String path) {
-		if (path.length() < 2) return allPartitions;
-		Set<Byte> p;
-		//p = partitionMapping.get(firstElem(path));
-		p = partitionMapping.get(path.substring(1, 2));
-		if (p == null) {
-			return Sets.newHashSet(allPartitions);
-		}
-		return Sets.newHashSet(p);
+        HashSet<Byte> reply = new HashSet<>();
+		if (path.length() < 2) {
+            reply.addAll(allPartitions);
+        } else {
+            Set<Byte> p;
+            //p = partitionMapping.get(firstElem(path));
+            p = partitionMapping.get(path.substring(1, 2));
+            if (p == null) {
+                reply.addAll(allPartitions);
+            } else {
+                reply.addAll(p);
+            }
+        }
+        return reply;
 	}
 }

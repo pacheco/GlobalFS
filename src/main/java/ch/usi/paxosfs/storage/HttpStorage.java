@@ -127,9 +127,7 @@ public class HttpStorage implements Storage {
                 .addHeader("Sync-Mode", "sync")
                 .connectTimeout(TIMEOUT)
                 .bodyByteArray(value);
-        synchronized (asyncHttp) {
-            return new StorageFutureWrapper<>(partition, key, asyncHttp.execute(req, new PutHandler()));
-        }
+        return new StorageFutureWrapper<>(partition, key, asyncHttp.execute(req, new PutHandler()));
     }
 
     @Override
@@ -145,9 +143,7 @@ public class HttpStorage implements Storage {
                 .addHeader("Content-Type", "application/octet-stream")
                 .addHeader("Sync-Mode", "sync")
                 .connectTimeout(TIMEOUT);
-        synchronized (asyncHttp) {
-            return new StorageFutureWrapper<>(partition, key, asyncHttp.execute(req, new GetHandler()));
-        }
+        return new StorageFutureWrapper<>(partition, key, asyncHttp.execute(req, new GetHandler()));
     }
 
     @Override
