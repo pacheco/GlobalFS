@@ -27,6 +27,7 @@ import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
@@ -317,13 +318,7 @@ public class FileSystemReplica implements Runnable {
             throw new FSError(FuseException.EBADF, "File not open for reading");
         }
 		// FIXME: check for negative offset?
-        ReadResult rr = null;
-        // TODO: remove this catch later! for debug purposes only
-        try {
-            rr = f.getBlocks(read.getOffset(), read.getBytes());
-        } catch (IndexOutOfBoundsException e) {
-            e.printStackTrace();
-        }
+		ReadResult rr = f.getBlocks(read.getOffset(), read.getBytes());
 		if (rr == null) {
             rr = new ReadResult(new ArrayList<DBlock>());
         }

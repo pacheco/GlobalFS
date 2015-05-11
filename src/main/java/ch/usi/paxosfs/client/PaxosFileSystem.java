@@ -532,7 +532,16 @@ public class PaxosFileSystem implements Filesystem3 {
                         log.error("Error fetching data block " + new String(b.getId()));
 						throw new FSError(Errno.EREMOTEIO, "Error fetching data block!");
 					}
-					buf.put(data, b.getStartOffset(), b.getEndOffset() - b.getStartOffset());
+                    try {
+                        buf.put(data, b.getStartOffset(), b.getEndOffset() - b.getStartOffset());
+                    } catch (IndexOutOfBoundsException e) {
+                        log.error("Block offsets out of bounds of the data block:"
+                                    + " data_len " + data.length
+                                    + " start_offset " + b.getStartOffset()
+                                    + " end_offset " + b.getEndOffset());
+                        e.printStackTrace();
+                        throw e;
+                    }
 				}
 			}
 			
@@ -547,10 +556,6 @@ public class PaxosFileSystem implements Filesystem3 {
 			client.getOutputProtocol().getTransport().close();
 			throw thriftError(e);
 		} catch (NoSuchElementException e) {
-            log.error(e);
-            e.printStackTrace();
-            throw e;
-        } catch (IndexOutOfBoundsException e) {
             log.error(e);
             e.printStackTrace();
             throw e;
