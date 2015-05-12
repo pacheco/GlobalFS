@@ -199,9 +199,10 @@ def start_node():
 def start_dht():
     """Start the dht
     """
-    with cd('usr/sinergiafs-dht/'):
+    with cd('usr/sinergiafs/'):
         run(dtach_and_log(
-            'lua ./dht.lua /home/ubuntu/dht${RING}.config $[ID + 1] /tmp/dhtstorage dht',
+            './kvstore /home/ubuntu/dht${RING}.config $[ID]',
+            #'lua ./dht.lua /home/ubuntu/dht${RING}.config $[ID + 1] /tmp/dhtstorage dht',
             '/tmp/dht',
             '/tmp/dht.log'))
 
