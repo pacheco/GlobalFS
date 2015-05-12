@@ -536,6 +536,7 @@ public class PaxosFileSystem implements Filesystem3 {
                         buf.put(data, b.getStartOffset(), b.getEndOffset() - b.getStartOffset());
                     } catch (IndexOutOfBoundsException e) {
                         log.error("Block offsets out of bounds of the data block:"
+                                    + " block_id " + UUIDUtils.bytesToHex(b.getId())
                                     + " data_len " + data.length
                                     + " start_offset " + b.getStartOffset()
                                     + " end_offset " + b.getEndOffset());
