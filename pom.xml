@@ -7,6 +7,59 @@
 	<name>SinergiaFS</name>
 	<description>SinergiaFS</description>
 
+    <profiles>
+        <profile>
+            <id>go-build</id>
+            <activation>
+                <property>
+                    <name>go-build</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <!-- Compile Go scripts too. Depends on "go" and "libleveldb" being available -->
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <version>1.4.0</version>
+                        <executions>
+                            <execution>
+                                <id>Compile kvstore-leveldb</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <workingDirectory>${project.build.directory}/bin</workingDirectory>
+                                    <executable>go</executable>
+                                    <arguments>
+                                        <argument>build</argument>
+                                        <argument>${project.basedir}/src/scripts/kvstore-leveldb.go</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>Compile kvstore</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <workingDirectory>${project.build.directory}/bin</workingDirectory>
+                                    <executable>go</executable>
+                                    <arguments>
+                                        <argument>build</argument>
+                                        <argument>${project.basedir}/src/scripts/kvstore.go</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -39,44 +92,6 @@
 					</execution>
 				</executions>
 			</plugin>
-            <plugin>
-                <!-- Compile Go scripts too. Depends on "go" and "libleveldb" being available -->
-                <artifactId>exec-maven-plugin</artifactId>
-                <groupId>org.codehaus.mojo</groupId>
-                <version>1.4.0</version>
-                <executions>
-                    <execution>
-                        <id>Compile kvstore-leveldb</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <workingDirectory>${project.build.directory}/bin</workingDirectory>
-                            <executable>go</executable>
-                            <arguments>
-                                <argument>build</argument>
-                                <argument>${project.basedir}/src/scripts/kvstore-leveldb.go</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>Compile kvstore</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <workingDirectory>${project.build.directory}/bin</workingDirectory>
-                            <executable>go</executable>
-                            <arguments>
-                                <argument>build</argument>
-                                <argument>${project.basedir}/src/scripts/kvstore.go</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
 	</build>
 
