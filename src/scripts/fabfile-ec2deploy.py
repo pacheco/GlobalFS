@@ -201,7 +201,7 @@ def start_dht():
     """
     with cd('usr/sinergiafs/'):
         run(dtach_and_log(
-            './kvstore /home/ubuntu/dht${RING}.config $[ID]',
+            './kvstore-leveldb /home/ubuntu/dht${RING}.config $[ID] /tmp/dhtstorage',
             #'lua ./dht.lua /home/ubuntu/dht${RING}.config $[ID + 1] /tmp/dhtstorage dht',
             '/tmp/dht',
             '/tmp/dht.log'))

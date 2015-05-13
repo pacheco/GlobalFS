@@ -18,6 +18,10 @@
     <fileSets>
         <fileSet>
             <outputDirectory>/</outputDirectory>
+            <directory>${project.build.directory}/bin</directory>
+        </fileSet>
+        <fileSet>
+            <outputDirectory>/</outputDirectory>
             <directory>src/scripts</directory>
         </fileSet>
     </fileSets>
