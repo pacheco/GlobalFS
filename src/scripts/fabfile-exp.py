@@ -181,7 +181,7 @@ def do_seqread(opertype, name, readsize, threads, duration, outdir):
         return
     execute(clearresult)
     execute(dstat)
-    results = execute(seqread, '/tmp/fs/' + filename, readsize, threads, duration, '/tmp/${NAME}_')
+    results = execute(seqread, '/tmp/fs/' + filename, readsize, threads, duration, '/tmp/cli${RING}_${ID}_')
     if results_ok(results):
         execute(copyresult, outdir)
     else:
@@ -202,7 +202,7 @@ def do_seqwrite(opertype, writesize, threads, duration, outdir):
         return
     execute(clearresult)
     execute(dstat)
-    results = execute(seqwrite, '/tmp/fs/' + filename, writesize, threads, duration, '/tmp/${NAME}_')
+    results = execute(seqwrite, '/tmp/fs/' + filename, writesize, threads, duration, '/tmp/cli${RING}_${ID}_')
     if results_ok(results):
         execute(copyresult, outdir)
     else:
@@ -223,7 +223,7 @@ def do_create(opertype, filesize, threads, duration, outdir):
         return
     execute(clearresult)
     execute(dstat)
-    results = execute(create, '/tmp/fs/' + filename, filesize, threads, duration, '/tmp/${NAME}_')
+    results = execute(create, '/tmp/fs/' + filename, filesize, threads, duration, '/tmp/cli${RING}_${ID}_')
     if results_ok(results):
         execute(copyresult, outdir)
     else:
