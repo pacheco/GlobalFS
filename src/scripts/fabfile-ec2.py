@@ -259,7 +259,7 @@ def create_dht_config():
         local('cat nodes.sh | grep DC%s_REP | sort | cut -d= -f2 > dhthosts' % (dc))
         local('seq 15100 100 15300 > dhtports')
         # REPLICATION LEVEL
-        local('echo replication = 1 > dht%s.config' % dc)
+        local('echo replication = 2 > dht%s.config' % dc)
         local('paste -d" " dhthosts dhtports >> dht%s.config' % (dc)) # create final dhtN.config
         # storage cfg
         local('seq 15101 100 15301 > dhtports') # http ports are +1
