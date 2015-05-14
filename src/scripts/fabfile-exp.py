@@ -121,7 +121,7 @@ def create(file, filesize, threads, duration, log):
     """
     with settings(warn_only=True):
         return run('~/usr/sinergiafs-clients/create %s %s %s %s %s %s' %
-                   (file, filesize, 1, threads, duration, log))
+                   (file, filesize, threads, threads, duration, log))
 
 
 @parallel
@@ -132,7 +132,7 @@ def seqread(file, readsize, threads, duration, log):
     # TODO check file exists on remote
     with settings(warn_only=True):
         return run('~/usr/sinergiafs-clients/read %s %s %s %s %s %s' %
-                   (file, readsize, 1, threads, duration, log))
+                   (file, readsize, threads, threads, duration, log))
 
 
 @parallel
@@ -142,7 +142,7 @@ def seqwrite(file, writesize, threads, duration, log):
     """
     with settings(warn_only=True):
         return run('~/usr/sinergiafs-clients/write %s %s %s %s %s %s' %
-                   (file, writesize, 1, threads, duration, log))
+                   (file, writesize, threads, threads, duration, log))
 
 
 def opertype_file(opertype, name):

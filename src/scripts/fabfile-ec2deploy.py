@@ -148,6 +148,7 @@ def kill_and_clear_():
                  '/tmp/sinergia*',
                  '/tmp/replica*',
                  '/tmp/dht*',
+                 '/dev/shm/dht*',
                  '/tmp/acceptor*',
                  '/tmp/storage*',
                  '/tmp/ringpaxos-db',
