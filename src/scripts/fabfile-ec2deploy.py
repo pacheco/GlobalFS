@@ -141,6 +141,7 @@ def kill_and_clear_():
         run('pkill --signal 9 -f TTYNode')
         run('pkill --signal 9 -f FSMain')
         run('pkill --signal 9 -f dht.lua')
+        run('pkill --signal 9 -f kvstore')
         sudo('pkill --signal 9 -f PaxosFileSystem')
         sudo('umount -l /tmp/fs*')
         to_rm = ['/tmp/*.vgc',
