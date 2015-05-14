@@ -28,6 +28,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
   private static final org.apache.thrift.protocol.TField UNLINK_FIELD_DESC = new org.apache.thrift.protocol.TField("unlink", org.apache.thrift.protocol.TType.STRUCT, (short)9);
   private static final org.apache.thrift.protocol.TField RMDIR_FIELD_DESC = new org.apache.thrift.protocol.TField("rmdir", org.apache.thrift.protocol.TType.STRUCT, (short)10);
   private static final org.apache.thrift.protocol.TField SYMLINK_FIELD_DESC = new org.apache.thrift.protocol.TField("symlink", org.apache.thrift.protocol.TType.STRUCT, (short)11);
+  private static final org.apache.thrift.protocol.TField READLINK_FIELD_DESC = new org.apache.thrift.protocol.TField("readlink", org.apache.thrift.protocol.TType.STRUCT, (short)26);
   private static final org.apache.thrift.protocol.TField RENAME_FIELD_DESC = new org.apache.thrift.protocol.TField("rename", org.apache.thrift.protocol.TType.STRUCT, (short)12);
   private static final org.apache.thrift.protocol.TField CHMOD_FIELD_DESC = new org.apache.thrift.protocol.TField("chmod", org.apache.thrift.protocol.TType.STRUCT, (short)13);
   private static final org.apache.thrift.protocol.TField CHOWN_FIELD_DESC = new org.apache.thrift.protocol.TField("chown", org.apache.thrift.protocol.TType.STRUCT, (short)14);
@@ -59,6 +60,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
   public UnlinkCmd unlink; // optional
   public RmdirCmd rmdir; // optional
   public SymlinkCmd symlink; // optional
+  public ReadlinkCmd readlink; // optional
   public RenameCmd rename; // optional
   public ChmodCmd chmod; // optional
   public ChownCmd chown; // optional
@@ -86,6 +88,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     UNLINK((short)9, "unlink"),
     RMDIR((short)10, "rmdir"),
     SYMLINK((short)11, "symlink"),
+    READLINK((short)26, "readlink"),
     RENAME((short)12, "rename"),
     CHMOD((short)13, "chmod"),
     CHOWN((short)14, "chown"),
@@ -134,6 +137,8 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
           return RMDIR;
         case 11: // SYMLINK
           return SYMLINK;
+        case 26: // READLINK
+          return READLINK;
         case 12: // RENAME
           return RENAME;
         case 13: // CHMOD
@@ -206,7 +211,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
   private static final int __REQID_ISSET_ID = 1;
   private static final int __REQTIME_ISSET_ID = 2;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.GETDIR,_Fields.ATTR,_Fields.MKNOD,_Fields.MKDIR,_Fields.UNLINK,_Fields.RMDIR,_Fields.SYMLINK,_Fields.RENAME,_Fields.CHMOD,_Fields.CHOWN,_Fields.TRUNCATE,_Fields.UTIME,_Fields.OPEN,_Fields.READ,_Fields.WRITE,_Fields.RELEASE,_Fields.STATFS,_Fields.SIGNAL,_Fields.DEBUG,_Fields.INSTANCE_MAP};
+  private _Fields optionals[] = {_Fields.GETDIR,_Fields.ATTR,_Fields.MKNOD,_Fields.MKDIR,_Fields.UNLINK,_Fields.RMDIR,_Fields.SYMLINK,_Fields.READLINK,_Fields.RENAME,_Fields.CHMOD,_Fields.CHOWN,_Fields.TRUNCATE,_Fields.UTIME,_Fields.OPEN,_Fields.READ,_Fields.WRITE,_Fields.RELEASE,_Fields.STATFS,_Fields.SIGNAL,_Fields.DEBUG,_Fields.INSTANCE_MAP};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -230,6 +235,8 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, RmdirCmd.class)));
     tmpMap.put(_Fields.SYMLINK, new org.apache.thrift.meta_data.FieldMetaData("symlink", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, SymlinkCmd.class)));
+    tmpMap.put(_Fields.READLINK, new org.apache.thrift.meta_data.FieldMetaData("readlink", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ReadlinkCmd.class)));
     tmpMap.put(_Fields.RENAME, new org.apache.thrift.meta_data.FieldMetaData("rename", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, RenameCmd.class)));
     tmpMap.put(_Fields.CHMOD, new org.apache.thrift.meta_data.FieldMetaData("chmod", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -313,6 +320,9 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     if (other.isSetSymlink()) {
       this.symlink = new SymlinkCmd(other.symlink);
     }
+    if (other.isSetReadlink()) {
+      this.readlink = new ReadlinkCmd(other.readlink);
+    }
     if (other.isSetRename()) {
       this.rename = new RenameCmd(other.rename);
     }
@@ -378,6 +388,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     this.unlink = null;
     this.rmdir = null;
     this.symlink = null;
+    this.readlink = null;
     this.rename = null;
     this.chmod = null;
     this.chown = null;
@@ -628,6 +639,30 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
   public void setSymlinkIsSet(boolean value) {
     if (!value) {
       this.symlink = null;
+    }
+  }
+
+  public ReadlinkCmd getReadlink() {
+    return this.readlink;
+  }
+
+  public Command setReadlink(ReadlinkCmd readlink) {
+    this.readlink = readlink;
+    return this;
+  }
+
+  public void unsetReadlink() {
+    this.readlink = null;
+  }
+
+  /** Returns true if field readlink is set (has been assigned a value) and false otherwise */
+  public boolean isSetReadlink() {
+    return this.readlink != null;
+  }
+
+  public void setReadlinkIsSet(boolean value) {
+    if (!value) {
+      this.readlink = null;
     }
   }
 
@@ -1075,6 +1110,14 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       }
       break;
 
+    case READLINK:
+      if (value == null) {
+        unsetReadlink();
+      } else {
+        setReadlink((ReadlinkCmd)value);
+      }
+      break;
+
     case RENAME:
       if (value == null) {
         unsetRename();
@@ -1222,6 +1265,9 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     case SYMLINK:
       return getSymlink();
 
+    case READLINK:
+      return getReadlink();
+
     case RENAME:
       return getRename();
 
@@ -1295,6 +1341,8 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       return isSetRmdir();
     case SYMLINK:
       return isSetSymlink();
+    case READLINK:
+      return isSetReadlink();
     case RENAME:
       return isSetRename();
     case CHMOD:
@@ -1427,6 +1475,15 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       if (!(this_present_symlink && that_present_symlink))
         return false;
       if (!this.symlink.equals(that.symlink))
+        return false;
+    }
+
+    boolean this_present_readlink = true && this.isSetReadlink();
+    boolean that_present_readlink = true && that.isSetReadlink();
+    if (this_present_readlink || that_present_readlink) {
+      if (!(this_present_readlink && that_present_readlink))
+        return false;
+      if (!this.readlink.equals(that.readlink))
         return false;
     }
 
@@ -1672,6 +1729,16 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetReadlink()).compareTo(other.isSetReadlink());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetReadlink()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.readlink, other.readlink);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = Boolean.valueOf(isSetRename()).compareTo(other.isSetRename());
     if (lastComparison != 0) {
       return lastComparison;
@@ -1913,6 +1980,16 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       }
       first = false;
     }
+    if (isSetReadlink()) {
+      if (!first) sb.append(", ");
+      sb.append("readlink:");
+      if (this.readlink == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.readlink);
+      }
+      first = false;
+    }
     if (isSetRename()) {
       if (!first) sb.append(", ");
       sb.append("rename:");
@@ -2079,6 +2156,9 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     if (symlink != null) {
       symlink.validate();
     }
+    if (readlink != null) {
+      readlink.validate();
+    }
     if (rename != null) {
       rename.validate();
     }
@@ -2240,6 +2320,15 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 26: // READLINK
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+              struct.readlink = new ReadlinkCmd();
+              struct.readlink.read(iprot);
+              struct.setReadlinkIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           case 12: // RENAME
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
               struct.rename = new RenameCmd();
@@ -2351,13 +2440,13 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
           case 24: // INVOLVED_PARTITIONS
             if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
               {
-                org.apache.thrift.protocol.TSet _set208 = iprot.readSetBegin();
-                struct.involvedPartitions = new HashSet<Byte>(2*_set208.size);
-                for (int _i209 = 0; _i209 < _set208.size; ++_i209)
+                org.apache.thrift.protocol.TSet _set216 = iprot.readSetBegin();
+                struct.involvedPartitions = new HashSet<Byte>(2*_set216.size);
+                for (int _i217 = 0; _i217 < _set216.size; ++_i217)
                 {
-                  byte _elem210;
-                  _elem210 = iprot.readByte();
-                  struct.involvedPartitions.add(_elem210);
+                  byte _elem218;
+                  _elem218 = iprot.readByte();
+                  struct.involvedPartitions.add(_elem218);
                 }
                 iprot.readSetEnd();
               }
@@ -2369,15 +2458,15 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
           case 25: // INSTANCE_MAP
             if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
               {
-                org.apache.thrift.protocol.TMap _map211 = iprot.readMapBegin();
-                struct.instanceMap = new HashMap<Byte,Long>(2*_map211.size);
-                for (int _i212 = 0; _i212 < _map211.size; ++_i212)
+                org.apache.thrift.protocol.TMap _map219 = iprot.readMapBegin();
+                struct.instanceMap = new HashMap<Byte,Long>(2*_map219.size);
+                for (int _i220 = 0; _i220 < _map219.size; ++_i220)
                 {
-                  byte _key213;
-                  long _val214;
-                  _key213 = iprot.readByte();
-                  _val214 = iprot.readI64();
-                  struct.instanceMap.put(_key213, _val214);
+                  byte _key221;
+                  long _val222;
+                  _key221 = iprot.readByte();
+                  _val222 = iprot.readI64();
+                  struct.instanceMap.put(_key221, _val222);
                 }
                 iprot.readMapEnd();
               }
@@ -2547,9 +2636,9 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
         oprot.writeFieldBegin(INVOLVED_PARTITIONS_FIELD_DESC);
         {
           oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, struct.involvedPartitions.size()));
-          for (byte _iter215 : struct.involvedPartitions)
+          for (byte _iter223 : struct.involvedPartitions)
           {
-            oprot.writeByte(_iter215);
+            oprot.writeByte(_iter223);
           }
           oprot.writeSetEnd();
         }
@@ -2560,13 +2649,20 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
           oprot.writeFieldBegin(INSTANCE_MAP_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, struct.instanceMap.size()));
-            for (Map.Entry<Byte, Long> _iter216 : struct.instanceMap.entrySet())
+            for (Map.Entry<Byte, Long> _iter224 : struct.instanceMap.entrySet())
             {
-              oprot.writeByte(_iter216.getKey());
-              oprot.writeI64(_iter216.getValue());
+              oprot.writeByte(_iter224.getKey());
+              oprot.writeI64(_iter224.getValue());
             }
             oprot.writeMapEnd();
           }
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.readlink != null) {
+        if (struct.isSetReadlink()) {
+          oprot.writeFieldBegin(READLINK_FIELD_DESC);
+          struct.readlink.write(oprot);
           oprot.writeFieldEnd();
         }
       }
@@ -2618,49 +2714,52 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       if (struct.isSetSymlink()) {
         optionals.set(9);
       }
-      if (struct.isSetRename()) {
+      if (struct.isSetReadlink()) {
         optionals.set(10);
       }
-      if (struct.isSetChmod()) {
+      if (struct.isSetRename()) {
         optionals.set(11);
       }
-      if (struct.isSetChown()) {
+      if (struct.isSetChmod()) {
         optionals.set(12);
       }
-      if (struct.isSetTruncate()) {
+      if (struct.isSetChown()) {
         optionals.set(13);
       }
-      if (struct.isSetUtime()) {
+      if (struct.isSetTruncate()) {
         optionals.set(14);
       }
-      if (struct.isSetOpen()) {
+      if (struct.isSetUtime()) {
         optionals.set(15);
       }
-      if (struct.isSetRead()) {
+      if (struct.isSetOpen()) {
         optionals.set(16);
       }
-      if (struct.isSetWrite()) {
+      if (struct.isSetRead()) {
         optionals.set(17);
       }
-      if (struct.isSetRelease()) {
+      if (struct.isSetWrite()) {
         optionals.set(18);
       }
-      if (struct.isSetStatfs()) {
+      if (struct.isSetRelease()) {
         optionals.set(19);
       }
-      if (struct.isSetSignal()) {
+      if (struct.isSetStatfs()) {
         optionals.set(20);
       }
-      if (struct.isSetDebug()) {
+      if (struct.isSetSignal()) {
         optionals.set(21);
       }
-      if (struct.isSetInvolvedPartitions()) {
+      if (struct.isSetDebug()) {
         optionals.set(22);
       }
-      if (struct.isSetInstanceMap()) {
+      if (struct.isSetInvolvedPartitions()) {
         optionals.set(23);
       }
-      oprot.writeBitSet(optionals, 24);
+      if (struct.isSetInstanceMap()) {
+        optionals.set(24);
+      }
+      oprot.writeBitSet(optionals, 25);
       if (struct.isSetType()) {
         oprot.writeI32(struct.type);
       }
@@ -2690,6 +2789,9 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       }
       if (struct.isSetSymlink()) {
         struct.symlink.write(oprot);
+      }
+      if (struct.isSetReadlink()) {
+        struct.readlink.write(oprot);
       }
       if (struct.isSetRename()) {
         struct.rename.write(oprot);
@@ -2730,19 +2832,19 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
       if (struct.isSetInvolvedPartitions()) {
         {
           oprot.writeI32(struct.involvedPartitions.size());
-          for (byte _iter217 : struct.involvedPartitions)
+          for (byte _iter225 : struct.involvedPartitions)
           {
-            oprot.writeByte(_iter217);
+            oprot.writeByte(_iter225);
           }
         }
       }
       if (struct.isSetInstanceMap()) {
         {
           oprot.writeI32(struct.instanceMap.size());
-          for (Map.Entry<Byte, Long> _iter218 : struct.instanceMap.entrySet())
+          for (Map.Entry<Byte, Long> _iter226 : struct.instanceMap.entrySet())
           {
-            oprot.writeByte(_iter218.getKey());
-            oprot.writeI64(_iter218.getValue());
+            oprot.writeByte(_iter226.getKey());
+            oprot.writeI64(_iter226.getValue());
           }
         }
       }
@@ -2751,7 +2853,7 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, Command struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(24);
+      BitSet incoming = iprot.readBitSet(25);
       if (incoming.get(0)) {
         struct.type = iprot.readI32();
         struct.setTypeIsSet(true);
@@ -2800,89 +2902,94 @@ public class Command implements org.apache.thrift.TBase<Command, Command._Fields
         struct.setSymlinkIsSet(true);
       }
       if (incoming.get(10)) {
+        struct.readlink = new ReadlinkCmd();
+        struct.readlink.read(iprot);
+        struct.setReadlinkIsSet(true);
+      }
+      if (incoming.get(11)) {
         struct.rename = new RenameCmd();
         struct.rename.read(iprot);
         struct.setRenameIsSet(true);
       }
-      if (incoming.get(11)) {
+      if (incoming.get(12)) {
         struct.chmod = new ChmodCmd();
         struct.chmod.read(iprot);
         struct.setChmodIsSet(true);
       }
-      if (incoming.get(12)) {
+      if (incoming.get(13)) {
         struct.chown = new ChownCmd();
         struct.chown.read(iprot);
         struct.setChownIsSet(true);
       }
-      if (incoming.get(13)) {
+      if (incoming.get(14)) {
         struct.truncate = new TruncateCmd();
         struct.truncate.read(iprot);
         struct.setTruncateIsSet(true);
       }
-      if (incoming.get(14)) {
+      if (incoming.get(15)) {
         struct.utime = new UtimeCmd();
         struct.utime.read(iprot);
         struct.setUtimeIsSet(true);
       }
-      if (incoming.get(15)) {
+      if (incoming.get(16)) {
         struct.open = new OpenCmd();
         struct.open.read(iprot);
         struct.setOpenIsSet(true);
       }
-      if (incoming.get(16)) {
+      if (incoming.get(17)) {
         struct.read = new ReadBlocksCmd();
         struct.read.read(iprot);
         struct.setReadIsSet(true);
       }
-      if (incoming.get(17)) {
+      if (incoming.get(18)) {
         struct.write = new WriteBlocksCmd();
         struct.write.read(iprot);
         struct.setWriteIsSet(true);
       }
-      if (incoming.get(18)) {
+      if (incoming.get(19)) {
         struct.release = new ReleaseCmd();
         struct.release.read(iprot);
         struct.setReleaseIsSet(true);
       }
-      if (incoming.get(19)) {
+      if (incoming.get(20)) {
         struct.statfs = new StatFsCmd();
         struct.statfs.read(iprot);
         struct.setStatfsIsSet(true);
       }
-      if (incoming.get(20)) {
+      if (incoming.get(21)) {
         struct.signal = new Signal();
         struct.signal.read(iprot);
         struct.setSignalIsSet(true);
       }
-      if (incoming.get(21)) {
+      if (incoming.get(22)) {
         struct.debug = new ch.usi.paxosfs.rpc.Debug();
         struct.debug.read(iprot);
         struct.setDebugIsSet(true);
       }
-      if (incoming.get(22)) {
+      if (incoming.get(23)) {
         {
-          org.apache.thrift.protocol.TSet _set219 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, iprot.readI32());
-          struct.involvedPartitions = new HashSet<Byte>(2*_set219.size);
-          for (int _i220 = 0; _i220 < _set219.size; ++_i220)
+          org.apache.thrift.protocol.TSet _set227 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.BYTE, iprot.readI32());
+          struct.involvedPartitions = new HashSet<Byte>(2*_set227.size);
+          for (int _i228 = 0; _i228 < _set227.size; ++_i228)
           {
-            byte _elem221;
-            _elem221 = iprot.readByte();
-            struct.involvedPartitions.add(_elem221);
+            byte _elem229;
+            _elem229 = iprot.readByte();
+            struct.involvedPartitions.add(_elem229);
           }
         }
         struct.setInvolvedPartitionsIsSet(true);
       }
-      if (incoming.get(23)) {
+      if (incoming.get(24)) {
         {
-          org.apache.thrift.protocol.TMap _map222 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, iprot.readI32());
-          struct.instanceMap = new HashMap<Byte,Long>(2*_map222.size);
-          for (int _i223 = 0; _i223 < _map222.size; ++_i223)
+          org.apache.thrift.protocol.TMap _map230 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, iprot.readI32());
+          struct.instanceMap = new HashMap<Byte,Long>(2*_map230.size);
+          for (int _i231 = 0; _i231 < _map230.size; ++_i231)
           {
-            byte _key224;
-            long _val225;
-            _key224 = iprot.readByte();
-            _val225 = iprot.readI64();
-            struct.instanceMap.put(_key224, _val225);
+            byte _key232;
+            long _val233;
+            _key232 = iprot.readByte();
+            _val233 = iprot.readI64();
+            struct.instanceMap.put(_key232, _val233);
           }
         }
         struct.setInstanceMapIsSet(true);

@@ -1,7 +1,6 @@
 package ch.usi.paxosfs.storage;
 
 import ch.usi.paxosfs.util.UUIDUtils;
-import com.google.common.cache.*;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;

@@ -3,19 +3,11 @@ package ch.usi.paxosfs.storage;
 import ch.usi.paxosfs.util.UUIDUtils;
 import net.spy.memcached.AddrUtil;
 import net.spy.memcached.MemcachedClient;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.fluent.Async;
-import org.apache.http.client.fluent.Request;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.Future;
 
 public class MemcachedStorage implements Storage {
     private Map<Byte, MemcachedClient> partitionClients;

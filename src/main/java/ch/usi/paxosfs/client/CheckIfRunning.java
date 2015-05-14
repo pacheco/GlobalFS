@@ -14,9 +14,6 @@ import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
-import org.apache.zookeeper.KeeperException;
-
-import java.io.IOException;
 
 /**
  * Checks if paxos is running by sending NULL commands to each partition (and the global ring)

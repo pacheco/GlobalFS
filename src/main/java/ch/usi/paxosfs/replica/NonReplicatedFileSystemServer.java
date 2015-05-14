@@ -15,7 +15,6 @@ import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.*;
 
@@ -161,7 +160,7 @@ public class NonReplicatedFileSystemServer implements FuseOps.Iface, Runnable {
 	}
 
 	@Override
-	public synchronized Response symlink(String target, String path, int uid, int gid, Map<Byte, Long> instanceMap)
+	public synchronized Response symlink(String target, String path, Map<Byte, Long> instanceMap)
 			throws FSError, TException {
 		throw new FSError(FuseException.EOPNOTSUPP, "symlinks not supported.");
 	}

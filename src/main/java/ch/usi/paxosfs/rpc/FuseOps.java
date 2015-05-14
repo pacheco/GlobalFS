@@ -38,7 +38,7 @@ public class FuseOps {
 
     public Response rmdir(String path, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException;
 
-    public Response symlink(String target, String path, int uid, int gid, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException;
+    public Response symlink(String target, String path, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException;
 
     public Response rename(String fromPath, String toPath, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException;
 
@@ -80,7 +80,7 @@ public class FuseOps {
 
     public void rmdir(String path, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void symlink(String target, String path, int uid, int gid, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void symlink(String target, String path, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void rename(String fromPath, String toPath, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -322,19 +322,17 @@ public class FuseOps {
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "rmdir failed: unknown result");
     }
 
-    public Response symlink(String target, String path, int uid, int gid, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException
+    public Response symlink(String target, String path, Map<Byte,Long> instanceMap) throws FSError, org.apache.thrift.TException
     {
-      send_symlink(target, path, uid, gid, instanceMap);
+      send_symlink(target, path, instanceMap);
       return recv_symlink();
     }
 
-    public void send_symlink(String target, String path, int uid, int gid, Map<Byte,Long> instanceMap) throws org.apache.thrift.TException
+    public void send_symlink(String target, String path, Map<Byte,Long> instanceMap) throws org.apache.thrift.TException
     {
       symlink_args args = new symlink_args();
       args.setTarget(target);
       args.setPath(path);
-      args.setUid(uid);
-      args.setGid(gid);
       args.setInstanceMap(instanceMap);
       sendBase("symlink", args);
     }
@@ -947,9 +945,9 @@ public class FuseOps {
       }
     }
 
-    public void symlink(String target, String path, int uid, int gid, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void symlink(String target, String path, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      symlink_call method_call = new symlink_call(target, path, uid, gid, instanceMap, resultHandler, this, ___protocolFactory, ___transport);
+      symlink_call method_call = new symlink_call(target, path, instanceMap, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -957,15 +955,11 @@ public class FuseOps {
     public static class symlink_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String target;
       private String path;
-      private int uid;
-      private int gid;
       private Map<Byte,Long> instanceMap;
-      public symlink_call(String target, String path, int uid, int gid, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public symlink_call(String target, String path, Map<Byte,Long> instanceMap, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.target = target;
         this.path = path;
-        this.uid = uid;
-        this.gid = gid;
         this.instanceMap = instanceMap;
       }
 
@@ -974,8 +968,6 @@ public class FuseOps {
         symlink_args args = new symlink_args();
         args.setTarget(target);
         args.setPath(path);
-        args.setUid(uid);
-        args.setGid(gid);
         args.setInstanceMap(instanceMap);
         args.write(prot);
         prot.writeMessageEnd();
@@ -1637,7 +1629,7 @@ public class FuseOps {
       public symlink_result getResult(I iface, symlink_args args) throws org.apache.thrift.TException {
         symlink_result result = new symlink_result();
         try {
-          result.success = iface.symlink(args.target, args.path, args.uid, args.gid, args.instanceMap);
+          result.success = iface.symlink(args.target, args.path, args.instanceMap);
         } catch (FSError e) {
           result.e = e;
         }
@@ -2396,7 +2388,7 @@ public class FuseOps {
       }
 
       public void start(I iface, symlink_args args, org.apache.thrift.async.AsyncMethodCallback<Response> resultHandler) throws TException {
-        iface.symlink(args.target, args.path, args.uid, args.gid, args.instanceMap,resultHandler);
+        iface.symlink(args.target, args.path, args.instanceMap,resultHandler);
       }
     }
 
@@ -10469,8 +10461,6 @@ public class FuseOps {
 
     private static final org.apache.thrift.protocol.TField TARGET_FIELD_DESC = new org.apache.thrift.protocol.TField("target", org.apache.thrift.protocol.TType.STRING, (short)1);
     private static final org.apache.thrift.protocol.TField PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("path", org.apache.thrift.protocol.TType.STRING, (short)2);
-    private static final org.apache.thrift.protocol.TField UID_FIELD_DESC = new org.apache.thrift.protocol.TField("uid", org.apache.thrift.protocol.TType.I32, (short)3);
-    private static final org.apache.thrift.protocol.TField GID_FIELD_DESC = new org.apache.thrift.protocol.TField("gid", org.apache.thrift.protocol.TType.I32, (short)4);
     private static final org.apache.thrift.protocol.TField INSTANCE_MAP_FIELD_DESC = new org.apache.thrift.protocol.TField("instanceMap", org.apache.thrift.protocol.TType.MAP, (short)5);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -10481,16 +10471,12 @@ public class FuseOps {
 
     public String target; // required
     public String path; // required
-    public int uid; // required
-    public int gid; // required
     public Map<Byte,Long> instanceMap; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       TARGET((short)1, "target"),
       PATH((short)2, "path"),
-      UID((short)3, "uid"),
-      GID((short)4, "gid"),
       INSTANCE_MAP((short)5, "instanceMap");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
@@ -10510,10 +10496,6 @@ public class FuseOps {
             return TARGET;
           case 2: // PATH
             return PATH;
-          case 3: // UID
-            return UID;
-          case 4: // GID
-            return GID;
           case 5: // INSTANCE_MAP
             return INSTANCE_MAP;
           default:
@@ -10556,9 +10538,6 @@ public class FuseOps {
     }
 
     // isset id assignments
-    private static final int __UID_ISSET_ID = 0;
-    private static final int __GID_ISSET_ID = 1;
-    private byte __isset_bitfield = 0;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -10566,10 +10545,6 @@ public class FuseOps {
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.PATH, new org.apache.thrift.meta_data.FieldMetaData("path", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-      tmpMap.put(_Fields.UID, new org.apache.thrift.meta_data.FieldMetaData("uid", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-      tmpMap.put(_Fields.GID, new org.apache.thrift.meta_data.FieldMetaData("gid", org.apache.thrift.TFieldRequirementType.DEFAULT, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
       tmpMap.put(_Fields.INSTANCE_MAP, new org.apache.thrift.meta_data.FieldMetaData("instanceMap", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
               new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BYTE), 
@@ -10584,17 +10559,11 @@ public class FuseOps {
     public symlink_args(
       String target,
       String path,
-      int uid,
-      int gid,
       Map<Byte,Long> instanceMap)
     {
       this();
       this.target = target;
       this.path = path;
-      this.uid = uid;
-      setUidIsSet(true);
-      this.gid = gid;
-      setGidIsSet(true);
       this.instanceMap = instanceMap;
     }
 
@@ -10602,15 +10571,12 @@ public class FuseOps {
      * Performs a deep copy on <i>other</i>.
      */
     public symlink_args(symlink_args other) {
-      __isset_bitfield = other.__isset_bitfield;
       if (other.isSetTarget()) {
         this.target = other.target;
       }
       if (other.isSetPath()) {
         this.path = other.path;
       }
-      this.uid = other.uid;
-      this.gid = other.gid;
       if (other.isSetInstanceMap()) {
         Map<Byte,Long> __this__instanceMap = new HashMap<Byte,Long>(other.instanceMap);
         this.instanceMap = __this__instanceMap;
@@ -10625,10 +10591,6 @@ public class FuseOps {
     public void clear() {
       this.target = null;
       this.path = null;
-      setUidIsSet(false);
-      this.uid = 0;
-      setGidIsSet(false);
-      this.gid = 0;
       this.instanceMap = null;
     }
 
@@ -10678,52 +10640,6 @@ public class FuseOps {
       if (!value) {
         this.path = null;
       }
-    }
-
-    public int getUid() {
-      return this.uid;
-    }
-
-    public symlink_args setUid(int uid) {
-      this.uid = uid;
-      setUidIsSet(true);
-      return this;
-    }
-
-    public void unsetUid() {
-      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __UID_ISSET_ID);
-    }
-
-    /** Returns true if field uid is set (has been assigned a value) and false otherwise */
-    public boolean isSetUid() {
-      return EncodingUtils.testBit(__isset_bitfield, __UID_ISSET_ID);
-    }
-
-    public void setUidIsSet(boolean value) {
-      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __UID_ISSET_ID, value);
-    }
-
-    public int getGid() {
-      return this.gid;
-    }
-
-    public symlink_args setGid(int gid) {
-      this.gid = gid;
-      setGidIsSet(true);
-      return this;
-    }
-
-    public void unsetGid() {
-      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __GID_ISSET_ID);
-    }
-
-    /** Returns true if field gid is set (has been assigned a value) and false otherwise */
-    public boolean isSetGid() {
-      return EncodingUtils.testBit(__isset_bitfield, __GID_ISSET_ID);
-    }
-
-    public void setGidIsSet(boolean value) {
-      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __GID_ISSET_ID, value);
     }
 
     public int getInstanceMapSize() {
@@ -10779,22 +10695,6 @@ public class FuseOps {
         }
         break;
 
-      case UID:
-        if (value == null) {
-          unsetUid();
-        } else {
-          setUid((Integer)value);
-        }
-        break;
-
-      case GID:
-        if (value == null) {
-          unsetGid();
-        } else {
-          setGid((Integer)value);
-        }
-        break;
-
       case INSTANCE_MAP:
         if (value == null) {
           unsetInstanceMap();
@@ -10814,12 +10714,6 @@ public class FuseOps {
       case PATH:
         return getPath();
 
-      case UID:
-        return Integer.valueOf(getUid());
-
-      case GID:
-        return Integer.valueOf(getGid());
-
       case INSTANCE_MAP:
         return getInstanceMap();
 
@@ -10838,10 +10732,6 @@ public class FuseOps {
         return isSetTarget();
       case PATH:
         return isSetPath();
-      case UID:
-        return isSetUid();
-      case GID:
-        return isSetGid();
       case INSTANCE_MAP:
         return isSetInstanceMap();
       }
@@ -10876,24 +10766,6 @@ public class FuseOps {
         if (!(this_present_path && that_present_path))
           return false;
         if (!this.path.equals(that.path))
-          return false;
-      }
-
-      boolean this_present_uid = true;
-      boolean that_present_uid = true;
-      if (this_present_uid || that_present_uid) {
-        if (!(this_present_uid && that_present_uid))
-          return false;
-        if (this.uid != that.uid)
-          return false;
-      }
-
-      boolean this_present_gid = true;
-      boolean that_present_gid = true;
-      if (this_present_gid || that_present_gid) {
-        if (!(this_present_gid && that_present_gid))
-          return false;
-        if (this.gid != that.gid)
           return false;
       }
 
@@ -10938,26 +10810,6 @@ public class FuseOps {
       }
       if (isSetPath()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.path, other.path);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
-      lastComparison = Boolean.valueOf(isSetUid()).compareTo(other.isSetUid());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetUid()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.uid, other.uid);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
-      lastComparison = Boolean.valueOf(isSetGid()).compareTo(other.isSetGid());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetGid()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gid, other.gid);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -11008,14 +10860,6 @@ public class FuseOps {
       }
       first = false;
       if (!first) sb.append(", ");
-      sb.append("uid:");
-      sb.append(this.uid);
-      first = false;
-      if (!first) sb.append(", ");
-      sb.append("gid:");
-      sb.append(this.gid);
-      first = false;
-      if (!first) sb.append(", ");
       sb.append("instanceMap:");
       if (this.instanceMap == null) {
         sb.append("null");
@@ -11042,8 +10886,6 @@ public class FuseOps {
 
     private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
       try {
-        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
-        __isset_bitfield = 0;
         read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
       } catch (org.apache.thrift.TException te) {
         throw new java.io.IOException(te);
@@ -11080,22 +10922,6 @@ public class FuseOps {
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.path = iprot.readString();
                 struct.setPathIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            case 3: // UID
-              if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-                struct.uid = iprot.readI32();
-                struct.setUidIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            case 4: // GID
-              if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-                struct.gid = iprot.readI32();
-                struct.setGidIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -11145,12 +10971,6 @@ public class FuseOps {
           oprot.writeString(struct.path);
           oprot.writeFieldEnd();
         }
-        oprot.writeFieldBegin(UID_FIELD_DESC);
-        oprot.writeI32(struct.uid);
-        oprot.writeFieldEnd();
-        oprot.writeFieldBegin(GID_FIELD_DESC);
-        oprot.writeI32(struct.gid);
-        oprot.writeFieldEnd();
         if (struct.instanceMap != null) {
           oprot.writeFieldBegin(INSTANCE_MAP_FIELD_DESC);
           {
@@ -11188,27 +11008,15 @@ public class FuseOps {
         if (struct.isSetPath()) {
           optionals.set(1);
         }
-        if (struct.isSetUid()) {
+        if (struct.isSetInstanceMap()) {
           optionals.set(2);
         }
-        if (struct.isSetGid()) {
-          optionals.set(3);
-        }
-        if (struct.isSetInstanceMap()) {
-          optionals.set(4);
-        }
-        oprot.writeBitSet(optionals, 5);
+        oprot.writeBitSet(optionals, 3);
         if (struct.isSetTarget()) {
           oprot.writeString(struct.target);
         }
         if (struct.isSetPath()) {
           oprot.writeString(struct.path);
-        }
-        if (struct.isSetUid()) {
-          oprot.writeI32(struct.uid);
-        }
-        if (struct.isSetGid()) {
-          oprot.writeI32(struct.gid);
         }
         if (struct.isSetInstanceMap()) {
           {
@@ -11225,7 +11033,7 @@ public class FuseOps {
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, symlink_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(5);
+        BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
           struct.target = iprot.readString();
           struct.setTargetIsSet(true);
@@ -11235,14 +11043,6 @@ public class FuseOps {
           struct.setPathIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.uid = iprot.readI32();
-          struct.setUidIsSet(true);
-        }
-        if (incoming.get(3)) {
-          struct.gid = iprot.readI32();
-          struct.setGidIsSet(true);
-        }
-        if (incoming.get(4)) {
           {
             org.apache.thrift.protocol.TMap _map120 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.BYTE, org.apache.thrift.protocol.TType.I64, iprot.readI32());
             struct.instanceMap = new HashMap<Byte,Long>(2*_map120.size);

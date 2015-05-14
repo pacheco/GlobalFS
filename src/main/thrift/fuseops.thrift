@@ -83,7 +83,7 @@ service FuseOps {
 	Response mkdir(1: string path, 2: i32 mode, 3: i32 uid, 4: i32 gid, 5: map<byte, i64> instanceMap) throws (1: FSError e),
 	Response unlink(1: string path, 2: map<byte, i64> instanceMap) throws (1: FSError e),
 	Response rmdir(1: string path, 2: map<byte, i64> instanceMap) throws (1: FSError e),
-	Response symlink(1: string target, 2: string path, 3: i32 uid, 4: i32 gid, 5: map<byte, i64> instanceMap) throws (1: FSError e),
+	Response symlink(1: string target, 2: string path, 5: map<byte, i64> instanceMap) throws (1: FSError e),
 	Response rename(1: string fromPath, 2: string toPath, 3: map<byte, i64> instanceMap) throws (1: FSError e),
 	Response chmod(1: string path, 2: i32 mode, 3: map<byte, i64> instanceMap) throws (1: FSError e),
 	Response chown(1: string path, 2: i32 uid, 3: i32 gid, 4: map<byte, i64> instanceMap) throws (1: FSError e),

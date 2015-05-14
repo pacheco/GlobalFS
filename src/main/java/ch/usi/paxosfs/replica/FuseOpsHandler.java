@@ -5,7 +5,6 @@ import ch.usi.paxosfs.replica.commands.*;
 import ch.usi.paxosfs.rpc.*;
 import ch.usi.paxosfs.util.Paths;
 import com.google.common.collect.Sets;
-import fuse.FuseException;
 import org.apache.thrift.TException;
 
 import java.util.*;
@@ -95,14 +94,29 @@ public class FuseOpsHandler implements FuseOps.Iface {
 	}
 
 	@Override
-	public Response symlink(String target, String path, int uid, int gid, Map<Byte, Long> instanceMap) throws TException {
-		throw new FSError(FuseException.EOPNOTSUPP, "symlinks not supported.");
+	public Response symlink(String target, String path, Map<Byte, Long> instanceMap) throws TException {
+        Set<Byte> parts = oracle.partitionsOf(path);
+        Set<Byte> parentParts = oracle.partitionsOf(Paths.dirname(path));
+        Set<Byte> involvedPartitions = Sets.union(parts, parentParts);
+        Command cmd = newCommand(CommandType.SYMLINK, involvedPartitions, instanceMap);
+        SymlinkCmd symlink = new SymlinkCmd(target, path, parentParts, parts);
+        cmd.setSymlink(symlink);
+        replica.submitCommand(cmd);
+        Response r = new Response(replica.getInstanceMap());
+        return r;
 	}
 	
 	@Override
 	public Response readlink(String path, Map<Byte, Long> instanceMap) throws TException {
-		// TODO Auto-generated method stub
-		throw new FSError(FuseException.EOPNOTSUPP, "symlinks not supported.");
+        // can be sent to ANY partition that replicates the path - we send it to the first returned by the oracle
+        Set<Byte> parts = Sets.newHashSet(Byte.valueOf(partition));
+        Command cmd = newCommand(CommandType.READLINK, parts, instanceMap);
+        ReadlinkCmd readlink = new ReadlinkCmd(path, parts);
+        cmd.setReadlink(readlink);
+        String result = (String) replica.submitCommand(cmd);
+        Response r = new Response(replica.getInstanceMap());
+        r.setReadlink(result);
+        return r;
 	}
 
 	@Override

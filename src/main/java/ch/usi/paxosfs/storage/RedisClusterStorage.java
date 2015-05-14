@@ -1,19 +1,17 @@
 package ch.usi.paxosfs.storage;
 
-import ch.usi.paxosfs.util.UUIDUtils;
-import com.lambdaworks.redis.RedisAsyncConnection;
 import com.lambdaworks.redis.RedisClusterAsyncConnection;
 import com.lambdaworks.redis.RedisFuture;
 import com.lambdaworks.redis.RedisURI;
 import com.lambdaworks.redis.cluster.RedisClusterClient;
-import net.spy.memcached.AddrUtil;
-import net.spy.memcached.MemcachedClient;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.Scanner;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 

@@ -318,7 +318,7 @@ public class PaxosFileSystem implements Filesystem3 {
 		int partition = this.partitionOracle.partitionsOf(from).iterator().next().intValue();
 		FuseOps.Client client = getClient((byte) partition);
 		try {
-			Response r = client.symlink(from, to, callerUid(), callerGid(), instanceMap.get());
+			Response r = client.symlink(from, to, instanceMap.get());
 			instanceMap.get().putAll(r.instanceMap);
 			returnClient(client, (byte) partition);
 		} catch (FSError e) {

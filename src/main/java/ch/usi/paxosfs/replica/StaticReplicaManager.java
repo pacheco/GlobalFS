@@ -1,11 +1,13 @@
 package ch.usi.paxosfs.replica;
 
 import com.google.common.net.HostAndPort;
-import org.apache.zookeeper.data.Stat;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.Scanner;
 
 /**
  * Register and find replicas on zookeeper by partition.

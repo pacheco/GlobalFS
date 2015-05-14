@@ -1,7 +1,6 @@
 package ch.usi.paxosfs.storage;
 
 import java.nio.file.Path;
-import java.util.concurrent.Future;
 
 /**
  * This interface provides access to a partitioned key value store. Methods expect a partition id identifying where the operation should run.

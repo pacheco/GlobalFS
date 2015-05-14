@@ -1,9 +1,6 @@
 package ch.usi.paxosfs.replica;
 
-import ch.usi.paxosfs.filesystem.DirNode;
-import ch.usi.paxosfs.filesystem.FileNode;
-import ch.usi.paxosfs.filesystem.FileSystem;
-import ch.usi.paxosfs.filesystem.Node;
+import ch.usi.paxosfs.filesystem.*;
 import ch.usi.paxosfs.filesystem.memory.MemDir;
 import ch.usi.paxosfs.filesystem.memory.MemFile;
 import ch.usi.paxosfs.filesystem.memory.MemFileSystem;
@@ -27,7 +24,6 @@ import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
@@ -234,6 +230,9 @@ public class FileSystemReplica implements Runnable {
 				case RELEASE:
 					applyRelease(c, res);
 					break;
+                case READLINK:
+                    applyReadlink(c, res);
+                    break;
 				default:
 					log.error(new StrBuilder().append("Invalid command").toString());
 					res.setSuccess(false);
@@ -438,13 +437,36 @@ public class FileSystemReplica implements Runnable {
 		res.setResponse(null);
 	}
 
-	private void applySymlink(Command c, CommandResult res) {
+	private void applySymlink(Command c, CommandResult res) throws FSError {
 		log.debug(new StrBuilder().append("symlink ").append(c.getSymlink().getPath()).append(" ").append(c.getSymlink().getTarget()).toString());
+        SymlinkCmd s = c.getSymlink();
+        fs.createLink(s.getPath(), s.getTarget());
 		res.setSuccess(true);
 		res.setResponse(null);
 	}
 
-	private void applyRename(Command c, CommandResult res) throws FSError {
+    private void applyReadlink(Command c, CommandResult res) throws FSError {
+        log.debug(new StrBuilder().append("readlink ").append(c.getReadlink().getPath()).toString());
+
+        Node n = fs.get(c.getReadlink().getPath());
+        if (!n.isLink()) {
+            throw new FSError(FuseException.ENOLINK, "Not a link");
+        }
+        String response = ((LinkNode) n).getTarget();
+
+        if (c.getInvolvedPartitions().size() > 1) {
+            // wait for other signals
+            for (Byte part : c.getInvolvedPartitions()) {
+                if (part == localPartition)
+                    continue;
+                //this.waitForSignal(c.getReqId(), part.byteValue());
+            }
+        }
+        res.setSuccess(true);
+        res.setResponse(response);
+    }
+
+    private void applyRename(Command c, CommandResult res) throws FSError {
 		log.debug(new StrBuilder().append("rename ").append(c.getRename().getFrom()).append(" ").append(c.getRename().getTo()).toString());
 		RenameCmd r = c.getRename();
 		// some partition in partitionTo is not in partitionFrom ->
@@ -855,6 +877,7 @@ public class FileSystemReplica implements Runnable {
 		case ATTR:
 		case GETDIR:
 		case READ_BLOCKS:
+        case READLINK:
 			return true;
         case OPEN:
             // check for the O_RDONLY flag

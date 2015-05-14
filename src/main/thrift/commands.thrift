@@ -21,6 +21,7 @@ enum CommandType {
     RELEASE = 15,
     SIGNAL = 16,
     DEBUG = 17,
+    READLINK = 18,
 }
 
 struct AttrCmd {
@@ -72,11 +73,14 @@ struct RmdirCmd {
 struct SymlinkCmd {
     3: string target
     4: string path
-    5: i32 uid
-    6: i32 gid
 
     7: set<byte> parentPartition
     8: set<byte> partition
+}
+
+struct ReadlinkCmd {
+    1: string path
+    2: set<byte> partition
 }
 
 struct RenameCmd {
@@ -185,6 +189,7 @@ struct Command {
     9: optional UnlinkCmd unlink
     10: optional RmdirCmd rmdir
     11: optional SymlinkCmd symlink
+    26: optional ReadlinkCmd readlink
     12: optional RenameCmd rename
     13: optional ChmodCmd chmod
     14: optional ChownCmd chown

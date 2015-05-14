@@ -1,7 +1,6 @@
 package ch.usi.paxosfs.storage;
 
 import java.nio.file.Path;
-import java.util.concurrent.Future;
 
 public class NullStorage implements Storage {
     byte[] data = new byte[1024];

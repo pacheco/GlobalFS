@@ -25,7 +25,8 @@ public enum CommandType implements org.apache.thrift.TEnum {
   WRITE_BLOCKS(14),
   RELEASE(15),
   SIGNAL(16),
-  DEBUG(17);
+  DEBUG(17),
+  READLINK(18);
 
   private final int value;
 
@@ -82,6 +83,8 @@ public enum CommandType implements org.apache.thrift.TEnum {
         return SIGNAL;
       case 17:
         return DEBUG;
+      case 18:
+        return READLINK;
       default:
         return null;
     }

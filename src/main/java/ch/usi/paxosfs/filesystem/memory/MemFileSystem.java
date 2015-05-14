@@ -49,14 +49,14 @@ public class MemFileSystem implements FileSystem {
 		return newFile;
 	}
 
-	public LinkNode createLink(String absolutePath, String absoluteTarget, int time, int uid, int gid) throws FSError {
+	public LinkNode createLink(String absolutePath, String absoluteTarget) throws FSError {
 		String parentPath = Paths.dirname(absolutePath);
 		MemDir parent = (MemDir) this.getDir(parentPath);
 		Node child = parent.getChild(Paths.basename(absolutePath));
 		if (child != null) {
 			throw errorAlreadyExists(absolutePath);
 		}
-		LinkNode newLink = new MemLink(absoluteTarget, time, uid, gid);
+		LinkNode newLink = new MemLink(absoluteTarget, 0, 0, 0);
 		parent.addChild(Paths.basename(absolutePath), newLink);
 		return newLink;
 	}

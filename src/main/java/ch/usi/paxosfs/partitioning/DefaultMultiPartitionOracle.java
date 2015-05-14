@@ -1,6 +1,5 @@
 package ch.usi.paxosfs.partitioning;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 import java.util.HashMap;

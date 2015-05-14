@@ -1,7 +1,9 @@
 package ch.usi.paxosfs.storage;
 
-import com.lambdaworks.redis.*;
-import com.lambdaworks.redis.cluster.RedisClusterClient;
+import com.lambdaworks.redis.RedisAsyncConnection;
+import com.lambdaworks.redis.RedisClient;
+import com.lambdaworks.redis.RedisFuture;
+import com.lambdaworks.redis.RedisURI;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.nio.file.Path;
