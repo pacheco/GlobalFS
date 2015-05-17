@@ -6,6 +6,8 @@ source $SCRIPTDIR/const.sh
 JVMOPT="-XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:/tmp/java-$$.vgc"
 PORT=20000
 
+N_PARTITIONS=$1
+
 # get node information
 source ~/whoami.sh
 
@@ -16,9 +18,10 @@ rm $LOG
 # from wait queue*delta
 #
 
-# LATCOMP=(0 160 10 60) # us-west-1 us-east-1 eu-west-1
-
 LATCOMP=(0 160 10 60) # us-west-1 us-east-1 eu-west-1
+
+# LATCOMP=(0 160 160 10 10 60 60) # us-west-1 us-east-1 eu-west-1
+# LATCOMP=(0 160 160 160 10 10 10 60 60 60) # us-west-1 us-east-1 eu-west-1
 
 DB=/mnt/
 
@@ -30,7 +33,7 @@ case $NAME in
         # echo "export EC2=$EC2; $UPAXOSDIR/ringpaxos.sh 0,${GLOBALID}:PL\;${RING},${ID}:PAL $ZKHOST:2182" | tee -a $LOG
         # sudo sh -c "export EC2=$EC2; $UPAXOSDIR/ringpaxos.sh 0,${GLOBALID}:PL\;${RING},${ID}:PAL $ZKHOST:2182" | tee -a $LOG
         # ;;
-        FULLCMD="export DB=$DB; export LAT=${LATCOMP[RING]}; export EC2=$EC2; java -Xmx2G -Xms1G -ea -cp $CLASSPATH $JVMOPT $GC -Djava.library.path=$LIBPATH ch.usi.paxosfs.replica.FSMain 3 $RING $ID $PORT $ZKHOST:2182"
+        FULLCMD="export DB=$DB; export LAT=${LATCOMP[RING]}; export EC2=$EC2; java -Xmx2G -Xms1G -ea -cp $CLASSPATH $JVMOPT $GC -Djava.library.path=$LIBPATH ch.usi.paxosfs.replica.FSMain $N_PARTITIONS $RING $ID $PORT $ZKHOST:2182"
 
         echo $FULLCMD | tee -a $LOG
         sh -c "$FULLCMD"  | tee -a $LOG
