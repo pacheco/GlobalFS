@@ -717,11 +717,12 @@ public class PaxosFileSystem implements Filesystem3 {
 
        // statsPrinter.start();
 
+        log.info(Arrays.toString(args));
 		PaxosFileSystem fs = new PaxosFileSystem(Integer.parseInt(args[0]), args[1], args[2], Integer.parseInt(args[3]), Byte.parseByte(args[4]));
 		try {
 			fs.start();
 			String[] mountArgs = Arrays.copyOfRange(args, 5, args.length);
-			log.info(Arrays.toString(mountArgs));
+//			log.info(Arrays.toString(mountArgs));
 			FuseMount.mount(mountArgs, fs, log);
 		} catch (Exception e) {
 			e.printStackTrace();
