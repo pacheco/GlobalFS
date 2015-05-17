@@ -21,7 +21,9 @@ rm $LOG
 LATCOMP=(0 160 10 60) # us-west-1 us-east-1 eu-west-1
 
 # LATCOMP=(0 160 160 10 10 60 60) # us-west-1 us-east-1 eu-west-1
-# LATCOMP=(0 160 160 160 10 10 10 60 60 60) # us-west-1 us-east-1 eu-west-1
+# LATCOMP=(0 170 170 170 50 50 50 90 90 90) # us-west-1 us-east-1 eu-west-1
+
+
 
 DB=/mnt/
 

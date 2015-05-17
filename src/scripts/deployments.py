@@ -172,3 +172,95 @@ if __name__ == '__main__':
             pprint(r.id)
             for n in r.nodes:
                 pprint(n)
+
+
+
+# 12 replicas and 12 clients per DC
+#----------------------------------------------------------
+dep_12 = EC2Deployment([], EC2Node('us-west-2', 'a', 'c3.large', 'head'))
+dc = 1
+
+region_zones = {
+    'us-west-2' : ['a', 'b', 'c'],
+    'us-east-1' : ['a', 'b', 'e'],
+    'eu-west-1' : ['a', 'b', 'c'],
+}
+
+for region in region_zones.keys():
+    reg = EC2Region(region, dc, [])
+    reg.nodes.append(EC2Node(region, region_zones[region][0], 'c3.large', 'acc%s_0' % (dc)))
+
+    rep = 0
+    for av in region_zones[region]:
+        reg.nodes.append(EC2Node(region, av, 'r3.large', 'rep%s_%s' % (dc, rep)))
+        reg.nodes.append(EC2Node(region, av, 'c3.large', 'cli%s_%s' % (dc, rep)))
+        rep += 1
+    dep_12.regions.append(reg)
+    dc += 1
+
+    reg = EC2Region(region, dc, [])
+    rep = 0
+    for av in region_zones[region]:
+        reg.nodes.append(EC2Node(region, av, 'r3.large', 'rep%s_%s' % (dc, rep)))
+        reg.nodes.append(EC2Node(region, av, 'c3.large', 'cli%s_%s' % (dc, rep)))
+        rep += 1
+    dep_12.regions.append(reg)
+    dc += 1
+
+    reg = EC2Region(region, dc, [])
+    rep = 0
+    for av in region_zones[region]:
+        reg.nodes.append(EC2Node(region, av, 'r3.large', 'rep%s_%s' % (dc, rep)))
+        reg.nodes.append(EC2Node(region, av, 'c3.large', 'cli%s_%s' % (dc, rep)))
+        rep += 1
+    dep_12.regions.append(reg)
+    dc += 1
+
+    reg = EC2Region(region, dc, [])
+    rep = 0
+    for av in region_zones[region]:
+        reg.nodes.append(EC2Node(region, av, 'r3.large', 'rep%s_%s' % (dc, rep)))
+        reg.nodes.append(EC2Node(region, av, 'c3.large', 'cli%s_%s' % (dc, rep)))
+        rep += 1
+    dep_12.regions.append(reg)
+    dc += 1
+deployments['d12'] = dep_12
+
+
+# USED for GIT-Workload
+# 4 partitions and 4 regions (DCs)
+#----------------------------------------------------------
+dep_4 = EC2Deployment([], EC2Node('us-west-2', 'a', 'c3.large', 'head'))
+dc = 1
+
+region_zones = {
+    'us-west-2' : ['a', 'b', 'c'],
+    'us-east-1' : ['a', 'c', 'e'],
+    'eu-west-1' : ['a', 'b', 'c'],
+    'sa-east-1' : ['a', 'b', 'c'],
+}
+
+for region in region_zones.keys():
+    rep = 0
+    reg = EC2Region(region, dc, [])
+    reg.nodes.append(EC2Node(region, region_zones[region][0], 'c3.large', 'acc%s_0' % (dc)))
+    for av in region_zones[region]:
+        #should be r3, not available in sa-east-1
+        reg.nodes.append(EC2Node(region, av, 'm3.large', 'rep%s_%s' % (dc, rep)))
+        #should be c3, not available in sa-east-1b
+        reg.nodes.append(EC2Node(region, av, 'm3.large', 'cli%s_%s' % (dc, rep)))
+        rep += 1
+    dep_4.regions.append(reg)
+    dc += 1
+deployments['d4'] = dep_4
+
+
+if __name__ == '__main__':
+    for k, v in deployments.items():
+        pprint(k)
+        for r in v.regions:
+            pprint(r.id)
+            for n in r.nodes:
+                pprint(n)
+
+
