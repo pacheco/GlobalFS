@@ -87,7 +87,7 @@ def copyresult(outdir):
 def ensuredirs():
     """Create benchmark directories
     """
-    run('mkdir -p /tmp/fs/{1,2,3,4,5,6,7,8,9,g}')
+    run('mkdir -p /tmp/fs/{1,2,3,4,5,6,7,8,9,10,11,12,g}')
 
 
 @parallel

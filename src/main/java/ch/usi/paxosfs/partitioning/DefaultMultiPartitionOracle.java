@@ -42,8 +42,7 @@ public class DefaultMultiPartitionOracle implements PartitioningOracle {
             reply.addAll(allPartitions);
         } else {
             Set<Byte> p;
-            //p = partitionMapping.get(firstElem(path));
-            p = partitionMapping.get(path.substring(1, 2));
+            p = partitionMapping.get(firstElem(path));
             if (p == null) {
                 reply.addAll(allPartitions);
             } else {
