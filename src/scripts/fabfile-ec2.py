@@ -250,11 +250,13 @@ def config_put():
     put('*.config', '/home/ubuntu/')
 
 
-def create_dht_config():
+def create_dht_config(deployment):
     """Generate dht and storage config files"""
     # create dht config files
     local('echo ch.usi.paxosfs.storage.HttpStorage > storage.config')
-    for dc in range(1, 4):
+    dep = deployments[deployment]
+    for reg in dep.regions:
+        dc = reg.id
         # hosts and ports
         local('cat nodes.sh | grep DC%s_REP | sort | cut -d= -f2 > dhthosts' % (dc))
         local('seq 15100 100 15300 > dhtports')
@@ -292,6 +294,6 @@ def inst_config(deployment):
         execute(lambda: put('nodes.sh', '~/'))
     pprint(dict(env.roledefs))
     execute(whoami_create)
-    execute(create_dht_config)
+    execute(create_dht_config, deployment)
     execute(config_put)
     execute(hostname_set)

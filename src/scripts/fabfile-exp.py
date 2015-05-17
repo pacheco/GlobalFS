@@ -87,7 +87,7 @@ def copyresult(outdir):
 def ensuredirs():
     """Create benchmark directories
     """
-    run('mkdir -p /tmp/fs/{1,2,3,g}')
+    run('mkdir -p /tmp/fs/{1,2,3,4,5,6,7,8,9,g}')
 
 
 @parallel
@@ -152,7 +152,9 @@ def opertype_file(opertype, name):
     elif opertype == 'glob':
         filename = 'g/${RING}_file%s' % (name)
     elif opertype == 'rem':
-        filename = '$[(RING+1) % 3]/file%s' % (name)
+        raise Exception("not implemente")
+        # here we would need a n_partition parameter to do the modulo
+        #filename = '$[(RING+1) % 3]/file%s' % (name)
     else:
         filename = None
     return filename

@@ -80,6 +80,60 @@ set /ringpaxos/topology3/config/auto_trim %(MRP_TRIM_AUTO)s
 set /ringpaxos/topology3/config/proposer_batch_policy %(MRP_BATCH)s
 set /ringpaxos/topology3/config/p1_resend_time %(MRP_P1_TIMEOUT)s
 set /ringpaxos/topology3/config/value_resend_time %(MRP_PROPOSER_TIMEOUT)s
+
+set /ringpaxos/topology4/config/stable_storage %(MRP_STORAGE)s
+set /ringpaxos/topology4/config/tcp_nodelay 1
+set /ringpaxos/topology4/config/learner_recovery %(MRP_RECOVERY)s
+set /ringpaxos/topology4/config/trim_modulo %(MRP_TRIM_MOD)s
+set /ringpaxos/topology4/config/auto_trim %(MRP_TRIM_AUTO)s
+set /ringpaxos/topology4/config/proposer_batch_policy %(MRP_BATCH)s
+set /ringpaxos/topology4/config/p1_resend_time %(MRP_P1_TIMEOUT)s
+set /ringpaxos/topology4/config/value_resend_time %(MRP_PROPOSER_TIMEOUT)s
+
+set /ringpaxos/topology5/config/stable_storage %(MRP_STORAGE)s
+set /ringpaxos/topology5/config/tcp_nodelay 1
+set /ringpaxos/topology5/config/learner_recovery %(MRP_RECOVERY)s
+set /ringpaxos/topology5/config/trim_modulo %(MRP_TRIM_MOD)s
+set /ringpaxos/topology5/config/auto_trim %(MRP_TRIM_AUTO)s
+set /ringpaxos/topology5/config/proposer_batch_policy %(MRP_BATCH)s
+set /ringpaxos/topology5/config/p1_resend_time %(MRP_P1_TIMEOUT)s
+set /ringpaxos/topology5/config/value_resend_time %(MRP_PROPOSER_TIMEOUT)s
+
+set /ringpaxos/topology6/config/stable_storage %(MRP_STORAGE)s
+set /ringpaxos/topology6/config/tcp_nodelay 1
+set /ringpaxos/topology6/config/learner_recovery %(MRP_RECOVERY)s
+set /ringpaxos/topology6/config/trim_modulo %(MRP_TRIM_MOD)s
+set /ringpaxos/topology6/config/auto_trim %(MRP_TRIM_AUTO)s
+set /ringpaxos/topology6/config/proposer_batch_policy %(MRP_BATCH)s
+set /ringpaxos/topology6/config/p1_resend_time %(MRP_P1_TIMEOUT)s
+set /ringpaxos/topology6/config/value_resend_time %(MRP_PROPOSER_TIMEOUT)s
+
+set /ringpaxos/topology7/config/stable_storage %(MRP_STORAGE)s
+set /ringpaxos/topology7/config/tcp_nodelay 1
+set /ringpaxos/topology7/config/learner_recovery %(MRP_RECOVERY)s
+set /ringpaxos/topology7/config/trim_modulo %(MRP_TRIM_MOD)s
+set /ringpaxos/topology7/config/auto_trim %(MRP_TRIM_AUTO)s
+set /ringpaxos/topology7/config/proposer_batch_policy %(MRP_BATCH)s
+set /ringpaxos/topology7/config/p1_resend_time %(MRP_P1_TIMEOUT)s
+set /ringpaxos/topology7/config/value_resend_time %(MRP_PROPOSER_TIMEOUT)s
+
+set /ringpaxos/topology8/config/stable_storage %(MRP_STORAGE)s
+set /ringpaxos/topology8/config/tcp_nodelay 1
+set /ringpaxos/topology8/config/learner_recovery %(MRP_RECOVERY)s
+set /ringpaxos/topology8/config/trim_modulo %(MRP_TRIM_MOD)s
+set /ringpaxos/topology8/config/auto_trim %(MRP_TRIM_AUTO)s
+set /ringpaxos/topology8/config/proposer_batch_policy %(MRP_BATCH)s
+set /ringpaxos/topology8/config/p1_resend_time %(MRP_P1_TIMEOUT)s
+set /ringpaxos/topology8/config/value_resend_time %(MRP_PROPOSER_TIMEOUT)s
+
+set /ringpaxos/topology9/config/stable_storage %(MRP_STORAGE)s
+set /ringpaxos/topology9/config/tcp_nodelay 1
+set /ringpaxos/topology9/config/learner_recovery %(MRP_RECOVERY)s
+set /ringpaxos/topology9/config/trim_modulo %(MRP_TRIM_MOD)s
+set /ringpaxos/topology9/config/auto_trim %(MRP_TRIM_AUTO)s
+set /ringpaxos/topology9/config/proposer_batch_policy %(MRP_BATCH)s
+set /ringpaxos/topology9/config/p1_resend_time %(MRP_P1_TIMEOUT)s
+set /ringpaxos/topology9/config/value_resend_time %(MRP_PROPOSER_TIMEOUT)s
 """
 
 
@@ -165,7 +219,7 @@ def setup_zookeeper():
         sudo('service zookeeper restart')
         MRP_CONFIG['MRP_START_TIME'] = run('date +%s000')
         time.sleep(5) # needed?
-        run(dtach_and_log("~/usr/Paxos-trunk/ringpaxos.sh '0,9999:L;1,9999:L;2,9999:L;3,9999:L' localhost:2182",
+        run(dtach_and_log("~/usr/Paxos-trunk/ringpaxos.sh '0,9999:L;1,9999:L;2,9999:L;3,9999:L;4,9999:L;5,9999:L;6,9999:L;7,9999:L;8,9999:L;9,9999:L' localhost:2182",
                           '/tmp/zkcfg',
                           '/tmp/trash'))
         time.sleep(10)
@@ -176,22 +230,22 @@ def setup_zookeeper():
 
 
 @roles('head')
-def paxos_on():
+def paxos_on(n_partitions):
     """
     """
     with cd('usr/sinergiafs'), settings(warn_only=True):
-        while run('java ch.usi.paxosfs.client.CheckIfRunning 3 localhost:2182').return_code != 0:
+        while run('java ch.usi.paxosfs.client.CheckIfRunning %s localhost:2182' % (n_partitions)).return_code != 0:
             print 'NOT YET :('
     print 'OK!'
 
 
 @parallel
-def start_node():
+def start_node(n_partitions):
     """Start the paxos/replica node
     """
     with hide('stdout', 'stderr'):
         with cd('usr/sinergiafs/'):
-            run(dtach_and_log('./node-ec2.sh',
+            run(dtach_and_log('./node-ec2.sh %s' % (n_partitions),
                               '/tmp/nodeec2',
                               '/tmp/nodeec2.log'))
 
@@ -209,19 +263,20 @@ def start_dht():
             '/tmp/dht.log'))
 
 
-def start_servers():
+def start_servers(deployment):
     """Start the sinergiafs servers
     """
+    n_partitions = len(deployments[deployment].regions)
     env.roles = ['paxos_coordinator']
-    execute(start_node)
+    execute(start_node, n_partitions)
     time.sleep(5)
     env.roles = ['paxos_rest']
-    execute(start_node)
+    execute(start_node, n_partitions)
 
 
 @parallel
 @roles('client')
-def mount_fs():
+def mount_fs(n_partitions):
     """Mount the fuse filesystem
     """
     with settings(warn_only=True):
@@ -229,7 +284,7 @@ def mount_fs():
         run('mkdir -p /tmp/fs')
         HEADNODE = env.roledefs['head'][0]
         with cd('usr/sinergiafs'):
-            cmd = './client-mount.sh 3 %s:2182 ~/storage.config $[ID %% 3] $RING -f %s /tmp/fs' % (HEADNODE, FUSE_OPTIONS)
+            cmd = './client-mount.sh %s %s:2182 ~/storage.config $[ID %% 3] $RING -f %s /tmp/fs' % (n_partitions, HEADNODE, FUSE_OPTIONS)
             run(dtach_and_log(cmd, '/tmp/sinergiafs', '/tmp/sinergiafs.log'))
 
 
@@ -237,9 +292,13 @@ def mount_fs():
 def mount_fs_local(deployment):
     """Mount the fuse filesystem on the local machine
     """
+    execute(set_roles, deployment)
     with settings(warn_only=True), lcd('~/usr/sinergiafs/'):
         HEADNODE = env.roledefs['head'][0]
-        cmd = './client-mount.sh 3 %s:2182 ./storage.config 0 3 -f %s /tmp/fs' % (HEADNODE, FUSE_OPTIONS)
+        n_partitions = len(deployments[deployment].regions)
+        cmd = './client-mount.sh %s %s:2182 ./storage.config 0 3 -f %s /tmp/fs' % (n_partitions,
+                                                                                   HEADNODE,
+                                                                                   FUSE_OPTIONS)
         get('storage.config', './storage.config')
         local('mkdir -p /tmp/fs')
         local('sudo umount -l /tmp/fs')
@@ -254,11 +313,12 @@ def start_all(deployment):
     execute(kill_and_clear_)
     execute(ntpsync)
     execute(setup_zookeeper)
-    execute(start_servers)
+    execute(start_servers, deployment)
     execute(start_dht)
     time.sleep(5)
-    execute(paxos_on)
-    execute(mount_fs)
+    n_partitions = len(deployments[deployment].regions)
+    execute(paxos_on, n_partitions)
+    execute(mount_fs, n_partitions)
 
 
 @task
