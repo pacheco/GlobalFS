@@ -25,9 +25,9 @@ MRP_CONFIG = {
     'MRP_LAMBDA' : 100000,
     'MRP_M' : 1,
     'MRP_REF_RING' : 0,
-    'MRP_STORAGE' : 'ch.usi.da.paxos.storage.CyclicArray',
+    'MRP_STORAGE' : 'ch.usi.da.paxos.storage.NoStorage',
     'MRP_BATCH' : 'none',
-    'MRP_RECOVERY' : 1,
+    'MRP_RECOVERY' : 0,
     'MRP_TRIM_MOD' : 0,
     'MRP_TRIM_AUTO' : 0,
     'MRP_P1_TIMEOUT' : 10000,
@@ -37,11 +37,11 @@ MRP_CONFIG = {
 # FUSE mount options
 FUSE_OPTIONS = " ".join([
     '-o direct_io',
-    #'-o noauto_cache',
-    '-o entry_timeout=10s',
-    '-o negative_timeout=10s',
-    '-o attr_timeout=10s',
-    '-o ac_attr_timeout=10s',
+    '-o noauto_cache',
+    # '-o entry_timeout=10s',
+    # '-o negative_timeout=10s',
+    # '-o attr_timeout=10s',
+    # '-o ac_attr_timeout=10s',
 ])
 
 
@@ -115,7 +115,7 @@ def kill_and_clear():
     with settings(warn_only = True):
         local('pkill --signal 9 -f TTYNode')
         local('pkill --signal 9 -f FSMain')
-        local('pkill --signal 9 -f dht-fake.py')
+        local('pkill --signal 9 -f kvstore')
         local('sudo pkill --signal 9 -f PaxosFileSystem')
         local('sudo umount -l /tmp/fs*')
         local('sudo rm -f /tmp/*.vgc')
@@ -135,12 +135,12 @@ def paxos_on():
     print 'PAXOS OK!'
 
 
-def start_http_storage(port):
+def start_http_storage(partition):
     """Start the simple, non-replicated, http storage
     """
-    cmd = './dht-fake.py %s' % (port)
-    with hide('stdout', 'stderr'):
-        local('dtach -n /tmp/storage_%s %s' % (port, cmd))
+    cmd = './kvstore storagecfg/kvstore%s.cfg 0' % partition
+    with hide('stdout', 'stderr'), lcd(FSDIR):
+        local('dtach -n /tmp/storage_%s %s' % (partition, cmd))
 
 
 def start_acceptor(partition, id):
@@ -180,8 +180,8 @@ def start_servers():
         port += 1
         execute(start_replica, i, 2, port)
         port += 1
-    
-    
+
+
 def mount_fs(mountpath, replica_id, closest_partition):
     """Mount the fuse filesystem
     """
@@ -212,5 +212,5 @@ def start_all(partitions):
     execute(start_servers)
     execute(paxos_on)
     for p in range(1, partitions + 1):
-        execute(start_http_storage, 15000 + p)
+        execute(start_http_storage, p)
         execute(mount_fs, '/tmp/fs%s' % (p), p-1, p)

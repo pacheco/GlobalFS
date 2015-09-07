@@ -21,6 +21,9 @@ fabric
 python-kazoo
 python-flask
 dstat
+memcached
+
+You'll also need golang, libleveldb and "github.com/jmhodges/levigo" to compile the kvstore
 
 The zookeeper executables (zkCli.sh specifically) should be available on PATH. They
 are generally inside '/usr/share/zookeeper/bin'.
@@ -36,13 +39,11 @@ For URingPaxos:
 
 For fuse4j:
   - mvn clean install
-  - compile the code (make) inside 'native' and copy libjavafs.so into ~/usr/lib
-    - set the correct make.flags and paths appropriately
+  - compile the code (make) inside 'native' and copy libjavafs.so make it available through `LD_LIBRARY_PATH`
+    - change make.flags appropriately
 
 Once everything is setup, compile sinergiafs:
-  - mvn clean install
-  - copy the 'target/sinergia-0.0.1-SNAPSHOT-deploy folder into ~/usr/sinergiafs
-    - Or can create a symlink there instead
+  - mvn clean install (-DskipTests if you don't have memcached installed)
 
 ## Running
 
@@ -57,6 +58,24 @@ The following components need to be deployed/started:
 The fabfile-local.py should start a simple local deployment, you can
 check it to figure out how to deploy everything and in what order it
 should be done.
+
+## Local deployment step-by-step
+
+0) `mvn install` URingPaxos
+
+0a) `mvn install -Dgo-build` sinergiafs (use -DskipTests if you don't have memcached installed)
+
+1) symlink sinergiafs/target/sinergiafs-\*-deploy to ~/usr/sinergiafs
+
+2) unzip URingPaxos/target/Paxos-trunk.zip, copy or move Paxos-trunk folder to ~/usr/
+
+3) to start with one partition:
+
+`$ fab -f src/scripts/fabfile-local.py start_all:1`
+
+4) to kill everything:
+
+`$ fab -f src/scripts/fabfile-local.py kill_and_clear`
 
 ## Distributed deployment
 
