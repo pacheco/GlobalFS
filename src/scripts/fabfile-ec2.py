@@ -32,6 +32,51 @@ def image_list(deployment):
 
 
 @task
+def image_delete(deployment, image_name):
+    """Delete the image from all regions in the deployment
+    """
+    dep = deployments[deployment]
+    connections = ec2.connect_all(*[x.region for x in dep.regions])
+    for region, conn in connections.iteritems():
+        images = ec2.list_images(conn)
+        print '%s:' % (region)
+        for img in images:
+            if img.name == image_name:
+                print "removing", img
+                img.deregister(delete_snapshot=True)
+
+
+@task
+def image_distribute(deployment, image_name):
+    """Distribute an image available on the head region to the other regions
+    """
+    dep = deployments[deployment]
+
+    head_region = dep.head.region
+    other_regions = [r.region for r in dep.regions if r.region != head_region]
+    connections = ec2.connect_all(*other_regions)
+
+    if not ec2.list_images(ec2.connect(head_region), image_name):
+        print 'image "%s" does not exist on %s!' %(image_name, head_region)
+        return
+
+    regions_tocopy = []
+    for region, conn in connections.iteritems():
+        images = ec2.list_images(conn)
+        print '%s:' % (region)
+        needcopy = True
+        for img in images:
+            if img.name == image_name:
+                print "\talready available:", img
+                needcopy = False
+                break
+        if needcopy:
+            print "\tcopying..."
+            regions_tocopy.append(conn)
+    for conn in regions_tocopy:
+        ec2.copy_image(conn, image_name, head_region)
+
+@task
 def head_stop(deployment):
     """Stop head instance
     """
