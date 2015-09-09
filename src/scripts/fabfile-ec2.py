@@ -173,6 +173,23 @@ def inst_terminate(deployment):
             continue
         print '* Terminating instance', worker.region.name, worker.id, worker.state
         worker.terminate()
+        worker.remove_tag('Name')
+
+
+@task
+def inst_untag(deployment):
+    """Clear terminated instance names
+    """
+    dep = deployments[deployment]
+    connections = ec2.connect_all(*[x.region for x in dep.regions])
+    instances = ec2.list_instances(*connections.values())
+    for worker in instances:
+        # ignore nodes named 'head'
+        if 'Name' in worker.tags and worker.tags['Name'] == 'head':
+            continue
+        if worker.state_code == 48:
+            print '* Untagging terminated instance', worker.region.name, worker.id
+            worker.remove_tag('Name')
 
 
 @task
@@ -275,8 +292,6 @@ def whoami_create():
     """Create a whoami.sh file in the ~ of the remote machine.
     Contains variables regarding the local machine
     """
-    run('rm -f ~/ec2info')
-    run('source ~/.bashrc')
     run('rm -f ~/whoami.sh')
     run('echo export ZKHOST=%s >> ~/whoami.sh' % env.roledefs['head'][0])
     run('echo -n export NAME= >> ~/whoami.sh')
