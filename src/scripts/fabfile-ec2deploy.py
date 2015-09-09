@@ -12,7 +12,7 @@ env.roledefs = None   # roledefs_from_instances()
 
 MRP_CONFIG = {
     'MRP_START_TIME' : 0,
-    'MRP_DELTA' : 10,
+    'MRP_DELTA' : 20,
     'MRP_LAMBDA' : 100000,
     'MRP_M' : 1,
     'MRP_REF_RING' : 0,
@@ -157,20 +157,24 @@ def dtach_and_log(command, dtach_socket, logfile):
 
 
 @task
-def rsync_from_head(deployment):
+def rsync_from_head(deployment, only_scripts=None):
     """Synchronize code from headnode
     """
     execute(set_roles, deployment)
-    execute(rsync_from_head_)
+    execute(rsync_from_head_, only_scripts)
 
 @parallel(pool_size=15)
 @roles('server', 'client')
-def rsync_from_head_():
+def rsync_from_head_(only_scripts):
     with hide('stdout', 'stderr'):
         HEADNODE = env.roledefs['head'][0]
         run('rsync -azr --delete %s:.bashrc ~' % (HEADNODE))
         run('rsync -azr --delete %s:.ssh ~' % (HEADNODE))
-        run('rsync -azr --delete %s:usr ~' % (HEADNODE))
+        if only_scripts:
+            run('rsync -azr --delete %s:usr/sinergiafs/*.sh usr/sinergiafs' % (HEADNODE))
+        else:
+            run('rsync -azr --delete %s:usr ~' % (HEADNODE))
+
 
 @parallel
 @roles('server', 'client')
@@ -341,10 +345,11 @@ def start_all_popup(deployment):
 def run_misc(deployment):
     """Task run on all nodes -> just change run_misc_"""
     execute(set_roles, deployment)
-    execute(status_)
+    execute(run_misc_)
 
 @parallel
-@roles(['server', 'client'])
+@roles(['server'])
 def run_misc_():
-    run('sudo apt-get update')
-    run('sudo apt-get install -y libleveldb1')
+    run('tail -n 20 /tmp/nodeec2.log')
+    # run('sudo apt-get update')
+    # run('sudo apt-get install -y libleveldb1')
