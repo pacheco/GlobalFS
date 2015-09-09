@@ -266,6 +266,7 @@ if __name__ == '__main__':
 
 # All regions (9), 1 partition per region (3 replicas and 3 clients)
 # ------------------------------------------------------------
+
 dep_all = EC2Deployment([], EC2Node('us-west-2', 'a', 'c3.large', 'head'))
 dc = 1
 
@@ -275,22 +276,38 @@ region_zones = {
     'us-east-1' : ['a', 'b', 'e'],
     'eu-west-1' : ['a', 'b', 'c'],
     'eu-central-1': ['a', 'b', 'b'], # not enough regions!
-    'ap-northeast-1': ['a', 'b', 'c'],
+    'ap-northeast-1': ['a', 'c', 'c'], # northeast-1b not working...
     'ap-southeast-1': ['a', 'b', 'b'], # not enough regions!
     'ap-southeast-2': ['a', 'b', 'b'], # not enough regions!
-    'sa-east-1': ['a', 'b', 'c']
+    'sa-east-1': ['a', 'c', 'c'] # sa-east-1b does not have c3.large
 }
 
-for region in region_zones.keys():
+region_order = [
+    'us-west-2',
+    'us-west-1',
+    'us-east-1',
+    'eu-west-1',
+    'eu-central-1',
+    'ap-northeast-1',
+    'ap-southeast-1',
+    'ap-southeast-2',
+    'sa-east-1'
+]
+
+for region in region_order:
     rep = 0
     reg = EC2Region(region, dc, [])
     # headnode
     # if region == 'us-west-2':
     #     reg.nodes.append(EC2Node(region, region_zones[region][0], 'c3.large', 'head'))
     # replicas and clients
-    reg.nodes.append(EC2Node(region, region_zones[region][0], 'c3.large', 'acc%s_0' % (dc)))
+    if dc <= 3: # only 3 global acceptors
+        reg.nodes.append(EC2Node(region, region_zones[region][0], 'c3.large', 'acc%s_0' % (dc)))
     for av in region_zones[region]:
-        reg.nodes.append(EC2Node(region, av, 'r3.large', 'rep%s_%s' % (dc, rep)))
+        if region == 'sa-east-1':
+            reg.nodes.append(EC2Node(region, av, 'c3.large', 'rep%s_%s' % (dc, rep)))
+        else:
+            reg.nodes.append(EC2Node(region, av, 'r3.large', 'rep%s_%s' % (dc, rep)))
         reg.nodes.append(EC2Node(region, av, 'c3.large', 'cli%s_%s' % (dc, rep)))
         rep += 1
     dep_all.regions.append(reg)
