@@ -18,11 +18,10 @@ rm $LOG
 # from wait queue*delta
 #
 
-LATCOMP=(0 160 10 60) # us-west-1 us-east-1 eu-west-1
+# LATCOMP=(0 160 10 60) # us-west-1 us-east-1 eu-west-1
 
-# LATCOMP=(0 160 160 10 10 60 60) # us-west-1 us-east-1 eu-west-1
-# LATCOMP=(0 170 170 170 50 50 50 90 90 90) # us-west-1 us-east-1 eu-west-1
-
+#LATCOMP=(0 0 0 0 0 0 0 0 0 0) # all regions, 1 partition per region
+LATCOMP=(0 560 0 40 80 100 220 240 340 480) # all regions, 1 partition per region
 
 
 DB=/mnt/
