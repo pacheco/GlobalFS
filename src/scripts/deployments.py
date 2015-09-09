@@ -304,7 +304,7 @@ for region in region_order:
     if dc <= 3: # only 3 global acceptors
         reg.nodes.append(EC2Node(region, region_zones[region][0], 'c3.large', 'acc%s_0' % (dc)))
     for av in region_zones[region]:
-        if region == 'sa-east-1':
+        if region == 'sa-east-1': # doesnt have r3.large
             reg.nodes.append(EC2Node(region, av, 'c3.large', 'rep%s_%s' % (dc, rep)))
         else:
             reg.nodes.append(EC2Node(region, av, 'r3.large', 'rep%s_%s' % (dc, rep)))
