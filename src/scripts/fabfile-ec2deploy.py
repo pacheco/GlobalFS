@@ -163,7 +163,7 @@ def rsync_from_head(deployment):
     execute(set_roles, deployment)
     execute(rsync_from_head_)
 
-@parallel
+@parallel(pool_size=15)
 @roles('server', 'client')
 def rsync_from_head_():
     with hide('stdout', 'stderr'):
@@ -336,3 +336,15 @@ def start_all_popup(deployment):
     """
     execute(start_all, deployment)
     popup('System started successfully')
+
+@task
+def run_misc(deployment):
+    """Task run on all nodes -> just change run_misc_"""
+    execute(set_roles, deployment)
+    execute(status_)
+
+@parallel
+@roles(['server', 'client'])
+def run_misc_():
+    run('sudo apt-get update')
+    run('sudo apt-get install -y libleveldb1')
