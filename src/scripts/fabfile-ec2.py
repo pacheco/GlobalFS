@@ -275,6 +275,8 @@ def whoami_create():
     """Create a whoami.sh file in the ~ of the remote machine.
     Contains variables regarding the local machine
     """
+    run('rm -f ~/ec2info')
+    run('source ~/.bashrc')
     run('rm -f ~/whoami.sh')
     run('echo export ZKHOST=%s >> ~/whoami.sh' % env.roledefs['head'][0])
     run('echo -n export NAME= >> ~/whoami.sh')

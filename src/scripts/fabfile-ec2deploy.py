@@ -136,9 +136,9 @@ set /ringpaxos/topology9/config/p1_resend_time %(MRP_P1_TIMEOUT)s
 set /ringpaxos/topology9/config/value_resend_time %(MRP_PROPOSER_TIMEOUT)s
 """
 
-
+@task
 def set_roles(deployment):
-    """Set fabric roles from running instances
+    """(No need to run this directly) Set fabric roles from running instances
     """
     env.roledefs = roledefs_from_instances(deployment) # get ips for the roledef lists from ec2 instances
 
@@ -157,17 +157,20 @@ def dtach_and_log(command, dtach_socket, logfile):
 
 
 @task
-@parallel
-@roles('server', 'client')
-def rsync_from_head():
+def rsync_from_head(deployment):
     """Synchronize code from headnode
     """
+    execute(set_roles, deployment)
+    execute(rsync_from_head_)
+
+@parallel
+@roles('server', 'client')
+def rsync_from_head_():
     with hide('stdout', 'stderr'):
         HEADNODE = env.roledefs['head'][0]
         run('rsync -azr --delete %s:.bashrc ~' % (HEADNODE))
         run('rsync -azr --delete %s:.ssh ~' % (HEADNODE))
         run('rsync -azr --delete %s:usr ~' % (HEADNODE))
-
 
 @parallel
 @roles('server', 'client')
@@ -181,6 +184,8 @@ def ntpsync():
 
 @task
 def kill_and_clear(deployment):
+    """Kill server processes and remove old data
+    """
     execute(set_roles, deployment)
     execute(kill_and_clear_)
 
@@ -188,8 +193,6 @@ def kill_and_clear(deployment):
 @parallel
 @roles('server', 'client')
 def kill_and_clear_():
-    """Kill server processes and remove old data
-    """
     with settings(warn_only=True):
         run('pkill --signal 9 -f Replica')
         run('pkill --signal 9 -f TTYNode')
@@ -290,16 +293,22 @@ def mount_fs(n_partitions):
 
 @task
 def mount_fs_local(deployment):
+    execute(set_roles, deployment)
+    execute(mount_fs_local_, deployment)
+
+
+@hosts(['localhost'])
+def mount_fs_local_(deployment):
     """Mount the fuse filesystem on the local machine
     """
-    execute(set_roles, deployment)
     with settings(warn_only=True), lcd('~/usr/sinergiafs/'):
         HEADNODE = env.roledefs['head'][0]
+        CLIENT = env.roledefs['client'][0]
         n_partitions = len(deployments[deployment].regions)
+        local('scp %s:storage.config ./storage.config' % (CLIENT))
         cmd = './client-mount.sh %s %s:2182 ./storage.config 0 3 -f %s /tmp/fs' % (n_partitions,
                                                                                    HEADNODE,
                                                                                    FUSE_OPTIONS)
-        get('storage.config', './storage.config')
         local('mkdir -p /tmp/fs')
         local('sudo umount -l /tmp/fs')
         local(dtach_and_log(cmd, '/tmp/sinergiafs', '/tmp/sinergiafs.log'))

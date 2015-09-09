@@ -264,3 +264,63 @@ if __name__ == '__main__':
                 pprint(n)
 
 
+# All regions (9), 1 partition per region (3 replicas and 3 clients)
+# ------------------------------------------------------------
+dep_all = EC2Deployment([], EC2Node('us-west-2', 'a', 'c3.large', 'head'))
+dc = 1
+
+region_zones = {
+    'us-west-2' : ['a', 'b', 'c'],
+    'us-west-1' : ['a', 'c', 'c'], # not enough regions!
+    'us-east-1' : ['a', 'b', 'e'],
+    'eu-west-1' : ['a', 'b', 'c'],
+    'eu-central-1': ['a', 'b', 'b'], # not enough regions!
+    'ap-northeast-1': ['a', 'b', 'c'],
+    'ap-southeast-1': ['a', 'b', 'b'], # not enough regions!
+    'ap-southeast-2': ['a', 'b', 'b'], # not enough regions!
+    'sa-east-1': ['a', 'b', 'c']
+}
+
+for region in region_zones.keys():
+    rep = 0
+    reg = EC2Region(region, dc, [])
+    # headnode
+    # if region == 'us-west-2':
+    #     reg.nodes.append(EC2Node(region, region_zones[region][0], 'c3.large', 'head'))
+    # replicas and clients
+    reg.nodes.append(EC2Node(region, region_zones[region][0], 'c3.large', 'acc%s_0' % (dc)))
+    for av in region_zones[region]:
+        reg.nodes.append(EC2Node(region, av, 'r3.large', 'rep%s_%s' % (dc, rep)))
+        reg.nodes.append(EC2Node(region, av, 'c3.large', 'cli%s_%s' % (dc, rep)))
+        rep += 1
+    dep_all.regions.append(reg)
+    dc += 1
+deployments['dall'] = dep_all
+
+
+# two regions (us-west-2 and us-west-1) with only two zones
+# ------------------------------------------------------------
+dep_2 = EC2Deployment([], EC2Node('us-west-2', 'a', 'c3.large', 'head'))
+dc = 1
+
+region_zones = {
+    'us-west-2': ['a', 'b', 'b'], # not enough regions!
+    'us-west-1': ['a', 'c', 'c'] # not enough regions!
+}
+
+for region in region_zones.keys():
+    rep = 0
+    reg = EC2Region(region, dc, [])
+    # headnode
+    # if region == 'us-west-2':
+    #     reg.nodes.append(EC2Node(region, region_zones[region][0], 'c3.large', 'head'))
+    # replicas and clients
+    reg.nodes.append(EC2Node(region, region_zones[region][0], 'c3.large', 'acc%s_0' % (dc)))
+    for av in region_zones[region]:
+        reg.nodes.append(EC2Node(region, av, 'r3.large', 'rep%s_%s' % (dc, rep)))
+        reg.nodes.append(EC2Node(region, av, 'c3.large', 'cli%s_%s' % (dc, rep)))
+        rep += 1
+    dep_2.regions.append(reg)
+    dc += 1
+deployments['d2'] = dep_2
+

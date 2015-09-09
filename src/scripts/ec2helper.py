@@ -56,6 +56,15 @@ def copy_image(conn, image_name, from_region):
     fromconn.close()
 
 
+def list_region_zones(*region_names):
+    """list availability zones for the given regions"""
+    connections = connect_all(*region_names)
+    for region, conn in connections.iteritems():
+        print '%s:' % (region)
+        for zone in conn.get_all_zones():
+            print '\t%s' % (zone.name)
+
+
 def request_instances(conn, image_name, instance_type, price,
                            count=1,
                            availability_zone=None,
