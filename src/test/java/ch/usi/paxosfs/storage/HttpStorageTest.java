@@ -6,7 +6,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.net.URL;
 import java.nio.file.Path;
@@ -90,7 +89,7 @@ public class HttpStorageTest {
     }
 
     /* delete is not implemented yet and throws NotImplementedException */
-    @Test(expected = NotImplementedException.class)
+    @Test(expected = RuntimeException.class)
     public void testDelete() throws Exception {
         Storage st = newStorage("storagecfg/httpstorage.cfg");
         Assert.assertNotNull(st);

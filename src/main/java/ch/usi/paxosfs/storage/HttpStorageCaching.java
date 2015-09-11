@@ -10,7 +10,6 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.fluent.Async;
 import org.apache.http.client.fluent.Request;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -190,6 +189,6 @@ public class HttpStorageCaching implements Storage {
     @Override
     public StorageFuture<Boolean> delete(final byte partition, final byte[] key) {
         // TODO not implemented
-        throw new NotImplementedException();
+        throw new RuntimeException("Not implemented");
     }
 }
