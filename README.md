@@ -2,50 +2,16 @@
 
 Geo distributed filesystem built on top of Multi-Ring Paxos ([URingPaxos](github.com/sambenz/URingPaxos))
 
-## Compiling
+## Compiling and running
 
-Install the following packages (considering Ubuntu 14.04):
+First, go through REQUIREMENTS.md to see what needs to be installed and compiled.
+Once that is done, compile the project:
 
-Oracle Java 7
-   sudo add-apt-repository ppa:webupd8team/java
-   sudo apt-get update
-   sudo apt-get install oracle-java7-installer
-zookeeper
-zookeeperd
-dtach
-fuse
-libfuse2
-libfuse-dev
-maven
-fabric
-python-kazoo
-python-flask
-dstat
-memcached
+1) `mvn install -Dgo-build` sinergiafs
+2) copy or symlink sinergiafs/target/sinergiafs-\*-deploy to ~/usr/sinergiafs
+3) to run the system locally, with one partition:
 
-You'll also need golang, libleveldb and "github.com/jmhodges/levigo" to compile the kvstore
-
-The zookeeper executables (zkCli.sh specifically) should be available on PATH. They
-are generally inside '/usr/share/zookeeper/bin'.
-
-2 other projects are needed:
-
-- URingPaxos - commit 8bfe7f4f999a64dd2c247d92c2341e4047e4ac24 from <https://github.com/sambenz/URingPaxos>
-- fuse4j - commit 729b3bb4c62b66650d97fe7f71eb21d568102a34 from <https://github.com/dtrott/fuse4j>
-
-For URingPaxos:
-  - mvn clean install -DskipTests
-  - unzip the target/Paxos-trunk.zip archive into ~/usr/Paxos-trunk
-
-For fuse4j:
-  - mvn clean install
-  - compile the code (make) inside 'native' and copy libjavafs.so make it available through `LD_LIBRARY_PATH`
-    - change make.flags appropriately
-
-Once everything is setup, compile sinergiafs:
-  - mvn clean install (-DskipTests if you don't have memcached installed)
-
-## Running
+# Deployment overview
 
 The following components need to be deployed/started:
 
@@ -55,30 +21,22 @@ The following components need to be deployed/started:
 - 1 storage deployment (DHT) for each partition
 - client mount points
 
+## Running locally
+
 The fabfile-local.py should start a simple local deployment, you can
 check it to figure out how to deploy everything and in what order it
 should be done.
 
-## Local deployment step-by-step
+    fab -f ~/usr/sinergiafs/fabfile-local.py start_all:1
 
-0) `mvn install` URingPaxos
+The system will be mounted under `/tmp/fs`. To umount and kill everything:
 
-0a) `mvn install -Dgo-build` sinergiafs (use -DskipTests if you don't have memcached installed)
+    fab -f ~/usr/sinergiafs/fabfile-local.py kill_and_clear
 
-1) symlink sinergiafs/target/sinergiafs-\*-deploy to ~/usr/sinergiafs
+## Distributed deployment on EC2
 
-2) unzip URingPaxos/target/Paxos-trunk.zip, copy or move Paxos-trunk folder to ~/usr/
-
-3) to start with one partition:
-
-`$ fab -f src/scripts/fabfile-local.py start_all:1`
-
-4) to kill everything:
-
-`$ fab -f src/scripts/fabfile-local.py kill_and_clear`
-
-## Distributed deployment
-
+To deploy on ec2 you can use the provided fabric scripts (src/scripts) fabfile-ec2.py and fabfile-ec2deploy.py.
+They assume the VM has been setup as per REQUIREMENTS.md.
 
 ## Tips/Caveats
 
