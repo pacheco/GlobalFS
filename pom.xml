@@ -23,7 +23,22 @@
                         <groupId>org.codehaus.mojo</groupId>
                         <version>1.4.0</version>
                         <executions>
-                            <execution>
+							<execution>
+								<id>Compile kvstore-rocksdb</id>
+								<phase>compile</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<workingDirectory>${project.build.directory}/bin</workingDirectory>
+									<executable>go</executable>
+									<arguments>
+										<argument>build</argument>
+										<argument>${project.basedir}/src/scripts/kvstore-rocksdb.go</argument>
+									</arguments>
+								</configuration>
+							</execution>
+							<execution>
                                 <id>Compile kvstore-leveldb</id>
                                 <phase>compile</phase>
                                 <goals>
@@ -96,16 +111,6 @@
 	</build>
 
 	<dependencies>
-        <dependency>
-            <groupId>biz.paluch.redis</groupId>
-            <artifactId>lettuce</artifactId>
-            <version>3.1.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>net.spy</groupId>
-            <artifactId>spymemcached</artifactId>
-            <version>2.11.6</version>
-        </dependency>
 		<dependency>
 			<groupId>jline</groupId>
 			<artifactId>jline</artifactId>
@@ -196,6 +201,11 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>1.7.7</version>
+		</dependency>
+		<dependency>
+			<groupId>org.rocksdb</groupId>
+			<artifactId>rocksdbjni</artifactId>
+			<version>3.10.1</version>
 		</dependency>
 	</dependencies>
 </project>

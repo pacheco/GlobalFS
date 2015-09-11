@@ -138,7 +138,7 @@ def paxos_on():
 def start_http_storage(partition):
     """Start the simple, non-replicated, http storage
     """
-    cmd = './kvstore storagecfg/kvstore%s.cfg 0' % partition
+    cmd = './kvstore-rocksdb storagecfg/kvstore%s.cfg 0 /tmp/kvstore%s' % (partition, partition)
     with hide('stdout', 'stderr'), lcd(FSDIR):
         local('dtach -n /tmp/storage_%s %s' % (partition, cmd))
 
