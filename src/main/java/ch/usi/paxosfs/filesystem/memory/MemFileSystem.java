@@ -30,7 +30,7 @@ public class MemFileSystem implements FileSystem {
 		MemDir parent = (MemDir) this.getDir(parentPath);
 		Node child = parent.getChild(Paths.basename(absolutePath));
 		if (child != null) {
-			throw errorAlreadyExists(absolutePath);
+			throw FSErrors.alreadyExists(absolutePath);
 		}
 		MemDir newDir = new MemDir(mode, time, uid, gid);
 		parent.addChild(Paths.basename(absolutePath), newDir);
@@ -42,7 +42,7 @@ public class MemFileSystem implements FileSystem {
 		MemDir parent = (MemDir) this.getDir(parentPath);
 		Node child = parent.getChild(Paths.basename(absolutePath));
 		if (child != null) {
-			throw errorAlreadyExists(absolutePath);
+			throw FSErrors.alreadyExists(absolutePath);
 		}
 		FileNode newFile = new MemFile(mode, time, uid, gid);
 		parent.addChild(Paths.basename(absolutePath), newFile);
@@ -54,7 +54,7 @@ public class MemFileSystem implements FileSystem {
 		MemDir parent = (MemDir) this.getDir(parentPath);
 		Node child = parent.getChild(Paths.basename(absolutePath));
 		if (child != null) {
-			throw errorAlreadyExists(absolutePath);
+			throw FSErrors.alreadyExists(absolutePath);
 		}
 		LinkNode newLink = new MemLink(absoluteTarget, 0, 0, 0);
 		parent.addChild(Paths.basename(absolutePath), newLink);
@@ -71,14 +71,14 @@ public class MemFileSystem implements FileSystem {
 		while (iter.hasNext()) {
 			String elem = iter.next();
 			if (current == null){
-				throw errorNotFound(path);
+				throw FSErrors.notFound(path);
 			} else if (!current.isDir()) {
-				throw errorNotDir(path);
+				throw FSErrors.notDir(path);
 			}
-			current = ((DirNode)current).getChild(elem);
+			current = ((MemDir)current).getChild(elem);
 		}
 		if (current == null){
-			throw errorNotFound(path);
+			throw FSErrors.notFound(path);
 		}
 		return current;
 	}
@@ -90,9 +90,9 @@ public class MemFileSystem implements FileSystem {
 		String name = Paths.basename(path);
 		Node child = parent.getChild(name);
 		if (child == null) {
-			throw errorNotFound(path);
+			throw FSErrors.notFound(path);
 		} else if (child.isDir()) {
-			throw errorIsDir(path);
+			throw FSErrors.isDir(path);
 		}
 		return parent.removeChild(Paths.basename(name));
 	}
@@ -105,13 +105,13 @@ public class MemFileSystem implements FileSystem {
 		String name = Paths.basename(path);
 		Node child = parent.getChild(name);
 		if (child == null) {
-			throw errorNotFound(path);
+			throw FSErrors.notFound(path);
 		} else if (!child.isDir()) {
-			throw errorNotDir(path);
+			throw FSErrors.notDir(path);
 		}
 		DirNode dir = (DirNode) child;
 		if (!dir.getChildren().isEmpty()) {
-			throw errorNotEmpty(path);
+			throw FSErrors.notEmpty(path);
 		}
 		return (DirNode) parent.removeChild(Paths.basename(name));
 	}
@@ -120,7 +120,7 @@ public class MemFileSystem implements FileSystem {
 	public DirNode getDir(String path) throws FSError {
 		Node n = this.get(path);
 		if (!n.isDir()){
-			throw errorNotDir(path);
+			throw FSErrors.notDir(path);
 		}
 		return (DirNode) n;
 	}
@@ -129,7 +129,7 @@ public class MemFileSystem implements FileSystem {
 	public FileNode getFile(String path) throws FSError {
 		Node n = this.get(path);
 		if (!n.isFile()) {
-			throw errorIsDir(path);
+			throw FSErrors.isDir(path);
 		}
 		return (FileNode) n;
 	}
@@ -143,19 +143,19 @@ public class MemFileSystem implements FileSystem {
 		
 		Node nodeFrom = parentFrom.getChild(nameFrom);
 		if (nodeFrom == null) {
-			throw errorNotFound(from);
+			throw FSErrors.notFound(from);
 		}
 		Node nodeTo = parentTo.getChild(nameTo);
 		if (nodeTo != null) {
 			if (nodeFrom.isDir()) {
 				if (!nodeTo.isDir()) { 
-					throw errorNotDir(to); 
+					throw FSErrors.notDir(to);
 				} else if (!((DirNode) nodeTo).getChildren().isEmpty()) {
-					throw errorNotEmpty(to);
+					throw FSErrors.notEmpty(to);
 				}
 			} else { // nodeFrom is a file or link
 				if (nodeTo.isDir()) {
-					throw errorIsDir(to);
+					throw FSErrors.isDir(to);
 				}
 			}
 			parentTo.removeChild(nameTo);
@@ -188,24 +188,5 @@ public class MemFileSystem implements FileSystem {
 		MemFile f = (MemFile) this.getFile(absolutePath);
 		f.truncate(size);
 	}
-	
-	private FSError errorNotFound(String file) {
-		return new FSError(FuseException.ENOENT, "No such file or directory");
-	}
-	
-	private FSError errorNotDir(String file) {
-		return new FSError(FuseException.ENOTDIR, "Not a directory");
-	}
-	
-	private FSError errorAlreadyExists(String file) {
-		return new FSError(FuseException.EEXIST, "File already exists");
-	}
 
-	private FSError errorIsDir(String file) {
-		return new FSError(FuseException.EISDIR, "Is a directory");
-	}
-
-	private FSError errorNotEmpty(String path) {
-		return new FSError(FuseException.ENOTEMPTY, "Not empty");
-	}
 }
