@@ -38,6 +38,22 @@ The system will be mounted under `/tmp/fs`. To umount and kill everything:
 To deploy on ec2 you can use the provided fabric scripts (src/scripts) fabfile-ec2.py and fabfile-ec2deploy.py.
 They assume the VM has been setup as per REQUIREMENTS.md.
 
+DISCLAIMER: the following is the steps I use which work on my EC2 setup... probably needs to be adapted:
+
+    # choose/create a deployment on deployment.py (from now on called DEP)
+    fab -f fabfile-ec2.py image_distribute:DEP,image_name
+    fab -f fabfile-ec2.py head_start:DEP
+    fab -f fabfile-ec2.py inst_start:DEP,image_name,token
+    # wait instances to spin up through ec2 console... you should be able to ssh
+    fab -f fabfile-ec2.py inst_config:DEP
+
+    # put newest version in the 'head' machine then:
+    fab -f fabfile-ec2deploy.py rsync_from_head:DEP
+
+    # starting the system...
+    fab -f fabfile-ec2deploy.py start_all_popup:DEP
+
+
 ## Tips/Caveats
 
 - I use 'dtach' to keep processes running in the background
