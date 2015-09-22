@@ -104,7 +104,7 @@ def head_stop(deployment):
 
 
 @task
-def head_start(deployment, image_name=None, token='A', keyname='macubuntu', security_group='default'):
+def head_start(deployment, image_name, token, keyname='macubuntu', security_group='default'):
     """Start/restart head instance.
 
     Assumptions:
