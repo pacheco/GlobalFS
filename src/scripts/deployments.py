@@ -313,20 +313,20 @@ dc = 1
 
 region_zones = {
     'us-west-2' : ['a', 'b', 'c'],
+    'us-west-1' : ['a', 'c', 'c'], # not enough regions!
     'us-east-1' : ['a', 'b', 'e'],
     'eu-west-1' : ['a', 'b', 'c'],
+    'eu-central-1': ['a', 'b', 'b'], # not enough regions!
     'ap-northeast-1': ['a', 'c', 'c'], # northeast-1b not working...
-    'ap-southeast-1': ['a', 'b', 'b'], # not enough regions!
-    'sa-east-1': ['a', 'c', 'c'] # sa-east-1b does not have c3.large
 }
 
 region_order = [
     'us-west-2',
+    'us-west-1',
     'us-east-1',
     'eu-west-1',
+    'eu-central-1',
     'ap-northeast-1',
-    'ap-southeast-1',
-    'sa-east-1'
 ]
 
 for region in region_order:
