@@ -224,14 +224,8 @@ def setup_zookeeper():
     """
     with hide('stdout', 'stderr'):
         sudo('service zookeeper restart')
+        time.sleep(3)
         MRP_CONFIG['MRP_START_TIME'] = run('date +%s000')
-        time.sleep(5) # needed?
-        run(dtach_and_log("~/usr/Paxos-trunk/ringpaxos.sh '0,9999:L;1,9999:L;2,9999:L;3,9999:L;4,9999:L;5,9999:L;6,9999:L;7,9999:L;8,9999:L;9,9999:L' localhost:2182",
-                          '/tmp/zkcfg',
-                          '/tmp/trash'))
-        time.sleep(10)
-        with settings(warn_only = True): # pkill is not returning 0 even on success
-            run('pkill --signal 9 -f TTYNode')
         # set zookeeper MRP variables
         run('echo "%s" | zkCli.sh -server localhost:2182' % (ZKCONFIG % MRP_CONFIG))
 
