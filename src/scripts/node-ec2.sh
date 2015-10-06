@@ -17,11 +17,12 @@ rm $LOG
 # letency compensation for ring 0,1,2,3...
 # from wait queue*delta
 #
+LATCOMP=(0 0 0 0 0 0 0 0 0 0) # no latency compensation
+#LATCOMP=(0 130 30 70) # us-west-2 us-east-1 eu-west-1
+#LATCOMP=(0 70 0 40) # dep3 as first three dcs of dep9 (all US)
+#LATCOMP=(0 260 0 50 100 100 220) # dep6 as first six dcs of dep9
+#LATCOMP=(0 600 20 70 90 100 210 270 340 500) # dep9
 
-# LATCOMP=(0 160 10 60) # us-west-1 us-east-1 eu-west-1
-
-#LATCOMP=(0 0 0 0 0 0 0 0 0 0) # all regions, 1 partition per region
-LATCOMP=(0 560 0 40 80 100 220 240 340 480) # all regions, 1 partition per region
 
 
 DB=/mnt/
