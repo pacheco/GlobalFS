@@ -165,16 +165,6 @@ for region in region_zones.keys():
 deployments['d9'] = dep_9
 
 
-if __name__ == '__main__':
-    for k, v in deployments.items():
-        pprint(k)
-        for r in v.regions:
-            pprint(r.id)
-            for n in r.nodes:
-                pprint(n)
-
-
-
 # 12 replicas and 12 clients per DC
 #----------------------------------------------------------
 dep_12 = EC2Deployment([], EC2Node('us-west-2', 'a', 'c3.large', 'head'))
@@ -255,17 +245,31 @@ for region in region_zones.keys():
 deployments['d4'] = dep_4
 
 
-if __name__ == '__main__':
-    for k, v in deployments.items():
-        pprint(k)
-        for r in v.regions:
-            pprint(r.id)
-            for n in r.nodes:
-                pprint(n)
-
-
 # NEW DEPLOYMENTS ----------------------------------------------------
 # --------------------------------------------------------------------
+
+# one (1) regions, single partition (3 replicas and 3 clients)
+# ------------------------------------------------------------
+
+region = 'us-west-2'
+dep_1 = EC2Deployment([], EC2Node(region, 'a', 'c3.large', 'head'))
+dc = 1
+
+region_zones = {
+    region : ['a', 'b', 'c'],
+}
+
+rep = 0
+reg = EC2Region(region, dc, [])
+for av in region_zones[region]:
+    reg.nodes.append(EC2Node(region, av, 'c3.large', 'acc%s_0' % (rep+1)))
+    reg.nodes.append(EC2Node(region, av, 'r3.large', 'rep%s_%s' % (dc, rep)))
+    reg.nodes.append(EC2Node(region, av, 'c3.large', 'cli%s_%s' % (dc, rep)))
+    rep += 1
+dep_1.regions.append(reg)
+
+deployments['dep1'] = dep_1
+
 
 # three (3) regions, 1 partition per region (3 replicas and 3 clients)
 # ------------------------------------------------------------
@@ -275,14 +279,14 @@ dc = 1
 
 region_zones = {
     'us-west-2' : ['a', 'b', 'c'],
-    'us-east-1' : ['a', 'b', 'e'],
-    'eu-west-1' : ['a', 'b', 'c']
+    'us-west-1' : ['a', 'c', 'c'], # not enough regions!
+    'us-east-1' : ['a', 'b', 'e']
 }
 
 region_order = [
     'us-west-2',
-    'us-east-1',
-    'eu-west-1'
+    'us-west-1',
+    'us-east-1'
 ]
 
 for region in region_order:
@@ -401,4 +405,10 @@ for region in region_order:
 deployments['dep9'] = dep_9
 
 
-
+if __name__ == '__main__':
+    for k, v in deployments.items():
+        pprint(k)
+        for r in v.regions:
+            pprint(r.id)
+            for n in r.nodes:
+                pprint(n)
