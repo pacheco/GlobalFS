@@ -36,7 +36,7 @@ FUSE_OPTIONS = " ".join([
 ])
 
 
-# note the MRP_CONFIG interpolation at the end
+# will be interpolated with MRP_CONFIG later
 ZKCONFIG ="""
 delete /ringpaxos/boot_time.bin
 set /ringpaxos/config/multi_ring_start_time %(MRP_START_TIME)s
