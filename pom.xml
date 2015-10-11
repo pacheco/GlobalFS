@@ -35,7 +35,7 @@
 									<executable>go</executable>
 									<arguments>
 										<argument>build</argument>
-										<argument>${project.basedir}/src/scripts/kvstore-rocksdb.go</argument>
+										<argument>${project.basedir}/src/main/go/kvstore-rocksdb.go</argument>
 									</arguments>
 								</configuration>
 							</execution>
@@ -50,7 +50,7 @@
                                     <executable>go</executable>
                                     <arguments>
                                         <argument>build</argument>
-                                        <argument>${project.basedir}/src/scripts/kvstore-leveldb.go</argument>
+                                        <argument>${project.basedir}/src/main/go/kvstore-leveldb.go</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
@@ -65,7 +65,7 @@
                                     <executable>go</executable>
                                     <arguments>
                                         <argument>build</argument>
-                                        <argument>${project.basedir}/src/scripts/kvstore.go</argument>
+                                        <argument>${project.basedir}/src/main/go/kvstore.go</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
