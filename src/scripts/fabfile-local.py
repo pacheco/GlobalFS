@@ -154,7 +154,7 @@ def start_acceptor(partition, id):
 def start_replica(partition, id, port=20000):
     """Start a paxos/replica node
     """
-    cmd = 'java -ea -cp . %(JVMOPT)s %(GC)s -Djava.library.path=%(LIBPATH)s ch.usi.paxosfs.replica.FSMain %(NPARTITIONS)s %(partition)s %(id)s %(port)s %(ZKHOST)s'
+    cmd = 'java -ea -cp . %(JVMOPT)s %(GC)s -Djava.library.path=%(LIBPATH)s ch.usi.paxosfs.replica.FSMain -n %(NPARTITIONS)s -p %(partition)s -i %(id)s -s %(port)s -z %(ZKHOST)s'
     cmd = cmd % dict(REPLICA_CONFIG.items() + {
         'partition' : partition,
         'id' : id,

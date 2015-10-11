@@ -35,7 +35,7 @@ case $NAME in
         # echo "export EC2=$EC2; $UPAXOSDIR/ringpaxos.sh 0,${GLOBALID}:PL\;${RING},${ID}:PAL $ZKHOST:2182" | tee -a $LOG
         # sudo sh -c "export EC2=$EC2; $UPAXOSDIR/ringpaxos.sh 0,${GLOBALID}:PL\;${RING},${ID}:PAL $ZKHOST:2182" | tee -a $LOG
         # ;;
-        FULLCMD="export DB=$DB; export LAT=${LATCOMP[RING]}; export EC2=$EC2; java -Xmx2G -Xms1G -ea -cp $CLASSPATH $JVMOPT $GC -Djava.library.path=$LIBPATH ch.usi.paxosfs.replica.FSMain $N_PARTITIONS $RING $ID $PORT $ZKHOST:2182"
+        FULLCMD="export DB=$DB; export LAT=${LATCOMP[RING]}; export EC2=$EC2; java -Xmx2G -Xms1G -ea -cp $CLASSPATH $JVMOPT $GC -Djava.library.path=$LIBPATH ch.usi.paxosfs.replica.FSMain -n $N_PARTITIONS -p $RING -i $ID -s $PORT -z $ZKHOST:2182"
 
         echo $FULLCMD | tee -a $LOG
         sh -c "$FULLCMD"  | tee -a $LOG

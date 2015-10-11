@@ -5,6 +5,7 @@ import ch.usi.da.paxos.Util;
 import ch.usi.da.paxos.api.PaxosRole;
 import ch.usi.da.paxos.ring.Node;
 import ch.usi.da.paxos.ring.RingDescription;
+import org.apache.commons.cli.*;
 import org.apache.log4j.Logger;
 import org.apache.thrift.transport.TTransportException;
 import org.apache.zookeeper.KeeperException;
@@ -18,33 +19,89 @@ import java.util.List;
 public class FSMain {
 	private static Logger log = Logger.getLogger(FSMain.class); 
 	private static Thread replica;
-	
-	private static class Options {
-		public int serverPort = 7777;
-		public String zookeeperHost = "127.0.0.1:2181";
-		public int replicaId;
-		public byte replicaPartition;
-		public int nPartitions;
+
+	/**
+	 * Definition of command line options
+	 * @return
+	 */
+	private static Options cmdlineOptions() {
+		Options opts = new Options();
+		Option.Builder optionBuilder;
+
+		optionBuilder = Option.builder("n");
+		optionBuilder
+				.argName("N_PARTITIONS")
+				.desc("number of partitions")
+				.longOpt("num-part")
+				.hasArg(true)
+				.type(Number.class)
+				.required(true);
+		opts.addOption(optionBuilder.build());
+
+		optionBuilder = Option.builder("p");
+		optionBuilder
+				.argName("PARTITION")
+				.desc("replica partition")
+				.longOpt("rep-part")
+				.hasArg(true)
+				.type(Number.class)
+				.required(true);
+		opts.addOption(optionBuilder.build());
+
+		optionBuilder = Option.builder("i");
+		optionBuilder
+				.argName("ID")
+				.desc("replica id")
+				.longOpt("rep-id")
+				.hasArg(true)
+				.type(Number.class)
+				.required(true);
+		opts.addOption(optionBuilder.build());
+
+		optionBuilder = Option.builder("s");
+		optionBuilder
+				.argName("PORT")
+				.desc("replica server port")
+				.longOpt("rep-port")
+				.hasArg(true)
+				.type(Number.class)
+				.required(true);
+		opts.addOption(optionBuilder.build());
+
+		optionBuilder = Option.builder("z");
+		optionBuilder.longOpt("zoo")
+				.argName("ZOOADDR")
+				.desc("zookeeper host:port")
+				.hasArg(true)
+				.type(String.class)
+				.required(true);
+		opts.addOption(optionBuilder.build());
+
+		optionBuilder = Option.builder("g");
+		optionBuilder.longOpt("global-id")
+				.argName("GLOBAL-ID")
+				.desc("global ring id")
+				.hasArg(true)
+				.type(Number.class)
+				.required(false);
+		opts.addOption(optionBuilder.build());
+
+		optionBuilder = Option.builder("A");
+		optionBuilder.longOpt("as-global-acc")
+				.desc("replica is a global acceptor")
+				.hasArg(false)
+				.required(false);
+		opts.addOption(optionBuilder.build());
+
+		return opts;
 	}
 
-	private static Options parseArgs(String[] args) {
-		Options opt = new Options();
-		if (args.length < 2) {
-			System.err.println("usage: FSMain n_partitions replicaPartition replicaId [serverPort] [zooHost]");
-			System.exit(1);
-		}
-		opt.nPartitions = Integer.parseInt(args[0]);
-		opt.replicaPartition = Byte.parseByte(args[1]);
-		opt.replicaId = Integer.parseInt(args[2]);
-	    if (args.length > 3) {
-	    	opt.serverPort = Integer.parseInt(args[3]);
-	    }
-	    if (args.length > 4) {
-	    	opt.zookeeperHost = args[4];
-	    }
-		return opt;
-	}
-	
+	/**
+	 * Start ring paxos node
+	 * @param rings
+	 * @param zoohost
+	 * @return
+	 */
 	private static Node startPaxos(List<RingDescription> rings, String zoohost) {
 		final Node node = new Node(zoohost, rings);
 		try {
@@ -69,26 +126,60 @@ public class FSMain {
 		replica.start();
 	}
 	
-	public static void main(String[] rawargs) {
-		// argument parsing
-		Options args = parseArgs(rawargs);
-		int globalRing = 0;
-		int globalid = args.replicaId + args.replicaPartition*100; // id of the node in the global ring
+	public static void main(String[] rawArgs) {
+		HelpFormatter formatter = new HelpFormatter();
+		formatter.setOptionComparator(null);
+		CommandLineParser parser = new DefaultParser();
+		Options opts = cmdlineOptions();
+		CommandLine args;
 
-		
+		int nPartitions;
+		byte replicaPartition;
+		int replicaId;
+		int globalRing = 0;
+		int globalId;
+		int serverPort;
+		String zookeeperHost;
+
+		try {
+			args = parser.parse(opts, rawArgs);
+			nPartitions = ((Number) args.getParsedOptionValue("n")).intValue();
+			replicaId = ((Number) args.getParsedOptionValue("i")).intValue();
+			replicaPartition = ((Number) args.getParsedOptionValue("p")).byteValue();
+			if (!args.hasOption("g")) {
+				globalId = replicaId + replicaPartition*100;
+			} else {
+				globalId = ((Number) args.getParsedOptionValue("g")).intValue();
+			}
+			serverPort = ((Number) args.getParsedOptionValue("s")).intValue();
+			zookeeperHost = (String) args.getParsedOptionValue("z");
+		} catch (ParseException e) {
+			formatter.printHelp("FSMain", "Start a metadata replica", opts, null, true);
+			System.exit(1);
+			return; // required even after exit to avoid compilation errors (null args)
+		}
+
 		List<RingDescription> rings = new LinkedList<RingDescription>();
-		// replicas are not acceptors on the big ring
-		rings.add(new RingDescription(globalRing, globalid, Arrays.asList(PaxosRole.Learner, PaxosRole.Proposer)));
-		// colocate replicas/acceptors - don't run more than 3 replicas per group!!!
-		rings.add(new RingDescription(args.replicaPartition, args.replicaId, Arrays.asList(PaxosRole.Acceptor, PaxosRole.Learner, PaxosRole.Proposer)));
-		final Node node = startPaxos(rings, args.zookeeperHost);
+		// whether replica is an acceptor in the global ring or not
+		if (!args.hasOption("A")) {
+			rings.add(new RingDescription(globalRing, globalId, Arrays.asList(PaxosRole.Learner, PaxosRole.Proposer)));
+		} else {
+			rings.add(new RingDescription(globalRing, globalId, Arrays.asList(PaxosRole.Learner, PaxosRole.Proposer, PaxosRole.Acceptor)));
+		}
+
+		// colocating replicas/acceptors - don't run more than 3 replicas per group!!!
+		// FIXME: change to an argument option?
+		rings.add(new RingDescription(replicaPartition, replicaId, Arrays.asList(PaxosRole.Acceptor, PaxosRole.Learner, PaxosRole.Proposer)));
+
+		// start ring paxos node
+		final Node node = startPaxos(rings, zookeeperHost);
 		if (node == null) {
 			log.error("Error starting paxos");
 			System.exit(1);
 		}
 		
 		// start communication service
-		final CommunicationService comm = new CommunicationService(args.replicaId, args.replicaPartition, node);
+		final CommunicationService comm = new CommunicationService(replicaId, replicaPartition, node);
 		comm.start();
 		
 		Runtime.getRuntime().addShutdownHook(new Thread(){
@@ -104,8 +195,8 @@ public class FSMain {
 
 		// start the replica
 		try {
-			InetSocketAddress addr = new InetSocketAddress(Util.getHostAddress(), args.serverPort);
-			startReplica(args.nPartitions, args.replicaId, args.replicaPartition, addr.getHostString(), args.serverPort, comm, args.zookeeperHost);
+			InetSocketAddress addr = new InetSocketAddress(Util.getHostAddress(), serverPort);
+			startReplica(nPartitions, replicaId, replicaPartition, addr.getHostString(), serverPort, comm, zookeeperHost);
 		} catch (TTransportException e) {
 			e.printStackTrace();
 			System.exit(1);
