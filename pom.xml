@@ -11,6 +11,7 @@
         <profile>
             <id>go-build</id>
             <activation>
+				<activeByDefault>true</activeByDefault>
                 <property>
                     <name>go-build</name>
                 </property>
