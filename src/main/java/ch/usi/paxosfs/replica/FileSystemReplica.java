@@ -280,11 +280,11 @@ public class FileSystemReplica implements Runnable {
 		if (f == null) {
             throw new FSError(FuseException.EBADF, "Bad file descriptor");
         }
-		if ((write.getFileHandle().getFlags() & UnixConstants.O_ACCMODE.getValue()) == UnixConstants.O_RDONLY.getValue()) {
+		if ((write.getFileHandle().getFlags() & UnixConstants.O_ACCMODE) == UnixConstants.O_RDONLY) {
             throw new FSError(FuseException.EBADF, "File not open for writing");
         }
 		// FIXME: check for negative offset?
-		if ((write.getFileHandle().getFlags() & UnixConstants.O_APPEND.getValue()) != 0) {
+		if ((write.getFileHandle().getFlags() & UnixConstants.O_APPEND) != 0) {
             f.appendData(write.getBlocks());
         } else {
             f.updateData(write.getBlocks(), write.getOffset());
@@ -313,7 +313,7 @@ public class FileSystemReplica implements Runnable {
 		if (f == null) {
             throw new FSError(FuseException.EBADF, "Bad file descriptor");
         }
-		if ((read.getFileHandle().getFlags() & UnixConstants.O_ACCMODE.getValue()) == UnixConstants.O_WRONLY.getValue()) {
+		if ((read.getFileHandle().getFlags() & UnixConstants.O_ACCMODE) == UnixConstants.O_WRONLY) {
             throw new FSError(FuseException.EBADF, "File not open for reading");
         }
 		// FIXME: check for negative offset?
@@ -881,7 +881,7 @@ public class FileSystemReplica implements Runnable {
 			return true;
         case OPEN:
             // check for the O_RDONLY flag
-            return ((c.getOpen().getFlags() & UnixConstants.O_ACCMODE.getValue()) == UnixConstants.O_RDONLY.getValue());
+            return ((c.getOpen().getFlags() & UnixConstants.O_ACCMODE) == UnixConstants.O_RDONLY);
 		default:
 			return false;
 		}

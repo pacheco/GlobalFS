@@ -2,19 +2,18 @@ package ch.usi.paxosfs.client;
 
 import ch.usi.paxosfs.partitioning.DefaultMultiPartitionOracle;
 import ch.usi.paxosfs.partitioning.PartitioningOracle;
+import ch.usi.paxosfs.replica.ReplicaManager;
 import ch.usi.paxosfs.replica.ReplicaManagerException;
-import ch.usi.paxosfs.replica.ZookeeperReplicaManager;
+import ch.usi.paxosfs.replica.ZookeeperReplicaWatcher;
 import ch.usi.paxosfs.rpc.*;
 import ch.usi.paxosfs.storage.Storage;
 import ch.usi.paxosfs.storage.StorageFactory;
 import ch.usi.paxosfs.storage.StorageFuture;
 import ch.usi.paxosfs.util.UUIDUtils;
+import ch.usi.paxosfs.util.UnixConstants;
 import ch.usi.paxosfs.util.Utils;
 import com.google.common.net.HostAndPort;
 import fuse.Errno;
-import fuse.FuseContext;
-import fuse.FuseException;
-import fuse.FuseMount;
 import org.apache.commons.lang3.text.StrBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,7 +44,7 @@ public class DirectFileSystem {
     private Random rand = new Random();
 	private int replicaId;
 	private static Log log = LogFactory.getLog(DirectFileSystem.class);
-	private ZookeeperReplicaManager rm;
+	private ReplicaManager rm;
 	private String zoohost;
 	private PartitioningOracle partitionOracle;
 	private Storage storage;
@@ -164,7 +163,7 @@ public class DirectFileSystem {
      * Get replica addresss
      */
 	public void start() throws ReplicaManagerException {
-		rm = new ZookeeperReplicaManager(zoohost);
+		rm = new ZookeeperReplicaWatcher(zoohost);
 		rm.start();
 
 	}
@@ -214,7 +213,7 @@ public class DirectFileSystem {
 	}
 
 	public List<DirEntry> getdir(String path) throws TException {
-		int partition = choosePartition(this.partitionOracle.partitionsOf(path)).intValue();
+        int partition = choosePartition(this.partitionOracle.partitionsOf(path)).intValue();
 		FuseOps.Client client = getClient((byte) partition);
 		try {
 			Response r = client.getdir(path, instanceMap.get());
@@ -469,10 +468,25 @@ public class DirectFileSystem {
         }
 	}
 
-	public ByteBuffer read(String path, FileHandle fh, long offset, long bytes) throws TException {
+    /**
+     * Returns a ByteBuffer with the file contents. The buffer will be ready for reading.
+     */
+    public ByteBuffer read(String path, FileHandle fh, long offset, int bytes) throws TException {
+        ByteBuffer buf = ByteBuffer.allocate(bytes);
+        this.read(path, fh, offset, buf);
+        buf.flip();
+        return buf;
+    }
+
+    /**
+     * Read file contents into buf. It will try to fill the ByteBuffer (current position to limit).
+     * flip() is NOT called before returning.
+     */
+	public void read(String path, FileHandle fh, long offset, ByteBuffer buf) throws TException {
         readCount.incrementAndGet();
         opCount.incrementAndGet();
 		FileHandle handle = fh;
+        int bytes = buf.remaining();
 		Set<Byte> allPartitions = this.partitionOracle.partitionsOf(path);
 		int partition = choosePartition(allPartitions).intValue();
 		FuseOps.Client client = getClient((byte) partition);
@@ -500,8 +514,6 @@ public class DirectFileSystem {
 				}
 			}
 
-			ByteBuffer buf = ByteBuffer.allocate((int)bytes);
-			
 			// pass the values to fuse - also checking for and creating zeroed blocks (null id)
 			Iterator<byte[]> valuesIter = values.iterator();
 			for (DBlock b : res.getBlocks()) {
@@ -530,8 +542,6 @@ public class DirectFileSystem {
 				}
 			}
 			returnClient(client, (byte) partition);
-            buf.flip();
-            return buf;
 		} catch (FSError e) {
             returnClient(client, (byte) partition);
             if (e.getErrorCode() == Errno.EAGAIN) {
@@ -686,6 +696,13 @@ public class DirectFileSystem {
 		DirectFileSystem fs = new DirectFileSystem(Integer.parseInt(args[0]), args[1], args[2], Integer.parseInt(args[3]), Byte.parseByte(args[4]));
 		try {
 			fs.start();
+            fs.mkdir("/1", 755);
+            fs.mkdir("/2", 755);
+            fs.mknod("/1/asdf", 755, 0);
+            fs.mknod("/global", 755, 0);
+            FileHandle fh = fs.open("/global", UnixConstants.O_WRONLY | UnixConstants.O_APPEND);
+            fs.write("/global", fh, 0, ByteBuffer.wrap("FOOBAR BAZ!".getBytes()));
+            fs.release("/global", fh, 0);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

@@ -1,11 +1,9 @@
 package ch.usi.paxosfs.client;
 
-import ch.usi.paxosfs.partitioning.DefaultMultiPartitionOracle;
-import ch.usi.paxosfs.partitioning.PartitioningOracle;
-import ch.usi.paxosfs.replica.ZookeeperReplicaManager;
 import ch.usi.paxosfs.rpc.*;
 import ch.usi.paxosfs.storage.Storage;
 import ch.usi.paxosfs.storage.StorageFactory;
+import ch.usi.paxosfs.util.Paths;
 import ch.usi.paxosfs.util.PathsNIO;
 import ch.usi.paxosfs.util.UUIDUtils;
 import ch.usi.paxosfs.util.UnixConstants;
@@ -17,17 +15,14 @@ import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
-import org.apache.thrift.transport.TTransport;
 
+import java.nio.ByteBuffer;
 import java.nio.file.FileSystems;
 import java.util.*;
 
 public class CommandLineClient {
-	private static TTransport[] transport;
-	private static FuseOps.Client[] client;
-	private static ZookeeperReplicaManager rm;
-	private static PartitioningOracle oracle;
-	private static Map<Byte, Long> instanceMap = new HashMap<Byte, Long>(); 
+	private static Map<Byte, Long> instanceMap = new HashMap<Byte, Long>();
+	private static DirectFileSystem fs;
 	
 	private static class PathCompleter implements Completer {
 		@Override
@@ -46,11 +41,8 @@ public class CommandLineClient {
 				dir = PathsNIO.dirname(path);
 				name = PathsNIO.basename(path);
 			}
-			int partition = oracle.partitionsOf(dir).iterator().next().intValue()-1;
 			try {
-				Response r = client[partition].getdir(dir, instanceMap);
-				instanceMap.putAll(r.instanceMap);
-				List<DirEntry> entries = r.getGetdir();
+				List<DirEntry> entries = fs.getdir(dir);
 				for (DirEntry e: entries) {
 					if (e.getName().startsWith(name)){
 						// fix for root "/"
@@ -79,24 +71,9 @@ public class CommandLineClient {
 		int nPartitions = Integer.parseInt(args[0]);
 		String zoohost = args[1];
 		String storageCfg = args[2];
-		Storage storage = StorageFactory.storageFromConfig(FileSystems.getDefault().getPath(storageCfg));
-		
-		rm = new ZookeeperReplicaManager(zoohost);
-		rm.start();
 
-		oracle = new DefaultMultiPartitionOracle(nPartitions);
-		
-		transport = new TTransport[nPartitions];
-		client = new FuseOps.Client[nPartitions];
-		
-		for (byte i=1; i<=nPartitions; i++) {
-			HostAndPort replicaAddr = rm.getReplicaAddress(i, 0);
-			transport[i-1] = new TSocket(replicaAddr.getHostText(), replicaAddr.getPort());
-			transport[i-1].open();
-			TProtocol protocol = new TBinaryProtocol(transport[i-1]);
-			client[i-1] = new FuseOps.Client(protocol);
-		}
-
+		fs = new DirectFileSystem(nPartitions, zoohost, storageCfg, 0, Integer.valueOf(1).byteValue());
+		fs.start();
 
 		ConsoleReader reader = new ConsoleReader();
 		reader.setPrompt("> ");
@@ -114,62 +91,46 @@ public class CommandLineClient {
 			try {
 			switch (cmd) {
 			case "statfs": {
-				Response r = client[0].statfs(instanceMap);
-				instanceMap.putAll(r.instanceMap);
-				System.out.println(r.statfs);
+				System.out.println(fs.statfs());
 				break;
 			}
 			case "getdir": {
-				if (parts.length < 2) continue;
+                if (parts.length < 2) continue;
 				String path = parts[1];
-				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
-				Response r = client[partition].getdir(path, instanceMap);
-				System.out.println(r.getdir);
-				instanceMap.putAll(r.instanceMap);
+				System.out.println(fs.getdir(path));
 				break;
 			}
 			case "mknod": {
 				if (parts.length < 2) continue;
 				String path = parts[1];
-				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
-				Response r = client[partition].mknod(path, 0, 0, 0, 0, instanceMap);
-				instanceMap.putAll(r.instanceMap);
+				fs.mknod(path, 0777, 0);
 				System.out.println("File created.");
 				break;
 			}
 			case "getattr": {
 				if (parts.length < 2) continue;
 				String path = parts[1];
-				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
-				Response r = client[partition].getattr(path, instanceMap);
-				System.out.println(r.getattr);
-				instanceMap.putAll(r.instanceMap);
+				System.out.println(fs.getattr(path));
 				break;
 			}
 			case "mkdir": {
 				if (parts.length < 2) continue;
 				String path = parts[1];
-				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
-				Response r = client[partition].mkdir(path, 0, 0, 0, instanceMap);
-				instanceMap.putAll(r.instanceMap);
+				fs.mkdir(path, 0777);
 				System.out.println("Dir created.");
 				break;
 			}
 			case "rmdir": {
 				if (parts.length < 2) continue;
 				String path = parts[1];
-				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
-				Response r = client[partition].rmdir(path, instanceMap);
-				instanceMap.putAll(r.instanceMap);
+				fs.rmdir(path);
 				System.out.println("Dir removed.");
 				break;
 			}
 			case "unlink": {
 				if (parts.length < 2) continue;
 				String path = parts[1];
-				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
-				Response r = client[partition].unlink(path, instanceMap);
-				instanceMap.putAll(r.instanceMap);
+				fs.unlink(path);
 				System.out.println("File removed.");
 				break;
 			}
@@ -177,19 +138,14 @@ public class CommandLineClient {
 				if (parts.length < 3) continue;
 				String from = parts[1];
 				String to = parts[2];
-				int partition = oracle.partitionsOf(from).iterator().next().intValue()-1;
-				Response r = client[partition].rename(from, to, instanceMap);
-				instanceMap.putAll(r.instanceMap);
+				fs.rename(from, to);
 				System.out.println("File renamed.");
 				break;			
 			}
 			case "open": {
 				if (parts.length < 2) continue;
 				String path = parts[1];
-				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
-				Response r = client[partition].open(path, UnixConstants.O_RDWR.getValue(), instanceMap);
-				fh = r.open;
-				instanceMap.putAll(r.instanceMap);
+				fh = fs.open(path, UnixConstants.O_RDWR);
 				System.out.println(fh);
 				break;
 			}
@@ -202,13 +158,7 @@ public class CommandLineClient {
 					System.out.println("Open a file first");
 					break;
 				}
-				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
-				List<DBlock> blocks = new ArrayList<DBlock>();
-				blocks.add(new DBlock(null, 0, data.length(), new HashSet<Byte>()));
-				blocks.get(0).setId(UUIDUtils.longToBytes(rand.nextLong()));
-				storage.put((byte) 0, blocks.get(0).getId(), data.getBytes()).get();
-				Response r = client[partition].writeBlocks(path, fh, offset, blocks, instanceMap);
-				instanceMap.putAll(r.instanceMap);
+				fs.write(path, fh, offset, ByteBuffer.wrap(data.getBytes()));
 				System.out.println("File written");
 				break;
 			}
@@ -221,30 +171,20 @@ public class CommandLineClient {
 					System.out.println("Open a file first");
 					break;
 				}
-				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
-				Response r = client[partition].readBlocks(path, fh, offset, bytes, instanceMap);
-				ReadResult rr = r.readBlocks;
-				instanceMap.putAll(r.instanceMap);
-				for (DBlock b : rr.getBlocks()) {
-//					System.out.println(new String(b.getId()));
-					if (b.getId().length == 0) {
-						System.out.print(new byte[(int)b.size()]);
-					}
-					System.out.print(new String(storage.get((byte) 0, b.getId()).get()));
-				}
-				System.out.println("");
+				ByteBuffer result = fs.read(path, fh, offset, bytes);
+				byte[] resultBytes = new byte[result.limit()];
+				result.get(resultBytes);
+				System.out.println(new String(resultBytes));
 				break;
 			}
 			case "release": {
 				if (parts.length < 2) continue;
 				String path = parts[1];
-				int partition = oracle.partitionsOf(path).iterator().next().intValue()-1;
 				if (fh == null) {
 					System.out.println("Open a file first");
 					break;
 				}
-				Response r = client[partition].release(path, fh, 0, instanceMap);
-				instanceMap.putAll(r.instanceMap);
+				fs.release(path, fh, 0);
 				System.out.println("File closed");
 				fh = null;
 				break;

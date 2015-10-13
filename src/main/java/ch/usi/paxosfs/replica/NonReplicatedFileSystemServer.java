@@ -263,12 +263,11 @@ public class NonReplicatedFileSystemServer implements FuseOps.Iface, Runnable {
 		if (f == null) {
 			throw new FSError(FuseException.EBADF, "Bad file descriptor");
 		}
-		if ((fh.getFlags() & UnixConstants.O_ACCMODE.getValue()) == UnixConstants.O_RDONLY
-				.getValue()) {
+		if ((fh.getFlags() & UnixConstants.O_ACCMODE) == UnixConstants.O_RDONLY) {
 			throw new FSError(FuseException.EBADF, "File not open for writing");
 		}
 		// FIXME: check for negative offset?
-		if ((fh.getFlags() & UnixConstants.O_APPEND.getValue()) != 0) {
+		if ((fh.getFlags() & UnixConstants.O_APPEND) != 0) {
 			f.appendData(blocks);
 		} else {
 			f.updateData(blocks, offset);

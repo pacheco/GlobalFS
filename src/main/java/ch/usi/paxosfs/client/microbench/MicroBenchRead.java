@@ -80,10 +80,10 @@ public class MicroBenchRead implements MicroBench {
             FileHandle localFh;
 
             try {
-                Response r = c.open(globalPath, UnixConstants.O_RDWR.getValue() | UnixConstants.O_APPEND.getValue(), instanceMap);
+                Response r = c.open(globalPath, UnixConstants.O_RDWR | UnixConstants.O_APPEND, instanceMap);
                 instanceMap.putAll(r.getInstanceMap());
                 globalFh = r.getOpen();
-                r = c.open(localPath, UnixConstants.O_RDWR.getValue() | UnixConstants.O_APPEND.getValue(), instanceMap);
+                r = c.open(localPath, UnixConstants.O_RDWR | UnixConstants.O_APPEND, instanceMap);
                 instanceMap.putAll(r.getInstanceMap());
                 localFh = r.getOpen();
             } catch (TException e){
