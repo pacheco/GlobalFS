@@ -107,7 +107,7 @@ def setup_zookeeper():
         MRP_CONFIG['MRP_START_TIME'] = local('date +%s000', capture = True)
         time.sleep(3) # needed?
         # create URingPaxos default config on zookeeper
-        local('dtach -n /tmp/zkcfg %s/ringpaxos.sh "0,0:L;1,0:L;2,0:L;3,0:L" %s' % (UPAXOSDIR, ZKHOST))
+        local('dtach -n /tmp/zkcfg %s/mrpnode.sh --zoo %s "0,0:L;1,0:L;2,0:L;3,0:L"' % (FSDIR, ZKHOST))
         time.sleep(3)
         with settings(warn_only = True): # pkill is not returning 0 even on success
             local('pkill --signal 9 -f TTYNode')
@@ -122,6 +122,7 @@ def kill_and_clear():
         local('pkill --signal 9 -f TTYNode')
         local('pkill --signal 9 -f FSMain')
         local('pkill --signal 9 -f kvstore')
+        local('pkill --signal 9 -f FileSystemClient')
         local('sudo pkill --signal 9 -f PaxosFileSystem')
         local('sudo umount -l /tmp/fs*')
         local('sudo rm -f /tmp/*.vgc')
