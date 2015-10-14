@@ -24,6 +24,7 @@ import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
+import java.io.FileNotFoundException;
 import java.nio.ByteBuffer;
 import java.nio.file.FileSystems;
 import java.util.*;
@@ -32,7 +33,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class DirectFileSystem {
+public class FileSystemClient {
     private static AtomicInteger readCount = new AtomicInteger(0);
     private static AtomicInteger writeCount = new AtomicInteger(0);
     private static AtomicInteger statCount = new AtomicInteger(0);
@@ -43,7 +44,7 @@ public class DirectFileSystem {
     private final int uid;
     private Random rand = new Random();
 	private int replicaId;
-	private static Log log = LogFactory.getLog(DirectFileSystem.class);
+	private static Log log = LogFactory.getLog(FileSystemClient.class);
 	private ReplicaManager rm;
 	private String zoohost;
 	private PartitioningOracle partitionOracle;
@@ -69,7 +70,7 @@ public class DirectFileSystem {
     }
 
     @SuppressWarnings("unchecked")
-    public DirectFileSystem(int numberOfPartitions, String zoohost, String storageCfg, int replicaId, Byte closestPartition) throws Exception {
+    public FileSystemClient(int numberOfPartitions, String zoohost, String storageCfg, int replicaId, Byte closestPartition) throws FileNotFoundException {
         this.numberOfPartitions = numberOfPartitions;
         this.zoohost = zoohost;
         this.storage = StorageFactory.storageFromConfig(FileSystems.getDefault().getPath(storageCfg));
@@ -168,7 +169,12 @@ public class DirectFileSystem {
 
 	}
 
-	public Attr getattr(String path) throws TException {
+    public void waitUntilReady() throws InterruptedException {
+        rm.waitInitialization();
+    }
+
+
+    public Attr getattr(String path) throws TException {
         statCount.incrementAndGet();
         opCount.incrementAndGet();
 		int partition = choosePartition(this.partitionOracle.partitionsOf(path)).intValue();
@@ -565,6 +571,7 @@ public class DirectFileSystem {
 		Set<Byte> allPartitions = this.partitionOracle.partitionsOf(path); // partitions to store the data block
 		int partition = choosePartition(allPartitions).intValue(); // partition to send the request
 		FuseOps.Client client = getClient((byte) partition);
+        int startPos = buf.position(); // used later to return number of bytes written
 		try {
 			List<DBlock> blocks = new LinkedList<>();
 			List<StorageFuture<Boolean>> putFutures = new LinkedList<>();
@@ -627,7 +634,7 @@ public class DirectFileSystem {
 			Response r = client.writeBlocks(path, handle, offset, blocks, instanceMap.get());
 			instanceMap.get().putAll(r.instanceMap);
 			returnClient(client, (byte) partition);
-            return buf.limit();
+            return buf.position() - startPos;
 		} catch (FSError e) {
             returnClient(client, (byte) partition);
             if (e.getErrorCode() == Errno.EAGAIN) {
@@ -693,9 +700,10 @@ public class DirectFileSystem {
        // statsPrinter.start();
 
         log.info(Arrays.toString(args));
-		DirectFileSystem fs = new DirectFileSystem(Integer.parseInt(args[0]), args[1], args[2], Integer.parseInt(args[3]), Byte.parseByte(args[4]));
+		FileSystemClient fs = new FileSystemClient(Integer.parseInt(args[0]), args[1], args[2], Integer.parseInt(args[3]), Byte.parseByte(args[4]));
 		try {
 			fs.start();
+            fs.waitUntilReady();
             fs.mkdir("/1", 755);
             fs.mkdir("/2", 755);
             fs.mknod("/1/asdf", 755, 0);
@@ -710,4 +718,5 @@ public class DirectFileSystem {
             // statsPrinter.interrupt();
 		}
 	}
+
 }

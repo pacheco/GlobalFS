@@ -116,6 +116,11 @@ public class ZookeeperReplicaManager implements Watcher, ReplicaManager {
 	}
 
 	@Override
+	public void waitInitialization() throws InterruptedException {
+		return;
+	}
+
+	@Override
 	public void process(WatchedEvent event) {
 		if (this.readonly) { // no replica needs to be registered on zookeeper
 			return;

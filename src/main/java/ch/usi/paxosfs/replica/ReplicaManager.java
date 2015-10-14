@@ -28,4 +28,6 @@ public interface ReplicaManager {
      * @throws ReplicaManagerException
      */
     public HostAndPort getReplicaAddress(byte partition, int replicaId) throws ReplicaManagerException;
+
+    public void waitInitialization() throws InterruptedException;
 }

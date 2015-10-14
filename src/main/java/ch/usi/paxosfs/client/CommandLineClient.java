@@ -1,28 +1,19 @@
 package ch.usi.paxosfs.client;
 
 import ch.usi.paxosfs.rpc.*;
-import ch.usi.paxosfs.storage.Storage;
-import ch.usi.paxosfs.storage.StorageFactory;
-import ch.usi.paxosfs.util.Paths;
 import ch.usi.paxosfs.util.PathsNIO;
-import ch.usi.paxosfs.util.UUIDUtils;
 import ch.usi.paxosfs.util.UnixConstants;
-import com.google.common.net.HostAndPort;
 import jline.console.ConsoleReader;
 import jline.console.completer.Completer;
 import jline.console.completer.StringsCompleter;
 import org.apache.thrift.TException;
-import org.apache.thrift.protocol.TBinaryProtocol;
-import org.apache.thrift.protocol.TProtocol;
-import org.apache.thrift.transport.TSocket;
 
 import java.nio.ByteBuffer;
-import java.nio.file.FileSystems;
 import java.util.*;
 
 public class CommandLineClient {
 	private static Map<Byte, Long> instanceMap = new HashMap<Byte, Long>();
-	private static DirectFileSystem fs;
+	private static FileSystemClient fs;
 	
 	private static class PathCompleter implements Completer {
 		@Override
@@ -72,7 +63,7 @@ public class CommandLineClient {
 		String zoohost = args[1];
 		String storageCfg = args[2];
 
-		fs = new DirectFileSystem(nPartitions, zoohost, storageCfg, 0, Integer.valueOf(1).byteValue());
+		fs = new FileSystemClient(nPartitions, zoohost, storageCfg, 0, Integer.valueOf(1).byteValue());
 		fs.start();
 
 		ConsoleReader reader = new ConsoleReader();

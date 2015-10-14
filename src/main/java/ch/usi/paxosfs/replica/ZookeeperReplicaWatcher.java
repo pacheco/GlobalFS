@@ -7,6 +7,8 @@ import org.apache.curator.framework.api.BackgroundCallback;
 import org.apache.curator.framework.api.CuratorEvent;
 import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.TreeCache;
+import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
+import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 import org.apache.curator.retry.BoundedExponentialBackoffRetry;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.*;
@@ -19,6 +21,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -27,13 +30,14 @@ import java.util.concurrent.TimeUnit;
  * @author pacheco
  * 
  */
-public class ZookeeperReplicaWatcher implements ReplicaManager {
+public class ZookeeperReplicaWatcher implements ReplicaManager, TreeCacheListener {
 	private static String BASEPATH = "/paxosfs";
 
 	private String zoohost;
 	private Random random = new Random();
     private CuratorFramework zk;
     private TreeCache replicas;
+    private CountDownLatch initialized = new CountDownLatch(1);
 
     /**
 	 * Clients use this constructor. The manager will be used only to find existing replicas.
@@ -52,6 +56,7 @@ public class ZookeeperReplicaWatcher implements ReplicaManager {
                 throw new ReplicaManagerException("Could not connect to zookeeper");
             }
             replicas = new TreeCache(zk, BASEPATH);
+            replicas.getListenable().addListener(this);
             replicas.start();
         } catch (InterruptedException e) {
             throw new ReplicaManagerException(e);
@@ -79,6 +84,18 @@ public class ZookeeperReplicaWatcher implements ReplicaManager {
             return HostAndPort.fromString(data);
         } else {
             throw new ReplicaManagerException("No replica available");
+        }
+    }
+
+    public void waitInitialization() throws InterruptedException {
+        initialized.await();
+    }
+
+    @Override
+    public void childEvent(CuratorFramework client, TreeCacheEvent event) throws Exception {
+        if (event.getType() == TreeCacheEvent.Type.INITIALIZED) {
+            initialized.countDown();
+            replicas.getListenable().removeListener(this);
         }
     }
 }
