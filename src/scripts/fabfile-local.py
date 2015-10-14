@@ -25,7 +25,7 @@ MRP_CONFIG = {
     'MRP_LAMBDA' : 100000,
     'MRP_M' : 1,
     'MRP_REF_RING' : 0,
-    'MRP_STORAGE' : 'ch.usi.da.paxos.storage.NoStorage',
+    'MRP_STORAGE' : 'ch.usi.da.paxos.storage.InMemory',
     'MRP_BATCH' : 'none',
     'MRP_RECOVERY' : 0,
     'MRP_TRIM_MOD' : 0,
@@ -92,6 +92,12 @@ set /ringpaxos/topology3/config/p1_resend_time %(MRP_P1_TIMEOUT)s
 set /ringpaxos/topology3/config/value_resend_time %(MRP_PROPOSER_TIMEOUT)s
 """
 
+def dtach_and_log(command, dtach_socket, logfile):
+    """Generate a command to leave the program running in the background
+    with its output copied to a logfile.
+
+    """
+    return 'dtach -n %s bash -c "%s 2>&1 | tee %s"' % (dtach_socket, command, logfile)
 
 def setup_zookeeper():
     """Setup zookeeper with MRP parameters
@@ -140,15 +146,17 @@ def start_http_storage(partition):
     """
     cmd = './kvstore-rocksdb storagecfg/kvstore%s.cfg 0 /tmp/kvstore%s' % (partition, partition)
     with hide('stdout', 'stderr'), lcd(FSDIR):
-        local('dtach -n /tmp/storage_%s %s' % (partition, cmd))
+        local(dtach_and_log(cmd, '/tmp/storage_%s' % (partition), '/tmp/storage_%s.log' % (partition)))
 
 
 def start_acceptor(partition, id):
     """Start a paxos acceptor
     """
-    cmd = './ringpaxos.sh %s,%s:A %s' % (partition, id, ZKHOST)
-    with hide('stdout', 'stderr'), lcd(UPAXOSDIR):
-        local('dtach -n /tmp/acceptor%s-%s %s' % (partition, id, cmd))
+    cmd = './mrpnode.sh --db /tmp --zoo %s %s,%s:A' % (ZKHOST, partition, id)
+    with hide('stdout', 'stderr'), lcd(FSDIR):
+        local(dtach_and_log(cmd,
+                            '/tmp/acceptor%s_%s' % (partition, id),
+                            '/tmp/acceptor%s_%s.log' % (partition, id)))
 
 
 def start_replica(partition, id, port=20000):
@@ -161,7 +169,9 @@ def start_replica(partition, id, port=20000):
         'port' : port,
     }.items())
     with hide('stdout', 'stderr'), lcd(FSDIR):
-        local('dtach -n /tmp/replica%s-%s %s' % (partition, id, cmd));
+        local(dtach_and_log(cmd,
+                            '/tmp/replica%s_%s' % (partition, id),
+                            '/tmp/replica%s_%s.log' % (partition, id)))
 
 
 def start_servers():
@@ -189,14 +199,17 @@ def mount_fs(mountpath, replica_id, closest_partition):
         local('sudo umount -l %s' % (mountpath))
         local('mkdir -p %s' % (mountpath))
     with lcd(FSDIR):
-        local('dtach -n /tmp/sinergiafs-%(rid)s ./client-mount.sh %(npart)s %(zkhost)s storagecfg/storage.cfg %(rid)s %(closestp)s -f %(fuseopt)s %(mountpath)s' % {
+        cmd = './client-mount.sh %(npart)s %(zkhost)s storagecfg/storage.cfg %(rid)s %(closestp)s -f %(fuseopt)s %(mountpath)s' % {
             'rid': replica_id,
             'npart': REPLICA_CONFIG['NPARTITIONS'],
             'zkhost': ZKHOST,
             'closestp': closest_partition,
             'mountpath': mountpath,
             'fuseopt': FUSE_OPTIONS,
-        })
+        }
+        local(dtach_and_log(cmd,
+                            '/tmp/sinergiafs%s_%s' % (closest_partition, replica_id),
+                            '/tmp/sinergiafs%s_%s.log' % (closest_partition, replica_id)))
 
 
 def start_all(partitions):
