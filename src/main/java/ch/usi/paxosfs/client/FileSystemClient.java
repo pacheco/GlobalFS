@@ -4,6 +4,7 @@ import ch.usi.paxosfs.partitioning.DefaultMultiPartitionOracle;
 import ch.usi.paxosfs.partitioning.PartitioningOracle;
 import ch.usi.paxosfs.replica.ReplicaManager;
 import ch.usi.paxosfs.replica.ReplicaManagerException;
+import ch.usi.paxosfs.replica.ZookeeperReplicaManager;
 import ch.usi.paxosfs.replica.ZookeeperReplicaWatcher;
 import ch.usi.paxosfs.rpc.*;
 import ch.usi.paxosfs.storage.Storage;
@@ -127,12 +128,18 @@ public class FileSystemClient {
 	private FuseOps.Client getClient(byte partition) {
 		FuseOps.Client c = clients[partition - 1].poll();
 		if (c == null) {
-			HostAndPort replicaAddr;
-			try {
-				replicaAddr = rm.getReplicaAddress(partition, replicaId);
-			} catch (ReplicaManagerException e) {
-				throw new RuntimeException(e);
-			}
+			HostAndPort replicaAddr = null;
+            while (replicaAddr == null) {
+                try {
+                    replicaAddr = rm.getReplicaAddress(partition, replicaId);
+                } catch (ReplicaManagerException e) {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e1) {
+                        throw new RuntimeException(e1);
+                    }
+                }
+            }
 			TTransport transport = new TSocket(replicaAddr.getHostText(), replicaAddr.getPort());
 			try {
 				transport.open();
@@ -164,10 +171,13 @@ public class FileSystemClient {
      * Get replica addresss
      */
 	public void start() throws ReplicaManagerException {
-		rm = new ZookeeperReplicaWatcher(zoohost);
+		rm = new ZookeeperReplicaManager(zoohost);
 		rm.start();
-
 	}
+
+    public void stop() {
+        rm.stop();
+    }
 
     public void waitUntilReady() throws InterruptedException {
         rm.waitInitialization();
