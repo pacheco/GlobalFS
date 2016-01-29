@@ -121,6 +121,15 @@ public class ZookeeperReplicaManager implements Watcher, ReplicaManager {
 	}
 
 	@Override
+	public void stop() {
+		try {
+			zk.close();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
 	public void process(WatchedEvent event) {
 		if (this.readonly) { // no replica needs to be registered on zookeeper
 			return;

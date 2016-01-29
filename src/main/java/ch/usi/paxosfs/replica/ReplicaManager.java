@@ -30,4 +30,6 @@ public interface ReplicaManager {
     public HostAndPort getReplicaAddress(byte partition, int replicaId) throws ReplicaManagerException;
 
     public void waitInitialization() throws InterruptedException;
+
+    void stop();
 }
