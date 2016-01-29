@@ -6,3 +6,6 @@
 /paxosfs-fuse.iml
 /src/scripts/nodes.sh
 *.pyc
+/.idea
+/*.iml
+/deps
