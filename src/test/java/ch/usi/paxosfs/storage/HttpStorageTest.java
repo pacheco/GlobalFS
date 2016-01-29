@@ -2,16 +2,16 @@ package ch.usi.paxosfs.storage;
 
 import ch.usi.paxosfs.util.UUIDUtils;
 import ch.usi.paxosfs.util.Utils;
+import org.apache.http.localserver.LocalTestServer;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.StringReader;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -19,39 +19,52 @@ import java.util.Random;
  */
 public class HttpStorageTest {
     Random rand = new Random();
-    List<Process> storages = new LinkedList<>();
+    LocalTestServer[] localServers = new LocalTestServer[3];
+    String cfg;
 
-    private Storage newStorage(String configFile) throws Exception {
-        URL url = Thread.currentThread().getContextClassLoader().getResource(configFile);
-        Path path = Paths.get(url.toURI());
-        Storage st = StorageFactory.storageFromConfig(path);
+    private Storage newStorage(String config) throws Exception {
+        StringReader r = new StringReader(config);
+        Storage st = new HttpStorage();
+        st.initialize(r);
         return st;
     }
 
     @Before
     public void startStorageServers() throws Exception {
-        storages.add(Runtime.getRuntime().exec("src/scripts/dht-fake.py 15001"));
-        storages.add(Runtime.getRuntime().exec("src/scripts/dht-fake.py 15002"));
-        storages.add(Runtime.getRuntime().exec("src/scripts/dht-fake.py 15003"));
+        for (int i = 0; i < 3; i++) {
+            localServers[i] = new LocalTestServer(null, null);
+            localServers[i].register("*", new HttpStorageRequestHandler());
+
+            localServers[i].start();
+        }
+        cfg = String.format("1 http://localhost:%d\n2 http://localhost:%d\n3 http://localhost:%d\n",
+                localServers[0].getServiceAddress().getPort(),
+                localServers[1].getServiceAddress().getPort(),
+                localServers[2].getServiceAddress().getPort());
     }
 
     @After
     public void killStorageServers() {
-        for (Process s: storages) {
-            s.destroy();
+        for (LocalTestServer s: localServers) {
+            try {
+                s.stop();
+            } catch (Exception e) {
+            }
         }
     }
 
     @Test
     public void testCreate() throws Exception {
-        Storage st = newStorage("storagecfg/httpstorage.cfg");
+        URL url = Thread.currentThread().getContextClassLoader().getResource("storagecfg/httpstorage.cfg");
+        Path path = Paths.get(url.toURI());
+        Storage st = StorageFactory.storageFromConfig(path);
         Assert.assertNotNull(st);
         Assert.assertTrue(st instanceof HttpStorage);
     }
 
     @Test
     public void testPutGet() throws Exception {
-        Storage st = newStorage("storagecfg/httpstorage.cfg");
+        Storage st = newStorage(cfg);
 
         // insert fails if the key already exists or the partition is not known (in the config file)
         byte[] key1 = UUIDUtils.longToBytes(33);
@@ -88,10 +101,10 @@ public class HttpStorageTest {
         Assert.assertArrayEquals(st.get((byte) 1, longKey2).get(), value2);
     }
 
-    /* delete is not implemented yet and throws NotImplementedException */
+    /* delete is not supported and throws NotImplementedException */
     @Test(expected = RuntimeException.class)
     public void testDelete() throws Exception {
-        Storage st = newStorage("storagecfg/httpstorage.cfg");
+        Storage st = newStorage("cfg");
         Assert.assertNotNull(st);
         Assert.assertTrue(st instanceof HttpStorage);
 
