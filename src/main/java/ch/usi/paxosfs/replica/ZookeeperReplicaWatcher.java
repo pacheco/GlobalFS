@@ -11,6 +11,7 @@ import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.curator.framework.recipes.cache.TreeCacheListener;
 import org.apache.curator.retry.BoundedExponentialBackoffRetry;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.curator.retry.RetryNTimes;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.KeeperException.Code;
 import org.apache.zookeeper.Watcher.Event.EventType;
@@ -48,7 +49,7 @@ public class ZookeeperReplicaWatcher implements ReplicaManager, TreeCacheListene
     }
 
 	public void start() throws ReplicaManagerException {
-        this.zk = CuratorFrameworkFactory.newClient(zoohost, new ExponentialBackoffRetry(500, 5));
+        this.zk = CuratorFrameworkFactory.newClient(zoohost, 10000, 5000, new RetryNTimes(3, 0));
         zk.start();
         try {
             boolean connected = zk.blockUntilConnected(10, TimeUnit.SECONDS);
@@ -73,7 +74,7 @@ public class ZookeeperReplicaWatcher implements ReplicaManager, TreeCacheListene
             String data = new String(replica.getData());
             return HostAndPort.fromString(data);
         } else {
-            throw new ReplicaManagerException("No replica available");
+            throw new ReplicaManagerException("No replica available for partition " + partition);
         }
 	}
 
@@ -83,12 +84,17 @@ public class ZookeeperReplicaWatcher implements ReplicaManager, TreeCacheListene
             String data = new String(replica.getData());
             return HostAndPort.fromString(data);
         } else {
-            throw new ReplicaManagerException("No replica available");
+            throw new ReplicaManagerException(String.format("Replica %d_%d not available", Integer.valueOf(partition), replicaId));
+
         }
     }
 
     public void waitInitialization() throws InterruptedException {
         initialized.await();
+    }
+
+    public void stop() {
+        zk.close();
     }
 
     @Override
