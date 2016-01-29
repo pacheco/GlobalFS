@@ -114,7 +114,7 @@ public class FileSystemClient {
                 writeCount.set(0);
                 statCount.set(0);
                 opCount.set(0);
-                log.info(String.format("op/s: %f\tread/s: %f\twrite/s: %f\tstat/s: %f\t", opSec, readSec, writeSec, statSec));
+                log.debug(String.format("op/s: %f\tread/s: %f\twrite/s: %f\tstat/s: %f\t", opSec, readSec, writeSec, statSec));
             }
         }
     });
