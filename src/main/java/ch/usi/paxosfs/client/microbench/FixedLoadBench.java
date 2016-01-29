@@ -153,6 +153,7 @@ public class FixedLoadBench {
             FileSystemClient fs = new FileSystemClient(nPartitions, zooHost, storage, replicaId, new Integer(partition).byteValue());
             fs.start();
             fs.waitUntilReady();
+            System.out.println("Got replicas from zookeeper " + partition + " " + replicaId);
 
             // run the benchmark
             String pathPrefix = (String) args.getParsedOptionValue("file-prefix");
@@ -168,31 +169,41 @@ public class FixedLoadBench {
 
             // create workers
             for (int i = 0; i < nThreads; i++) {
-                FileOutputStream logOut = new FileOutputStream(logPrefix + i);
+                FileOutputStream logOut = null;
+                if (!args.hasOption("populate")) { // populate does not use a log file
+                    logOut = new FileOutputStream(logPrefix + i);
+                }
+
                 if (args.hasOption("create")) {
                     workers.add(new Thread(new BenchCreate(fs, pathPrefix, size, durationSec*1000, logOut, histogram)));
                 } else if (args.hasOption("write")) {
                     workers.add(new Thread(new BenchWrite(fs, pathPrefix, size, durationSec*1000, logOut, histogram)));
                 } else if (args.hasOption("populate")) {
-                    throw new RuntimeException("TODO:");
+                    workers.add(new Thread(new BenchPopulate(fs, pathPrefix, i, size)));
                 } else if (args.hasOption("read")) {
-                    throw new RuntimeException("TODO:");
+                    workers.add(new Thread(new BenchRead(fs, pathPrefix, i, size, durationSec*1000, logOut, histogram)));
                 }
             }
             // start workers
             for (int i = 0; i < nThreads; i++) {
-                System.out.println("Starting thread " + i);
+                //System.out.println("Starting thread " + i);
                 workers.get(i).start();
             }
             // wait for workers to finish
             try {
                 for (int i = 0; i < nThreads; i++) {
                     workers.get(i).join();
-                    System.out.println("Thread " + i + " done");
+                    //System.out.println("Thread " + i + " done");
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            fs.stop();
+
+            if (durationSec > 0) {
+                System.out.println(histogram.getTotalCount() / durationSec + " op/sec");
+            }
+            System.out.format("Latency %f %d %d\n", histogram.getMean(), histogram.getValueAtPercentile(95.0), histogram.getValueAtPercentile(99.0));
 
             System.exit(0);
         } catch (ParseException | FileNotFoundException | ReplicaManagerException | TException e) {
