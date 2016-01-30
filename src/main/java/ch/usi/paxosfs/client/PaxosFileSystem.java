@@ -47,9 +47,9 @@ public class PaxosFileSystem implements Filesystem3 {
 	private Storage storage;
 	private int numberOfPartitions;
 	private ConcurrentLinkedQueue<FuseOps.Client>[] clients;
-    private Byte closestPartition; // TODO: an array of the partitions in order of proximity would be more complete
+    private Byte closestPartition; // TODO: use an array of the partitions in order of proximity?
 
-	// TODO: To be sure this is correct check how threads are used inside Fuse4J. Should be good enough for benchmarking.
+	// TODO: The correctness of this scheme depends on thread behaviour inside Fuse4J. Good enough for benchmarking.
 	private ThreadLocal<Map<Byte, Long>> instanceMap = new ThreadLocal<Map<Byte, Long>>(){
         @Override protected Map<Byte, Long> initialValue() {
             return new ConcurrentHashMap<Byte, Long>();
@@ -625,7 +625,7 @@ public class PaxosFileSystem implements Filesystem3 {
                 if (allPartitions.size() == 1 && b.getStorageSize() == 0) {
                     throw new FSError(Errno.EREMOTEIO, "Error storing single-partition data block: Could not write to storage " + allPartitions.iterator().next());
                 } else if (allPartitions.size() >= 2 && b.getStorageSize() < 2) {
-                    // FIXME: TODO: how to handle a replicated write? Right now we assume that for replicated writes, writing to 2 is enough
+					// FIXME: hard-coded: writing to 2 partitions is enough to support 1 datacenter failure
                     throw new FSError(Errno.EREMOTEIO, "Error storing replicated data block: Required replication not achieved");
                 }
             }

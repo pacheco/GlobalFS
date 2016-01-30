@@ -13,7 +13,7 @@ import java.util.*;
  * FIXME: The methods here assume that this replica is part of the partitions of
  * a given path. A more "general" way would be to make a remote call to a
  * responsible replica when that is not the case. Clients always send request to
- * a responsible replica so this is not a problem now.
+ * the correct replica for now.
  * 
  * Implementation for the thrift server receiving client requests for fuse
  * operations
@@ -228,7 +228,7 @@ public class FuseOpsHandler implements FuseOps.Iface {
 
 	@Override
 	public Response statfs(Map<Byte, Long> instanceMap) throws TException {
-		// TODO: implement this if we care about statfs
+		// TODO: don't care about this for now
 		Response r = new Response(replica.getInstanceMap());
 		r.setStatfs(new FileSystemStats(32*1024, 0, Integer.MAX_VALUE, Integer.MAX_VALUE, 0, 0, 1024));
 		return r;

@@ -198,8 +198,7 @@ public class CommunicationService {
 			ringid = command.getInvolvedPartitions().iterator().next().byteValue();
 		}
 		// TODO: right now its not possible to submit to rings the replica is
-		// not part of. The simplest way to support this would probably be if
-		// the replica acted as a proxy to one of the responsible replicas.
+		// not part of. Make the replica act as a proxy to one of the responsible replicas?
 		log.debug(new StrBuilder().append("Submitting command to ring ").append(ringid).toString());
 		Proposer p = this.proposers.get(Byte.valueOf(ringid));
 		// TSerializer is not threadsafe, create a new one for each amcast. Is
@@ -221,7 +220,7 @@ public class CommunicationService {
 	 * @throws FSError
 	 */
 	public void signal(long reqId, Signal signal, Set<Byte> involvedPartitions) throws FSError {
-		// FIXME: a fixed replica is sending the signal - experiments assume no failures
+		// FIXME: a fixed replica is sending the signal - good enough for benchmarking (no crashes)
 		if (id != 0) {
 			return;
 		}

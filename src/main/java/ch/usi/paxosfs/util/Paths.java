@@ -62,7 +62,7 @@ public class Paths {
 	 * @return
 	 */
 	public static String clean(String path) {
-		// FIXME: it seems that simplifying .. in the middle of a path is not a good idea. Take the example of foo/../bar.
+		// FIXME: it seems that simplifying '..' in the middle of a path is not a good idea. Take the example of foo/../bar.
 		// If foo is a symlink, reducing the path to 'bar' might be incorrect.
 		if (path.equals("")) {
 			return ".";

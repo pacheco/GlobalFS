@@ -30,7 +30,7 @@ public class BenchPopulate extends BenchWorker {
                 throw e;
             }
             System.out.println("File exists. Not populating");
-            return; // FIXME: don't populate file if it already exists...
+            return;
         }
         FileHandle fh;
         fh = fs.open(path, UnixConstants.O_WRONLY | UnixConstants.O_APPEND);

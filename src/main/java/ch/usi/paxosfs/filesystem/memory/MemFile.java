@@ -183,7 +183,6 @@ public class MemFile extends MemNode implements FileNode {
 		long sizeDiff = size - this.getAttributes().getSize();
 		if (sizeDiff > 0L) {
 			// increase file size by adding a null block of the size difference
-			// FIXME: we are casting long to int here. The correct way would be create blocks multiple blocks of max size int
 			while (sizeDiff > Integer.MAX_VALUE) {
 				DBlock nullBlock = new DBlock(null, 0, (int) Integer.MAX_VALUE, null); 
 				blocks.add(nullBlock);
@@ -217,12 +216,7 @@ public class MemFile extends MemNode implements FileNode {
 			}
 			this.getAttributes().setSize(size);
 
-			// TODO: we will probably need another data structure to avoid
-			// traversing the list again here
-			// TODO: removed blocks could be stored for DHT garbage collection.
-			// This is not so simple because we can have blocks used in multiple
-			// positions (after an overwrite to the middle of a block it will be
-			// split)
+			// TODO: we will probably need another data structure to avoid traversing the list again here
 			this.blocks.subList(iter.nextIndex(), this.blocks.size()).clear();
 		}
 	}

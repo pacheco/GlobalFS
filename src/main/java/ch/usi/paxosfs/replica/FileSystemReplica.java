@@ -147,8 +147,8 @@ public class FileSystemReplica implements Runnable {
 	}
 
 	/**
-	 * Apply a new command to the FileSystem state. FIXME: Assuming it's correct
-	 * to return upon error without waiting for signals. Check if this is true!
+	 * Apply a new command to the FileSystem state.
+	 * FIXME: Check it's ok to return upon error without waiting for signals.
 	 * 
 	 * @param decision
 	 *            the command to be applied
@@ -156,10 +156,7 @@ public class FileSystemReplica implements Runnable {
 	 *            indicates if the command is readonly or not
 	 */
 	private void applyCommand(CommandDecision decision, boolean isReadonly) {
-		// FIXME: It is handling both state-machine commands (which advance
-		// the replica state) and readonly commands which reply if the state is
-		// recent enough. It was simpler than separating it in two separate
-		// methods and synchronizing them.
+		// FIXME: This loop handles updates and reads. In theory reads don't need to be serialized.
 		Command c = decision.command;
 		synchronized (fs) {
 			CommandResult res = pendingCommands.remove(Long.valueOf(c.getReqId()));
@@ -493,9 +490,7 @@ public class FileSystemReplica implements Runnable {
                     Node n = fs.get(r.getFrom());
                     if (signalWithData) {
                         if (n.isDir() && !((DirNode) n).isEmpty()) {
-                            // TODO: we don't support moving
-                            // non-empty directories accross
-                            // partitions
+                            // TODO: moving non-empty directories across partitions not implemented
                             throw new FSError(FuseException.ENOTEMPTY, "Moving non-empty directory accross partitions");
                         }
                         s.setRenameData(this.renameDataFromNode(n));
@@ -506,9 +501,7 @@ public class FileSystemReplica implements Runnable {
                     comm.signal(c.getReqId(), s, c.getInvolvedPartitions());
                 } catch (FSError e) {
                     // origin does not exist.
-                    // FIXME: we fail early by throwing e. Is it ok
-                    // (linearizable) to not wait for signals in
-                    // this case?
+                    // FIXME: Check it's ok to return upon error without waiting for signals.
                     s.setSuccess(false);
                     s.setError(e);
                     comm.signal(c.getReqId(), s, c.getInvolvedPartitions());
@@ -570,9 +563,7 @@ public class FileSystemReplica implements Runnable {
                         Signal s = new Signal(localPartition.byteValue(), false);
                         s.setError(e);
                         comm.signal(c.getReqId(), s, c.getInvolvedPartitions());
-                        // FIXME: we fail early by throwing e. Is it
-                        // ok (linearizable) to not wait for signals
-                        // in this case?
+                        // FIXME: Check it's ok to return upon error without waiting for signals.
                         throw e;
                     }
                 }
