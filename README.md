@@ -11,8 +11,6 @@ Once that is done, compile the project:
 
 2. copy or symlink sinergiafs/target/sinergiafs-\*-deploy to ~/usr/sinergiafs
 
-3. to run the system locally, with one partition:
-
 ## Deployment overview
 The simplest deployment consists of the following components:
 
