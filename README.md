@@ -7,9 +7,11 @@ Geo-distributed filesystem built on top of Multi-Ring Paxos ([URingPaxos](github
 First, go through the REQUIREMENTS file and compile/install the dependencies.
 Once that is done, compile the project:
 
-1) `mvn install -Dgo-build`
-2) copy or symlink sinergiafs/target/sinergiafs-\*-deploy to ~/usr/sinergiafs
-3) to run the system locally, with one partition:
+1. `mvn install -Dgo-build`
+
+2. copy or symlink sinergiafs/target/sinergiafs-\*-deploy to ~/usr/sinergiafs
+
+3. to run the system locally, with one partition:
 
 ## Deployment overview
 The simplest deployment consists of the following components:
