@@ -1,6 +1,6 @@
-# SinergiaFS
+# GlobalFS
 
-Geo-distributed filesystem built on top of Multi-Ring Paxos ([URingPaxos](github.com/sambenz/URingPaxos))
+Strongly consistent, geo-distributed filesystem on top of Multi-Ring Paxos ([URingPaxos](github.com/sambenz/URingPaxos))
 
 ## Compiling and running
 
