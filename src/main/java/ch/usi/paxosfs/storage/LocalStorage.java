@@ -1,5 +1,6 @@
 package ch.usi.paxosfs.storage;
 
+import java.io.Reader;
 import java.nio.file.Path;
 import java.util.HashMap;
 
@@ -10,7 +11,7 @@ import java.util.HashMap;
 public class LocalStorage implements Storage {
     HashMap<Byte, HashMap<String, byte[]>> partitions;
 
-    public void initialize(Path configFile) throws Exception {
+    public void initialize(Reader configReader) throws Exception {
         partitions = new HashMap<>();
     }
 

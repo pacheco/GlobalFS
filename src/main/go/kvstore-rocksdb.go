@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/tecbot/gorocksdb"
 	"hash/fnv"
 	"io/ioutil"
 	"net/http"
@@ -12,6 +11,9 @@ import (
 	"strconv"
 	"strings"
 )
+
+// #cgo LDFLAGS: -lrocksdb -lstdc++ -lm -lz -lbz2 -lsnappy
+import "github.com/tecbot/gorocksdb"
 
 type HostPort struct {
 	Host string

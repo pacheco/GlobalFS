@@ -10,6 +10,7 @@ import org.apache.http.client.fluent.Request;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -89,13 +90,10 @@ public class HttpStorage implements Storage {
      *
      */
     @Override
-    public void initialize(Path configFile) throws Exception {
-        Scanner sc = new Scanner(configFile);
+    public void initialize(Reader configReader) throws Exception {
+        Scanner sc = new Scanner(configReader);
 
         partitionServers = new HashMap<>();
-
-        // skip first line
-        sc.nextLine();
 
 		while (sc.hasNext()) {
 			if (sc.hasNext("#.*")) {

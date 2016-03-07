@@ -13,7 +13,7 @@ import java.util.*;
  * FIXME: The methods here assume that this replica is part of the partitions of
  * a given path. A more "general" way would be to make a remote call to a
  * responsible replica when that is not the case. Clients always send request to
- * a responsible replica so this is not a problem now.
+ * the correct replica for now.
  * 
  * Implementation for the thrift server receiving client requests for fuse
  * operations
@@ -39,10 +39,21 @@ public class FuseOpsHandler implements FuseOps.Iface {
 		this.oracle = oracle;
 		this.replica = replica;
 	}
+
+	/**
+	 *  Adds a '/' at the beginning of the path if it is not already there
+	 */
+	private static String makePathAbsolute(String path) {
+		if (path.charAt(0) != '/') {
+			return "/" + path;
+		}
+		return path;
+	}
 	
 	@Override
 	public Response getattr(String path, Map<Byte, Long> instanceMap) throws TException {
 		// can be sent to ANY partition that replicates the path - we send it to the first returned by the oracle
+		path = makePathAbsolute(path);
 		Set<Byte> parts = Sets.newHashSet(Byte.valueOf(partition));
 		Command cmd = newCommand(CommandType.ATTR, parts, instanceMap);
 		AttrCmd attr = new AttrCmd(path, parts);
@@ -56,6 +67,7 @@ public class FuseOpsHandler implements FuseOps.Iface {
 	@Override
 	public Response getdir(String path, Map<Byte, Long> instanceMap) throws TException {
 		// can be sent to ANY partition that replicates the path - we send it to the first returned by the oracle
+		path = makePathAbsolute(path);
 		Set<Byte> parts = Sets.newHashSet(Byte.valueOf(partition));
 		Command cmd = newCommand(CommandType.GETDIR, parts, instanceMap);
 		GetdirCmd getdir = new GetdirCmd(path, parts);
@@ -69,6 +81,7 @@ public class FuseOpsHandler implements FuseOps.Iface {
 
 	@Override
 	public Response mknod(String path, int mode, int rdev, int uid, int gid, Map<Byte, Long> instanceMap) throws TException {
+		path = makePathAbsolute(path);
 		Set<Byte> parts = oracle.partitionsOf(path);
 		Set<Byte> parentParts = oracle.partitionsOf(Paths.dirname(path));
 		Set<Byte> involvedPartitions = Sets.union(parts, parentParts);
@@ -82,6 +95,7 @@ public class FuseOpsHandler implements FuseOps.Iface {
 
 	@Override
 	public Response mkdir(String path, int mode, int uid, int gid, Map<Byte, Long> instanceMap) throws TException {
+		path = makePathAbsolute(path);
 		Set<Byte> parts = oracle.partitionsOf(path);
 		Set<Byte> parentParts = oracle.partitionsOf(Paths.dirname(path));
 		Set<Byte> involvedPartitions = Sets.union(parts, parentParts);
@@ -95,6 +109,8 @@ public class FuseOpsHandler implements FuseOps.Iface {
 
 	@Override
 	public Response symlink(String target, String path, Map<Byte, Long> instanceMap) throws TException {
+		path = makePathAbsolute(path);
+		target = makePathAbsolute(target);
         Set<Byte> parts = oracle.partitionsOf(path);
         Set<Byte> parentParts = oracle.partitionsOf(Paths.dirname(path));
         Set<Byte> involvedPartitions = Sets.union(parts, parentParts);
@@ -108,6 +124,7 @@ public class FuseOpsHandler implements FuseOps.Iface {
 	
 	@Override
 	public Response readlink(String path, Map<Byte, Long> instanceMap) throws TException {
+		path = makePathAbsolute(path);
         // can be sent to ANY partition that replicates the path - we send it to the first returned by the oracle
         Set<Byte> parts = Sets.newHashSet(Byte.valueOf(partition));
         Command cmd = newCommand(CommandType.READLINK, parts, instanceMap);
@@ -121,6 +138,7 @@ public class FuseOpsHandler implements FuseOps.Iface {
 
 	@Override
 	public Response unlink(String path, Map<Byte, Long> instanceMap) throws TException {
+		path = makePathAbsolute(path);
 		Set<Byte> parts = oracle.partitionsOf(path);
 		Set<Byte> parentParts = oracle.partitionsOf(Paths.dirname(path));
 		Set<Byte> involvedPartitions = Sets.union(parts, parentParts);
@@ -134,6 +152,7 @@ public class FuseOpsHandler implements FuseOps.Iface {
 
 	@Override
 	public Response rmdir(String path, Map<Byte, Long> instanceMap) throws TException {
+		path = makePathAbsolute(path);
 		Set<Byte> parts = oracle.partitionsOf(path);
 		Set<Byte> parentParts = oracle.partitionsOf(Paths.dirname(path));
 		Set<Byte> involvedPartitions = Sets.union(parts, parentParts);
@@ -147,6 +166,8 @@ public class FuseOpsHandler implements FuseOps.Iface {
 
 	@Override
 	public Response rename(String from, String to, Map<Byte, Long> instanceMap) throws TException {
+		from = makePathAbsolute(from);
+		to = makePathAbsolute(to);
 		Set<Byte> fromParts = oracle.partitionsOf(from);
 		Set<Byte> fromParentParts = oracle.partitionsOf(Paths.dirname(from));
 		Set<Byte> toParts = oracle.partitionsOf(to);
@@ -167,6 +188,7 @@ public class FuseOpsHandler implements FuseOps.Iface {
 
 	@Override
 	public Response chmod(String path, int mode, Map<Byte, Long> instanceMap) throws TException {
+		path = makePathAbsolute(path);
 		Set<Byte> parts = oracle.partitionsOf(path);
 		Command cmd = newCommand(CommandType.CHMOD, parts, instanceMap);
 		ChmodCmd chmod = new ChmodCmd(path, mode, parts);
@@ -179,12 +201,14 @@ public class FuseOpsHandler implements FuseOps.Iface {
 	@Override
 	public Response chown(String path, int uid, int gid, Map<Byte, Long> instanceMap) throws TException {
 		// TODO: implement
+		path = makePathAbsolute(path);
 		Response r = new Response(replica.getInstanceMap());
 		return r;
 	}
 
 	@Override
 	public Response truncate(String path, long size, Map<Byte, Long> instanceMap) throws TException {
+		path = makePathAbsolute(path);
 		Set<Byte> parts = oracle.partitionsOf(path);
 		Command cmd = newCommand(CommandType.TRUNCATE, parts, instanceMap);
 		TruncateCmd truncate = new TruncateCmd(path, size, parts);
@@ -197,13 +221,14 @@ public class FuseOpsHandler implements FuseOps.Iface {
 	@Override
 	public Response utime(String path, long atime, long mtime, Map<Byte, Long> instanceMap) throws TException {
 		// TODO implement
+		path = makePathAbsolute(path);
 		Response r = new Response(replica.getInstanceMap());
 		return r;
 	}
 
 	@Override
 	public Response statfs(Map<Byte, Long> instanceMap) throws TException {
-		// TODO: implement this if we care about statfs
+		// TODO: don't care about this for now
 		Response r = new Response(replica.getInstanceMap());
 		r.setStatfs(new FileSystemStats(32*1024, 0, Integer.MAX_VALUE, Integer.MAX_VALUE, 0, 0, 1024));
 		return r;
@@ -211,6 +236,7 @@ public class FuseOpsHandler implements FuseOps.Iface {
 
 	@Override
 	public Response open(String path, int flags, Map<Byte, Long> instanceMap) throws TException {
+		path = makePathAbsolute(path);
 		Set<Byte> parts = oracle.partitionsOf(path);
 		Command cmd = newCommand(CommandType.OPEN, parts, instanceMap);
 		OpenCmd open = new OpenCmd(path, flags, parts);
@@ -223,6 +249,7 @@ public class FuseOpsHandler implements FuseOps.Iface {
 
 	@Override
 	public Response release(String path, FileHandle fh, int flags, Map<Byte, Long> instanceMap) throws TException {
+		path = makePathAbsolute(path);
 		Set<Byte> parts = oracle.partitionsOf(path);
 		Command cmd = newCommand(CommandType.RELEASE, parts, instanceMap);
 		ReleaseCmd release = new ReleaseCmd(path, fh, flags, parts);
@@ -251,6 +278,7 @@ public class FuseOpsHandler implements FuseOps.Iface {
 
 	@Override
 	public Response readBlocks(String path, FileHandle fh, long offset, long bytes, Map<Byte, Long> instanceMap) throws TException {
+		path = makePathAbsolute(path);
 		// assuming this replica replicates the file, send to own partition
 		Set<Byte> parts = Sets.newHashSet(Byte.valueOf(partition));
 		Command cmd = newCommand(CommandType.READ_BLOCKS, parts, instanceMap);
@@ -264,6 +292,7 @@ public class FuseOpsHandler implements FuseOps.Iface {
 
 	@Override
 	public Response writeBlocks(String path, FileHandle fh, long offset, List<DBlock> blocks, Map<Byte, Long> instanceMap) throws TException {
+		path = makePathAbsolute(path);
 		Set<Byte> parts = oracle.partitionsOf(path);
 		Command cmd = newCommand(CommandType.WRITE_BLOCKS, parts, instanceMap);
 		WriteBlocksCmd write = new WriteBlocksCmd(path, fh, offset, blocks, parts);

@@ -86,7 +86,7 @@ public class ZookeeperReplicaManager implements Watcher, ReplicaManager {
 		}
 	}
 
-	// FIXME: this is probably not the correct way of using ZK (use watchers?)
+	// FIXME: use watchers
 	public HostAndPort getRandomReplicaAddress(byte partition) throws ReplicaManagerException {
         try {
             String path = BASEPATH + "/" + Byte.toString(partition);
@@ -104,7 +104,7 @@ public class ZookeeperReplicaManager implements Watcher, ReplicaManager {
         }
 	}
 
-	// FIXME: this is probably not the correct way of using ZK (use watchers?)
+	// FIXME: use watchers
 	public HostAndPort getReplicaAddress(byte partition, int replicaId) throws ReplicaManagerException {
         try {
             String path = BASEPATH + "/" + Byte.toString(partition) + "/" + Integer.toString(replicaId);
@@ -113,6 +113,20 @@ public class ZookeeperReplicaManager implements Watcher, ReplicaManager {
         } catch (KeeperException | InterruptedException e) {
             throw new ReplicaManagerException(e);
         }
+	}
+
+	@Override
+	public void waitInitialization() throws InterruptedException {
+		return;
+	}
+
+	@Override
+	public void stop() {
+		try {
+			zk.close();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

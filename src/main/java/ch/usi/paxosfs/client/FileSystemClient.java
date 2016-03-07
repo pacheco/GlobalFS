@@ -2,16 +2,19 @@ package ch.usi.paxosfs.client;
 
 import ch.usi.paxosfs.partitioning.DefaultMultiPartitionOracle;
 import ch.usi.paxosfs.partitioning.PartitioningOracle;
+import ch.usi.paxosfs.replica.ReplicaManager;
 import ch.usi.paxosfs.replica.ReplicaManagerException;
 import ch.usi.paxosfs.replica.ZookeeperReplicaManager;
+import ch.usi.paxosfs.replica.ZookeeperReplicaWatcher;
 import ch.usi.paxosfs.rpc.*;
 import ch.usi.paxosfs.storage.Storage;
 import ch.usi.paxosfs.storage.StorageFactory;
 import ch.usi.paxosfs.storage.StorageFuture;
 import ch.usi.paxosfs.util.UUIDUtils;
+import ch.usi.paxosfs.util.UnixConstants;
 import ch.usi.paxosfs.util.Utils;
 import com.google.common.net.HostAndPort;
-import fuse.*;
+import fuse.Errno;
 import org.apache.commons.lang3.text.StrBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,8 +25,8 @@ import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
+import java.io.FileNotFoundException;
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.file.FileSystems;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,17 +34,19 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class PaxosFileSystem implements Filesystem3 {
+public class FileSystemClient {
     private static AtomicInteger readCount = new AtomicInteger(0);
     private static AtomicInteger writeCount = new AtomicInteger(0);
     private static AtomicInteger statCount = new AtomicInteger(0);
     private static AtomicInteger opCount = new AtomicInteger(0);
     private static int MAXBLOCKSIZE = 1024 * 300;
     private static int KEYSIZE = 16;
-	private Random rand = new Random();
+    private final int gid;
+    private final int uid;
+    private Random rand = new Random();
 	private int replicaId;
-	private static Log log = LogFactory.getLog(PaxosFileSystem.class);
-	private ZookeeperReplicaManager rm;
+	private static Log log = LogFactory.getLog(FileSystemClient.class);
+	private ReplicaManager rm;
 	private String zoohost;
 	private PartitioningOracle partitionOracle;
 	private Storage storage;
@@ -49,12 +54,40 @@ public class PaxosFileSystem implements Filesystem3 {
 	private ConcurrentLinkedQueue<FuseOps.Client>[] clients;
     private Byte closestPartition; // TODO: use an array of the partitions in order of proximity?
 
-	// TODO: The correctness of this scheme depends on thread behaviour inside Fuse4J. Good enough for benchmarking.
 	private ThreadLocal<Map<Byte, Long>> instanceMap = new ThreadLocal<Map<Byte, Long>>(){
         @Override protected Map<Byte, Long> initialValue() {
             return new ConcurrentHashMap<Byte, Long>();
         }
     };
+
+    /**
+     * client connection pool return
+     *
+     * @param client
+     * @param partition
+     */
+    private void returnClient(FuseOps.Client client, int partition) {
+        clients[partition - 1].add(client);
+    }
+
+    @SuppressWarnings("unchecked")
+    public FileSystemClient(int numberOfPartitions, String zoohost, String storageCfg, int replicaId, Byte closestPartition) throws FileNotFoundException {
+        this.numberOfPartitions = numberOfPartitions;
+        this.zoohost = zoohost;
+        this.storage = StorageFactory.storageFromConfig(FileSystems.getDefault().getPath(storageCfg));
+        this.partitionOracle = new DefaultMultiPartitionOracle(numberOfPartitions);
+        this.replicaId = replicaId;
+        this.closestPartition = closestPartition;
+
+        this.uid = 1000;
+        this.gid = 1000;
+
+        // hack around generics
+        clients = (ConcurrentLinkedQueue<FuseOps.Client>[]) new ConcurrentLinkedQueue<?>[this.numberOfPartitions];
+        for (byte i = 0; i < this.numberOfPartitions; i++) {
+            clients[i] = new ConcurrentLinkedQueue<>();
+        }
+    }
 
     /**
      * Print op statistics
@@ -81,26 +114,32 @@ public class PaxosFileSystem implements Filesystem3 {
                 writeCount.set(0);
                 statCount.set(0);
                 opCount.set(0);
-                log.info(String.format("op/s: %f\tread/s: %f\twrite/s: %f\tstat/s: %f\t", opSec, readSec, writeSec, statSec));
+                log.debug(String.format("op/s: %f\tread/s: %f\twrite/s: %f\tstat/s: %f\t", opSec, readSec, writeSec, statSec));
             }
         }
     });
 
 	/**
 	 * client connection pool return
-	 * 
+	 *
 	 * @param partition
 	 * @return
 	 */
 	private FuseOps.Client getClient(byte partition) {
 		FuseOps.Client c = clients[partition - 1].poll();
 		if (c == null) {
-			HostAndPort replicaAddr;
-			try {
-				replicaAddr = rm.getReplicaAddress(partition, replicaId);
-			} catch (ReplicaManagerException e) {
-				throw new RuntimeException(e);
-			}
+			HostAndPort replicaAddr = null;
+            while (replicaAddr == null) {
+                try {
+                    replicaAddr = rm.getReplicaAddress(partition, replicaId);
+                } catch (ReplicaManagerException e) {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e1) {
+                        throw new RuntimeException(e1);
+                    }
+                }
+            }
 			TTransport transport = new TSocket(replicaAddr.getHostText(), replicaAddr.getPort());
 			try {
 				transport.open();
@@ -113,32 +152,6 @@ public class PaxosFileSystem implements Filesystem3 {
 			c = new FuseOps.Client(protocol);
 		}
 		return c;
-	}
-
-	/**
-	 * client connection pool return
-	 * 
-	 * @param client
-	 * @param partition
-	 */
-	private void returnClient(FuseOps.Client client, int partition) {
-		clients[partition - 1].add(client);
-	}
-
-	@SuppressWarnings("unchecked")
-	public PaxosFileSystem(int numberOfPartitions, String zoohost, String storageCfg, int replicaId, Byte closestPartition) throws Exception {
-		this.numberOfPartitions = numberOfPartitions;
-		this.zoohost = zoohost;
-		this.storage = StorageFactory.storageFromConfig(FileSystems.getDefault().getPath(storageCfg));
-		this.partitionOracle = new DefaultMultiPartitionOracle(numberOfPartitions);
-		this.replicaId = replicaId;
-        this.closestPartition = closestPartition;
-		
-		// hack around generics
-		clients = (ConcurrentLinkedQueue<FuseOps.Client>[]) new ConcurrentLinkedQueue<?>[this.numberOfPartitions];
-		for (byte i = 0; i < this.numberOfPartitions; i++) {
-			clients[i] = new ConcurrentLinkedQueue<>();
-		}
 	}
 
     /**
@@ -160,10 +173,18 @@ public class PaxosFileSystem implements Filesystem3 {
 	public void start() throws ReplicaManagerException {
 		rm = new ZookeeperReplicaManager(zoohost);
 		rm.start();
-
 	}
 
-	public int getattr(String path, FuseGetattrSetter getattrSetter) throws FuseException {
+    public void stop() {
+        rm.stop();
+    }
+
+    public void waitUntilReady() throws InterruptedException {
+        rm.waitInitialization();
+    }
+
+
+    public Attr getattr(String path) throws TException {
         statCount.incrementAndGet();
         opCount.incrementAndGet();
 		int partition = choosePartition(this.partitionOracle.partitionsOf(path)).intValue();
@@ -173,68 +194,61 @@ public class PaxosFileSystem implements Filesystem3 {
 			Response r = client.getattr(path, instanceMap.get());
 			instanceMap.get().putAll(r.instanceMap);
 			attr = r.getattr;
-			attrSetterFill(attr, getattrSetter);
 			returnClient(client, (byte) partition);
+			return attr;
 		} catch (FSError e) {
             returnClient(client, (byte) partition);
-            if (e.getErrorCode() == Errno.EAGAIN) {
-                System.out.println(e.getErrorMsg());
-            }
-			throw thriftError(e);
+			if (e.getErrorCode() == Errno.EAGAIN) {
+				System.out.println(e.getErrorMsg());
+			}
+			throw e;
         } catch (TException e) {
 			client.getOutputProtocol().getTransport().close();
-			throw thriftError(e);
+			throw e;
 		}
-		return 0;
 	}
 
-	public int readlink(String path, CharBuffer link) throws FuseException {
+	public String readlink(String path) throws TException {
 		int partition = choosePartition(this.partitionOracle.partitionsOf(path)).intValue();
 		FuseOps.Client client = getClient((byte) partition);
 		try {
 			Response r = client.readlink(path, instanceMap.get());
 			instanceMap.get().putAll(r.instanceMap);
-			link.append(r.readlink);
 			returnClient(client, (byte) partition);
+			return r.readlink;
 		} catch (FSError e) {
             returnClient(client, (byte) partition);
             if (e.getErrorCode() == Errno.EAGAIN) {
                 System.out.println(e.getErrorMsg());
             }
-			throw thriftError(e);
+			throw e;
         } catch (TException e) {
 			client.getOutputProtocol().getTransport().close();
-			throw thriftError(e);
+			throw e;
 		}
-		return 0;
 	}
 
-	public int getdir(String path, FuseDirFiller dirFiller) throws FuseException {
-		int partition = choosePartition(this.partitionOracle.partitionsOf(path)).intValue();
+	public List<DirEntry> getdir(String path) throws TException {
+        int partition = choosePartition(this.partitionOracle.partitionsOf(path)).intValue();
 		FuseOps.Client client = getClient((byte) partition);
 		try {
 			Response r = client.getdir(path, instanceMap.get());
 			instanceMap.get().putAll(r.instanceMap);
-			List<DirEntry> entries;
-			entries = r.getdir;
-			for (DirEntry entry : entries) {
-				dirFiller.add(entry.getName(), entry.getInode(), entry.getMode());
-			}
 			returnClient(client, (byte) partition);
+			return r.getdir;
 		} catch (FSError e) {
             returnClient(client, (byte) partition);
             if (e.getErrorCode() == Errno.EAGAIN) {
                 System.out.println(e.getErrorMsg());
             }
-            throw thriftError(e);
+            throw e;
         } catch (TException e) {
 			client.getOutputProtocol().getTransport().close();
-			throw thriftError(e);
+			throw e;
 		}
-		return 0;
 	}
 
-	public int mknod(String path, int mode, int rdev) throws FuseException {
+	public void mknod(String path, int mode, int rdev) throws TException {
 		int partition = choosePartition(this.partitionOracle.partitionsOf(path)).intValue();
 		FuseOps.Client client = getClient((byte) partition);
 		try {
@@ -246,15 +260,14 @@ public class PaxosFileSystem implements Filesystem3 {
             if (e.getErrorCode() == Errno.EAGAIN) {
                 System.out.println(e.getErrorMsg());
             }
-			throw thriftError(e);
+			throw e;
         } catch (TException e) {
 			client.getOutputProtocol().getTransport().close();
-			throw thriftError(e);
+			throw e;
 		}
-		return 0;
 	}
 
-	public int mkdir(String path, int mode) throws FuseException {
+	public void mkdir(String path, int mode) throws TException {
 		int partition = choosePartition(this.partitionOracle.partitionsOf(path)).intValue();
 		FuseOps.Client client = getClient((byte) partition);
 		try {
@@ -266,15 +279,14 @@ public class PaxosFileSystem implements Filesystem3 {
             if (e.getErrorCode() == Errno.EAGAIN) {
                 System.out.println(e.getErrorMsg());
             }
-			throw thriftError(e);
+			throw e;
         } catch (TException e) {
 			client.getOutputProtocol().getTransport().close();
-			throw thriftError(e);
+			throw e;
 		}
-		return 0;
 	}
 
-	public int unlink(String path) throws FuseException {
+	public void unlink(String path) throws TException {
 		int partition = choosePartition(this.partitionOracle.partitionsOf(path)).intValue();
 		FuseOps.Client client = getClient((byte) partition);
 		try {
@@ -286,15 +298,14 @@ public class PaxosFileSystem implements Filesystem3 {
             if (e.getErrorCode() == Errno.EAGAIN) {
                 System.out.println(e.getErrorMsg());
             }
-            throw thriftError(e);
+            throw e;
         } catch (TException e) {
 			client.getOutputProtocol().getTransport().close();
-			throw thriftError(e);
+			throw e;
 		}
-		return 0;
 	}
 
-	public int rmdir(String path) throws FuseException {
+	public void rmdir(String path) throws TException {
 		int partition = choosePartition(this.partitionOracle.partitionsOf(path)).intValue();
 		FuseOps.Client client = getClient((byte) partition);
 		try {
@@ -306,15 +317,14 @@ public class PaxosFileSystem implements Filesystem3 {
             if (e.getErrorCode() == Errno.EAGAIN) {
                 System.out.println(e.getErrorMsg());
             }
-			throw thriftError(e);
+			throw e;
         } catch (TException e) {
 			client.getOutputProtocol().getTransport().close();
-			throw thriftError(e);
+			throw e;
 		}
-		return 0;
 	}
 
-	public int symlink(String from, String to) throws FuseException {
+	public void symlink(String from, String to) throws TException {
 		int partition = this.partitionOracle.partitionsOf(from).iterator().next().intValue();
 		FuseOps.Client client = getClient((byte) partition);
 		try {
@@ -326,15 +336,14 @@ public class PaxosFileSystem implements Filesystem3 {
             if (e.getErrorCode() == Errno.EAGAIN) {
                 System.out.println(e.getErrorMsg());
             }
-			throw thriftError(e);
+			throw e;
         } catch (TException e) {
 			client.getOutputProtocol().getTransport().close();
-			throw thriftError(e);
+			throw e;
 		}
-		return 0;
 	}
 
-	public int rename(String from, String to) throws FuseException {
+	public void rename(String from, String to) throws TException {
 		int partition = this.partitionOracle.partitionsOf(from).iterator().next().intValue();
 		FuseOps.Client client = getClient((byte) partition);
 		try {
@@ -346,19 +355,18 @@ public class PaxosFileSystem implements Filesystem3 {
             if (e.getErrorCode() == Errno.EAGAIN) {
                 System.out.println(e.getErrorMsg());
             }
-            throw thriftError(e);
+            throw e;
         } catch (TException e) {
 			client.getOutputProtocol().getTransport().close();
-			throw thriftError(e);
+			throw e;
 		}
-		return 0;
 	}
 
-	public int link(String from, String to) throws FuseException {
-		throw new FuseException("Hardlinks not supported").initErrno(FuseException.EOPNOTSUPP);
+	public void link(String from, String to) throws TException {
+		throw new FSError(Errno.ENOTSUPP, "Hardlinks not supported");
 	}
 
-	public int chmod(String path, int mode) throws FuseException {
+	public void chmod(String path, int mode) throws TException {
 		int partition = choosePartition(this.partitionOracle.partitionsOf(path)).intValue();
 		FuseOps.Client client = getClient((byte) partition);
 		try {
@@ -370,15 +378,14 @@ public class PaxosFileSystem implements Filesystem3 {
             if (e.getErrorCode() == Errno.EAGAIN) {
                 System.out.println(e.getErrorMsg());
             }
-			throw thriftError(e);
+			throw e;
         } catch (TException e) {
 			client.getOutputProtocol().getTransport().close();
-			throw thriftError(e);
+			throw e;
 		}
-		return 0;
 	}
 
-	public int chown(String path, int uid, int gid) throws FuseException {
+	public void chown(String path, int uid, int gid) throws TException {
 		int partition = choosePartition(this.partitionOracle.partitionsOf(path)).intValue();
 		FuseOps.Client client = getClient((byte) partition);
 		try {
@@ -390,15 +397,14 @@ public class PaxosFileSystem implements Filesystem3 {
             if (e.getErrorCode() == Errno.EAGAIN) {
                 System.out.println(e.getErrorMsg());
             }
-            throw thriftError(e);
+            throw e;
         } catch (TException e) {
 			client.getOutputProtocol().getTransport().close();
-			throw thriftError(e);
+			throw e;
 		}
-		return 0;
 	}
 
-	public int truncate(String path, long size) throws FuseException {
+	public void truncate(String path, long size) throws TException {
 		int partition = choosePartition(this.partitionOracle.partitionsOf(path)).intValue();
 		FuseOps.Client client = getClient((byte) partition);
 		try {
@@ -410,15 +416,14 @@ public class PaxosFileSystem implements Filesystem3 {
             if (e.getErrorCode() == Errno.EAGAIN) {
                 System.out.println(e.getErrorMsg());
             }
-			throw thriftError(e);
+			throw e;
         } catch (TException e) {
 			client.getOutputProtocol().getTransport().close();
-			throw thriftError(e);
+			throw e;
 		}
-		return 0;
 	}
 
-	public int utime(String path, int atime, int mtime) throws FuseException {
+	public void utime(String path, int atime, int mtime) throws TException {
 		int partition = choosePartition(this.partitionOracle.partitionsOf(path)).intValue();
 		FuseOps.Client client = getClient((byte) partition);
 		try {
@@ -430,73 +435,80 @@ public class PaxosFileSystem implements Filesystem3 {
             if (e.getErrorCode() == Errno.EAGAIN) {
                 System.out.println(e.getErrorMsg());
             }
-			throw thriftError(e);
+			throw e;
         } catch (TException e) {
 			client.getOutputProtocol().getTransport().close();
-			throw thriftError(e);
+			throw e;
 		}
-		return 0;
 	}
 
-	public int statfs(FuseStatfsSetter statfsSetter) throws FuseException {
+	public FileSystemStats statfs() throws TException {
 		FuseOps.Client client = getClient((byte) 1);
 		try {
-			FileSystemStats s;
 			Response r = client.statfs(instanceMap.get());
 			instanceMap.get().putAll(r.instanceMap);
-			s = r.statfs;
-			statfsSetter.set(s.getBlockSize(), s.getBlocks(), s.getBlocksFree(), s.getBlocksAvail(), s.getFiles(), s.getFilesFree(),
-					s.getNamelen());
 			returnClient(client, (byte) 1);
+			return r.statfs;
 		} catch (FSError e) {
             returnClient(client, (byte) 1);
             if (e.getErrorCode() == Errno.EAGAIN) {
                 System.out.println(e.getErrorMsg());
             }
-            throw thriftError(e);
+            throw e;
         } catch (TException e) {
 			client.getOutputProtocol().getTransport().close();
-			throw thriftError(e);
+			throw e;
 		}
-		return 0;
 	}
 
-	public int open(String path, int flags, FuseOpenSetter openSetter) throws FuseException {
+	public FileHandle open(String path, int flags) throws TException {
 		int partition = choosePartition(this.partitionOracle.partitionsOf(path)).intValue();
 		FuseOps.Client client = getClient((byte) partition);
 		try {
-			FileHandle h;
 			Response r = client.open(path, flags, instanceMap.get());
 			instanceMap.get().putAll(r.instanceMap);
-			h = r.open;
-			openSetter.setFh(h);
 			returnClient(client, (byte) partition);
+			return r.open;
 		} catch (FSError e) {
             returnClient(client, (byte) partition);
             if (e.getErrorCode() == Errno.EAGAIN) {
                 System.out.println(e.getErrorMsg());
             }
-			throw thriftError(e);
+			throw e;
         } catch (TException e) {
 			client.getOutputProtocol().getTransport().close();
-			throw thriftError(e);
+			throw e;
 		} catch (NoSuchElementException e) {
             e.printStackTrace();
             throw e;
         }
-		return 0;
 	}
 
-	public int read(String path, Object fh, ByteBuffer buf, long offset) throws FuseException {
+    /**
+     * Returns a ByteBuffer with the file contents. The buffer will be ready for reading.
+     */
+    public ByteBuffer read(String path, FileHandle fh, long offset, int bytes) throws TException {
+        ByteBuffer buf = ByteBuffer.allocate(bytes);
+        this.read(path, fh, offset, buf);
+        buf.flip();
+        return buf;
+    }
+
+    /**
+     * Read file contents into buf. It will try to fill the ByteBuffer (current position to limit).
+     * flip() is NOT called before returning.
+     */
+	public void read(String path, FileHandle fh, long offset, ByteBuffer buf) throws TException {
         readCount.incrementAndGet();
         opCount.incrementAndGet();
-		FileHandle handle = (FileHandle) fh;
+		FileHandle handle = fh;
+        int bytes = buf.remaining();
 		Set<Byte> allPartitions = this.partitionOracle.partitionsOf(path);
 		int partition = choosePartition(allPartitions).intValue();
 		FuseOps.Client client = getClient((byte) partition);
 		try {
 			ReadResult res;
-			Response r = client.readBlocks(path, handle, offset, (long) buf.remaining(), instanceMap.get());
+			Response r = client.readBlocks(path, handle, offset, bytes, instanceMap.get());
 			instanceMap.get().putAll(r.instanceMap);
 			res = r.readBlocks;
 			List<StorageFuture<byte[]>> futureValues = new LinkedList<>();
@@ -517,7 +529,7 @@ public class PaxosFileSystem implements Filesystem3 {
     				throw new FSError(Errno.EREMOTEIO, "Error fetching data block!");
 				}
 			}
-			
+
 			// pass the values to fuse - also checking for and creating zeroed blocks (null id)
 			Iterator<byte[]> valuesIter = values.iterator();
 			for (DBlock b : res.getBlocks()) {
@@ -545,32 +557,31 @@ public class PaxosFileSystem implements Filesystem3 {
                     }
 				}
 			}
-			
 			returnClient(client, (byte) partition);
 		} catch (FSError e) {
             returnClient(client, (byte) partition);
             if (e.getErrorCode() == Errno.EAGAIN) {
                 System.out.println(e.getErrorMsg());
             }
-            throw thriftError(e);
+            throw e;
         } catch (TException e) {
 			client.getOutputProtocol().getTransport().close();
-			throw thriftError(e);
+			throw e;
 		} catch (NoSuchElementException e) {
             log.error(e);
             e.printStackTrace();
             throw e;
         }
-		return 0;
 	}
 
-	public int write(String path, Object fh, boolean isWritepage, ByteBuffer buf, long offset) throws FuseException {
+	public int write(String path, FileHandle fh, long offset, ByteBuffer buf) throws TException {
         writeCount.incrementAndGet();
         opCount.incrementAndGet();
-		FileHandle handle = (FileHandle) fh;
+		FileHandle handle = fh;
 		Set<Byte> allPartitions = this.partitionOracle.partitionsOf(path); // partitions to store the data block
 		int partition = choosePartition(allPartitions).intValue(); // partition to send the request
 		FuseOps.Client client = getClient((byte) partition);
+        int startPos = buf.position(); // used later to return number of bytes written
 		try {
 			List<DBlock> blocks = new LinkedList<>();
 			List<StorageFuture<Boolean>> putFutures = new LinkedList<>();
@@ -625,7 +636,7 @@ public class PaxosFileSystem implements Filesystem3 {
                 if (allPartitions.size() == 1 && b.getStorageSize() == 0) {
                     throw new FSError(Errno.EREMOTEIO, "Error storing single-partition data block: Could not write to storage " + allPartitions.iterator().next());
                 } else if (allPartitions.size() >= 2 && b.getStorageSize() < 2) {
-					// FIXME: hard-coded: writing to 2 partitions is enough to support 1 datacenter failure
+                    // FIXME: hard-coded: writing to 2 partitions is enough to support 1 datacenter failure
                     throw new FSError(Errno.EREMOTEIO, "Error storing replicated data block: Required replication not achieved");
                 }
             }
@@ -633,30 +644,29 @@ public class PaxosFileSystem implements Filesystem3 {
 			Response r = client.writeBlocks(path, handle, offset, blocks, instanceMap.get());
 			instanceMap.get().putAll(r.instanceMap);
 			returnClient(client, (byte) partition);
+            return buf.position() - startPos;
 		} catch (FSError e) {
             returnClient(client, (byte) partition);
             if (e.getErrorCode() == Errno.EAGAIN) {
                 System.out.println(e.getErrorMsg());
             }
-			throw thriftError(e);
+			throw e;
         } catch (TException e) {
 			client.getOutputProtocol().getTransport().close();
-			throw thriftError(e);
+			throw e;
 		} catch (NoSuchElementException e) {
             log.error(e);
             e.printStackTrace();
             throw e;
         }
-		return 0;
 	}
 
-	public int flush(String path, Object fh) throws FuseException {
+	public void flush(String path, FileHandle fh) throws TException {
 		// All operations go through paxos. Flush does not make sense for us
-		return 0;
 	}
 
-	public int release(String path, Object fh, int flags) throws FuseException {
-		FileHandle handle = (FileHandle) fh;
+	public void release(String path, FileHandle fh, int flags) throws TException {
+		FileHandle handle = fh;
 		//int partition = (int) handle.getPartition();
 		int partition = choosePartition(this.partitionOracle.partitionsOf(path)).intValue();
 		FuseOps.Client client = getClient((byte) partition);
@@ -669,61 +679,48 @@ public class PaxosFileSystem implements Filesystem3 {
             if (e.getErrorCode() == Errno.EAGAIN) {
                 System.out.println(e.getErrorMsg());
             }
-			throw thriftError(e);
+			throw e;
         } catch (TException e) {
 			client.getOutputProtocol().getTransport().close();
-			throw thriftError(e);
+			throw e;
 		}
-		return 0;
 	}
 
-	public int fsync(String path, Object fh, boolean isDatasync) throws FuseException {
+	public void fsync(String path, Object fh, boolean isDatasync) throws TException {
 		// Since all reads/writes go through paxos, no need for fsync
-		return 0;
-	}
-
-	public FuseException thriftError(TException cause) {
-		if (cause instanceof FSError) {
-			return new FuseException(((FSError) cause).errorMsg).initErrno(((FSError) cause).errorCode);
-		}
-		return new FuseException("Error communicating with replica", cause);
-	}
-
-	public void attrSetterFill(Attr attr, FuseGetattrSetter setter) {
-		setter.set(attr.getInode(), attr.getMode(), attr.getNlink(), attr.getUid(), attr.getGid(), attr.getRdev(), attr.getSize(),
-				attr.getBlocks(), attr.getAtime(), attr.getMtime(), attr.getCtime());
 	}
 
 	private int callerUid() {
-		return FuseContext.get().uid;
+        return this.uid;
 	}
 
 	private int callerGid() {
-		return FuseContext.get().gid;
+		return this.gid;
 	}
-	
+
 	public static void main(String[] args) throws Exception {
-		// small sanity check to avoid problems later (fuse hangs on exceptions
-		// sometimes)
 		if (args.length < 5) {
-			System.err.println("usage: PaxosFileSystem <n_partitions> <zoohost> <storage> <replica_id> <closest_partition> <MOUNT PARAMETERS>\n"
+			System.err.println("usage: PaxosFileSystem <n_partitions> <zoohost> <storage> <replica_id> <closest_partition>\n"
 					+ "\treplica_id -> in each partition, connect to the replica with this id\n"
 					+ "\tstorage -> storage config file \n"
                     + "\tclosest_partition -> id of the partition geographically closest to the client machine");
 			return;
 		}
 
-		System.out.println(Arrays.toString(LogFactory.getFactory().getAttributeNames()));
-
        // statsPrinter.start();
 
         log.info(Arrays.toString(args));
-		PaxosFileSystem fs = new PaxosFileSystem(Integer.parseInt(args[0]), args[1], args[2], Integer.parseInt(args[3]), Byte.parseByte(args[4]));
+		FileSystemClient fs = new FileSystemClient(Integer.parseInt(args[0]), args[1], args[2], Integer.parseInt(args[3]), Byte.parseByte(args[4]));
 		try {
 			fs.start();
-			String[] mountArgs = Arrays.copyOfRange(args, 5, args.length);
-//			log.info(Arrays.toString(mountArgs));
-			FuseMount.mount(mountArgs, fs, log);
+            fs.waitUntilReady();
+            fs.mkdir("/1", 755);
+            fs.mkdir("/2", 755);
+            fs.mknod("/1/asdf", 755, 0);
+            fs.mknod("/global", 755, 0);
+            FileHandle fh = fs.open("/global", UnixConstants.O_WRONLY | UnixConstants.O_APPEND);
+            fs.write("/global", fh, 0, ByteBuffer.wrap("FOOBAR BAZ!".getBytes()));
+            fs.release("/global", fh, 0);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -731,4 +728,5 @@ public class PaxosFileSystem implements Filesystem3 {
             // statsPrinter.interrupt();
 		}
 	}
+
 }

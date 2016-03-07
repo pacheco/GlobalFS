@@ -80,6 +80,7 @@ public class StaticReplicaManager implements ReplicaManager {
     @Override
     public void start() throws ReplicaManagerException {}
 
+
     @Override
     public HostAndPort getRandomReplicaAddress(byte partition) throws ReplicaManagerException {
         Map<Integer, HostAndPort> replicas = partitionReplicas.get(Byte.valueOf(partition));
@@ -93,4 +94,10 @@ public class StaticReplicaManager implements ReplicaManager {
         if (replicas == null) return null;
         return replicas.get(Integer.valueOf(replicaId));
     }
+
+    @Override
+    public void waitInitialization() throws InterruptedException {}
+
+    @Override
+    public void stop() {}
 }

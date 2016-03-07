@@ -19,6 +19,16 @@ def set_roles(deployment):
 
 
 @task
+def image_from_head(deployment, image_name):
+    """Create a new snapshot image from head
+    """
+    dep = deployments[deployment]
+    head_region = dep.head.region
+    connection = ec2.connect(head_region)
+    ec2.create_snapshot_image(connection, 'head', image_name)
+
+
+@task
 def image_list(deployment):
     """List images available on each region
     """
@@ -43,7 +53,10 @@ def image_delete(deployment, image_name):
         for img in images:
             if img.name == image_name:
                 print "removing", img
-                img.deregister(delete_snapshot=True)
+                try:
+                    img.deregister(delete_snapshot=True)
+                except:
+                    pass
 
 
 @task

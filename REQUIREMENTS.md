@@ -1,5 +1,20 @@
-# General VM setup
-I use ubuntu VMs and recomend the same for easy setup. Install the following packages (`apt-get install`):
+Instalation instructions for Ubuntu as that was the platform used for
+development and testing, but should work without problems in other
+linuxes.
+
+Three installation scripts are provided to make things easier. You can run them in the following order:
+
+    install-packages-ubuntu.sh # use apt-get to install other dependencies
+    fetch-deps.sh              # clone/checkout correct version of dependencies that need to be compiled
+    compile-install-deps.sh    # compile and install dependencies at ~/usr/
+
+The scripts used to deploy/run the system expects compiled
+dependencies to be under `~/usr` (`~/usr/lib` and `~/usr/include` for
+libraries) - this is assumed by the following instructions.
+
+
+# General dependencies
+Install the following packages(`apt-get install`):
 
     zookeeper
     zookeeperd
@@ -11,22 +26,24 @@ I use ubuntu VMs and recomend the same for easy setup. Install the following pac
     fabric
     dstat
     python-pip
+    openjdk-7-jdk   # any jdk >7
+    golang
+    zenity
+    build-essential
+    zlib1g-dev
+    libbz2-dev
+    libsnappy-dev
 
 Then install python packages
 
     sudo pip install boto
 
-# Java
-You need at least java 7. Get the Oracle JVM. I use ubuntu and an external PPA:
+# Compiled dependencies
 
-    sudo add-apt-repository ppa:webupd8team/java
-    sudo apt-get update
-    sudo apt-get install oracle-java7-installer
-    sudo update-java-alternatives java-7-oracle
+These dependencies should be fetched (`fetch-deps.sh`) and compiled.
 
-## Maven
-Install maven 3 (`sudo apt-get install maven`)
 ## URingPaxos
+
 URingPaxos can be obtained from <https://github.com/sambenz/URingPaxos>.
 
     git clone https://github.com/sambenz/URingPaxos
@@ -38,17 +55,21 @@ URingPaxos can be obtained from <https://github.com/sambenz/URingPaxos>.
     cp -r Paxos-trunk ~/usr
 
 ## Fuse4J
-Fuse4J can be obtained from <https://github.com/dtrott/fuse4j>.
 
-    git clone https://github.com/dtrott/fuse4j
+Fuse4J can be obtained from <https://github.com/pacheco/fuse4j>.
+Forked from <https://github.com/dtrott/fuse4j> to make it compile on
+Ubuntu 64 by default.
+
+    git clone https://github.com/pacheco/fuse4j
     cd fuse4j
     git checkout -f 729b3bb4c62b66650d97fe7f71eb21d568102a34
     mvn install
 
-# Compiled libraries
-I keep external libraries and includes inside `~/usr/lib` and `~/usr/include` respectively.
+## Compiled libraries
 
-Set the following variables in your `.bashrc`:
+This assumes external libraries and includes can be installed inside
+`~/usr/lib` and `~/usr/include` respectively.  Set the following
+variables in your `.bashrc` (if using bash):
 
     export LIBRARY_PATH=${HOME}/usr/lib/:$LIBRARY_PATH
     export LD_LIBRARY_PATH=${HOME}/usr/lib/:$LD_LIBRARY_PATH
@@ -56,14 +77,12 @@ Set the following variables in your `.bashrc`:
     export CPLUS_INCLUDE_PATH=${HOME}/usr/include/:$CPLUS_INCLUDE_PATH
 
 ## Fuse4J
-You need to compile (`make`) the code inside `fuse4j/native` and copy `libjavafs.so` into `~/usr/lib`.
-Change `make.flags` appropriatelly to make it compile.
+
+You need to compile (`make`) the code inside `fuse4j/native` and copy
+`libjavafs.so` into `~/usr/lib`.
+Change `make.flags` if necessary.
 
 ## RocksDB
-Install the following libraries (assuming Ubuntu):
-
-    sudo apt-get install libstdc++-4.8-dev libstdc++6 zlib1g-dev zlib1g \
-                         libbz2-dev libbz2-1.0 libsnappy1 libsnappy-dev
 
 Get the code from github and compile
 
@@ -75,16 +94,26 @@ Get the code from github and compile
     cp -r librock* ~/usr/lib
 
 # Go
-Download the binaries (1.5) and extract it inside `~/usr/`. Full path should be `~/usr/go`.j
 
-I keep go packages inside `~/usr/gousr`. For that, set the following variables in your `.bashrc`:
+The storage implementation is done in go.
+Install golang through `apt-get` or download the binaries and set
+enviroment variables as appropriate: Assuming go is kept in
+`${HOME}/usr/go` and go packages under `${HOME}/usr/gousr`:
 
     export PATH=${HOME}/usr/go/bin:$PATH
     export GOROOT=${HOME}/usr/go/
     export GOPATH=${HOME}/usr/gousr/
 
 ## gorocksdb
-You need to have compiled/installed the RocksDB shared libraries and have setup golang. After that, run:
+
+You need to have compiled/installed the RocksDB shared libraries and
+have setup golang. After that, run:
 
     export CGO_LDFLAGS="-lrocksdb -lstdc++ -lm -lz -lbz2 -lsnappy"
     go get github.com/tecbot/gorocksdb
+
+## goleveldb
+
+You need to install `libleveldb-dev`
+
+    go get github.com/jmhodges/levigo

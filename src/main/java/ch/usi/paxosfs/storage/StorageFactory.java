@@ -3,6 +3,7 @@ package ch.usi.paxosfs.storage;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.Reader;
 import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,19 +23,17 @@ public class StorageFactory {
         List<String> hosts = new LinkedList<>();
         Storage st = null;
         Class clazz = null;
-        try {
-            BufferedReader r = new BufferedReader(new FileReader(configFile.toFile()));
+        try (BufferedReader r = new BufferedReader(new FileReader(configFile.toFile()))) {
             String className = r.readLine();
             clazz = Class.forName(className);
             if (Storage.class.isAssignableFrom(clazz)) { // check that it implements a Storage
                 st = (Storage) clazz.newInstance();
-                st.initialize(configFile);
+                st.initialize(r);
             }
         } catch (Exception e) {
             e.printStackTrace();
             st = null;
         }
-
         return st;
 	}
 }

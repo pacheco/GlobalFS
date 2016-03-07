@@ -165,16 +165,6 @@ for region in region_zones.keys():
 deployments['d9'] = dep_9
 
 
-if __name__ == '__main__':
-    for k, v in deployments.items():
-        pprint(k)
-        for r in v.regions:
-            pprint(r.id)
-            for n in r.nodes:
-                pprint(n)
-
-
-
 # 12 replicas and 12 clients per DC
 #----------------------------------------------------------
 dep_12 = EC2Deployment([], EC2Node('us-west-2', 'a', 'c3.large', 'head'))
@@ -255,19 +245,119 @@ for region in region_zones.keys():
 deployments['d4'] = dep_4
 
 
-if __name__ == '__main__':
-    for k, v in deployments.items():
-        pprint(k)
-        for r in v.regions:
-            pprint(r.id)
-            for n in r.nodes:
-                pprint(n)
+# NEW DEPLOYMENTS ----------------------------------------------------
+# --------------------------------------------------------------------
+
+# one (1) regions, single partition (3 replicas and 3 clients)
+# ------------------------------------------------------------
+
+region = 'us-west-2'
+dep_1 = EC2Deployment([], EC2Node(region, 'a', 'c3.large', 'head'))
+dc = 1
+
+region_zones = {
+    region : ['a', 'b', 'c'],
+}
+
+rep = 0
+reg = EC2Region(region, dc, [])
+for av in region_zones[region]:
+    reg.nodes.append(EC2Node(region, av, 'c3.large', 'acc%s_0' % (rep+1)))
+    reg.nodes.append(EC2Node(region, av, 'r3.large', 'rep%s_%s' % (dc, rep)))
+    reg.nodes.append(EC2Node(region, av, 'c3.large', 'cli%s_%s' % (dc, rep)))
+    rep += 1
+dep_1.regions.append(reg)
+
+deployments['dep1'] = dep_1
+
+
+# three (3) regions, 1 partition per region (3 replicas and 3 clients)
+# ------------------------------------------------------------
+
+dep_3 = EC2Deployment([], EC2Node('us-west-2', 'a', 'c3.large', 'head'))
+dc = 1
+
+region_zones = {
+    'us-west-2' : ['a', 'b', 'c'],
+    'us-west-1' : ['a', 'c', 'c'], # not enough regions!
+    'us-east-1' : ['a', 'b', 'e']
+}
+
+region_order = [
+    'us-west-2',
+    'us-west-1',
+    'us-east-1'
+]
+
+for region in region_order:
+    rep = 0
+    reg = EC2Region(region, dc, [])
+    # headnode
+    # if region == 'us-west-2':
+    #     reg.nodes.append(EC2Node(region, region_zones[region][0], 'c3.large', 'head'))
+    # replicas and clients
+    if dc <= 3: # only 3 global acceptors
+        reg.nodes.append(EC2Node(region, region_zones[region][0], 'c3.large', 'acc%s_0' % (dc)))
+    for av in region_zones[region]:
+        if region == 'sa-east-1': # doesnt have r3.large
+            reg.nodes.append(EC2Node(region, av, 'c3.large', 'rep%s_%s' % (dc, rep)))
+        else:
+            reg.nodes.append(EC2Node(region, av, 'r3.large', 'rep%s_%s' % (dc, rep)))
+        reg.nodes.append(EC2Node(region, av, 'c3.large', 'cli%s_%s' % (dc, rep)))
+        rep += 1
+    dep_3.regions.append(reg)
+    dc += 1
+deployments['dep3'] = dep_3
+
+# six (6) regions, 1 partition per region (3 replicas and 3 clients)
+# ------------------------------------------------------------
+
+dep_6 = EC2Deployment([], EC2Node('us-west-2', 'a', 'c3.large', 'head'))
+dc = 1
+
+region_zones = {
+    'us-west-2' : ['a', 'b', 'c'],
+    'us-west-1' : ['a', 'c', 'c'], # not enough regions!
+    'us-east-1' : ['a', 'b', 'e'],
+    'eu-west-1' : ['a', 'b', 'c'],
+    'eu-central-1': ['a', 'b', 'b'], # not enough regions!
+    'ap-northeast-1': ['a', 'c', 'c'], # northeast-1b not working...
+}
+
+region_order = [
+    'us-west-2',
+    'us-west-1',
+    'us-east-1',
+    'eu-west-1',
+    'eu-central-1',
+    'ap-northeast-1',
+]
+
+for region in region_order:
+    rep = 0
+    reg = EC2Region(region, dc, [])
+    # headnode
+    # if region == 'us-west-2':
+    #     reg.nodes.append(EC2Node(region, region_zones[region][0], 'c3.large', 'head'))
+    # replicas and clients
+    if dc <= 3: # only 3 global acceptors
+        reg.nodes.append(EC2Node(region, region_zones[region][0], 'c3.large', 'acc%s_0' % (dc)))
+    for av in region_zones[region]:
+        if region == 'sa-east-1': # doesnt have r3.large
+            reg.nodes.append(EC2Node(region, av, 'c3.large', 'rep%s_%s' % (dc, rep)))
+        else:
+            reg.nodes.append(EC2Node(region, av, 'r3.large', 'rep%s_%s' % (dc, rep)))
+        reg.nodes.append(EC2Node(region, av, 'c3.large', 'cli%s_%s' % (dc, rep)))
+        rep += 1
+    dep_6.regions.append(reg)
+    dc += 1
+deployments['dep6'] = dep_6
 
 
 # All regions (9), 1 partition per region (3 replicas and 3 clients)
 # ------------------------------------------------------------
 
-dep_all = EC2Deployment([], EC2Node('us-west-2', 'a', 'c3.large', 'head'))
+dep_9 = EC2Deployment([], EC2Node('us-west-2', 'a', 'c3.large', 'head'))
 dc = 1
 
 region_zones = {
@@ -310,36 +400,9 @@ for region in region_order:
             reg.nodes.append(EC2Node(region, av, 'r3.large', 'rep%s_%s' % (dc, rep)))
         reg.nodes.append(EC2Node(region, av, 'c3.large', 'cli%s_%s' % (dc, rep)))
         rep += 1
-    dep_all.regions.append(reg)
+    dep_9.regions.append(reg)
     dc += 1
-deployments['dall'] = dep_all
-
-
-# two regions (us-west-2 and us-west-1) with only two zones
-# ------------------------------------------------------------
-dep_2 = EC2Deployment([], EC2Node('us-west-2', 'a', 'c3.large', 'head'))
-dc = 1
-
-region_zones = {
-    'us-west-2': ['a', 'b', 'b'], # not enough regions!
-    'us-west-1': ['a', 'b', 'b'] # not enough regions!
-}
-
-for region in region_zones.keys():
-    rep = 0
-    reg = EC2Region(region, dc, [])
-    # headnode
-    # if region == 'us-west-2':
-    #     reg.nodes.append(EC2Node(region, region_zones[region][0], 'c3.large', 'head'))
-    # replicas and clients
-    reg.nodes.append(EC2Node(region, region_zones[region][0], 'c3.large', 'acc%s_0' % (dc)))
-    for av in region_zones[region]:
-        reg.nodes.append(EC2Node(region, av, 'r3.large', 'rep%s_%s' % (dc, rep)))
-        reg.nodes.append(EC2Node(region, av, 'c3.large', 'cli%s_%s' % (dc, rep)))
-        rep += 1
-    dep_2.regions.append(reg)
-    dc += 1
-deployments['d2'] = dep_2
+deployments['dep9'] = dep_9
 
 
 # GLUSTERFS EXPERIMENTS
@@ -426,3 +489,11 @@ for region in region_order:
     d3_gluster.regions.append(reg)
     dc += 1
 deployments['d3_gluster'] = d3_gluster
+
+if __name__ == '__main__':
+    for k, v in deployments.items():
+        pprint(k)
+        for r in v.regions:
+            pprint(r.id)
+            for n in r.nodes:
+                pprint(n)

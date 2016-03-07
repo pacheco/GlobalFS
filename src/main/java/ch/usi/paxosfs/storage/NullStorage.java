@@ -1,12 +1,13 @@
 package ch.usi.paxosfs.storage;
 
+import java.io.Reader;
 import java.nio.file.Path;
 
 public class NullStorage implements Storage {
     byte[] data = new byte[1024];
 
     @Override
-    public void initialize(Path configFile) {
+    public void initialize(Reader configReader) {
     }
 
     @Override

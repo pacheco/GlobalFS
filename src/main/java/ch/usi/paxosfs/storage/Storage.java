@@ -1,5 +1,6 @@
 package ch.usi.paxosfs.storage;
 
+import java.io.Reader;
 import java.nio.file.Path;
 
 /**
@@ -8,12 +9,11 @@ import java.nio.file.Path;
  */
 public interface Storage {
     /**
-     * Initialize the Storage given the config file. The first line in the config file is the name of the class (used by StorageFactory)
-     * but the rest is free to be used by each implementation as required.
+     * Initialize the Storage given the config. Actual contents of config is implementation dependent.
      *
-     * @param configFile path to the config file
+     * @param configReader reader for the config
      */
-    void initialize(Path configFile) throws Exception;
+    void initialize(Reader configReader) throws Exception;
 
     /**
      * Assign data to a key inside a given partition. Does the operation asynchronously returning a Future<Boolean> (false if the operation was unsuccessful)

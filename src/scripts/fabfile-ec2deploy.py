@@ -36,7 +36,7 @@ FUSE_OPTIONS = " ".join([
 ])
 
 
-# note the MRP_CONFIG interpolation at the end
+# will be interpolated with MRP_CONFIG later
 ZKCONFIG ="""
 delete /ringpaxos/boot_time.bin
 set /ringpaxos/config/multi_ring_start_time %(MRP_START_TIME)s
@@ -203,6 +203,7 @@ def kill_and_clear_():
         run('pkill --signal 9 -f FSMain')
         run('pkill --signal 9 -f dht.lua')
         run('pkill --signal 9 -f kvstore')
+        run('pkill --signal 9 -f FileSystemClient')
         sudo('pkill --signal 9 -f PaxosFileSystem')
         sudo('umount -l /tmp/fs*')
         to_rm = ['/tmp/*.vgc',
@@ -226,7 +227,7 @@ def setup_zookeeper():
         sudo('service zookeeper restart')
         MRP_CONFIG['MRP_START_TIME'] = run('date +%s000')
         time.sleep(5) # needed?
-        run(dtach_and_log("~/usr/Paxos-trunk/ringpaxos.sh '0,9999:L;1,9999:L;2,9999:L;3,9999:L;4,9999:L;5,9999:L;6,9999:L;7,9999:L;8,9999:L;9,9999:L' localhost:2182",
+        run(dtach_and_log("~/usr/sinergiafs/mrpnode.sh --zoo localhost:2182 '0,9999:L;1,9999:L;2,9999:L;3,9999:L;4,9999:L;5,9999:L;6,9999:L;7,9999:L;8,9999:L;9,9999:L'",
                           '/tmp/zkcfg',
                           '/tmp/trash'))
         time.sleep(10)
