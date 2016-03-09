@@ -10,7 +10,7 @@ import java.util.Random;
 import java.util.Scanner;
 
 /**
- * Register and find replicas on zookeeper by partition.
+ * Static map between partitions and replicas
  * 
  * @author pacheco
  * 
